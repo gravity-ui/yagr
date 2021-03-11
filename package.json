@@ -1,12 +1,13 @@
 {
   "name": "@yandex-data-ui/yagr",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "keywords": [],
   "main": "dist/index.js",
   "module": "dist/yagr.es5.js",
   "files": [
-    "dist"
+    "dist",
+    "typings"
   ],
   "author": "Trdat Mkrtchian <zeffirsky@yandex-team.ru>",
   "repository": {
