@@ -1,0 +1,28 @@
+.yagr {
+    width: 100%;
+    height: 100%;
+
+    .uplot {
+        width: 100%;
+        font-family: var(--yc-font-family);
+    }
+
+    .u-title {
+        color: var(--highcharts-title);
+        font-size: 15px;
+        font-weight: bold;
+        fill: var(--highcharts-title);
+        line-height: 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .u-select {
+        background: rgba(51, 92, 173, 0.25);
+    }
+}
+
+@import './YagrCore/plugins/tooltip/tooltip.scss';
+@import './YagrCore/plugins/cursor/cursor.scss';
+@import './YagrCore/plugins/legend/legend.scss';
