@@ -1,10 +1,10 @@
 import {Plugin, Series} from 'uplot';
 
-import {CursorOptions, SnapToValue} from '../cursor/cursor';
+import {CursorOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
-import {DataSeries} from '../../types';
+import {DataSeries, SnapToValue} from '../../types';
 
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
 import {
@@ -20,25 +20,23 @@ const DEFAULT_MAX_LINES = 10;
 export interface TooltipState {
     /** Is tooltip pinned */
     pinned: boolean;
-
     /** X-Coord of click to track selections and differ them from single click */
     clickStartedX: null | number;
-
-    /** Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
-    renderTooltipCloses: () => void;
+    visible: boolean;
+    mounted: boolean;
 }
-
+export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
 
 function renderTooltip(rows: TooltipRows) {
-    const body = rows.map(({y, name}) => {
-        return `<div>${name} : ${y}</div>`;
-    });
-
-    return `<div>${body}</div>`;
+    return rows.map(({y, name, color}) => {
+        return `<div class="yagr-tooltip__item" data-series-name="${name}">
+            <span class="yagr-tooltip__mark" style="background-color: ${color}"></span> ${name} : ${y}
+        </div>`;
+    }).join('\n');
 }
 
 // eslint-disable-next-line complexity
-const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: number) => {
+const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: number, stripValue: unknown = null) => {
     const source = Array.isArray(serie.originalData) ? serie.originalData : data;
 
     const snapTo = cursor.snapToValues === false
@@ -47,7 +45,7 @@ const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: 
 
     let value = source[idx];
 
-    if (value === null) {
+    if (value === stripValue) {
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo);
         value = source[nonNullIdx];
     }
@@ -60,6 +58,9 @@ const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: 
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): Plugin {
+    /** Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
+    let renderTooltipCloses = () => {};
+
     const defaultTooltipValueFormatter = (n: number | null, precision?: number) => {
         return n === null
             ? '-'
@@ -83,6 +84,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         sort: undefined,
         showIndicies: false,
         hideNoData: false,
+        className: 'yagr-tooltip_default',
     }, options);
 
     let over: HTMLDivElement;
@@ -93,27 +95,55 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     const tOverlay = document.createElement('div');
 
     tOverlay.id = `${yagr.id}.tooltip`;
-    tOverlay.className = 'yagr-tooltip chartkit-theme_common';
+    tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
     tOverlay.style.display = 'none';
-    tOverlay.style.position = 'absolute';
-
-    document.body.appendChild(tOverlay);
 
     const state: TooltipState = {
+        /** Is tooltip mounted */
+        mounted: true,
         pinned: false,
+        visible: false,
         clickStartedX: null,
-        renderTooltipCloses: () => {},
     };
 
-    const show = () => { tOverlay.style.display = 'block'; };
-    const hide = () => { tOverlay.style.display = 'none'; };
+    const emit = (action: TooltipAction) => {
+        if (opts.onStateChange) {
+            opts.onStateChange(tOverlay, {
+                state,
+                actions: {
+                    pin, show, hide,
+                },
+                action,
+                yagr,
+            });
+        }
+    };
+
+    emit('init');
+    document.body.appendChild(tOverlay);
+    state.mounted = true;
+    emit('mount');
+
+    const show = () => { 
+        const shouldEmit = !state.visible;
+        state.visible = true;
+        tOverlay.style.display = 'block';
+        shouldEmit && emit('show');
+    };
+
+    const hide = () => {
+        const shouldEmit = state.visible;
+        state.visible = false;
+        tOverlay.style.display = 'none'; emit('hide');
+        shouldEmit && emit('show');
+    };
 
     const checkFocus = (event: MouseEvent) => {
         const target = event.target as HTMLElement | null;
         let serieName: string | undefined;
 
-        if (target && tOverlay.contains(target) && target.tagName === 'TD') {
-            serieName = target.parentElement?.dataset['seriesName'];
+        if (target && tOverlay.contains(target) && target.classList.contains('yagr-tooltip__item')) {
+            serieName = target.dataset['seriesName'];
         }
 
         const serie = serieName ? (yagr.uplot.series).find((s) => {
@@ -135,12 +165,45 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             const isClickOnUplotOver = target && over.contains(target);
 
             if (!isClickInsideTooltip && !isClickOnUplotOver) {
-                state.pinned = false;
-                tOverlay.classList.remove('yagr-tooltip_pinned');
+                pin(false);
                 hide();
             }
         }
     };
+
+    const pin = (pinState: boolean) => {
+        const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
+        state.pinned = pinState;
+
+        if (pinState) {
+            tOverlay.classList.add('yagr-tooltip_pinned');
+            if (list) {
+                list.style.height = list?.clientHeight + 'px';
+            }
+
+            const pointsHolder = document.createElement('div');
+            pointsHolder.classList.add('yagr-points-holder');
+            over.querySelectorAll('.yagr-point').forEach((elem) => {
+                pointsHolder.appendChild(elem.cloneNode(true));
+            });
+            over.appendChild(pointsHolder);
+
+            if (opts.render === renderTooltip) {
+                document.addEventListener('mousemove', checkFocus)
+                document.addEventListener('mousedown', detectClickOutside);
+            }
+        } else {
+            over.querySelector('.yagr-points-holder')?.remove();
+            tOverlay.classList.remove('yagr-tooltip_pinned');
+
+            if (opts.render === renderTooltip) {
+                document.removeEventListener('mousemove', checkFocus)
+                document.removeEventListener('mousedown', detectClickOutside);
+            }
+        }
+
+        emit(pinState ? 'pin' : 'unpin');
+    }
 
     const onMouseUp = (event: MouseEvent) => {
         if (
@@ -148,33 +211,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             state.clickStartedX &&
             state.clickStartedX === event.clientX
         ) {
-            state.pinned = !state.pinned;
-            const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
-
-            if (state.pinned) {
-                tOverlay.classList.add('yagr-tooltip_pinned');
-                if (list) {
-                    list.style.height = list?.clientHeight + 'px';
-                }
-
-                const pointsHolder = document.createElement('div');
-                pointsHolder.classList.add('yagr-points-holder');
-                over.querySelectorAll('.yagr-point').forEach((elem) => {
-                    pointsHolder.appendChild(elem.cloneNode(true));
-                });
-                over.appendChild(pointsHolder);
-
-                document.addEventListener('mousemove', checkFocus);
-                document.addEventListener('mousedown', detectClickOutside);
-            } else {
-                over.querySelector('.yagr-points-holder')?.remove();
-                tOverlay.classList.remove('yagr-tooltip_pinned');
-                list.removeEventListener('mousemove', checkFocus);
-                document.removeEventListener('mousedown', detectClickOutside);
-            }
-
+            pin(!state.pinned);
             show();
-            state.renderTooltipCloses();
+            renderTooltipCloses();
         }
     };
 
@@ -257,13 +296,15 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    const value = findValue(yagr.config.cursor, u.data[i], serie, idx);
+                    const stripValue = yagr.config.settings?.interpolationValue;
+                    const value = findValue(yagr.config.cursor, u.data[i], serie, idx, stripValue);
 
                     if (opts.total) {
                         sum += (value || 0);
                     }
 
-                    const yValue = data[i][idx];
+                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : data[i][idx]
+
                     ys.push(yValue);
 
                     i += 1;
@@ -333,7 +374,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     anchor.left += ANCHOR_Y_OFFSET;
                 }
 
-                state.renderTooltipCloses = () => {
+                renderTooltipCloses = () => {
                     tOverlay.innerHTML = opts.render(rows, {
                         options: opts,
                         lines: availableLines,
@@ -346,16 +387,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         bound,
                     });
 
-                    if (opts.onRendered) {
-                        opts.onRendered(tOverlay);
-                    }
+                    emit('render');
                 };
 
                 if (state.pinned) {
                     return;
                 }
 
-                state.renderTooltipCloses();
+                renderTooltipCloses();
             },
             destroy: () => {
                 /** Free overlay listeners */
@@ -366,6 +405,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 /** Removing tooltip on destroy */
                 tOverlay.remove();
+                state.mounted = false;
+                emit('destroy');
             },
         },
     };

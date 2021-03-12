@@ -1,6 +1,5 @@
 import {Series} from 'uplot';
-import {SnapToValue} from '../plugins/cursor/cursor';
-import {DataSeries} from '../types';
+import {DataSeries, SnapToValue} from '../types';
 
 
 /*
@@ -113,6 +112,7 @@ export function findDataIdx(
     series: Series,
     idx: number,
     defaultSnapTo: SnapToValue | false = SnapToValue.Closest,
+    trimValue: unknown = null,
 ) {
     let nonNullLft = idx, nonNullRgt = idx, i;
 
@@ -125,14 +125,14 @@ export function findDataIdx(
     if (direction === SnapToValue.Left || direction === SnapToValue.Closest) {
         i = idx;
         while (nonNullLft === idx && i-- > 0) {
-            if (data[i] !== null) { nonNullLft = i; }
+            if (data[i] !== trimValue) { nonNullLft = i; }
         }
     }
 
     if (direction === SnapToValue.Right || direction === SnapToValue.Closest) {
         i = idx;
         while (nonNullRgt === idx && i++ < data.length) {
-            if (data[i] !== null) { nonNullRgt = i; }
+            if (data[i] !== trimValue) { nonNullRgt = i; }
         }
     }
 
@@ -144,3 +144,19 @@ export function findDataIdx(
     }
     return nonNullRgt - idx > idx - nonNullLft ? nonNullLft : nonNullRgt;
 }
+
+/** Linear interpolation */
+export const interpolateImpl = (y1: number | null, y2: number | null, x1: number, x2: number, x: number) => {
+    if (y1 === null || y2 === null) { return null; }
+
+    const i = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+
+    if (isNaN(i)) {
+        return null;
+    }
+
+    return i;
+};
+
+
+export const genId = () => Math.random().toString(34).slice(2);

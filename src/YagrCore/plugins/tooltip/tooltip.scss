@@ -8,6 +8,21 @@
     font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
     pointer-events: none;
 
+    &_default {
+        font-size: 12px;
+        padding: 4px 12px;
+
+        div { white-space: nowrap; display: flex; flex-direction: row; justify-content: left; align-items: center; }
+
+        .yagr-tooltip__mark {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: block;
+        }
+    }
+
     &_pinned {
         pointer-events: all;
 

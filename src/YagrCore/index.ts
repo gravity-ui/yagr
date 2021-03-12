@@ -28,7 +28,7 @@ import {
     PlotLineConfig,
 } from './types';
 
-import {getSumByIdx} from './utils/common';
+import {genId, getSumByIdx, interpolateImpl} from './utils/common';
 import {getScaleRange} from './utils/scales';
 import {pathsRenderer} from './utils/paths';
 import {getAxis} from './utils/axes';
@@ -117,7 +117,7 @@ class Yagr {
             cursor: {},
         }, pConfig);
 
-        this.id = root.id;
+        this.id = root.id || genId();
         this.root = root;
         this.plugins = {};
         this.config = config;
@@ -279,7 +279,7 @@ class Yagr {
         };
 
         if (config.cursor) {
-            const cursorPluginInstance = cursorPlugin(config.cursor);
+            const cursorPluginInstance = cursorPlugin(config.cursor, config);
             plugins.push(cursorPluginInstance);
         }
 
@@ -483,23 +483,26 @@ class Yagr {
     private transformSeries() {
         const result = [];
         const series = this.config.data.map(({data}) => data);
+        const timeline = this.config.timeline;
+        this.config.settings = this.config.settings || {};
+        const settings = this.config.settings;
 
         const store: {
             accum: number[];
+            igroup: number[];
         } = {
+            igroup: [],
             accum: [],
         };
 
-        this.config.settings = this.config.settings || {};
-
-        if (this.config?.settings?.stacking) {
+        if (settings.stacking) {
             store.accum = series.length ? new Array(series[0].length).fill(0) : [];
         }
 
-        let isTotallyEmpty = true;
+        const isTotallyEmpty = series.length > 0 && series[0].length > 0;
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
-            const dataLine = [];
+            const dataLine: (number | null)[] = [];
             const realSerieIdx = sIdx + 1;
             const serie = series[sIdx];
 
@@ -510,28 +513,33 @@ class Yagr {
             ) || {};
 
             let shouldCalculateRefPoints = false;
+
             if (!serieOptions.refPoints) {
                 shouldCalculateRefPoints = true;
                 serieOptions.refPoints = {};
             }
 
             let empty = true;
-            for (let idx = 0; idx < serie.length; idx++) {
-                let value = serie[idx];
+            let y1, y2, x1, x2;
 
-                if (value === null && !this.config.settings.stacking) {
+            const processIdx = (
+                idx: number,
+                value: number | null,
+                dataLine: (number | null)[],
+                serieOptions: Series & {refPoints: RefPoints},
+            ) => {
+                if (value === null && !settings.stacking) {
                     dataLine.push(null);
-                    continue;
+                    return;
                 }
 
-                isTotallyEmpty = false;
                 empty = false;
 
-                if (this.config.settings.stacking) {
+                if (settings.stacking) {
                     if (value === null) {
                         if (serieOptions.show) {
                             dataLine.push(null);
-                            continue;
+                            return;
                         } else {
                             value = 0;
                         }
@@ -569,6 +577,29 @@ class Yagr {
 
                 serieOptions._valuesCount += 1;
                 dataLine.push(value);
+                return value;
+            };
+
+            for (let idx = 0; idx < serie.length; idx++) {
+                const value = serie[idx];
+
+                if (value === this.config.settings.interpolationValue) {
+                    store.igroup.push(idx);
+                    continue;
+                } else {
+                    if (store.igroup.length) {
+                        y2 = value;
+                        x2 = timeline[idx];
+                        for (const iIdx of store.igroup) {
+                            const newVal = interpolateImpl(y1 || 0, y2, x1 || timeline[0], x2, timeline[iIdx]);
+                            processIdx(iIdx, newVal, dataLine, serieOptions as Series & {refPoints: RefPoints});
+                        }
+                        store.igroup = [];
+                    }
+
+                    y1 = processIdx(idx, value, dataLine, serieOptions as Series & {refPoints: RefPoints});
+                    x1 = timeline[idx];
+                }
             }
 
             if (shouldCalculateRefPoints) {

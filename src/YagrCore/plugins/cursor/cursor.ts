@@ -1,15 +1,10 @@
 
+import {YagrConfig, SnapToValue} from '../../types';
 import UPlot, {Plugin} from 'uplot';
 
 import {CURSOR_STYLE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
 import {colorParser} from '../../utils/colors';
 import {findDataIdx} from '../../utils/common';
-
-export enum SnapToValue {
-    Left = 'left',
-    Right = 'right',
-    Closest = 'closest',
-}
 
 /**
  * Options for cursor plugin.
@@ -36,7 +31,7 @@ const MAX_CURSORS = 50;
 /*
  *
  */
-export default function CursorPlugin(opts: CursorOptions): Plugin {
+export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): Plugin {
     const snapTo = opts.snapToValues === false
         ? false
         : opts.snapToValues || SnapToValue.Closest;
@@ -46,11 +41,15 @@ export default function CursorPlugin(opts: CursorOptions): Plugin {
     * it's value for drawIdx hook for cursor
     */
     const snapOnValues = (self: UPlot, seriesIdx: number, hoveredIdx: number) => {
-        const seriesData = self.data[seriesIdx];
         const series = self.series[seriesIdx];
+        const seriesData = self.data[seriesIdx];
 
-        if (seriesData[hoveredIdx] === null && snapTo) {
-            return findDataIdx(seriesData, series, hoveredIdx, snapTo);
+        const shouldTrim = config.settings?.interpolationValue &&
+            series.originalData &&
+            series.originalData[hoveredIdx] === config.settings.interpolationValue;
+
+        if (shouldTrim || (seriesData[hoveredIdx] === null && snapTo)) {
+            return findDataIdx(seriesData, series, hoveredIdx, snapTo, config.settings?.interpolationValue || null);
         }
 
         return hoveredIdx;
@@ -108,10 +107,10 @@ export default function CursorPlugin(opts: CursorOptions): Plugin {
             init: (u) => {
                 const cX: HTMLElement | null = u.root.querySelector('.u-cursor-x');
                 if (cX) {
-                    if (opts.x && opts.x.visible !== false) {
-                        cX.style.borderRight = opts.x.style || CURSOR_STYLE;
-                    } else {
+                    if (opts.x?.visible === false) {
                         cX.style.display = 'none';
+                    } else {
+                        cX.style.borderRight = opts.x?.style || CURSOR_STYLE;
                     }
                 }
 

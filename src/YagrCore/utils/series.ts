@@ -2,13 +2,14 @@
 import * as defaults from '../defaults';
 
 import {YagrConfig, RawSerieData} from '../types';
+import {genId} from './common';
 
 export function getSerie(rawSerie: RawSerieData, config: YagrConfig) {
     return {
         ...rawSerie,
 
         name: rawSerie.name, // @TODO rename to label using uPlot
-        id: rawSerie.id,
+        id: rawSerie.id || rawSerie.name || genId(),
         show: rawSerie.visible === undefined ? true : rawSerie.visible,
         color: rawSerie.color,
         originalData: rawSerie.data,

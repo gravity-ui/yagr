@@ -1,7 +1,7 @@
 export * from './YagrCore/types';
 export * from './YagrCore/plugins/tooltip/types';
 
-export {SnapToValue, CursorOptions} from './YagrCore/plugins/cursor/cursor';
+export {CursorOptions} from './YagrCore/plugins/cursor/cursor';
 export {LegendPosition, LegendOptions} from './YagrCore/plugins/legend/legend';
 
 import * as DEF from './YagrCore/defaults';

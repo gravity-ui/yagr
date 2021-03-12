@@ -3,7 +3,7 @@ import {Axis as UAxis, Hooks, DrawOrderKey, Series} from 'uplot';
 import Yagr, {YagrMeta} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
-import {CursorOptions, SnapToValue} from './plugins/cursor/cursor';
+import {CursorOptions} from './plugins/cursor/cursor';
 
 interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
     /** Will appear after processing series */
@@ -82,14 +82,14 @@ export interface YagrConfig {
 
     /** uPlot hooks */
     hooks: Hooks.Arrays & {
-        load?: ((d: {chart: Yagr, meta: YagrMeta}) => void)[];
+        load?: ((d: {chart: Yagr; meta: YagrMeta}) => void)[];
         onSelect?: ((d: {from: number; to: number}) => void)[];
-        error?: ((d: {type: 'processing', error: Error, yagr: Yagr}) => void)[];
-        processed?: ((d: {chart: Yagr, meta: Pick<YagrMeta, 'processTime'>}) => void)[];
-        inited?: ((d: {chart: Yagr, meta: Pick<YagrMeta, 'initTime'>}) => void)[];
+        error?: ((d: {type: 'processing'; error: Error; yagr: Yagr}) => void)[];
+        processed?: ((d: {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}) => void)[];
+        inited?: ((d: {chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}) => void)[];
         dispose?: ((d: Yagr) => void)[];
         resize?: ((d: ResizeObserverEntry[]) => void)[];
-    }
+    };
 }
 
 /**
@@ -310,6 +310,9 @@ export interface YagrChartSettings {
     /** Interpolation options (default: linear) */
     interpolation?: InterpolationSetting;
 
+    /** Values to interpolate */
+    interpolationValue?: unknown;
+
     /** Minial width to catch selection */
     minSelectionWidth?: number; // 15px
 
@@ -365,4 +368,10 @@ export enum UAxisSide {
 export enum UAxisAlign {
     Left = 1,
     Right = 2,
+}
+
+export enum SnapToValue {
+    Left = 'left',
+    Right = 'right',
+    Closest = 'closest',
 }

@@ -24,7 +24,7 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
         default: throw new Error(`Unknown scale range type ${scale.range}`);
     }
 
-    return (_: UPlot, dataMin: number | null, dataMax: number | null): Range.MinMax => {
+    return (_: UPlot, dataMin: number, dataMax: number): Range.MinMax => {
         const refs = getRefs() || {};
         const dMin = dataMin === null ? refs.min || 0 : dataMin;
         const dMax = dataMax === null ? refs.max || 100 : dataMax;
@@ -52,7 +52,9 @@ export function offsetScale(
     scaleConfig: Scale,
     config: YagrConfig,
 ) {
-    const startFromZero = config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars;
+    const startFromZero = dataMin >= 0 && (
+        config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars
+    );
 
     return {
         min: startFromZero
@@ -74,12 +76,14 @@ export function niceScale(
     scaleConfig: Scale,
     config: YagrConfig,
 ) {
-    const startFromZero = config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars;
+    const startFromZero = dataMin >= 0 && (
+        config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars
+    );
 
     /**
      * This code handles case when scale has user max/min and niceScale's
      * range after usage of given max-min from scale config creates not centered lines
-     */
+     * */
     const dMax = typeof scaleConfig.max === 'number' ? Math.max(scaleConfig.max, dataMax) : dataMax;
     const dMin = startFromZero ? 0 : (
         typeof scaleConfig.min === 'number'
