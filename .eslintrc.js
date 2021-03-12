@@ -60,6 +60,7 @@ module.exports = {
         'no-with': ERROR,
         'radix': WARNING,
         'wrap-iife': [ERROR, 'inside'],
+        'semi': [ERROR, 'always'],
 
         // Variables
         'no-label-var': ERROR,

@@ -13,11 +13,11 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
 
 export default (key: string) => {
     return LOCALIZATIONS[locale][key];
-}
+};
 
 export const setLocale = (newLocale: keyof typeof LOCALIZATIONS) => {
     locale = newLocale;
-}
+};
 
 export const setLocalization = (lang: string, localization: Record<string, string>) => {
     LOCALIZATIONS[lang] = localization;

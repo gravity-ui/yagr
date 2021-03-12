@@ -189,7 +189,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             over.appendChild(pointsHolder);
 
             if (opts.render === renderTooltip) {
-                document.addEventListener('mousemove', checkFocus)
+                document.addEventListener('mousemove', checkFocus);
                 document.addEventListener('mousedown', detectClickOutside);
             }
         } else {
@@ -197,13 +197,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             tOverlay.classList.remove('yagr-tooltip_pinned');
 
             if (opts.render === renderTooltip) {
-                document.removeEventListener('mousemove', checkFocus)
+                document.removeEventListener('mousemove', checkFocus);
                 document.removeEventListener('mousedown', detectClickOutside);
             }
         }
 
         emit(pinState ? 'pin' : 'unpin');
-    }
+    };
 
     const onMouseUp = (event: MouseEvent) => {
         if (
@@ -303,7 +303,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         sum += (value || 0);
                     }
 
-                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : data[i][idx]
+                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : data[i][idx];
 
                     ys.push(yValue);
 

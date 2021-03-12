@@ -389,7 +389,7 @@ class Yagr {
 
         /** Setting up minimal axes */
         options.axes = options.axes || [];
-        const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE}
+        const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE};
         options.axes[0] = getAxis(xAxis, config);
 
         const yAxis = config.axes.length > 1 ? config.axes[1] : {scale: DEFAULT_Y_SCALE};
@@ -705,7 +705,7 @@ class Yagr {
         if (Array.isArray(hooks)) {
             hooks.forEach((hook) => {
                 typeof hook === 'function' && hook(...args);
-            })
+            });
         }
     }
 }
