@@ -14,24 +14,28 @@ import {
     TooltipRow,
 } from './types';
 
-const ANCHOR_Y_OFFSET = 24;
-const DEFAULT_MAX_LINES = 10;
-
 export interface TooltipState {
     /** Is tooltip pinned */
     pinned: boolean;
     /** X-Coord of click to track selections and differ them from single click */
     clickStartedX: null | number;
+    /** Is tooltip visible */
     visible: boolean;
+    /** Is tooltip mounted */
     mounted: boolean;
 }
+
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
 
+const ANCHOR_Y_OFFSET = 24;
+const DEFAULT_MAX_LINES = 10;
+
 function renderTooltip(rows: TooltipRows) {
-    return rows.map(({y, name, color}) => {
+    return rows.map(({value, name, color, active}) => {
+        const label = active ? `<b>${name} : ${value}</b>` :  `${name} : ${value}`;
         return `<div class="yagr-tooltip__item" data-series-name="${name}">
-            <span class="yagr-tooltip__mark" style="background-color: ${color}"></span> ${name} : ${y}
-        </div>`;
+<span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${label}
+</div>`;
     }).join('\n');
 }
 
@@ -99,7 +103,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     tOverlay.style.display = 'none';
 
     const state: TooltipState = {
-        /** Is tooltip mounted */
         mounted: true,
         pinned: false,
         visible: false,
@@ -296,15 +299,15 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    const stripValue = yagr.config.settings?.interpolationValue;
+                    const stripValue = yagr.config.settings.interpolationValue;
                     const value = findValue(yagr.config.cursor, u.data[i], serie, idx, stripValue);
 
                     if (opts.total) {
                         sum += (value || 0);
                     }
 
-                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : data[i][idx];
-
+                    const realY = data[i][idx];
+                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : realY;
                     ys.push(yValue);
 
                     i += 1;
@@ -330,7 +333,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     }
 
                     rows.push(rowData);
-                    rowYs.push(yValue);
+                    rowYs.push(realY);
                 }
 
                 if (rows.length === 0) {

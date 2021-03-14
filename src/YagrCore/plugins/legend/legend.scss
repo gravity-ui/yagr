@@ -29,7 +29,7 @@ $block: yagr-legend;
         text-overflow: ellipsis;
         margin-right: 16px;
 
-        color: var(--highcharts-legend-item);
+        color: var(--yagr-legend-item);
         font-weight: normal;
         position: relative;
         white-space: nowrap;
@@ -39,16 +39,16 @@ $block: yagr-legend;
         line-height: 14px;
 
         &:hover {
-            color: var(--highcharts-legend-item-hover);
+            color: var(--yagr-legend-item-hover);
         }
 
         &_hidden {
-            color: var(--highcharts-legend-item-hidden);
+            color: var(--yagr-legend-item-hidden);
 
             .#{$block}__icon {
                 // important required to override element style color;
                 // stylelint-disable-next-line
-                background-color: var(--highcharts-legend-item-hidden) !important;
+                background-color: var(--yagr-legend-item-hidden) !important;
             }
         }
     }
@@ -76,8 +76,11 @@ $block: yagr-legend;
         display: flex;
         justify-content: flex-start;
         align-items: center;
+
         &-text {
             user-select: none;
+            color: var(--yagr-legend-item-hover);
+            font-size: 12px;
         }
     }
 

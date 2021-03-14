@@ -42,7 +42,7 @@
   },
   "lint-staged": {
     "./src/**/*.{ts, tsx, js, jsx}": [
-      "eslint --fix --quiet"
+      "eslint --quiet"
     ]
   },
   "devDependencies": {

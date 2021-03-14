@@ -3,7 +3,6 @@ import * as defaults from '../defaults';
 
 import {ChartTypes, InterpolationSetting} from '../types';
 
-
 /*
  * Configures and return apropriate path renderer
  * by given serieIndex and two points

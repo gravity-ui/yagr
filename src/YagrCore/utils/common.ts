@@ -99,7 +99,7 @@ export const getUnitSuffix = (value: number): [number, string] => {
 /* Number.toFixed() wihout rounding */
 export function toFixed(num: number, fixed: number) {
     if (Number.isInteger(num)) {
-        return num + '.' + new Array(fixed).fill('0').join('');
+        return num + '.' + '0'.repeat(fixed);
     }
 
     const [i, fr] = num.toString().split('.');
@@ -147,15 +147,15 @@ export function findDataIdx(
 
 /** Linear interpolation */
 export const interpolateImpl = (y1: number | null, y2: number | null, x1: number, x2: number, x: number) => {
-    if (y1 === null || y2 === null) { return null; }
+    if (y1 === null || y2 === null) {return null;}
 
-    const i = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+    const result = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
 
-    if (isNaN(i)) {
+    if (isNaN(result) || Math.abs(result) === Infinity) {
         return null;
     }
 
-    return i;
+    return result;
 };
 
 

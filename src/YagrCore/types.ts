@@ -1,4 +1,4 @@
-import {Axis as UAxis, Hooks, DrawOrderKey, Series} from 'uplot';
+import {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
 
 import Yagr, {YagrMeta} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -7,7 +7,7 @@ import {CursorOptions} from './plugins/cursor/cursor';
 
 interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
     /** Will appear after processing series */
-    originalData?: DataSeries;
+    originalData: DataSeries;
 
     /** Will appear after processing series if serie values normalized */
     normalizedData?: DataSeries;
@@ -20,6 +20,7 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 }
 declare module 'uplot' {
     interface Series extends ProcessedSeriesData {
+        id: string;
         /** Current focus state */
         _focus?: boolean | null;
         _valuesCount: number;
@@ -35,7 +36,7 @@ export interface YagrConfig {
     chart: YagrChartOptions;
 
     /** Graph title style */
-    title?: {
+    title: {
         text: string;
         color?: string; // @TODO
         font?: string; // @TODO
@@ -43,7 +44,7 @@ export interface YagrConfig {
     };
 
     /** Graph subtitle style. @TODO Implement this, currently stuck into uPlot */
-    subtitle?: {
+    subtitle: {
         text: string;
         color?: string;
         font?: string;
@@ -51,7 +52,7 @@ export interface YagrConfig {
     };
 
     /** Chart inline legend configuration */
-    legend?: LegendOptions;
+    legend: LegendOptions;
 
     /** Config for axes. Determines style and labeling */
     axes: AxisOptions[];
@@ -63,16 +64,16 @@ export interface YagrConfig {
     timeline: number[];
 
     /** Tooltip config. Detemines tooltip's behavior */
-    tooltip?: TooltipOptions;
+    tooltip: TooltipOptions;
 
     /** Chart settings */
-    settings?: YagrChartSettings;
+    settings: YagrChartSettings;
 
     /** Grid options (applies to all axes, can be overrided by axis.grid). */
-    grid?: UAxis.Grid;
+    grid: UAxis.Grid;
 
     /** Marker visualisation options */
-    markers?: MarkersOptions;
+    markers: MarkersOptions;
 
     /** Scales options */
     scales: Record<string, Scale>;
@@ -90,6 +91,9 @@ export interface YagrConfig {
         dispose?: ((d: Yagr) => void)[];
         resize?: ((d: ResizeObserverEntry[]) => void)[];
     };
+
+    /** uPlot */
+    process?: (opts: Options) => Options;
 }
 
 /**
@@ -139,23 +143,6 @@ export type RefPoints = {
     count?: number;
 };
 
-export enum YagrEvents {
-    /** Fires when uPlot is ready */
-    Ready = 'ready',
-    /** Fires when drawn cycle was finished */
-    Draw = 'draw',
-    /** Fires when data processing is finished */
-    Process = 'processed',
-    /** Fires on chart resize */
-    Resize = 'resize',
-    /** Fires when everything is ready and drawn (one time) */
-    Loaded = 'loaded',
-    /** Fires before chart destruction */
-    Dispose = 'dispose',
-    /** Fires on range selection */
-    Select = 'select',
-}
-
 /**
  * Expected serie config and data format from Chart API
  */
@@ -167,7 +154,7 @@ export interface RawSerieData {
     color: string;
 
     /** Unique ID */
-    id: string;
+    id?: string;
 
     /** Width of line (line type charts) */
     width?: number;
@@ -300,6 +287,8 @@ export enum YagrTheme {
     Dark = 'dark',
 }
 
+export type SupportedLocales = 'en' | 'ru';
+
 export interface YagrChartSettings {
     /** Should stack Y values (default: false) */
     stacking?: boolean;
@@ -327,6 +316,9 @@ export interface YagrChartSettings {
 
     /** Enable native uPlot zoom (default: true) */
     zoom?: boolean;
+
+    /** Locale */
+    locale?: SupportedLocales | Record<string, string>;
 }
 
 /**

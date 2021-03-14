@@ -1,24 +1,21 @@
-let locale = 'en-Us';
-
 const LOCALIZATIONS: Record<string, Record<string, string>> = {
-    'ru-Ru': {
+    'ru': {
         'legend.hide-all-lines': 'Скрыть все линии',
         'legend.show-all-lines': 'Показать все линии',
     },
-    'en-Us': {
+    'en': {
         'legend.hide-all-lines': 'Hide lines',
         'legend.show-all-lines': 'Show lines'
     },
 };
 
-export default (key: string) => {
-    return LOCALIZATIONS[locale][key];
-};
-
-export const setLocale = (newLocale: keyof typeof LOCALIZATIONS) => {
-    locale = newLocale;
-};
-
-export const setLocalization = (lang: string, localization: Record<string, string>) => {
-    LOCALIZATIONS[lang] = localization;
+export default (locale: keyof typeof LOCALIZATIONS | Record<string, string> = 'en') => {
+    if (typeof locale !== 'string') {
+        LOCALIZATIONS.custom = locale;
+        locale = 'custom';
+    }
+    
+    return (key: string) => {
+        return LOCALIZATIONS[locale as string][key];
+    };
 };

@@ -45,6 +45,7 @@ import {
     DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
 } from './defaults';
+import i18n from './locale';
 
 export interface YagrEvent {
     chart: Yagr;
@@ -85,6 +86,7 @@ class Yagr {
     references?: RefPoints;
     plugins: YagrPlugins;
     sync: SyncPubSub;
+    i18n: ReturnType<typeof i18n>
 
     private _startTime: number;
     private _drawn: boolean;
@@ -101,34 +103,57 @@ class Yagr {
         }
 
         if (!pConfig.data) {
-            throw new Error('Specify config.data: AlignedData[]');
+            throw new Error('Specify config.data: Series[]');
         }
 
         const config: YagrConfig = Object.assign({
-            data: [],
+            title: {},
             timeline: [],
+            data: [],
             axes: [],
-            scales: {},
+            scales: {
+                x: {time: true},
+                y: {},
+            },
             hooks: {},
             settings: {},
-            chart: {
-                type: ChartTypes.Line,
-            },
+            chart: {},
             cursor: {},
+            legend: {
+                show: false
+            },
+            tooltip: {
+                enabled: true,
+            },
+            grid: null,
+            markers: {},
         }, pConfig);
+
+        config.chart.type = config.chart.type || ChartTypes.Line;
 
         this.id = root.id || genId();
         this.root = root;
+        this.root.classList.add('yagr');
+
         this.plugins = {};
         this.config = config;
         this.sync = UPlot.sync('sync');
 
+        const settings = config.settings;
+
+        if (!settings.adaptive && config.chart.width && config.chart.height) {
+            root.style.width = config.chart.width + 'px';
+            root.style.height = config.chart.height + 'px';
+        }
+
         try {
-            THEMED.setTheme(config?.settings?.theme || YagrTheme.Light);
+            THEMED.setTheme(settings.theme || YagrTheme.Light);
+            this.root.classList.add('yagr_theme_' + THEMED.theme);
+            this.i18n = i18n(settings.locale || 'en');
             const {options, series} = this.process();
             this._cache = {height: options.height, width: options.width};
 
-            this.options = options;
+            this.options = config.process ? config.process(options) : options;
             this.series = series;
             this.plugins.legend = new LegendPlugin(this, config.legend);
         } catch (error) {
@@ -188,7 +213,7 @@ class Yagr {
             show: typeof value === 'undefined' ? !serie.show : value,
         });
         this.options.series = this.uplot.series;
-        if (this.config.settings?.stacking) {
+        if (this.config.settings.stacking) {
             this.uplot.setData(this.transformSeries());
             this.uplot.redraw();
         }
@@ -203,7 +228,7 @@ class Yagr {
     }
 
     dispose = () => {
-        if (this.config.settings?.adaptive) {
+        if (this.config.settings.adaptive) {
             this.resizeOb?.unobserve(this.root);
         }
         this.uplot.destroy();
@@ -246,7 +271,7 @@ class Yagr {
 
         const options: UPlotOptions = {
             width: this.root.clientWidth,
-            height: this.root.clientHeight - (config.title?.text ? 15 : 0),
+            height: this.clientHeight,
             title: config.title?.text,
             plugins: plugins,
             focus: {alpha: settings.stacking ? 1 : DEFAULT_FOCUS_ALPHA},
@@ -268,7 +293,7 @@ class Yagr {
         options.cursor = options.cursor || {};
         options.cursor.points = options.cursor.points || {};
         options.cursor.drag = options.cursor.drag || {
-            dist: config?.settings?.minSelectionWidth || MIN_SELECTION_WIDTH,
+            dist: config.settings.minSelectionWidth || MIN_SELECTION_WIDTH,
             x: true,
             y: false,
             setScale: settings.zoom === undefined ? true : settings.zoom,
@@ -341,7 +366,7 @@ class Yagr {
         }
 
         /** Setting up markers plugin after default points renderers to be settled */
-        if (config.markers) {
+        if (config.markers.show) {
             const markersPluginInstance = markersPlugin(config.markers);
             plugins.push(markersPluginInstance);
         }
@@ -356,7 +381,7 @@ class Yagr {
             if (!scales) { return; }
 
             const isLogarithmic = scaleConfig.type === ScaleType.Logarithmic;
-            const isStacked = config.settings?.stacking;
+            const isStacked = config.settings.stacking;
 
             scales[scaleName] = scales[scaleName] || {};
             const scale = scales[scaleName];
@@ -499,7 +524,7 @@ class Yagr {
             store.accum = series.length ? new Array(series[0].length).fill(0) : [];
         }
 
-        const isTotallyEmpty = series.length > 0 && series[0].length > 0;
+        const isTotallyEmpty = !(series.length > 0 && series[0].length > 0);
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
@@ -584,7 +609,11 @@ class Yagr {
                 const value = serie[idx];
 
                 if (value === this.config.settings.interpolationValue) {
-                    store.igroup.push(idx);
+                    if (idx === 0 || idx === serie.length - 1) {
+                        dataLine.push(null);
+                    } else {
+                        store.igroup.push(idx);
+                    }
                     continue;
                 } else {
                     if (store.igroup.length) {
@@ -596,9 +625,9 @@ class Yagr {
                         }
                         store.igroup = [];
                     }
-
-                    y1 = processIdx(idx, value, dataLine, serieOptions as Series & {refPoints: RefPoints});
+                    y1 = value;
                     x1 = timeline[idx];
+                    processIdx(idx, value, dataLine, serieOptions as Series & {refPoints: RefPoints});
                 }
             }
 
@@ -607,7 +636,6 @@ class Yagr {
             }
 
             serieOptions.empty = empty;
-
             result.unshift(dataLine);
         }
 
@@ -676,13 +704,9 @@ class Yagr {
         ) {
             return;
         }
-        let hOffset = 0;
-        if (this.options.title) {
-            hOffset -= 15;
-        }
 
         this.setOptionsWithUpdate((options) => {
-            options.height = this.root.clientHeight + hOffset;
+            options.height = this.clientHeight;
             options.width = this.root.clientWidth;
             this._cache.width = this.options.width;
             this._cache.height = this.options.height;
@@ -693,7 +717,7 @@ class Yagr {
     };
 
     private init = () => {
-        if (this.config.settings?.adaptive) {
+        if (this.config.settings.adaptive) {
             this.resizeOb = new ResizeObserver(debounce(this.onResize, 100));
             this.resizeOb.observe(this.root);
         }
@@ -707,6 +731,15 @@ class Yagr {
                 typeof hook === 'function' && hook(...args);
             });
         }
+    }
+
+    private get clientHeight() {
+        const DEFAULT_FONT_SIZE = 14;
+        const MARGIN = 8;
+        const offset = this.config.title.text
+            ? (this.config.title.fontSize || DEFAULT_FONT_SIZE) + MARGIN
+            : 0;
+        return this.root.clientHeight - offset;
     }
 }
 

@@ -21,7 +21,7 @@ export const AXIS_STROKE_LIGHT = 'rgba(0, 0, 0, 0.5)';
 export const AXIS_STROKE_DARK = 'rgba(255, 255, 255, 0.5)';
 
 export const BACKGROUND_COLOR_LIGHT = '#ffffff';
-export const BACKGROUND_COLOR_DARK = 'rgb(45, 44, 51)';
+export const BACKGROUND_COLOR_DARK = '#2d2c33';
 
 export const X_AXIS_TICKS_LIGHT = {size: 8, ...GRID_LIGHT};
 export const X_AXIS_TICKS_DARK = {size: 8, ...GRID_DARK};
@@ -30,7 +30,8 @@ export const Y_AXIS_TICKS_DARK = {size: 6, ...GRID_DARK};
 
 export const Y_AXIS_TICK_GAP = 6;
 export const DEFAULT_Y_AXIS_SIZE = 12;
-export const DEFAULT_Y_AXIS_PADDING = 4;
+export const DEFAULT_Y_AXIS_PADDING = 12;
+export const DEFAULT_Y_AXIS_LABEL_PADDING = 2;
 export const Y_AXIS_SIZE = (self: uPlot, values: string[], axisIdx: number) => {
     if (!values) {
         return DEFAULT_Y_AXIS_SIZE;
@@ -55,15 +56,24 @@ export const Y_AXIS_SIZE = (self: uPlot, values: string[], axisIdx: number) => {
         ctx.restore();
     }
 
-    return textSize / DEFAULT_CANVAS_PIXEL_RATIO + labelSize / DEFAULT_CANVAS_PIXEL_RATIO + DEFAULT_Y_AXIS_PADDING;
+    return labelSize
+        ? textSize / DEFAULT_CANVAS_PIXEL_RATIO + labelSize / DEFAULT_CANVAS_PIXEL_RATIO + DEFAULT_Y_AXIS_LABEL_PADDING
+        : textSize / DEFAULT_CANVAS_PIXEL_RATIO + DEFAULT_Y_AXIS_PADDING;
 };
 export const Y_AXIS_LABEL_SIZE = 11;
 
 export const X_AXIS_TICK_GAP = 6;
 export const X_AXIS_SIZE = 32;
-export const X_AXIS_SPACE = 80;
+export const X_AXIS_SPACE = 80;  
 export const X_AXIS_INCRS = [
-    // minute divisors (# of secs)
+    // seconds divisors (# os ms)
+    1,
+    10,
+    50,
+    100,
+    200,
+    500,
+    // minute divisors
     1000,
     5000,
     10000,

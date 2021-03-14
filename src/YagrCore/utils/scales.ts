@@ -83,7 +83,7 @@ export function niceScale(
     /**
      * This code handles case when scale has user max/min and niceScale's
      * range after usage of given max-min from scale config creates not centered lines
-     * */
+     */
     const dMax = typeof scaleConfig.max === 'number' ? Math.max(scaleConfig.max, dataMax) : dataMax;
     const dMin = startFromZero ? 0 : (
         typeof scaleConfig.min === 'number'

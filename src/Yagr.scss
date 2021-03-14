@@ -1,18 +1,44 @@
 .yagr {
+    --yagr-font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+
+    &_theme_light {
+        --yagr-title: #333333;
+
+        --yagr-legend-item: rgba(0, 0, 0, 0.5);
+        --yagr-legend-item-hover: #000000;
+        --yagr-legend-item-hidden: rgba(0, 0, 0, 0.3);
+
+        --yagr-background: #ffffff;
+    }
+
+    &_theme_dark {
+        --yagr-title: rgba(255, 255, 255, 0.35);
+
+        --yagr-legend-item: rgba(255, 255, 255, 0.5);
+        --yagr-legend-item-hover: #a09fa3;
+        --yagr-legend-item-hidden: hsla(0, 0%, 100%, 0.17);
+
+        --yagr-background: #2d2c33
+    }
+}
+
+.yagr {
     width: 100%;
     height: 100%;
+    font-family: var(--yagr-font-family);
+    background-color: var(--yagr-background);;
 
     .uplot {
         width: 100%;
-        font-family: var(--yc-font-family);
+        font-family: var(--yagr-font-family);
     }
 
     .u-title {
-        color: var(--highcharts-title);
-        font-size: 15px;
+        color: var(--yagr-title);
+        font-size: 14px;
         font-weight: bold;
-        fill: var(--highcharts-title);
-        line-height: 15px;
+        line-height: 14px;
+        margin-top: 8px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

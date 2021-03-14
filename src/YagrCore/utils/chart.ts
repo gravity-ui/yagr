@@ -1,12 +1,10 @@
-
-
 import {Options, Padding} from 'uplot';
 import * as defaults from '../defaults';
 
 export function getPaddingByAxes(options: Options): Padding {
     let hasLeftAxis = false;
     let hasRightAxis = false;
-
+    
     options.axes?.forEach((axis) => {
         if (axis.scale === defaults.DEFAULT_X_SCALE) {
             return;

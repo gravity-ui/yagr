@@ -44,12 +44,11 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
         const series = self.series[seriesIdx];
         const seriesData = self.data[seriesIdx];
 
-        const shouldTrim = config.settings?.interpolationValue &&
-            series.originalData &&
+        const shouldTrim = config.settings.interpolationValue &&
             series.originalData[hoveredIdx] === config.settings.interpolationValue;
 
         if (shouldTrim || (seriesData[hoveredIdx] === null && snapTo)) {
-            return findDataIdx(seriesData, series, hoveredIdx, snapTo, config.settings?.interpolationValue || null);
+            return findDataIdx(seriesData, series, hoveredIdx, snapTo, config.settings.interpolationValue || null);
         }
 
         return hoveredIdx;
@@ -60,7 +59,6 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     */
     function cursorPoint(u: UPlot, seriesIndex: number) {
         const serie = u.series[seriesIndex];
-
         const pt = document.createElement('div');
 
         // @TODO возможно сюда надо добавить возможность вообще не рендерить точку курсора, если возможно
@@ -70,7 +68,6 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
             return pt;
         }
         const span = document.createElement('span');
-
         pt.appendChild(span);
         pt.classList.add('yagr-point');
 

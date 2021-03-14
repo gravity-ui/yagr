@@ -3,8 +3,6 @@ import UPlot, {Options, Series} from 'uplot';
 import Yagr from '../../index';
 import {DEFAULT_X_SERIE_NAME} from '../../defaults';
 
-import i18n from '../../locale';
-
 export enum LegendPosition {
     Top = 'top',
     Bottom = 'bottom',
@@ -43,7 +41,7 @@ const hasOneVisibleLine = (series: Series[]) => {
     return series.some(({show, id}) => id !== DEFAULT_X_SERIE_NAME && show);
 };
 
-const getPrependingTitle = (series: Series[]) => {
+const getPrependingTitle = (i18n: Yagr['i18n'], series: Series[]) => {
     return series.length > 3 && i18n(
         hasOneVisibleLine(series)
             ? 'legend.hide-all-lines'
@@ -152,7 +150,7 @@ export default class Legend {
             const allSeriesItem = u.root.querySelector(`[data-serie-id="${ALL}"]`);
 
             if (allSeriesItem) {
-                const title = getPrependingTitle(u.series);
+                const title = getPrependingTitle(this.yagr.i18n, u.series);
                 allSeriesItem.innerHTML = title || '';
             }
         };
@@ -175,11 +173,11 @@ export default class Legend {
             serieNode.addEventListener('mouseenter', onFocus);
             serieNode.addEventListener('mouseleave', onSerieMouseLeave);
 
-            unsubsribe.push(
-                () => serieNode.removeEventListener('click', onClick),
-                () => serieNode.removeEventListener('mouseenter', onFocus),
-                () => serieNode.removeEventListener('mouseleave', onSerieMouseLeave),
-            );
+            unsubsribe.push(() => {
+                serieNode.removeEventListener('click', onClick);
+                serieNode.removeEventListener('mouseenter', onFocus);
+                serieNode.removeEventListener('mouseleave', onSerieMouseLeave);
+            });
         });
 
         const destroy = () => unsubsribe.forEach((fn) => fn());
@@ -294,14 +292,13 @@ export default class Legend {
         const upClassName = state.page === 0 ? 'yagr-legend__icon-up_disabled' : '';
         const downClassName = state.page === state.pages - 1 ? 'yagr-legend__icon-down_disabled' : '';
 
-        pagination.innerHTML = `
-            <span class="yagr-legend__icon-up ${upClassName}"></span>
-            <span class="yagr-legend__pagination-text">${state.page + 1}/${state.pages}</span>
-            <span class="yagr-legend__icon-down ${downClassName}"></span>
-        `;
+        pagination.innerHTML = `<span class="yagr-legend__icon-up ${upClassName}"></span>
+<span class="yagr-legend__pagination-text">${state.page + 1}/${state.pages}</span>
+<span class="yagr-legend__icon-down ${downClassName}"></span>`;
 
         const nextPage = pagination.querySelector('.yagr-legend__icon-down') as HTMLElement;
         const prevPage = pagination.querySelector('.yagr-legend__icon-up') as HTMLElement;
+
         if (!downClassName) {
             nextPage.addEventListener('click', this.nextPage);
         }
@@ -313,7 +310,7 @@ export default class Legend {
     }
 
     private renderItems(uplotOptions: Options) {
-        const title = getPrependingTitle(uplotOptions.series);
+        const title = getPrependingTitle(this.yagr.i18n, uplotOptions.series);
 
         const series: (string | Series)[] = title ? [title] : [];
 

@@ -9,20 +9,22 @@ import {terser} from 'rollup-plugin-terser';
 const pkg = require('./package.json');
 const libraryName = 'yagr';
 
-export default {
+
+export default [{
     input: `src/index.ts`,
     output: [
         {file: pkg.main, name: libraryName, format: 'umd', sourcemap: true},
-        {file: pkg.module, format: 'es', sourcemap: true, plugins: [terser()]},
+        {file: pkg.module, format: 'es', sourcemap: true},
     ],
-
     external: [],
     watch: {
         include: 'src/**',
     },
     plugins: [
         json(),
-        typescript({useTsconfigDeclarationDir: true}),
+        typescript({
+            useTsconfigDeclarationDir: true,
+        }),
         scss({
             output: true,
             bundle: 'yagr.css',
@@ -31,4 +33,44 @@ export default {
         resolve(),
         sourceMaps(),
     ],
-};
+}, {
+    input: './src/YagrCore/index.ts',
+    output: {
+        name: 'Yagr',
+        format: 'iife',
+        file: './dist/yagr.iife.min.js',
+        esModule: false,
+        exports: 'default',
+    },
+    context: 'this',
+    plugins: [
+        json(),
+        typescript({
+            typescript: require('typescript'),
+            useTsconfigDeclarationDir: true,
+            objectHashIgnoreUnknownHack: true,
+        }),
+        scss({
+            output: true,
+            bundle: 'yagr.css',
+        }),
+        commonjs(),
+        resolve(),
+        terser({
+            compress: {
+                inline: 0,
+                passes: 2,
+                keep_fnames: false,
+                keep_fargs: false,
+                pure_getters: true,
+                unsafe: true,
+                unsafe_comps: true,
+                unsafe_math: true,
+                unsafe_undefined: true,
+            },
+            output: {
+                comments: /^!/,
+            }
+        }),
+    ]
+}];

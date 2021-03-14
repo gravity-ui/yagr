@@ -84,7 +84,7 @@ const defaultTimeFormatter = (_: unknown, ticks: number[]) => {
 export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
     const axis: Axis = {
         show: typeof axisConfig.show === 'undefined' ? true : axisConfig.show,
-        label: axisConfig.label,
+        label: axisConfig.label || undefined,
         labelSize: axisConfig.labelSize || defaults.Y_AXIS_LABEL_SIZE,
         labelFont: axisConfig.labelFont || defaults.AXIS_LABEL_FONT,
         font: axisConfig.font || defaults.AXIS_VALUES_FONT,
@@ -92,7 +92,6 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
         ticks: axisConfig.ticks || defaults.THEMED.Y_AXIS_TICKS,
         grid: config.grid || axisConfig.grid || defaults.THEMED.GRID,
     };
-
 
     if (axisConfig.scale === defaults.DEFAULT_X_SCALE) {
         return Object.assign(axis, {
@@ -102,7 +101,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
             ticks: axisConfig.ticks || defaults.THEMED.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || defaults.X_AXIS_SPACE,
-            incrs: axisConfig.incrs || defaults.X_AXIS_INCRS.map((i) => i * (config.settings?.timeMultiplier || 1)),
+            incrs: axisConfig.incrs || defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1)),
             side: 2,
             stroke: axisConfig.stroke || defaults.THEMED.AXIS_STROKE,
         });
@@ -113,7 +112,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
         size: axisConfig.size || defaults.Y_AXIS_SIZE,
         values: axisConfig.values || getNumericValueFormatter(axisConfig),
         scale: axisConfig.scale || defaults.DEFAULT_Y_SCALE,
-        ...getAxisPositioning(axisConfig.side, axisConfig.align),
+        ...getAxisPositioning(axisConfig.side || AxisSide.Left, axisConfig.align),
     });
 
     if (axisConfig.space) {
