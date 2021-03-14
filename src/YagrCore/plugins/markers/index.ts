@@ -31,9 +31,9 @@ const renderCircle = (
 };
 
 export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: number) {
-    const {color, scale, spanGaps} = u.series[i];
+    const {color, scale, spanGaps, _valuesCount} = u.series[i];
 
-    if (spanGaps) {
+    if (spanGaps && _valuesCount > 1) {
         return false;
     }
 
