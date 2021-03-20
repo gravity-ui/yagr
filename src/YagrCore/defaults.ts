@@ -62,6 +62,12 @@ export const Y_AXIS_SIZE = (self: uPlot, values: string[], axisIdx: number) => {
 };
 export const Y_AXIS_LABEL_SIZE = 11;
 
+export const SECOND = 1000;
+export const MINUTE = SECOND * 60;
+export const HOUR = MINUTE * 60;
+export const DAY = HOUR * 24;
+export const YEAR = DAY * 365;
+
 export const X_AXIS_TICK_GAP = 6;
 export const X_AXIS_SIZE = 32;
 export const X_AXIS_SPACE = 80;  
@@ -74,37 +80,40 @@ export const X_AXIS_INCRS = [
     200,
     500,
     // minute divisors
-    1000,
-    5000,
-    10000,
-    15000,
-    30000,
+    SECOND,
+    SECOND * 2,
+    SECOND * 5,
+    SECOND * 10,
+    SECOND * 15,
+    SECOND * 30,
     // hour divisors
-    60000,
-    60000 * 5,
-    60000 * 10,
-    60000 * 30,
+    MINUTE,
+    MINUTE * 5,
+    MINUTE * 10,
+    MINUTE * 30,
     // day divisors
-    3600000,
-    3600000 * 2,
-    3600000 * 6,
-    3600000 * 12,
+    HOUR,
+    HOUR * 2,
+    HOUR * 3,
+    HOUR * 4,
+    HOUR * 6,
+    HOUR * 12,
     // month divisors
-    86400000,
-    86400000 * 2,
-    86400000 * 3,
-    86400000 * 5,
-    86400000 * 10,
-    86400000 * 15,
-    86400000 * 30,
-    86400000 * 60,
-    86400000 * 120,
-    86400000 * 180,
+    DAY,
+    DAY * 2,
+    DAY * 3,
+    DAY * 5,
+    DAY * 10,
+    DAY * 15,
+    DAY * 30,
+    DAY * 60,
+    DAY * 120,
+    DAY * 180,
     // year divisors
-    31536000000,
-    31536000000 * 2,
-    31536000000 * 5,
-    31536000000 * 10,
+    YEAR,
+    YEAR * 2,
+    YEAR * 5,
+    YEAR * 10,
 ];
 
 export const BARS_DRAW_FACTOR = 0.5;
@@ -126,6 +135,7 @@ export const MIN_SELECTION_WIDTH = 15;
 
 const LIGHTEN_COLOR_SHIFT = 0.68;
 const DARKEN_COLOR_SHIFT = -0.6;
+
 class ThemedDefaults {
     theme?: YagrTheme;
 

@@ -42,10 +42,10 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     */
     const snapOnValues = (self: UPlot, seriesIdx: number, hoveredIdx: number) => {
         const series = self.series[seriesIdx];
-        const seriesData = self.data[seriesIdx];
+        const seriesData = series.$c || self.data[seriesIdx];
 
         const shouldTrim = config.settings.interpolationValue &&
-            series.originalData[hoveredIdx] === config.settings.interpolationValue;
+            series.$c[hoveredIdx] === config.settings.interpolationValue;
 
         if (shouldTrim || (seriesData[hoveredIdx] === null && snapTo)) {
             return findDataIdx(seriesData, series, hoveredIdx, snapTo, config.settings.interpolationValue || null);

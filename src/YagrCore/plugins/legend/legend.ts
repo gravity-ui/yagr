@@ -216,10 +216,7 @@ export default class Legend {
             this.calc();
         }
 
-        legendEl.innerHTML = `
-            <div class="yagr-legend__container" style="height: ${this.state.pageSize}px">
-                ${this.itemsHtml}
-            </div>`;
+        legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.pageSize}px">${this.itemsHtml}</div>`;
 
         this.items = legendEl.querySelector('.yagr-legend__items') as HTMLElement;
         this.container = legendEl.querySelector('.yagr-legend__container') as HTMLElement;
@@ -335,10 +332,7 @@ export default class Legend {
 
             const visible = typeof serie === 'string' ? true : serie.show;
 
-            return `
-                <div class="yagr-legend__item ${visible ? '' : 'yagr-legend__item_hidden'}" data-serie-id="${id}">
-                    ${content}
-                </div>`;
+            return `<div class="yagr-legend__item ${visible ? '' : 'yagr-legend__item_hidden'}" data-serie-id="${id}">${content}</div>`;
         }).join('');
 
         return `<div class="yagr-legend__items">${content}</div>`;

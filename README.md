@@ -1,6 +1,6 @@
 # Yagr
 
-Yagr is high performance HTML5 canvas chart renderer for timeseries data based on [uPlot](https://github.com/leeoniya/uPlot). 
+Yagr is high performance HTML5 canvas chart renderer for timeseries data based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts. 
 
 ## Features
 
@@ -9,7 +9,7 @@ Yagr is high performance HTML5 canvas chart renderer for timeseries data based o
  - Different Scaling
  - Plot lines and bands
  - Configurable Tooltip
- - Responsive charts
+ - Responsive charts (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
  - High support of stacked areas/columns
  - Light/Dark theme
  - Data normalization
@@ -17,25 +17,26 @@ Yagr is high performance HTML5 canvas chart renderer for timeseries data based o
  - Typescript
  - Localization
  - Support of missing data
+ - CSS Variables as color names
+ - Paginated inline legend
+ - Error handling and extended hooks
 
 ## Usage 
+
+Let's ee a minimal chart's config:
 
 ```ts
 import Yagr from 'yagr';
 
 const config = {
-    timeline: [0, 100, 200],
+    timeline: [0, 1000, 2000],
     data: [
         {name: 'First', data: [1, 2, 3], color: 'red'},
         {name: 'Second', data: [2, 4, 1], color: 'green'}
     ],
-    axes: [
-        {
-            scale: 'x',
-            values: (_, i) => i,
-        }
-    ]
 };
 
 const y = new Yagr(document.body, config);
 ```
+
+# Examples

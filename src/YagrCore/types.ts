@@ -7,7 +7,7 @@ import {CursorOptions} from './plugins/cursor/cursor';
 
 interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
     /** Will appear after processing series */
-    originalData: DataSeries;
+    $c: DataSeries;
 
     /** Will appear after processing series if serie values normalized */
     normalizedData?: DataSeries;
@@ -82,18 +82,22 @@ export interface YagrConfig {
     data: RawSerieData[];
 
     /** uPlot hooks */
-    hooks: Hooks.Arrays & {
-        load?: ((d: {chart: Yagr; meta: YagrMeta}) => void)[];
-        onSelect?: ((d: {from: number; to: number}) => void)[];
-        error?: ((d: {type: 'processing'; error: Error; yagr: Yagr}) => void)[];
-        processed?: ((d: {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}) => void)[];
-        inited?: ((d: {chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}) => void)[];
-        dispose?: ((d: Yagr) => void)[];
-        resize?: ((d: ResizeObserverEntry[]) => void)[];
-    };
+    hooks: Hooks.Arrays & YagrHooks;
 
     /** uPlot */
     process?: (opts: Options) => Options;
+}
+
+type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>
+
+export interface YagrHooks extends Hooks.Arrays {
+    load?: Handler<{chart: Yagr; meta: YagrMeta}>;
+    onSelect?: Handler<{from: number; to: number}>;
+    error?: Handler<{type: 'processing'; error: Error; yagr: Yagr}>;
+    processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
+    inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
+    dispose?: Handler<Yagr>;
+    resize?: Handler<ResizeObserverEntry[]>;
 }
 
 /**
@@ -216,7 +220,7 @@ export interface AxisOptions extends Omit<UAxis, 'side'> {
     /** Axis side */
     side?: AxisSide;
 
-    /** Values decimal precision (default: auto)*/
+    /** Values decimal precision (default: auto) */
     precision?: number | 'auto';
 }
 
@@ -230,7 +234,7 @@ export interface PlotLineConfig {
     /** Color of line */
     color: string;
 
-    /** Line width in px*/
+    /** Line width in px */
     width?: number;
 }
 
@@ -270,7 +274,7 @@ export interface Scale {
     min?: number | null;
     max?: number | null;
 
-    /** view type (default: nice)*/
+    /** view type (default: nice) */
     range?: ScaleRange;
     offset?: number;
     /** default: 5 */

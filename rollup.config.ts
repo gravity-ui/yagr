@@ -63,10 +63,6 @@ export default [{
                 keep_fnames: false,
                 keep_fargs: false,
                 pure_getters: true,
-                unsafe: true,
-                unsafe_comps: true,
-                unsafe_math: true,
-                unsafe_undefined: true,
             },
             output: {
                 comments: /^!/,

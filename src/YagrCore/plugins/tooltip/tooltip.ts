@@ -41,7 +41,7 @@ function renderTooltip(rows: TooltipRows) {
 
 // eslint-disable-next-line complexity
 const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: number, stripValue: unknown = null) => {
-    const source = Array.isArray(serie.originalData) ? serie.originalData : data;
+    const source = Array.isArray(serie.$c) ? serie.$c : data;
 
     const snapTo = cursor.snapToValues === false
         ? false
@@ -50,7 +50,7 @@ const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: 
     let value = source[idx];
 
     if (value === stripValue) {
-        const nonNullIdx = findDataIdx(source, serie, idx, snapTo);
+        const nonNullIdx = findDataIdx(source, serie, idx, snapTo, stripValue);
         value = source[nonNullIdx];
     }
 
@@ -307,7 +307,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     }
 
                     const realY = data[i][idx];
-                    const yValue = serie.originalData && serie.originalData[idx] === stripValue ? value : realY;
+                    const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
                     ys.push(yValue);
 
                     i += 1;

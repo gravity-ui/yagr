@@ -70,14 +70,32 @@ const getNumericValueFormatter = (axisConfig: AxisOptions) => {
     };
 };
 
+const dayTimeFormatter = uPlot.fmtDate('{DD}.{MM}.{YYYY}');
+const dateTimeFormatter = uPlot.fmtDate('{HH}:{mm}:{ss}');
+const minuteFormatter = uPlot.fmtDate('{MM}:{ss}');
+const secondFormatter = uPlot.fmtDate('{MM}:{ss}.{fff}');
 
+const getTimeFormatter = (config: YagrConfig) => {
+    const msm = (config.settings.timeMultiplier || 1);
+    return (_: unknown, ticks: number[]) => {
+        const range = ticks[ticks.length - 1] - ticks[0];
+        const rangeMs = range / msm;
 
-const defaultDateFormatter = uPlot.fmtDate('{DD}.{MM}.{YYYY}');
+        let formatter = dayTimeFormatter;
+        if (rangeMs <= defaults.SECOND) {
+            formatter = secondFormatter;
+        } else 
+        if (rangeMs <= defaults.MINUTE) {
+            formatter = minuteFormatter;
+        } else
+        if (rangeMs <= defaults.DAY) {
+            formatter = dateTimeFormatter;
+        }
 
-const defaultTimeFormatter = (_: unknown, ticks: number[]) => {
-    return ticks.map((rawValue) => {
-        return defaultDateFormatter(new Date(rawValue));
-    });
+        return ticks.map((rawValue) => {
+            return formatter(new Date(rawValue / msm));
+        });
+    };
 };
 
 // eslint-disable-next-line complexity
@@ -97,7 +115,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
         return Object.assign(axis, {
             gap: axisConfig.gap || defaults.X_AXIS_TICK_GAP,
             size: axisConfig.size || defaults.X_AXIS_SIZE,
-            values: axisConfig.values || defaultTimeFormatter,
+            values: axisConfig.values || getTimeFormatter(config),
             ticks: axisConfig.ticks || defaults.THEMED.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || defaults.X_AXIS_SPACE,

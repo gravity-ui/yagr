@@ -8,7 +8,10 @@ import * as defaults from '../defaults';
  */
 class ColorParser {
     private _toRgba: (color: string) => number[];
+    private context: HTMLElement | null;
+
     constructor() {
+        this.context = null;
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = 1;
         const ctx = canvas.getContext('2d');
@@ -19,6 +22,8 @@ class ColorParser {
 
         /* @NOTE Maybe should memoize this, not sure */
         this._toRgba = (color: string) => {
+            color = this.parse(color);
+
             if (color.startsWith('rgb')) {
                 const match = color.match(/\((.+)\)/);
                 if (match) {
@@ -38,6 +43,22 @@ class ColorParser {
             ctx.fillRect(0, 0, 1, 1);
             return [... ctx.getImageData(0, 0, 1, 1).data];
         };
+    }
+
+    parse(color: string) {
+        const isVar = color.startsWith('var(--');
+        if (isVar || color.startsWith('--')) {
+            if (!this.context) {
+                throw new Error('colorParse.context is not ready');
+            }
+            return getComputedStyle(this.context).getPropertyValue(isVar ? color.slice(4, -1) : color);
+        }
+
+        return color;
+    }
+
+    setContext(context: HTMLElement) {
+        this.context = context;
     }
 
     rgba(color: number[]) {

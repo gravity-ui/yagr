@@ -26,6 +26,7 @@ import {
     RefPoints,
     RedrawOptions,
     PlotLineConfig,
+    YagrHooks,
 } from './types';
 
 import {genId, getSumByIdx, interpolateImpl} from './utils/common';
@@ -33,7 +34,7 @@ import {getScaleRange} from './utils/scales';
 import {pathsRenderer} from './utils/paths';
 import {getAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
-import {getSerieFocusColors} from './utils/colors';
+import {colorParser, getSerieFocusColors} from './utils/colors';
 import {getSerie} from './utils/series';
 
 import {
@@ -134,6 +135,8 @@ class Yagr {
         this.id = root.id || genId();
         this.root = root;
         this.root.classList.add('yagr');
+
+        colorParser.setContext(root);
 
         this.plugins = {};
         this.config = config;
@@ -279,13 +282,16 @@ class Yagr {
                 id: DEFAULT_X_SERIE_NAME,
                 color: '',
                 name: '',
-                originalData: config.timeline,
+                $c: config.timeline,
                 _valuesCount: config.timeline.length,
             }],
             ms: settings.timeMultiplier || 1,
             hooks: config.hooks || {},
         };
 
+        const isEmptyDataSet = config.timeline.length === 0 ||
+            config.data.length === 0 ||
+            config.data.every(({data}) => data.length === 0);
 
         /**
          * Setting up cursor - points on cursor, drag behavior, crosshairs
@@ -309,7 +315,10 @@ class Yagr {
         }
 
         /** first serie is always X */
-        const seriesOptions = (config.data || []).map((rawSerie: RawSerieData) => getSerie(rawSerie, config));
+        const seriesOptions = (config.data || []).map((
+            rawSerie: RawSerieData,
+            idx
+        ) => getSerie(rawSerie, config, idx));
 
         /* First serie is always X serie */
         const resultingSeriesOptions: Series[] = options.series;
@@ -359,9 +368,7 @@ class Yagr {
                 settings.interpolation ||
                 InterpolationSetting.Linear;
 
-            if (pathsRenderer !== undefined) {
-                serie.paths = pathsRenderer;
-            }
+            serie.paths = pathsRenderer;
             resultingSeriesOptions.push(serie);
         }
 
@@ -372,7 +379,6 @@ class Yagr {
         }
 
         options.series = resultingSeriesOptions;
-
 
         /** Setting up scales */
         options.scales = options.scales || {};
@@ -397,11 +403,19 @@ class Yagr {
                 scale.distr = 3; /** @TODO Use type from uPlot */
             }
 
-            if (scaleName !== DEFAULT_X_SCALE && scaleConfig.type !== ScaleType.Logarithmic) {
-                if (typeof scaleConfig.min === 'number' && typeof scaleConfig.max === 'number') {
-                    scale.range = [scaleConfig.min, scaleConfig.max];
-                } else {
-                    scale.range = getScaleRange(scaleConfig, () => this.references, config);
+            if (scaleName !== DEFAULT_X_SCALE) {
+                if (isEmptyDataSet) {
+                    scale.range = [
+                        typeof scaleConfig.min === 'number' ? scaleConfig.min : (isLogarithmic ? 1 : 0),
+                        typeof scaleConfig.max === 'number' ? scaleConfig.max : 100,
+                    ];
+                } else
+                if (!isLogarithmic) {
+                    if (typeof scaleConfig.min === 'number' && typeof scaleConfig.max === 'number') {
+                        scale.range = [scaleConfig.min, scaleConfig.max];
+                    } else {
+                        scale.range = getScaleRange(scaleConfig, () => this.references, config);
+                    }
                 }
             }
         });
@@ -524,8 +538,6 @@ class Yagr {
             store.accum = series.length ? new Array(series[0].length).fill(0) : [];
         }
 
-        const isTotallyEmpty = !(series.length > 0 && series[0].length > 0);
-
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
             const realSerieIdx = sIdx + 1;
@@ -639,14 +651,6 @@ class Yagr {
             result.unshift(dataLine);
         }
 
-        /** Adding arbitary scale for empty series set */
-        if (isTotallyEmpty) {
-            const yScale = this.options.scales?.y;
-            if (yScale) {
-                yScale.range = [0, 100];
-            }
-        }
-
         this.calculateRefPoints();
 
         result.unshift(this.config.timeline);
@@ -713,7 +717,7 @@ class Yagr {
             this.plugins?.legend?.redraw();
         });
 
-        this.execHooks(this.config.hooks.resize, args);
+        this.execHooks<YagrHooks['resize']>(this.config.hooks.resize, args);
     };
 
     private init = () => {
@@ -725,7 +729,7 @@ class Yagr {
         this.unsubscribe();
     };
 
-    private execHooks = (hooks: Function[] | undefined, ...args: unknown[]) => {
+    private execHooks = <T>(hooks: T | undefined, ...args: unknown[]) => {
         if (Array.isArray(hooks)) {
             hooks.forEach((hook) => {
                 typeof hook === 'function' && hook(...args);

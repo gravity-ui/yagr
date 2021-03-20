@@ -114,7 +114,7 @@ export function findDataIdx(
     defaultSnapTo: SnapToValue | false = SnapToValue.Closest,
     trimValue: unknown = null,
 ) {
-    let nonNullLft = idx, nonNullRgt = idx, i;
+    let corL = idx, corR = idx, i;
 
     const direction = series.snapToValues === undefined ? defaultSnapTo : series.snapToValues;
 
@@ -124,25 +124,25 @@ export function findDataIdx(
 
     if (direction === SnapToValue.Left || direction === SnapToValue.Closest) {
         i = idx;
-        while (nonNullLft === idx && i-- > 0) {
-            if (data[i] !== trimValue) { nonNullLft = i; }
+        while (corL === idx && i-- > 0) {
+            if (data[i] !== trimValue) { corL = i; }
         }
     }
 
     if (direction === SnapToValue.Right || direction === SnapToValue.Closest) {
         i = idx;
-        while (nonNullRgt === idx && i++ < data.length) {
-            if (data[i] !== trimValue) { nonNullRgt = i; }
+        while (corR === idx && i++ < data.length) {
+            if (data[i] !== trimValue) { corR = i; }
         }
     }
 
     if (direction === SnapToValue.Left) {
-        return nonNullLft;
+        return corL;
     }
     if (direction === SnapToValue.Right) {
-        return nonNullRgt;
+        return corR;
     }
-    return nonNullRgt - idx > idx - nonNullLft ? nonNullLft : nonNullRgt;
+    return corR - idx > idx - corL ? corL : corR;
 }
 
 /** Linear interpolation */
