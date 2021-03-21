@@ -12,6 +12,7 @@ import {
     TooltipOptions,
     TooltipRows,
     TooltipRow,
+    TooltipRenderOpts,
 } from './types';
 
 export interface TooltipState {
@@ -30,8 +31,11 @@ export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin
 const ANCHOR_Y_OFFSET = 24;
 const DEFAULT_MAX_LINES = 10;
 
-function renderTooltip(rows: TooltipRows) {
-    return rows.map(({value, name, color, active}) => {
+function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
+    const r = rows.slice(0, renderOptions.options.maxLines);
+    renderOptions.options.sort && r.sort(renderOptions.options.sort);
+
+    return r.map(({value, name, color, active}) => {
         const label = active ? `<b>${name} : ${value}</b>` :  `${name} : ${value}`;
         return `<div class="yagr-tooltip__item" data-series-name="${name}">
 <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${label}

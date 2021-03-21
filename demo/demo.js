@@ -136,14 +136,14 @@ const createChart = (config) => {
     }
 }
 
-createChart({
-    length: 500, step: DAY, count: 2, type: 'line', title: 'line: 500 pts / stepped',
-    config: {settings: {interpolation: 'left'}, legend: {show: true}},
-    fn: (idx, __, _, prev) => {
-        if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
-        return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
-    }
-});
+// createChart({
+//     length: 100, step: 50, count: 5, type: 'line', title: 'line: 500 pts / stepped',
+//     config: {settings: {interpolation: 'smooth'}, legend: {show: false}},
+//     fn: (idx, __, _, prev) => {
+//         if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
+//         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
+//     }
+// });
 
 // createChart({
 //     length: 500, step: DAY, count: 1, type: 'line', title: 'line: 500 pts / stepped',
@@ -214,15 +214,40 @@ createChart({
 createChart(() => ({
     chart: {type: 'line', width: 600, height: 300},
     timeline: [0, 1, 2, 4, 5, 6],
+    tooltip: {
+        tracking: 'sticky'
+    },
+    cursor: {
+        // snapToValues: false && 'right',
+        // markersSize: 12,
+        y: {
+            visible: true,
+            style: 'dash grey 2px'
+        }
+    },
     data: [{
         color: 'darkgreen',
-        data: [1, 'NUN', 'NUN', 12, 'NUN', 10]
+        data: [1, 'NUN', 'NUN', 12, 'NUN', 10],
+        scale: 'y'
     }, {
-        color: 'orange',
-        data: [1, 1, 1, 1, 1, 1]
+        color: '--some-variable',
+        data: [1, 1, 2, 1, 1, 1],
+        scale: '%'
     }],
     settings: {
+        drawOrder: ['axes', 'series'],
         interpolationValue: 'NUN',
         timeMultiplier: 0.001,
+        stacking: false,
+    },
+    axes: [
+        {scale: 'x'},
+        {scale: 'y', side: 'left'},
+        {scale: '%', side: 'right', grid: {stroke: 'rgba(200, 3, 112, 0.3)'}, values: (_, m) => m.map((x) => x + ' %')}
+    ],
+    scales: {
+        x: {time: true},
+        '%': {min: 0, max: 15},
+        y: {min: 0, max: 15},
     }
 }));
