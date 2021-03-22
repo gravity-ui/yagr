@@ -41,6 +41,12 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
             }
         }
 
+        const minRange = scale.minRange || DEFAULT_SCALE_MIN_RANGE;
+        if (Math.abs(max - min) < minRange) {
+            min -= minRange / 2;
+            max += minRange / 2;
+        }
+
         return [min, max];
     };
 };

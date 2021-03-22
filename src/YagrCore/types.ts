@@ -274,6 +274,9 @@ export interface Scale {
     min?: number | null;
     max?: number | null;
 
+    /** min scale range (default: 0.01) */
+    minRange?: number;
+
     /** view type (default: nice) */
     range?: ScaleRange;
     offset?: number;

@@ -9,6 +9,7 @@ export const DEFAULT_FOCUS_ALPHA = 0.3;
 export const DEFAULT_CANVAS_PIXEL_RATIO = window.devicePixelRatio || 1;
 export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
+export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 
 export const GRID_LIGHT = {show: true, stroke: 'rgba(0, 0, 0, 0.105)', width: 1};
 export const GRID_DARK = {show: true, stroke: 'rgba(255, 255, 255, 0.23)', width: 1};
