@@ -231,9 +231,7 @@ class Yagr {
     }
 
     dispose = () => {
-        if (this.config.settings.adaptive) {
-            this.resizeOb?.unobserve(this.root);
-        }
+        this.resizeOb && this.resizeOb.unobserve(this.root);
         this.uplot.destroy();
         this.execHooks(this.config.hooks.dispose, this);
     };
@@ -525,7 +523,7 @@ class Yagr {
         const timeline = this.config.timeline;
         this.config.settings = this.config.settings || {};
         const settings = this.config.settings;
-
+        const nullValues = settings.nullValues || {};
         const store: {
             accum: number[];
             igroup: number[];
@@ -618,9 +616,9 @@ class Yagr {
             };
 
             for (let idx = 0; idx < serie.length; idx++) {
-                const value = serie[idx];
+                let value = serie[idx];
 
-                if (value === this.config.settings.interpolationValue) {
+                if (value === settings.interpolationValue) {
                     if (idx === 0 || idx === serie.length - 1) {
                         dataLine.push(null);
                     } else {
@@ -628,6 +626,14 @@ class Yagr {
                     }
                     continue;
                 } else {
+                    if (typeof value === 'string') {
+                        if (nullValues.hasOwnProperty(value)) {
+                            value = null;
+                        } else {
+                            throw new Error('Unexpected value: ' + value);
+                        }
+                    }
+
                     if (store.igroup.length) {
                         y2 = value;
                         x2 = timeline[idx];

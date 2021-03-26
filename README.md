@@ -31,8 +31,8 @@ import Yagr from 'yagr';
 const config = {
     timeline: [0, 1000, 2000],
     data: [
-        {name: 'First', data: [1, 2, 3], color: 'red'},
-        {name: 'Second', data: [2, 4, 1], color: 'green'}
+        {data: [1, 2, 3], color: 'red'},
+        {data: [2, 4, 1], color: 'green'}
     ],
 };
 

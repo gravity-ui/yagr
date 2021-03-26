@@ -1,6 +1,5 @@
 import {Series} from 'uplot';
-import {DataSeries, SnapToValue} from '../types';
-
+import {DataSeriesExtended, DataSeries, SnapToValue} from '../types';
 
 /*
  * Finds index of nearest point in range of Y-Axis values
@@ -32,12 +31,11 @@ export const findInRange = (
 };
 
 /* Gets sum of all values of given data index by all series */
-export const getSumByIdx = (series: DataSeries[], idx: number) => {
+export const getSumByIdx = (series: DataSeriesExtended[], idx: number) => {
     let sum = 0;
     for (const serie of series) {
-        if (serie) {
-            sum += serie[idx] || 0;
-        }
+        const value = serie[idx];
+        sum += typeof value === 'number' ? value : 0;
     }
     return sum;
 };
@@ -108,13 +106,13 @@ export function toFixed(num: number, fixed: number) {
 
 /* Finds non neares null value in data series by given direction */
 export function findDataIdx(
-    data: DataSeries,
+    data: DataSeriesExtended,
     series: Series,
     idx: number,
     defaultSnapTo: SnapToValue | false = SnapToValue.Closest,
     trimValue: unknown = null,
 ) {
-    let corL = idx, corR = idx, i;
+    let corL = idx, corR = idx;
 
     const direction = series.snapToValues === undefined ? defaultSnapTo : series.snapToValues;
 
@@ -123,16 +121,14 @@ export function findDataIdx(
     }
 
     if (direction === SnapToValue.Left || direction === SnapToValue.Closest) {
-        i = idx;
-        while (corL === idx && i-- > 0) {
-            if (data[i] !== trimValue) { corL = i; }
+        for (let i = idx - 1; i >= 0; i--) {
+            if (data[i] !== trimValue) { corL = i; break; }
         }
     }
 
     if (direction === SnapToValue.Right || direction === SnapToValue.Closest) {
-        i = idx;
-        while (corR === idx && i++ < data.length) {
-            if (data[i] !== trimValue) { corR = i; }
+        for (let i = idx + 1; i < data.length; i++) {
+            if (data[i] !== trimValue) { corR = i; break; }
         }
     }
 
@@ -142,6 +138,7 @@ export function findDataIdx(
     if (direction === SnapToValue.Right) {
         return corR;
     }
+
     return corR - idx > idx - corL ? corL : corR;
 }
 
@@ -157,6 +154,5 @@ export const interpolateImpl = (y1: number | null, y2: number | null, x1: number
 
     return result;
 };
-
 
 export const genId = () => Math.random().toString(34).slice(2);

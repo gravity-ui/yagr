@@ -6,7 +6,7 @@ import * as defaults from '../defaults';
  *  - color parsing from RGBA, HEX or CSS color name
  *  - linear shade/lighten @see https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)#stackoverflow-archive-begin
  */
-class ColorParser {
+export default class ColorParser {
     private _toRgba: (color: string) => number[];
     private context: HTMLElement | null;
 

@@ -104,10 +104,10 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
             init: (u) => {
                 const cX: HTMLElement | null = u.root.querySelector('.u-cursor-x');
                 if (cX) {
-                    if (opts.x?.visible === false) {
+                    if (opts.x && opts.x.visible === false) {
                         cX.style.display = 'none';
                     } else {
-                        cX.style.borderRight = opts.x?.style || CURSOR_STYLE;
+                        cX.style.borderRight = (opts.x && opts.x.style) || CURSOR_STYLE;
                     }
                 }
 

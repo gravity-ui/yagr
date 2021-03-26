@@ -40,7 +40,7 @@ export interface TooltipOptions {
     /** Is tooltip pinable */
     pinable: boolean;
     /** Value formatter */
-    value: (value: number | null, precision?: number) => string;
+    value: (value: string | number | null, precision?: number) => string;
     /**
      * @TODO Not implemented
      * Show DataLine index

@@ -117,16 +117,25 @@ const generateChart = ({
 };
 
 let c;
-const createChart = (config) => {
+const createChart = (config, repeat) => {
     const d = document.createElement('div');
     d.classList.add('container');
     root.appendChild(d);
-    const cfg = typeof config === 'function' ? config() : generateChart(config);
-    console.log('cfg', cfg);
+    let cfg = typeof config === 'function' ? config() : generateChart(config);
+
     if (cfg.settings && cfg.settings.theme === 'dark') {
        d.classList.add('dark');
     }
-    const y = new Yagr(d, cfg);
+    console.log('cfg', cfg);
+    let y = new Yagr(d, cfg);
+
+    if (repeat) {
+        setInterval(() => {
+            y && y.dispose();
+            cfg = typeof config === 'function' ? config() : generateChart(config);
+            y = new Yagr(d, cfg);
+        }, repeat);
+    }
 
     if (!c) {
         c = true;
@@ -137,8 +146,8 @@ const createChart = (config) => {
 }
 
 // createChart({
-//     length: 100, step: 50, count: 5, type: 'line', title: 'line: 500 pts / stepped',
-//     config: {settings: {interpolation: 'smooth'}, legend: {show: false}},
+//     length: 500, step: 50, count: 3, type: 'line', title: 'line: 500 pts / stepped',
+//     config: {settings: {adaptive: true}, legend: {show: false}},
 //     fn: (idx, __, _, prev) => {
 //         if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
 //         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
@@ -212,13 +221,13 @@ const createChart = (config) => {
 
 
 createChart(() => ({
-    chart: {type: 'line', width: 600, height: 300},
+    chart: {type: 'area', width: 600, height: 300},
     timeline: [0, 1, 2, 4, 5, 6],
     tooltip: {
-        tracking: 'sticky'
+        tracking: 'area',
     },
     cursor: {
-        // snapToValues: false && 'right',
+        snapToValues: 'left',
         // markersSize: 12,
         y: {
             visible: true,
@@ -227,27 +236,33 @@ createChart(() => ({
     },
     data: [{
         color: 'darkgreen',
-        data: [1, 'NUN', 'NUN', 12, 'NUN', 10],
-        scale: 'y'
+        data: [1, 2, null, 1, 2, 3]
+        // data: [1, 'NUN', 'NUN', 12, 'NUN', 10],
     }, {
         color: '--some-variable',
-        data: [1, 1, 2, 1, 1, 1],
-        scale: '%'
+        data: [1, 2, 3, 1, 2, 3],
+        // data: [1, 1, 2, '+inf', 1, 1],
+        spanGaps: false,
+    }, {
+        color: 'rgba(32, 32, 100, 1)',
+        data: [2, 2, 3, 1, 2, 3],
+        spanGaps: false,
     }],
     settings: {
+        stacking: true,
         drawOrder: ['axes', 'series'],
         interpolationValue: 'NUN',
         timeMultiplier: 0.001,
-        stacking: false,
+        nullValues: {
+            '+inf': null
+        },
     },
     axes: [
         {scale: 'x'},
         {scale: 'y', side: 'left'},
-        {scale: '%', side: 'right', grid: {stroke: 'rgba(200, 3, 112, 0.3)'}, values: (_, m) => m.map((x) => x + ' %')}
     ],
     scales: {
         x: {time: true},
-        '%': {min: 0, max: 15},
-        y: {min: 0, max: 15},
+        y: {normalize: true, normalizeBase: 300},
     }
 }));

@@ -1,4 +1,11 @@
-import {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
+import {
+    Axis as UAxis,
+    Hooks,
+    DrawOrderKey,
+    Series,
+    Options,
+    Scale as UScale,
+} from 'uplot';
 
 import Yagr, {YagrMeta} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -7,7 +14,7 @@ import {CursorOptions} from './plugins/cursor/cursor';
 
 interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
     /** Will appear after processing series */
-    $c: DataSeries;
+    $c: DataSeriesExtended;
 
     /** Will appear after processing series if serie values normalized */
     normalizedData?: DataSeries;
@@ -18,6 +25,7 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
     /** Reference points of series */
     refPoints?: RefPoints;
 }
+
 declare module 'uplot' {
     interface Series extends ProcessedSeriesData {
         id: string;
@@ -26,6 +34,7 @@ declare module 'uplot' {
         _valuesCount: number;
     }
 }
+
 
 
 /**
@@ -137,6 +146,7 @@ export enum ChartTypes {
 }
 
 /** Data values of lines */
+export type DataSeriesExtended = (number | string | null)[]
 export type DataSeries = (number | null)[];
 
 export type RefPoints = {
@@ -188,10 +198,10 @@ export interface RawSerieData {
     visible?: boolean;
 
     /** Formatter for serie value */
-    formatter?: (value: number | null, serie: Series) => string;
+    formatter?: (value: string | number | null, serie: Series) => string;
 
     /** Raw data */
-    data: DataSeries;
+    data: DataSeriesExtended;
 
     /** Calculated references points for Yagr plot. If not provided, Yagr calculates them by itself. */
     refPoints?: RefPoints;
@@ -278,7 +288,7 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?: ScaleRange;
+    range?: ScaleRange | UScale['range'];
     offset?: number;
     /** default: 5 */
     maxTicks?: number;
@@ -326,6 +336,8 @@ export interface YagrChartSettings {
 
     /** Locale */
     locale?: SupportedLocales | Record<string, string>;
+
+    nullValues?: Record<string, string | null>;
 }
 
 /**

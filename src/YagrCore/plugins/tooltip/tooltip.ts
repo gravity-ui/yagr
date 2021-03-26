@@ -70,9 +70,19 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     let renderTooltipCloses = () => {};
 
     const defaultTooltipValueFormatter = (n: number | null, precision?: number) => {
-        return n === null
-            ? '-'
-            : n.toFixed(
+        if (n === null) {
+            return '-';
+        }
+
+        if (typeof n === 'string') {
+            if (ySettings.nullValues && ySettings.nullValues.hasOwnProperty(n)) {
+                return ySettings.nullValues[n];
+            }
+
+            return n;
+        }
+
+        return n.toFixed(
                 // eslint-disable-next-line no-nested-ternary
                 typeof precision === 'number'
                     ? precision
@@ -94,6 +104,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         hideNoData: false,
         className: 'yagr-tooltip_default',
     }, options);
+
+    const ySettings = yagr.config.settings;
 
     let over: HTMLDivElement;
     let bLeft: number;
@@ -303,8 +315,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    const stripValue = yagr.config.settings.interpolationValue;
-                    const value = findValue(yagr.config.cursor, u.data[i], serie, idx, stripValue);
+                    const stripValue = ySettings.interpolationValue;
+                    let value = findValue(yagr.config.cursor, u.data[i], serie, idx, stripValue);
+                    let dValue = value;
+
+                    if (typeof value === 'string') {
+                        dValue = value;
+                        value = null;
+                    }
 
                     if (opts.total) {
                         sum += (value || 0);
@@ -321,8 +339,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     }
 
                     const displayValue = serie.formatter
-                        ? serie.formatter(value, serie)
-                        : opts.value(value, serie.precision);
+                        ? serie.formatter(dValue, serie)
+                        : opts.value(dValue, serie.precision);
 
                     const rowData: TooltipRow = {
                         name: serie.name,

@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
 
-import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET} from '../defaults';
+import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
 import {ChartTypes, YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 
 type ScaleType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
@@ -46,7 +46,6 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
             min -= minRange / 2;
             max += minRange / 2;
         }
-
         return [min, max];
     };
 };

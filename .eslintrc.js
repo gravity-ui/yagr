@@ -16,6 +16,7 @@ module.exports = {
         // Possible Errors
         'no-empty': OFF, // eslint:recommended
         'valid-jsdoc': [WARNING, {requireParamDescription: false, requireReturnDescription: false}],
+        'no-prototype-builtins': OFF,
 
         // Best Practices
         'array-callback-return': ERROR,
