@@ -31,7 +31,7 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
 
     componentDidUpdate() {
         if (this.chart) {
-            this.chart.uplot.destroy();
+            this.chart.dispose();
         }
 
         this.initChart();
