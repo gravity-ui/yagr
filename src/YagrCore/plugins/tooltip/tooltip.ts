@@ -35,8 +35,9 @@ function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
     const r = rows.slice(0, renderOptions.options.maxLines);
     renderOptions.options.sort && r.sort(renderOptions.options.sort);
 
-    return r.map(({value, name, color, active}) => {
-        const label = active ? `<b>${name} : ${value}</b>` :  `${name} : ${value}`;
+    return r.map(({value, name, color, active, normalized}) => {
+        const val = `${value}${typeof normalized === 'number' ? ' ' + normalized.toFixed(0) + '%' : ''}`;
+        const label = active ? `<b>${name} : ${val}</b>` :  `${name} : ${val}`;
         return `<div class="yagr-tooltip__item" data-series-name="${name}">
 <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${label}
 </div>`;

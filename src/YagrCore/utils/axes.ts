@@ -106,9 +106,9 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
         labelSize: axisConfig.labelSize || defaults.Y_AXIS_LABEL_SIZE,
         labelFont: axisConfig.labelFont || defaults.AXIS_LABEL_FONT,
         font: axisConfig.font || defaults.AXIS_VALUES_FONT,
-        stroke: axisConfig.stroke || defaults.THEMED.AXIS_STROKE,
-        ticks: axisConfig.ticks || defaults.THEMED.Y_AXIS_TICKS,
-        grid: config.grid || axisConfig.grid || defaults.THEMED.GRID,
+        stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
+        ticks: axisConfig.ticks || defaults.theme.Y_AXIS_TICKS,
+        grid: config.grid || axisConfig.grid || defaults.theme.GRID,
     };
 
     if (axisConfig.scale === defaults.DEFAULT_X_SCALE) {
@@ -116,12 +116,12 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
             gap: axisConfig.gap || defaults.X_AXIS_TICK_GAP,
             size: axisConfig.size || defaults.X_AXIS_SIZE,
             values: axisConfig.values || getTimeFormatter(config),
-            ticks: axisConfig.ticks || defaults.THEMED.X_AXIS_TICKS,
+            ticks: axisConfig.ticks || defaults.theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || defaults.X_AXIS_SPACE,
             incrs: axisConfig.incrs || defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1)),
             side: 2,
-            stroke: axisConfig.stroke || defaults.THEMED.AXIS_STROKE,
+            stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
         });
     }
 

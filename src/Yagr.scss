@@ -9,6 +9,8 @@
         --yagr-legend-item-hidden: rgba(0, 0, 0, 0.3);
 
         --yagr-background: #ffffff;
+        --yagr-grid: rgba(0, 0, 0, 0.105);
+        --yagr-axis-stroke: rgba(0, 0, 0, 0.5);
     }
 
     &_theme_dark {
@@ -18,7 +20,9 @@
         --yagr-legend-item-hover: #a09fa3;
         --yagr-legend-item-hidden: hsla(0, 0%, 100%, 0.17);
 
-        --yagr-background: #2d2c33
+        --yagr-background: #2d2c33;
+        --yagr-grid: rgba(255, 255, 255, 0.23);
+        --yagr-axis-stroke: rgba(255, 255, 255, 0.5);
     }
 }
 

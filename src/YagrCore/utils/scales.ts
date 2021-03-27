@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
-
 import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
 import {ChartTypes, YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 

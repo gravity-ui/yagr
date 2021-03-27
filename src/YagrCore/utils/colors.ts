@@ -1,5 +1,5 @@
 import UPlot from 'uplot';
-import * as defaults from '../defaults';
+import {theme} from '../defaults';
 
 /**
  * This class implements:
@@ -88,7 +88,7 @@ export default class ColorParser {
 export const colorParser = new ColorParser();
 
 export const getSerieFocusColors = (color: string) => {
-    const shift = defaults.THEMED.getFocusColorShift();
+    const shift = theme.SHIFT;
     const defaultColor = [0, 0, 0, 0.6];
     const mainColor = colorParser.toRgba(color, defaultColor);
     const modified = colorParser.shade(mainColor, shift);

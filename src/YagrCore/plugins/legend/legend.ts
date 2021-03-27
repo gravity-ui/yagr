@@ -44,8 +44,8 @@ const hasOneVisibleLine = (series: Series[]) => {
 const getPrependingTitle = (i18n: Yagr['i18n'], series: Series[]) => {
     return series.length > 3 && i18n(
         hasOneVisibleLine(series)
-            ? 'legend.hide-all-lines'
-            : 'legend.show-all-lines',
+            ? 'hide-all'
+            : 'show-all',
     );
 };
 

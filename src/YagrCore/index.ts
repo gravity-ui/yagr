@@ -42,9 +42,9 @@ import {
     DEFAULT_X_SERIE_NAME,
     DEFAULT_Y_SCALE,
     MIN_SELECTION_WIDTH,
-    THEMED,
     DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
+    theme,
 } from './defaults';
 import i18n from './locale';
 
@@ -150,8 +150,8 @@ class Yagr {
         }
 
         try {
-            THEMED.setTheme(settings.theme || YagrTheme.Light);
-            this.root.classList.add('yagr_theme_' + THEMED.theme);
+            theme.setTheme(settings.theme || YagrTheme.Light);
+            this.root.classList.add('yagr_theme_' + theme.theme);
             this.i18n = i18n(settings.locale || 'en');
             const {options, series} = this.process();
             this._cache = {height: options.height, width: options.width};
@@ -472,7 +472,7 @@ class Yagr {
         options.hooks.drawClear.push((u: UPlot) => {
             const {ctx} = u;
             ctx.save();
-            ctx.fillStyle = THEMED.BACKGROUND_COLOR;
+            ctx.fillStyle = theme.BACKGROUND;
             ctx.fillRect(
                 DEFAULT_CANVAS_PIXEL_RATIO,
                 DEFAULT_CANVAS_PIXEL_RATIO,

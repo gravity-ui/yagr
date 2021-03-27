@@ -222,7 +222,7 @@ const createChart = (config, repeat) => {
 
 createChart(() => ({
     chart: {type: 'area', width: 600, height: 300},
-    timeline: [0, 1, 2, 4, 5, 6],
+    timeline: [0, 1, 2],
     tooltip: {
         tracking: 'area',
     },
@@ -234,23 +234,25 @@ createChart(() => ({
             style: 'dash grey 2px'
         }
     },
+    legend: {show: true,},
     data: [{
         color: 'darkgreen',
-        data: [1, 2, null, 1, 2, 3]
+        data: [1, 1, 1]
         // data: [1, 'NUN', 'NUN', 12, 'NUN', 10],
     }, {
         color: '--some-variable',
-        data: [1, 2, 3, 1, 2, 3],
+        data: [1, 1, 1],
         // data: [1, 1, 2, '+inf', 1, 1],
         spanGaps: false,
     }, {
         color: 'rgba(32, 32, 100, 1)',
-        data: [2, 2, 3, 1, 2, 3],
+        data: [1, 'NUN', 1],
         spanGaps: false,
     }],
     settings: {
+        theme: 'light',
         stacking: true,
-        drawOrder: ['axes', 'series'],
+        drawOrder: ['series', 'axes'],
         interpolationValue: 'NUN',
         timeMultiplier: 0.001,
         nullValues: {
@@ -263,6 +265,6 @@ createChart(() => ({
     ],
     scales: {
         x: {time: true},
-        y: {normalize: true, normalizeBase: 300},
+        y: {normalize: true},
     }
 }));

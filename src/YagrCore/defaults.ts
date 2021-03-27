@@ -1,6 +1,6 @@
-
 import uPlot, {Padding} from 'uplot';
 import {YagrTheme} from './types';
+import {colorParser} from './utils/colors';
 
 export const DEFAULT_X_SERIE_NAME = 'date';
 export const DEFAULT_X_SCALE = 'x';
@@ -11,23 +11,9 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 
-export const GRID_LIGHT = {show: true, stroke: 'rgba(0, 0, 0, 0.105)', width: 1};
-export const GRID_DARK = {show: true, stroke: 'rgba(255, 255, 255, 0.23)', width: 1};
-
 export const DEFAULT_AXIS_FONT_SIZE = 11;
 export const AXIS_LABEL_FONT = 'normal 11px Lucida Grande, Arial, Helvetica, sans-serif';
 export const AXIS_VALUES_FONT = '11px Lucida Grande, Arial, Helvetica, sans-serif';
-
-export const AXIS_STROKE_LIGHT = 'rgba(0, 0, 0, 0.5)';
-export const AXIS_STROKE_DARK = 'rgba(255, 255, 255, 0.5)';
-
-export const BACKGROUND_COLOR_LIGHT = '#ffffff';
-export const BACKGROUND_COLOR_DARK = '#2d2c33';
-
-export const X_AXIS_TICKS_LIGHT = {size: 8, ...GRID_LIGHT};
-export const X_AXIS_TICKS_DARK = {size: 8, ...GRID_DARK};
-export const Y_AXIS_TICKS_LIGHT = {size: 6, ...GRID_LIGHT};
-export const Y_AXIS_TICKS_DARK = {size: 6, ...GRID_DARK};
 
 export const Y_AXIS_TICK_GAP = 6;
 export const DEFAULT_Y_AXIS_SIZE = 12;
@@ -140,51 +126,37 @@ const DARKEN_COLOR_SHIFT = -0.6;
 class ThemedDefaults {
     theme?: YagrTheme;
 
-    AXIS_STROKE = AXIS_STROKE_LIGHT;
-    GRID = GRID_LIGHT;
-
-    X_AXIS_TICKS = X_AXIS_TICKS_LIGHT;
-    Y_AXIS_TICKS = Y_AXIS_TICKS_LIGHT;
-
-    BACKGROUND_COLOR = BACKGROUND_COLOR_LIGHT;
-
     constructor(theme: YagrTheme = YagrTheme.Light) {
         this.setTheme(theme);
     }
 
     setTheme(theme: YagrTheme) {
         this.theme = theme;
-        this.init();
     }
 
-    init() {
-        switch (this.theme) {
-            case undefined:
-            case YagrTheme.Light: {
-                this.AXIS_STROKE = AXIS_STROKE_LIGHT;
-                this.GRID = GRID_LIGHT;
-                this.X_AXIS_TICKS = X_AXIS_TICKS_LIGHT;
-                this.Y_AXIS_TICKS = Y_AXIS_TICKS_LIGHT;
-                this.BACKGROUND_COLOR = BACKGROUND_COLOR_LIGHT;
-                break;
-            }
-            case YagrTheme.Dark: {
-                this.AXIS_STROKE = AXIS_STROKE_DARK;
-                this.GRID = GRID_DARK;
-                this.X_AXIS_TICKS = X_AXIS_TICKS_DARK;
-                this.Y_AXIS_TICKS = Y_AXIS_TICKS_DARK;
-                this.BACKGROUND_COLOR = BACKGROUND_COLOR_DARK;
-                break;
-            }
-            default: {
-                throw new Error(`Yagr: Unsupported theme: ${this.theme}`);
-            }
-        }
+    get GRID() {
+        return {show: true, stroke: colorParser.parse('--yagr-grid'), width: 1};
     }
 
-    getFocusColorShift() {
+    get X_AXIS_TICKS() {
+        return {size: 8, ...this.GRID};
+    }
+
+    get Y_AXIS_TICKS() {
+        return {size: 6, ...this.GRID};
+    }
+
+    get AXIS_STROKE() {
+        return colorParser.parse('--yagr-axis-stroke');
+    }
+
+    get BACKGROUND() {
+        return colorParser.parse('--yagr-background');
+    }
+
+    get SHIFT() {
         return this.theme === YagrTheme.Light ? LIGHTEN_COLOR_SHIFT : DARKEN_COLOR_SHIFT;
     }
 }
 
-export const THEMED = new ThemedDefaults();
+export const theme = new ThemedDefaults();
