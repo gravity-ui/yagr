@@ -1,4 +1,3 @@
-
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
 
@@ -6,22 +5,20 @@ import {
     YagrConfig,
     AxisOptions,
     AxisSide,
-    UAxisSide,
-    UAxisAlign,
 } from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
-    [AxisSide.Right]: UAxisSide.Right,
-    [AxisSide.Top]: UAxisSide.Top,
-    [AxisSide.Bottom]: UAxisSide.Bottom,
-    [AxisSide.Left]: UAxisSide.Left,
+    [AxisSide.Right]: Axis.Side.Right,
+    [AxisSide.Top]: Axis.Side.Top,
+    [AxisSide.Bottom]: Axis.Side.Bottom,
+    [AxisSide.Left]: Axis.Side.Left,
 };
 
 const AXIS_SIDE_TO_ALIGN = {
-    [AxisSide.Left]: UAxisAlign.Right,
-    [AxisSide.Right]: UAxisAlign.Left,
+    [AxisSide.Left]: Axis.Align.Right,
+    [AxisSide.Right]: Axis.Align.Left,
     [AxisSide.Top]: undefined,
     [AxisSide.Bottom]: undefined,
 };
@@ -31,7 +28,7 @@ const AXIS_SIDE_TO_ALIGN = {
  */
 export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align']) => {
     return {
-        side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : UAxisSide.Left,
+        side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : Axis.Side.Left,
         align: align || (side ? AXIS_SIDE_TO_ALIGN[side] : undefined),
     };
 };

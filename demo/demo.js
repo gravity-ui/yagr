@@ -265,6 +265,6 @@ createChart(() => ({
     ],
     scales: {
         x: {time: true},
-        y: {},
+        y: {normalize: true},
     }
 }));

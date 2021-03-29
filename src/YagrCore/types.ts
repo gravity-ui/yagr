@@ -368,19 +368,6 @@ export interface MarkersOptions {
     lineWidth?: number;
 }
 
-// Remove after migrating to TS4
-export enum UAxisSide {
-    Top = 0,
-    Right = 1,
-    Bottom = 2,
-    Left = 3,
-}
-
-export enum UAxisAlign {
-    Left = 1,
-    Right = 2,
-}
-
 export enum SnapToValue {
     Left = 'left',
     Right = 'right',

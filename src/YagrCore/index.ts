@@ -498,8 +498,8 @@ class Yagr {
         });
 
         options.drawOrder = settings.drawOrder || [
-            'series' as DrawOrderKey.Series,
-            'axes' as DrawOrderKey.Axes,
+            DrawOrderKey.Series,
+            DrawOrderKey.Axes,
         ];
 
         /** Disabling uPlot legend. */
