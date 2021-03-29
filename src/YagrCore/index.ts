@@ -226,7 +226,6 @@ class Yagr {
         const serieIdx = lineId && this.uplot.series.findIndex((serie) => {
             return serie.id === lineId;
         }) || null;
-
         this.uplot.setSeries(serieIdx, {focus});
     }
 
@@ -275,7 +274,8 @@ class Yagr {
             height: this.clientHeight,
             title: config.title?.text,
             plugins: plugins,
-            focus: {alpha: settings.stacking ? 1 : DEFAULT_FOCUS_ALPHA},
+            // @see https://github.com/leeoniya/uPlot/issues/429
+            focus: {alpha: settings.stacking ? 1.1 : DEFAULT_FOCUS_ALPHA},
             series: [{
                 id: DEFAULT_X_SERIE_NAME,
                 color: '',
@@ -665,7 +665,7 @@ class Yagr {
         this.calculateRefPoints();
 
         result.unshift(this.config.timeline);
-        return result;
+        return result as UPlotData;
     }
 
     private calculateRefPoints() {

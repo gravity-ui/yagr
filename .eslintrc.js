@@ -2,6 +2,7 @@ const OFF = 0;
 const WARNING = 1;
 const ERROR = 2;
 
+// eslint-disable-next-line
 module.exports = {
     extends: ['eslint:recommended', 'plugin:react/recommended'],
     plugins: ['react'],

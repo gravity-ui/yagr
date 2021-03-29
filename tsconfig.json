@@ -20,11 +20,6 @@
     "allowJs": false,
     "jsx": "react",
     "baseUrl": ".",
-    "paths": {
-      "uplot": [
-        "./typings/uplot.d.ts"
-      ]
-    },
     "outDir": "./dist"
   },
   "include": [

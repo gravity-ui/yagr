@@ -94,6 +94,7 @@ export const getSerieFocusColors = (color: string) => {
     const modified = colorParser.shade(mainColor, shift);
     return (u: UPlot, idx: number) => {
         const serie = u.series[idx];
+        console.log('serie._focus', serie._focus);
         return serie._focus === false ? modified : color;
     };
 };
