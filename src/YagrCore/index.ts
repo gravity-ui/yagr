@@ -639,7 +639,12 @@ class Yagr {
                         x2 = timeline[idx];
                         for (const iIdx of store.igroup) {
                             const newVal = interpolateImpl(y1 || 0, y2, x1 || timeline[0], x2, timeline[iIdx]);
-                            processIdx(iIdx, newVal, dataLine, serieOptions as Series & {refPoints: RefPoints});
+                            processIdx(
+                                iIdx,
+                                newVal,
+                                dataLine,
+                                serieOptions as Series & {refPoints: RefPoints},
+                            );
                         }
                         store.igroup = [];
                     }

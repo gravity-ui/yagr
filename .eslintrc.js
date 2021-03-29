@@ -149,7 +149,7 @@ module.exports = {
                 argsIgnorePattern: '^_',
                 varsIgnorePattern: '^_',
             }],
-            '@typescript-eslint/no-use-before-define': [WARNING, {functions: false}],
+            '@typescript-eslint/no-use-before-define': [ERROR, {functions: false}],
             '@typescript-eslint/no-useless-constructor': ERROR,
 
             '@typescript-eslint/naming-convention': [

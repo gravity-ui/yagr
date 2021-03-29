@@ -67,6 +67,8 @@ const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: 
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): Plugin {
+    const ySettings = yagr.config.settings;
+
     /** Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
     let renderTooltipCloses = () => {};
 
@@ -106,8 +108,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         className: 'yagr-tooltip_default',
     }, options);
 
-    const ySettings = yagr.config.settings;
-
     let over: HTMLDivElement;
     let bLeft: number;
     let bTop: number;
@@ -144,19 +144,19 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     state.mounted = true;
     emit('mount');
 
-    const show = () => { 
+    function show() { 
         const shouldEmit = !state.visible;
         state.visible = true;
         tOverlay.style.display = 'block';
         shouldEmit && emit('show');
-    };
+    }
 
-    const hide = () => {
+    function hide() {
         const shouldEmit = state.visible;
         state.visible = false;
         tOverlay.style.display = 'none'; emit('hide');
         shouldEmit && emit('show');
-    };
+    }
 
     const checkFocus = (event: MouseEvent) => {
         const target = event.target as HTMLElement | null;
@@ -191,7 +191,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         }
     };
 
-    const pin = (pinState: boolean) => {
+    function pin(pinState: boolean) {
         const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
         state.pinned = pinState;
 
@@ -223,7 +223,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         }
 
         emit(pinState ? 'pin' : 'unpin');
-    };
+    }
 
     const onMouseUp = (event: MouseEvent) => {
         if (
