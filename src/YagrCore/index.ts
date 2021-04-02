@@ -27,9 +27,10 @@ import {
     RedrawOptions,
     PlotLineConfig,
     YagrHooks,
+    DataSeries,
 } from './types';
 
-import {genId, getSumByIdx, interpolateImpl} from './utils/common';
+import {genId, getSumByIdx, preprocess} from './utils/common';
 import {getScaleRange} from './utils/scales';
 import {pathsRenderer} from './utils/paths';
 import {getAxis} from './utils/axes';
@@ -329,25 +330,25 @@ class Yagr {
 
             serie.points = serie.points || {};
 
-            if (config.chart.type === ChartTypes.Area) {
+            if (serie.type === ChartTypes.Area) {
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
                 serie.width = serie.lineWidth;
                 serie.points.show = false;
             }
 
-            if (config.chart.type === ChartTypes.Line) {
+            if (serie.type === ChartTypes.Line) {
                 serie.stroke = serie.color;
                 serie.points.show = drawMarkersIfRequired;
             }
 
-            if (config.chart.type === ChartTypes.Bars) {
+            if (serie.type === ChartTypes.Bars) {
                 serie.stroke = getSerieFocusColors(serie.color);
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.points.show = false;
             }
 
-            if (config.chart.type === ChartTypes.Dots) {
+            if (serie.type === ChartTypes.Dots) {
                 serie.stroke = serie.color;
                 serie.fill = serie.color;
                 serie.width = 2;
@@ -355,11 +356,6 @@ class Yagr {
                     size: 4,
                 }));
             }
-
-            serie.type =
-                serie.type ||
-                config.chart.type ||
-                ChartTypes.Line;
 
             serie.interpolation =
                 serie.interpolation ||
@@ -519,21 +515,28 @@ class Yagr {
     // eslint-disable-next-line complexity
     private transformSeries() {
         const result = [];
-        const series = this.config.data.map(({data}) => data);
-        const timeline = this.config.timeline;
-        this.config.settings = this.config.settings || {};
-        const settings = this.config.settings;
-        const nullValues = settings.nullValues || {};
-        const store: {
-            accum: number[];
-            igroup: number[];
-        } = {
-            igroup: [],
-            accum: [],
-        };
+        const config = this.config;
+        const timeline = config.timeline;
+        const settings = config.settings;
+        let processing = config.processing || false;
+
+        let series: DataSeries[] = this.config.data.map(({data}) => data) as DataSeries[];
+
+        if (processing) {
+            series = preprocess(series, timeline, processing);
+            processing = false;
+        }
+
+        if (/** condition for non transforming*/ undefined) {
+            return [
+                timeline,
+            ].concat(series.reverse() as any) as UPlotData;
+        }
+
+        let accum: number[] = [];
 
         if (settings.stacking) {
-            store.accum = series.length ? new Array(series[0].length).fill(0) : [];
+            accum = new Array(timeline.length).fill(0);
         }
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
@@ -555,44 +558,43 @@ class Yagr {
             }
 
             let empty = true;
-            let y1, y2, x1, x2;
 
-            const processIdx = (
-                idx: number,
-                value: number | null,
-                dataLine: (number | null)[],
-                serieOptions: Series & {refPoints: RefPoints},
-            ) => {
-                if (value === null && !settings.stacking) {
-                    dataLine.push(null);
-                    return;
+            for (let idx = 0; idx < serie.length; idx++) {
+                let value = serie[idx] as number | null;
+
+                if (processing && processing.nullValues[value]) {
+                    value = null;
+                }
+
+                if (value === null) {
+                    if (serieOptions.type === ChartTypes.Line || serieOptions.type === ChartTypes.Dots) {
+                        dataLine.push(null);
+                        continue;
+                    } else
+                    if (serieOptions.show) {
+                        dataLine.push(null);
+                        continue;
+                    } else {
+                        value = 0;
+                    }
                 }
 
                 empty = false;
 
-                if (settings.stacking) {
-                    if (value === null) {
-                        if (serieOptions.show) {
-                            dataLine.push(null);
-                            return;
-                        } else {
-                            value = 0;
-                        }
-                    }
+                if (scaleConfig.normalize) {
+                    const sum = getSumByIdx(series, idx);
+                    value = (value / sum) * (scaleConfig.normalizeBase || 100);
 
+                    serieOptions.normalizedData = serieOptions.normalizedData || [];
+                    serieOptions.normalizedData[idx] = value;
+                }
+
+                if (settings.stacking) {
                     if (!serieOptions.show) {
                         value = 0;
                     }
 
-                    if (scaleConfig.normalize) {
-                        const sum = getSumByIdx(series, idx);
-                        value = (value / sum) * (scaleConfig.normalizeBase || 100);
-
-                        serieOptions.normalizedData = serieOptions.normalizedData || [];
-                        serieOptions.normalizedData[idx] = value;
-                    }
-
-                    value = store.accum[idx] += value;
+                    value = accum[idx] += value;
                 }
 
                 if (scaleConfig.type === ScaleType.Logarithmic && value === 0) {
@@ -612,46 +614,6 @@ class Yagr {
 
                 serieOptions._valuesCount += 1;
                 dataLine.push(value);
-                return value;
-            };
-
-            for (let idx = 0; idx < serie.length; idx++) {
-                let value = serie[idx];
-
-                if (value === settings.interpolationValue) {
-                    if (idx === 0 || idx === serie.length - 1) {
-                        dataLine.push(null);
-                    } else {
-                        store.igroup.push(idx);
-                    }
-                    continue;
-                } else {
-                    if (typeof value === 'string') {
-                        if (nullValues.hasOwnProperty(value)) {
-                            value = null;
-                        } else {
-                            throw new Error('Unexpected value: ' + value);
-                        }
-                    }
-
-                    if (store.igroup.length) {
-                        y2 = value;
-                        x2 = timeline[idx];
-                        for (const iIdx of store.igroup) {
-                            const newVal = interpolateImpl(y1 || 0, y2, x1 || timeline[0], x2, timeline[iIdx]);
-                            processIdx(
-                                iIdx,
-                                newVal,
-                                dataLine,
-                                serieOptions as Series & {refPoints: RefPoints},
-                            );
-                        }
-                        store.igroup = [];
-                    }
-                    y1 = value;
-                    x1 = timeline[idx];
-                    processIdx(idx, value, dataLine, serieOptions as Series & {refPoints: RefPoints});
-                }
             }
 
             if (shouldCalculateRefPoints) {

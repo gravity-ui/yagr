@@ -103,6 +103,13 @@ export const X_AXIS_INCRS = [
     YEAR * 10,
 ];
 
+export const TYPES_ORDER = [
+    'dots',
+    'line',
+    'area',
+    'column',
+];
+
 export const BARS_DRAW_FACTOR = 0.5;
 export const BARS_DRAW_MAX = 100;
 

@@ -1,6 +1,7 @@
 import UPlot from 'uplot';
 import {DEFAULT_X_SCALE} from '../../defaults';
 import {PlotLineConfig} from '../../types';
+import {colorParser} from '../../utils/colors';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 
@@ -29,7 +30,7 @@ export default function plotLinesPlugin(plotLines: PlotLineConfig[] = []) {
             if (!plotLineConfig.scale) { continue; }
 
             ctx.save();
-            ctx.fillStyle = plotLineConfig.color;
+            ctx.fillStyle = colorParser.parse(plotLineConfig.color);
 
             const {scale, value} = plotLineConfig;
 

@@ -9,6 +9,43 @@ import {terser} from 'rollup-plugin-terser';
 const pkg = require('./package.json');
 const libraryName = 'yagr';
 
+const iife = (min) => ({
+    input: './src/YagrCore/index.ts',
+    output: {
+        name: 'Yagr',
+        format: 'iife',
+        file: min ? './dist/yagr.iife.min.js' : './dist/yagr.iife.js',
+        esModule: false,
+        exports: 'default',
+    },
+    context: 'this',
+    plugins: [
+        json(),
+        typescript({
+            typescript: require('typescript'),
+            useTsconfigDeclarationDir: true,
+            objectHashIgnoreUnknownHack: true,
+        }),
+        scss({
+            output: true,
+            bundle: 'yagr.css',
+        }),
+        commonjs(),
+        resolve(),
+        min && terser({
+            compress: {
+                inline: 0,
+                passes: 2,
+                keep_fnames: false,
+                keep_fargs: false,
+                pure_getters: true,
+            },
+            output: {
+                comments: /^!/,
+            }
+        }),
+    ].filter(Boolean)
+});
 
 export default [{
     input: `src/index.ts`,
@@ -33,40 +70,4 @@ export default [{
         resolve(),
         sourceMaps(),
     ],
-}, {
-    input: './src/YagrCore/index.ts',
-    output: {
-        name: 'Yagr',
-        format: 'iife',
-        file: './dist/yagr.iife.min.js',
-        esModule: false,
-        exports: 'default',
-    },
-    context: 'this',
-    plugins: [
-        json(),
-        typescript({
-            typescript: require('typescript'),
-            useTsconfigDeclarationDir: true,
-            objectHashIgnoreUnknownHack: true,
-        }),
-        scss({
-            output: true,
-            bundle: 'yagr.css',
-        }),
-        commonjs(),
-        resolve(),
-        terser({
-            compress: {
-                inline: 0,
-                passes: 2,
-                keep_fnames: false,
-                keep_fargs: false,
-                pure_getters: true,
-            },
-            output: {
-                comments: /^!/,
-            }
-        }),
-    ]
-}];
+}, iife(true), iife(false)];

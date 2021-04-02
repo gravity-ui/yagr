@@ -67,9 +67,9 @@ const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: 
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): Plugin {
-    const ySettings = yagr.config.settings;
+    const pSettings = yagr.config.processing || {};
 
-    /** Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
+    /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
     let renderTooltipCloses = () => {};
 
     const defaultTooltipValueFormatter = (n: number | null, precision?: number) => {
@@ -78,8 +78,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         }
 
         if (typeof n === 'string') {
-            if (ySettings.nullValues && ySettings.nullValues.hasOwnProperty(n)) {
-                return ySettings.nullValues[n];
+            if (pSettings.nullValues && pSettings.nullValues.hasOwnProperty(n)) {
+                return pSettings.nullValues[n];
             }
 
             return n;
@@ -316,7 +316,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    const stripValue = ySettings.interpolationValue;
+                    const stripValue = pSettings.interpolation?.value;
                     let value = findValue(yagr.config.cursor, u.data[i], serie, idx, stripValue);
                     let dValue = value;
 

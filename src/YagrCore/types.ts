@@ -93,6 +93,8 @@ export interface YagrConfig {
     /** uPlot hooks */
     hooks: Hooks.Arrays & YagrHooks;
 
+    processing?: ProcessingSettings;
+
     /** uPlot */
     process?: (opts: Options) => Options;
 }
@@ -102,11 +104,22 @@ type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C
 export interface YagrHooks extends Hooks.Arrays {
     load?: Handler<{chart: Yagr; meta: YagrMeta}>;
     onSelect?: Handler<{from: number; to: number}>;
-    error?: Handler<{type: 'processing'; error: Error; yagr: Yagr}>;
+    error?: Handler<{type: 'processing' | 'uplot'; error: Error; yagr: Yagr}>;
     processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
     inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
     dispose?: Handler<Yagr>;
     resize?: Handler<ResizeObserverEntry[]>;
+}
+
+export interface ProcessingSettings {
+    /** Should interpolate missing data (default: false) */
+    interpolation?: {
+        /** Interpolation type */
+        type: 'left' | 'right' | 'linear';
+        /** Values to interpolate */
+        value?: unknown;
+    };
+    nullValues?: Record<string, string | null>;
 }
 
 /**
@@ -316,9 +329,6 @@ export interface YagrChartSettings {
     /** Interpolation options (default: linear) */
     interpolation?: InterpolationSetting;
 
-    /** Values to interpolate */
-    interpolationValue?: unknown;
-
     /** Minial width to catch selection */
     minSelectionWidth?: number; // 15px
 
@@ -336,8 +346,6 @@ export interface YagrChartSettings {
 
     /** Locale */
     locale?: SupportedLocales | Record<string, string>;
-
-    nullValues?: Record<string, string | null>;
 }
 
 /**

@@ -29,6 +29,13 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
         const dMax = dataMax === null ? refs.max || 100 : dataMax;
         let {min, max} = rangeFn(dMin, dMax, scale, config);
 
+        const minRange = scale.minRange || DEFAULT_SCALE_MIN_RANGE;
+
+        if (Math.abs(max - min) < minRange) {
+            min -= minRange / 2;
+            max += minRange / 2;
+        }
+
         min = typeof scale.min === 'number' ? scale.min : min;
         max = typeof scale.max === 'number' ? scale.max : max;
 
@@ -40,11 +47,6 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
             }
         }
 
-        const minRange = scale.minRange || DEFAULT_SCALE_MIN_RANGE;
-        if (Math.abs(max - min) < minRange) {
-            min -= minRange / 2;
-            max += minRange / 2;
-        }
         return [min, max];
     };
 };

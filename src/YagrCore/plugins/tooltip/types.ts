@@ -75,7 +75,7 @@ export type TooltipRow = {
     /** Current Y value of DataLine */
     value: string | number | null;
     /** Color of DataLine */
-    color?: string;
+    color: string;
     /** Is cursor over DataLine */
     active?: boolean;
     /** Custom className */

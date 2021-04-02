@@ -1,5 +1,5 @@
 import {Series} from 'uplot';
-import {DataSeriesExtended, DataSeries, SnapToValue} from '../types';
+import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings} from '../types';
 
 /*
  * Finds index of nearest point in range of Y-Axis values
@@ -142,17 +142,97 @@ export function findDataIdx(
     return corR - idx > idx - corL ? corL : corR;
 }
 
-/** Linear interpolation */
-export const interpolateImpl = (y1: number | null, y2: number | null, x1: number, x2: number, x: number) => {
-    if (y1 === null || y2 === null) {return null;}
+/*
+ * Interpolation function
+ */
+export const interpolateImpl = (
+    timeline: number[],
+    y1: number | null,
+    y2: number | null,
+    x1: number,
+    x2: number,
+    xIdx: number,
+    type: 'left' | 'right' | 'linear' = 'linear'
+) => {
+    let result = null;
+    const x = timeline[xIdx];
 
-    const result = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+    switch(type) {
+        case 'linear': {
+            if (y1 === null || y2 === null) { return null; }
 
-    if (isNaN(result) || Math.abs(result) === Infinity) {
-        return null;
+            result = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+
+            if (isNaN(result) || Math.abs(result) === Infinity) {
+                result = null;
+            }
+            break;
+        }
+        case 'left': {
+            result = y1;
+            break;
+        }
+        case 'right': {
+            result = y2;
+            break;
+        }
     }
-
     return result;
 };
 
 export const genId = () => Math.random().toString(34).slice(2);
+
+export const preprocess = (series: DataSeriesExtended[], timeline: number[], settings: ProcessingSettings): DataSeries[] => {
+    const result = [];
+    const nullValues = settings.nullValues || {};
+    const interpolation = settings.interpolation;
+    for (let sIdx = 0; sIdx < series.length; sIdx++) {
+        const line = series[sIdx];
+        const resultLine = [];
+
+        let iGroup = [];
+        let y1 = null, y2 = null, x1, x2;
+
+        for(let idx = 0; idx < line.length; idx++) {
+            const val = line[idx];
+
+            if (val === null || nullValues[val]) {
+                resultLine.push(null); 
+                continue;
+            }
+
+            if (interpolation && val === interpolation.value) {
+                if (!idx || idx === line.length - 1) {
+                    resultLine.push(null);
+                } else {
+                    iGroup.push(idx);
+                }
+                continue;
+            }
+
+            if (iGroup.length) {
+                y2 = val;
+                x2 = timeline[idx];
+                for (const iIdx of iGroup) {
+                    resultLine[iIdx] = interpolateImpl(
+                        timeline,
+                        (y1 as number | null),
+                        (y2 as number | null),
+                        x1 || timeline[0],
+                        x2 || timeline[timeline.length - 1],
+                        iIdx,
+                        interpolation && interpolation.type,
+                    );
+                }
+                iGroup = [];
+            }
+
+            y1 = val;
+            x1 = timeline[idx];
+            resultLine.push(val);
+        }
+        result.push(resultLine);
+    }
+
+    return result as DataSeries[];
+};
