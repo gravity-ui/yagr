@@ -127,7 +127,7 @@ const createChart = (config, repeat) => {
     }
 
     let y = new Yagr(d, cfg);
-
+    window['y' + y.id] = y;
     if (repeat) {
         setInterval(() => {
             y && y.dispose();
@@ -200,43 +200,57 @@ const createChart = (config, repeat) => {
 //     config: {settings: {interpolation: 'smooth'}}
 // });
 
-createChart({
-    length: 30, step: DAY, count: 5, type: 'area', title: 'area: 30pts Sinusoid / smooth',
-    fn: (idx, sidx) => {
-        if (!sidx) {return 1};
-        const m = idx + sidx;
-        if (sidx !== 1 && m % 3 && m % 2) {return 'NIL'};
-        return Math.abs(Math.sin(idx) * (sidx % 10));
-    },
-    config: {
-        settings: {
-            stacking: true,
-        },
-        cursor: {
-            snapToValues: 'left'
-        },
-        processing: {
-            interpolation: {
-                value: 'NIL',
-                type: 'left'
-            },
-        },
-        scales: {
-            y: {normalize: true}
-        }
-    }
-});
+// createChart({
+//     length: 30, step: DAY, count: 5, type: 'area', title: 'area: 30pts Sinusoid / smooth',
+//     fn: (idx, sidx) => {
+//         if (!sidx) {return 1};
+//         const m = idx + sidx;
+//         if (sidx !== 1 && m % 3 && m % 2) {return 'NIL'};
+//         return Math.abs(Math.sin(idx) * (sidx % 10));
+//     },
+//     config: {
+//         settings: {
+//             stacking: true,
+//         },
+//         cursor: {
+//             snapToValues: 'left'
+//         },
+//         processing: {
+//             interpolation: {
+//                 value: 'NIL',
+//                 type: 'left'
+//             },
+//         },
+//         scales: {
+//             y: {normalize: true}
+//         }
+//     }
+// });
+
+createChart(() => ({
+    timeline: [0, 1000, 2000],
+    data: [
+        {data: [1, 2, 3], color: 'red'},
+        {data: [2, 4, 1], color: 'green'}
+    ],
+    axes: [
+        {scale: 'y', precision: 'auto'}
+    ],
+    chart: {width: 600, height: 300},
+    tooltip: {enabled: true}
+}));
 
 // createChart(() => ({
-//     chart: {type: 'line', width: 600, height: 300},
+//     chart: {type: 'area', width: 600, height: 300},
 //     timeline: [1,2,3,4],
 //     data: [
-//         {data: [3,   3, 1, 3], color: 'green', type: 'dots'},
+//         {data: [3,   3, 1, 3], color: 'green'},
 //         {data: [2,   1, 2, 2], color: '--some-variable'},
-//         {data: [1,   'x', 3, 4], color: 'orange', type: 'area'},
+//         {data: [1,   'x', 3, 4], color: 'orange'},
 //     ],
 //     settings: {
-//         stacking: false,
+//         drawOrder: ['series', 'plotLines', 'axes'],
+//         stacking: true,
 //     },
 //     cursor: {
 //         snapToValues: 'left'
@@ -244,6 +258,9 @@ createChart({
 //     legend: {
 //         show: true,
 //     },
+//     axes: [
+//         {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', value: [2,3]}]}
+//     ],
 //     processing: {
 //         interpolation: {
 //             value: 'x',

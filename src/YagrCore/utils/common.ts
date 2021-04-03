@@ -101,7 +101,7 @@ export function toFixed(num: number, fixed: number) {
     }
 
     const [i, fr] = num.toString().split('.');
-    return `${i}.${fr.slice(0, fixed)}`;
+    return fr.length >= fixed ? `${i}.${fr.slice(0, fixed)}` : `${i}.${fr}` + '0'.repeat((fixed - fr.length));
 }
 
 /* Finds non neares null value in data series by given direction */

@@ -4,10 +4,10 @@ Yagr is high performance HTML5 canvas chart renderer for timeseries data based o
 
 ## Features
 
- - Lines, Areas, Columns, Dots as visualization type
- - Configurable Legend Tooltip 
- - Different Scaling
- - Plot lines and bands
+ - Lines, Areas, Columns, Dots as visualization type. Configurable per series.
+ - Configurable Legend Tooltip
+ - Different scaling, axes with extra options for decimals precision
+ - Plot lines and bands. Configurable draw layer.
  - Configurable Tooltip
  - Responsive charts (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
  - High support of stacked areas/columns
@@ -23,7 +23,7 @@ Yagr is high performance HTML5 canvas chart renderer for timeseries data based o
 
 ## Usage 
 
-Let's ee a minimal chart's config:
+Let's see a minimal chart's config:
 
 ```ts
 import Yagr from 'yagr';
@@ -36,7 +36,49 @@ const config = {
     ],
 };
 
-const y = new Yagr(document.body, config);
+const y = new Yagr(document.getElementById('chart'), config);
 ```
 
-# Examples
+This code produces simple line chart:
+
+<img src="./imgs/1.png" width="600">
+
+# Feature examples 
+
+## Visualization types 
+
+There are 4 types supported in Yagr: 
+ - Line 
+ - Area
+ - Columns
+ - Dots
+
+You can choose whole chart type by:
+
+```js
+config.chart.type = 'area';
+```
+
+or setup each series: 
+
+```js
+config.data[0].type = 'line'
+config.data[1].type = 'area'
+```
+
+## Tooltip 
+
+To enable legend tooltip use: 
+
+```js
+const config = {
+    timeline: [0, 1000, 2000],
+    data: [
+        {data: [1, 2, 3], color: 'red'},
+        {data: [2, 4, 1], color: 'green'}
+    ],
+    tooltip: {enabled: true}
+};
+```
+
+## 

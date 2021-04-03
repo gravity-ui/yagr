@@ -1,32 +1,41 @@
-import UPlot from 'uplot';
+import UPlot, {DrawOrderKey} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../defaults';
-import {PlotLineConfig} from '../../types';
+import {PlotLineConfig, YagrConfig} from '../../types';
 import {colorParser} from '../../utils/colors';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
-
+const DRAW_MAP = {
+    [DrawOrderKey.Series]: 0,
+    [DrawOrderKey.Axes]: 1,
+    'plotLines': 2,
+};
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
  */
-export default function plotLinesPlugin(plotLines: PlotLineConfig[] = []) {
+export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConfig[] = []) {
     const thresholds: Record<string, PlotLineConfig[]> = {};
 
+    const drawIndicies = (cfg.settings.drawOrder
+        ? cfg.settings.drawOrder.map((key) => (DRAW_MAP)[key])
+        : [0, 1, 2]).join('');
+    
+    const hook = {
+        '012': 'draw',
+        '102': 'draw',
+        '201': 'drawClear',
+        '210': 'drawClear',
+        '120': 'drawAxes',
+        '021': 'drawSeries',
+    }[drawIndicies] || 'drawClear';
+    
     function renderPlotLines(u: UPlot) {
         const {ctx} = u;
         const {height, top, width, left} = u.bbox;
 
         const thresholdsValues = Object.values(thresholds);
 
-        const plotLinesToIterate = [...plotLines];
-
-        if (thresholdsValues.length) {
-            thresholdsValues.forEach((tConfigs) => {
-                plotLinesToIterate.push(...tConfigs);
-            });
-        }
-
-        for (const plotLineConfig of plotLinesToIterate) {
+        for (const plotLineConfig of plotLines.concat(...thresholdsValues)) {
             if (!plotLineConfig.scale) { continue; }
 
             ctx.save();
@@ -73,6 +82,12 @@ export default function plotLinesPlugin(plotLines: PlotLineConfig[] = []) {
         }
     }
 
+    const handler = hook === 'drawSeries' ? (u: UPlot, sIdx: number) => {
+        if (sIdx === u.series.length - 1) {
+            renderPlotLines(u);
+        }
+    } : renderPlotLines;
+
     return {
         setThreshold: (key: string, threshold: PlotLineConfig[]) => {
             thresholds[key] = threshold;
@@ -84,7 +99,8 @@ export default function plotLinesPlugin(plotLines: PlotLineConfig[] = []) {
         },
         uPlotPlugin: {
             hooks: {
-                drawClear: renderPlotLines,
+                // @TODO Add feature to draw plot lines over series
+                [hook]: handler,
             },
         },
     };

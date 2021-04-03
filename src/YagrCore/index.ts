@@ -425,7 +425,7 @@ class Yagr {
         const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE};
         options.axes[0] = getAxis(xAxis, config);
 
-        const yAxis = config.axes.length > 1 ? config.axes[1] : {scale: DEFAULT_Y_SCALE};
+        const yAxis = config.axes.find(({scale}) => scale === DEFAULT_Y_SCALE) || {scale: DEFAULT_Y_SCALE};
         options.axes[1] = getAxis(yAxis, config);
 
         if (config.axes.length >= 2) {
@@ -493,10 +493,12 @@ class Yagr {
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
         });
 
-        options.drawOrder = settings.drawOrder || [
-            DrawOrderKey.Series,
-            DrawOrderKey.Axes,
-        ];
+        options.drawOrder = settings.drawOrder
+            ? settings.drawOrder.filter((key) => key === DrawOrderKey.Series ||  key === DrawOrderKey.Axes) as DrawOrderKey[]
+            : [
+                DrawOrderKey.Series,
+                DrawOrderKey.Axes,
+            ];
 
         /** Disabling uPlot legend. */
         options.legend = {show: false};
@@ -664,7 +666,7 @@ class Yagr {
             }
         });
 
-        const plugin = plotLinesPlugin(plotLines);
+        const plugin = plotLinesPlugin(config, plotLines);
         this.plugins.plotLines = plugin;
         return plugin.uPlotPlugin;
     }

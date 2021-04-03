@@ -333,7 +333,7 @@ export interface YagrChartSettings {
     minSelectionWidth?: number; // 15px
 
     /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
-    drawOrder?: DrawOrderKey[];
+    drawOrder?: (DrawOrderKey | 'plotLines')[];
 
     /** Theme (default: 'light') */
     theme?: YagrTheme;
