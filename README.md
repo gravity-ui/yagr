@@ -30,7 +30,7 @@ import Yagr from 'yagr';
 
 const config = {
     timeline: [0, 1000, 2000],
-    data: [
+    graphs: [
         {data: [1, 2, 3], color: 'red'},
         {data: [2, 4, 1], color: 'green'}
     ],
@@ -65,20 +65,3 @@ or setup each series:
 config.data[0].type = 'line'
 config.data[1].type = 'area'
 ```
-
-## Tooltip 
-
-To enable legend tooltip use: 
-
-```js
-const config = {
-    timeline: [0, 1000, 2000],
-    data: [
-        {data: [1, 2, 3], color: 'red'},
-        {data: [2, 4, 1], color: 'green'}
-    ],
-    tooltip: {enabled: true}
-};
-```
-
-## 

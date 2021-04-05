@@ -96,12 +96,18 @@ export const getUnitSuffix = (value: number): [number, string] => {
 
 /* Number.toFixed() wihout rounding */
 export function toFixed(num: number, fixed: number) {
+    if (fixed === 0) {
+        return parseInt(num as unknown as string);
+    }
+
     if (Number.isInteger(num)) {
         return num + '.' + '0'.repeat(fixed);
     }
 
-    const [i, fr] = num.toString().split('.');
-    return fr.length >= fixed ? `${i}.${fr.slice(0, fixed)}` : `${i}.${fr}` + '0'.repeat((fixed - fr.length));
+    const [int, frac] = num.toString().split('.');
+    return frac.length >= fixed
+        ? `${int}.${frac.slice(0, fixed)}`
+        : `${int}.${frac}${'0'.repeat(fixed - frac.length)}`;
 }
 
 /* Finds non neares null value in data series by given direction */

@@ -234,14 +234,15 @@ createChart(() => ({
         {data: [2, 4, 1], color: 'green'}
     ],
     axes: [
-        {scale: 'y', precision: 'auto'}
+        {scale: 'x', values: (u, x) => x},
+        {scale: 'y', precision: 0}
     ],
     chart: {width: 600, height: 300},
-    tooltip: {enabled: true}
+    // tooltip: {enabled: true}
 }));
 
 // createChart(() => ({
-//     chart: {type: 'area', width: 600, height: 300},
+//     chart: {type: 'dots', width: 600, height: 300},
 //     timeline: [1,2,3,4],
 //     data: [
 //         {data: [3,   3, 1, 3], color: 'green'},
@@ -250,7 +251,7 @@ createChart(() => ({
 //     ],
 //     settings: {
 //         drawOrder: ['series', 'plotLines', 'axes'],
-//         stacking: true,
+//         stacking: false,
 //     },
 //     cursor: {
 //         snapToValues: 'left'
@@ -264,7 +265,7 @@ createChart(() => ({
 //     processing: {
 //         interpolation: {
 //             value: 'x',
-//             type: 'linear',
+//             type: 'left',
 //         }
 //     }
 // }))

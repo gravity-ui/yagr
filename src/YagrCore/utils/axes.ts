@@ -34,7 +34,7 @@ export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align
 };
 
 
-export const getDefaultNumberFormatter = (precision: 'auto' | number = 'auto', nullValue = '') => {
+export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue = '') => {
     return (n: number | null) => {
         if (n === null) {
             return nullValue;
@@ -52,7 +52,7 @@ export const getDefaultNumberFormatter = (precision: 'auto' | number = 'auto', n
             ? String(transformedValue).replace(/\.(\d{5,})/, (match) => {
                 return match.slice(0, 6);
             })
-            : toFixed(transformedValue, precisionNum || 2)) + suffix;
+            : toFixed(transformedValue, precisionNum)) + suffix;
 
     };
 };
@@ -61,7 +61,11 @@ export const getDefaultNumberFormatter = (precision: 'auto' | number = 'auto', n
  * Generates ticks labels values
  */
 const getNumericValueFormatter = (axisConfig: AxisOptions) => {
-    const numFormatter = getDefaultNumberFormatter(axisConfig.precision, '');
+    const p = axisConfig.precision;
+    const numFormatter = getDefaultNumberFormatter(
+        typeof p === 'number' ? p : p || 'auto',
+        '',
+    );
     return function defaultNumericValueFormatter(_: unknown, ticks: number[]) {
         return ticks.map(numFormatter);
     };
