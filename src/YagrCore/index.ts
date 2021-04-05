@@ -104,15 +104,12 @@ class Yagr {
             throw new Error('Specify config.timeline: number[]');
         }
 
-        if (!pConfig.data) {
-            throw new Error('Specify config.data: Series[]');
-        }
-
         const config: YagrConfig = Object.assign({
             title: {},
             timeline: [],
             data: [],
             axes: [],
+            series: [],
             scales: {
                 x: {time: true},
                 y: {},
@@ -289,8 +286,8 @@ class Yagr {
         };
 
         const isEmptyDataSet = config.timeline.length === 0 ||
-            config.data.length === 0 ||
-            config.data.every(({data}) => data.length === 0);
+            config.series.length === 0 ||
+            config.series.every(({data}) => data.length === 0);
 
         /**
          * Setting up cursor - points on cursor, drag behavior, crosshairs
@@ -314,7 +311,7 @@ class Yagr {
         }
 
         /** first serie is always X */
-        const seriesOptions = (config.data || []).map((
+        const seriesOptions = (config.series || []).map((
             rawSerie: RawSerieData,
             idx
         ) => getSerie(rawSerie, config, idx));
@@ -522,7 +519,7 @@ class Yagr {
         const settings = config.settings;
         let processing = config.processing || false;
 
-        let series: DataSeries[] = this.config.data.map(({data}) => data) as DataSeries[];
+        let series: DataSeries[] = this.config.series.map(({data}) => data) as DataSeries[];
 
         if (processing) {
             series = preprocess(series, timeline, processing);

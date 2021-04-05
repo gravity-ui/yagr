@@ -63,7 +63,8 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
         if (!this.charRef.current) { return; }
         const {onChartLoad, config, onSelect} = this.props;
 
-        const hooks = config.hooks || {};
+        config.hooks = config.hooks || {};
+        const hooks = config.hooks;
        
         if (onChartLoad) {
             const load = hooks.load || [];

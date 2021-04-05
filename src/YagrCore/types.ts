@@ -88,7 +88,7 @@ export interface YagrConfig {
     scales: Record<string, Scale>;
 
     /** Raw series data and options */
-    data: RawSerieData[];
+    series: RawSerieData[];
 
     /** uPlot hooks */
     hooks: Hooks.Arrays & YagrHooks;

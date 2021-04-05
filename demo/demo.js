@@ -201,7 +201,7 @@ const createChart = (config, repeat) => {
 // });
 
 // createChart({
-//     length: 30, step: DAY, count: 5, type: 'area', title: 'area: 30pts Sinusoid / smooth',
+//     length: 30, step: DAY, count: 5, type: 'area',
 //     fn: (idx, sidx) => {
 //         if (!sidx) {return 1};
 //         const m = idx + sidx;
@@ -228,17 +228,28 @@ const createChart = (config, repeat) => {
 // });
 
 createChart(() => ({
-    timeline: [0, 1000, 2000],
+    timeline: [1, 2, 3, 4, 5, 6, 7],
     data: [
-        {data: [1, 2, 3], color: 'red'},
-        {data: [2, 4, 1], color: 'green'}
+        {data: [1, 2, 1, null, 1, 2, 1], color: 'red'},
+        {data: [1, 'nil', 1, null, 'nil', 1, 1], color: 'darkorange'},
     ],
     axes: [
         {scale: 'x', values: (u, x) => x},
-        {scale: 'y', precision: 0}
+        {scale: 'y', precision: 'auto'}
     ],
-    chart: {width: 600, height: 300},
-    // tooltip: {enabled: true}
+    scales: {
+        // y: {max: 3.5},
+    },
+    settings: {stacking: true},
+    processing: {
+        interpolation: {
+            value: 'nil',
+            type: 'linear'
+        }
+    },
+    cursor: {snapToValues: 'left'},
+    chart: {width: 600, height: 300, type: 'area'},
+    tooltip: {enabled: true}
 }));
 
 // createChart(() => ({
