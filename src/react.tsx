@@ -7,7 +7,7 @@ interface YagrChartProps {
     /** Chart ID */
     id: string;
     /** Config of chart */
-    config: YagrConfig;
+    config: Partial<YagrConfig>;
     /** Root component class name */
     className?: string;
     /** Debug data */
