@@ -148,9 +148,13 @@ class Yagr {
         }
 
         try {
+
             theme.setTheme(settings.theme || YagrTheme.Light);
+            this.root.classList.remove('yagr_theme_dark');
+            this.root.classList.remove('yagr_theme_light');
             this.root.classList.add('yagr_theme_' + theme.theme);
             this.i18n = i18n(settings.locale || 'en');
+
             const {options, series} = this.process();
             this._cache = {height: options.height, width: options.width};
 
