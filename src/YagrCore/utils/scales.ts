@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
 import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
-import {ChartTypes, YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
+import {YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 
 type ScaleType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
@@ -58,9 +58,7 @@ export function offsetScale(
     scaleConfig: Scale,
     config: YagrConfig,
 ) {
-    const startFromZero = dataMin >= 0 && (
-        config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars
-    );
+    const startFromZero = dataMin >= 0 && config.settings.stacking;
 
     return {
         min: startFromZero
@@ -82,9 +80,7 @@ export function niceScale(
     scaleConfig: Scale,
     config: YagrConfig,
 ) {
-    const startFromZero = dataMin >= 0 && (
-        config.chart.type === ChartTypes.Area || config.chart.type === ChartTypes.Bars
-    );
+    const startFromZero = dataMin >= 0 && config.settings.stacking;
 
     /**
      * This code handles case when scale has user max/min and niceScale's

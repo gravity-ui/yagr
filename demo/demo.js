@@ -62,7 +62,7 @@ const generateChart = ({
 
     const result = {
         timeline,
-        data: series,
+        series,
         chart: {
             ...(config.chart || {}),
             type,
@@ -227,59 +227,59 @@ const createChart = (config, repeat) => {
 //     }
 // });
 
-createChart(() => ({
-    timeline: [1, 2, 3, 4, 5, 6, 7],
-    data: [
-        {data: [1, 2, 1, null, 1, 2, 1], color: 'red'},
-        {data: [1, 'nil', 1, null, 'nil', 1, 1], color: 'darkorange'},
-    ],
-    axes: [
-        {scale: 'x', values: (u, x) => x},
-        {scale: 'y', precision: 'auto'}
-    ],
-    scales: {
-        // y: {max: 3.5},
-    },
-    settings: {stacking: true},
-    processing: {
-        interpolation: {
-            value: 'nil',
-            type: 'linear'
-        }
-    },
-    cursor: {snapToValues: 'left'},
-    chart: {width: 600, height: 300, type: 'area'},
-    tooltip: {enabled: true}
-}));
-
 // createChart(() => ({
-//     chart: {type: 'dots', width: 600, height: 300},
-//     timeline: [1,2,3,4],
+//     timeline: [1, 2, 3, 4, 5, 6, 7],
 //     data: [
-//         {data: [3,   3, 1, 3], color: 'green'},
-//         {data: [2,   1, 2, 2], color: '--some-variable'},
-//         {data: [1,   'x', 3, 4], color: 'orange'},
+//         {data: [1, 2, 1, null, 1, 2, 1], color: 'red'},
+//         {data: [1, 'nil', 1, null, 'nil', 1, 1], color: 'darkorange'},
 //     ],
-//     settings: {
-//         drawOrder: ['series', 'plotLines', 'axes'],
-//         stacking: false,
-//     },
-//     cursor: {
-//         snapToValues: 'left'
-//     },
-//     legend: {
-//         show: true,
-//     },
 //     axes: [
-//         {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', value: [2,3]}]}
+//         {scale: 'x', values: (u, x) => x},
+//         {scale: 'y', precision: 'auto'}
 //     ],
+//     scales: {
+//         // y: {max: 3.5},
+//     },
+//     settings: {stacking: true},
 //     processing: {
 //         interpolation: {
-//             value: 'x',
-//             type: 'left',
+//             value: 'nil',
+//             type: 'linear'
 //         }
-//     }
-// }))
+//     },
+//     cursor: {snapToValues: 'left'},
+//     chart: {width: 600, height: 300, type: 'area'},
+//     tooltip: {enabled: true}
+// }));
+
+createChart(() => ({
+    chart: {type: 'line', width: 600, height: 300},
+    timeline: [1,2,3,4],
+    series: [
+        {data: [3,   3, 1, 3], color: 'green', title: 'sosi'},
+        {data: [2,   1, 2, 2], color: '--some-variable'},
+        {data: [1,   2, 3, 4], color: 'orange'},
+    ],
+    settings: {
+        drawOrder: ['series', 'plotLines', 'axes'],
+        stacking: false,
+    },
+    cursor: {
+        snapToValues: 'left'
+    },
+    legend: {
+        show: true,
+    },
+    axes: [
+        {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', border: [1, 'red', 'dash'], value: [2,3]}]}
+    ],
+    processing: {
+        interpolation: {
+            value: 'x',
+            type: 'left',
+        }
+    },
+}))
 
 // createChart(() => ({
 //     chart: {type: 'column', width: 600, height: 300},

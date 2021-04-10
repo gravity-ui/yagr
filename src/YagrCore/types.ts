@@ -227,6 +227,9 @@ export interface RawSerieData {
 
     /** Snap dataIdx value (default: closest) */
     snapToValues?: SnapToValue | false;
+
+    /** Title of serie */
+    title?: string;
 }
 
 export enum AxisSide {
