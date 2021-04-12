@@ -5,6 +5,8 @@ import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings} from '.
  * Finds index of nearest point in range of Y-Axis values
  * by area matching policy. If stickToRanges = true,
  * returns nearest range index if value out of ranges
+ * If stickToRanges = true, then returns first non null Y from ranges
+ * if value >= first non null Y
  */
 export const findInRange = (
     ranges: DataSeries,
@@ -12,16 +14,20 @@ export const findInRange = (
     stickToRanges = false,
 ): number | null => {
     let i = 0;
-
-    if (!stickToRanges && value > (ranges[0] || 0)) {
-        return null;
-    }
+    let isFirstRange = true;
 
     while (i < ranges.length) {
         const y = ranges[i];
 
-        if (y === null || value > y) {
-            return i - 1 >= 0 ? i - 1 : 0;
+        if (y === null) {
+            i += 1;
+            continue;
+        }
+
+        if (value > y) {
+            return isFirstRange && !stickToRanges ? null : Math.max(0, i - 1);
+        } else {
+            isFirstRange = false;
         }
 
         i += 1;

@@ -80,9 +80,7 @@ describe('utils:scales', () => {
                     {min: -105, max: 105},
                 ],
             }
-        }
-
-
+        };
 
         Object.entries(SAMPLES).forEach(([title, samples]) => {
             describe(title, () => {

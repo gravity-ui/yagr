@@ -369,7 +369,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 if (opts.highlightLines) {
                     let activeIndex: number | null = i - 1;
                     if (opts.tracking === TrackingOptions.Area) {
-                        activeIndex = findInRange(rowYs, cursorValue, false);
+                        activeIndex = findInRange(rowYs, cursorValue);
                     } else
                     if (opts.tracking === TrackingOptions.Sticky) {
                         activeIndex = findSticky(rowYs, cursorValue);

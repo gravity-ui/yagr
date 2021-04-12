@@ -126,7 +126,15 @@ const createChart = (config, repeat) => {
        d.classList.add('dark');
     }
 
+    cfg.hooks = cfg.hooks || {};
+
+    cfg.hooks.load = [({meta}) => {
+        window.prep.innerHTML = 'Process: ' + meta.processTime + 'ms';
+        window.load.innerHTML = 'Render: ' + meta.renderTime + 'ms';
+    }];
+
     let y = new Yagr(d, cfg);
+
     window['y' + y.id] = y;
     if (repeat) {
         setInterval(() => {
@@ -152,6 +160,20 @@ const createChart = (config, repeat) => {
 //         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : 0.1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
 //     }
 // });
+
+createChart({
+    length: 200, step: 50, count: 100, type: 'area',
+    config: {settings: {stacking: true}, processing: {interpolation: {value: 'nil', type: 'linear'}}},
+    fn: (idx, __, _, prev) => {
+        if (!idx) { return prev[idx] = getRandomInt(20, 30); }
+        const p = prev[idx - 1] + getRandomInt(0, 10) * (Math.random() > 0.5 ? - 1 : 1);
+
+        if (Math.random() < 0.1) {
+            return 'nil'
+        }
+        return prev[idx] = p > 0 ? p : Math.abs(p);
+    }
+});
 
 // createChart({
 //     length: 500, step: DAY, count: 1, type: 'line', title: 'line: 500 pts / stepped',
@@ -252,34 +274,34 @@ const createChart = (config, repeat) => {
 //     tooltip: {enabled: true}
 // }));
 
-createChart(() => ({
-    chart: {type: 'line', width: 600, height: 300},
-    timeline: [1,2,3,4],
-    series: [
-        {data: [3,   3, 1, 3], color: 'green', title: 'sosi'},
-        {data: [2,   1, 2, 2], color: '--some-variable'},
-        {data: [1,   2, 3, 4], color: 'orange'},
-    ],
-    settings: {
-        drawOrder: ['series', 'plotLines', 'axes'],
-        stacking: false,
-    },
-    cursor: {
-        snapToValues: 'left'
-    },
-    legend: {
-        show: true,
-    },
-    axes: [
-        {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', border: [1, 'red', 'dash'], value: [2,3]}]}
-    ],
-    processing: {
-        interpolation: {
-            value: 'x',
-            type: 'left',
-        }
-    },
-}))
+// createChart(() => ({
+//     chart: {type: 'line', width: 600, height: 300},
+//     timeline: [1,2,3,4],
+//     series: [
+//         {data: [3,   3, 1, 3], color: 'green', title: 'sosi'},
+//         {data: [2,   1, 2, 2], color: '--some-variable'},
+//         {data: [1,   2, 3, 4], color: 'orange'},
+//     ],
+//     settings: {
+//         drawOrder: ['series', 'plotLines', 'axes'],
+//         stacking: false,
+//     },
+//     cursor: {
+//         snapToValues: 'left'
+//     },
+//     legend: {
+//         show: true,
+//     },
+//     axes: [
+//         {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', border: [1, 'red', 'dash'], value: [2,3]}]}
+//     ],
+//     processing: {
+//         interpolation: {
+//             value: 'x',
+//             type: 'left',
+//         }
+//     },
+// }))
 
 // createChart(() => ({
 //     chart: {type: 'column', width: 600, height: 300},
