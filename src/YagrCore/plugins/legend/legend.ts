@@ -13,15 +13,15 @@ export enum LegendPosition {
 }
 export interface LegendOptions {
     /** Show legend (default: false) */
-    show: boolean;
+    show?: boolean;
     /** Root classname */
     className?: string;
     /** Legend placement position @TODO Implement me please */
-    position: LegendPosition;
+    position?: LegendPosition;
     /** Maximal space fro legend as a fraction of chart height (default: 0.3) */
-    maxLegendSpace: number;
+    maxLegendSpace?: number;
     /** @TODO Maybe bugs here  */
-    fontSize: number;
+    fontSize?: number;
 }
 
 interface LegendState {
@@ -61,7 +61,7 @@ export default class Legend {
     container?: HTMLElement;
     _onDestroy?: () => void;
 
-    constructor(yagr: Yagr, options?: Partial<LegendOptions>) {
+    constructor(yagr: Yagr, options?: LegendOptions) {
         this.yagr = yagr;
         this.pagesCount = 0;
         this.state = {
@@ -77,6 +77,7 @@ export default class Legend {
             position: LegendPosition.Bottom,
             fontSize: DEFAULT_FONT_SIZE,
             maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
+            className: undefined,
         }, options || {});
 
         if (this.options.show) {
@@ -345,9 +346,9 @@ export default class Legend {
         const chartHeight = uplotOptions.height - TOTAL_LEGEND_VERTICAL_PADDING;
         const html = this.renderItems(uplotOptions);
         const {height: requiredHeight} = this.measureLegend(html);
-        const rowHeight = this.options.fontSize + 2;
+        const rowHeight = (this.options.fontSize as number) + 2;
 
-        const maxPossiblePlace = chartHeight * this.options.maxLegendSpace;
+        const maxPossiblePlace = chartHeight * (this.options.maxLegendSpace as number);
         const rowsPerPage = Math.floor(maxPossiblePlace / rowHeight);
         const itemsRowsPerPage = rowsPerPage - 1;
         const itemsPageSize = Math.min(itemsRowsPerPage * rowHeight, maxPossiblePlace);

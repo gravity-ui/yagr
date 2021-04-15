@@ -1,10 +1,18 @@
-import UPlot, {Plugin} from 'uplot';
-// interface YagrNamesConfig {
-//     font: string;
-//     point: number | ((s: Series) => number);
-// }
+import UPlot, {Plugin, Series} from 'uplot';
+import {exec} from '../../utils/common';
 
-export default function namesPlugin(/*cgf: YagrNamesConfig*/): Plugin {
+interface YagrNamesConfig {
+    fontSize?: number;
+    color?: string | ((s: Series) => string);
+    point?: number | ((s: Series) => number);
+}
+
+export default function namesPlugin(cgf: YagrNamesConfig): Plugin {
+    const opts = {
+        fontSize: 11,
+        point: 0,
+        ...cgf,
+    };
     
     return {
         hooks: {
@@ -12,12 +20,14 @@ export default function namesPlugin(/*cgf: YagrNamesConfig*/): Plugin {
                 const {ctx} = u;
                 const series = u.series[seriesKey as unknown as number];
                 if (series.title) {
-                    ctx.font = 'normal 22px Lucida Grande, Arial, Helvetica, sans-serif';
-                    ctx.fillStyle = series.color || 'black';
+                    ctx.font = `normal ${opts.fontSize * devicePixelRatio}px Lucida Grande, Arial, Helvetica, sans-serif`;
+                    ctx.fillStyle = (opts.color ? exec(series.color) : series.color) || 'black';
+                    const pIdx = exec<number, [Series]>(opts.point, series);
+
                     ctx.fillText(
-                        series.title,
-                        u.valToPos(u.data[0][0], 'x'),
-                        u.height - u.valToPos(u.data[seriesKey as unknown as number][0] || 1, 'y'),
+                        exec<string, [number]>(series.title, seriesKey as unknown as number),
+                        u.valToPos(u.data[0][pIdx], 'x') * devicePixelRatio,
+                        u.valToPos(u.data[seriesKey as unknown as number][pIdx] || 1, 'y') * devicePixelRatio,
                     );
                 }
             }

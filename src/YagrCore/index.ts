@@ -205,15 +205,6 @@ class Yagr {
         this.uplot.redraw(...uPlotRedrawOptions);
     }
 
-    setOptionsWithUpdate(updateFn: (d: UPlotOptions, s?: UPlotData) => void) {
-        updateFn(this.options, this.series);
-        this.uplot.setSize({
-            width: this.options.width,
-            height: this.options.height,
-        });
-        this.uplot.redraw();
-    }
-
     toggleSerieVisibility(idx: number, serie: Series, value?: boolean) {
         this.uplot.setSeries(idx, {
             show: typeof value === 'undefined' ? !serie.show : value,
@@ -272,7 +263,7 @@ class Yagr {
             plugins.push(tooltipPluginInstance);
         }
 
-        plugins.push(namesPlugin());
+        plugins.push(namesPlugin((config as any).names as {}));
 
         const options: UPlotOptions = {
             width: this.root.clientWidth,
@@ -449,7 +440,7 @@ class Yagr {
             this._drawn = true;
             const renderTime = performance.now() - this._startTime;
             this._meta.renderTime = renderTime;
-            this.execHooks(this.config.hooks.load, {
+            this.execHooks(config.hooks.load, {
                 chart: this,
                 meta: this._meta,
             });
@@ -460,7 +451,7 @@ class Yagr {
             const initTime = performance.now() - this._startTime;
             this._meta.initTime = initTime;
 
-            this.execHooks(this.config.hooks.inited, {
+            this.execHooks(config.hooks.inited, {
                 chart: this,
                 meta: {
                     initTime,
@@ -489,7 +480,7 @@ class Yagr {
                 u.posToVal(left + width, DEFAULT_X_SCALE),
             ];
 
-            this.execHooks(this.config.hooks.onSelect, {
+            this.execHooks(config.hooks.onSelect, {
                 from: Math.ceil(_from * 1000),
                 to: Math.ceil(_to * 1000),
             });
@@ -673,6 +664,15 @@ class Yagr {
         const plugin = plotLinesPlugin(config, plotLines);
         this.plugins.plotLines = plugin;
         return plugin.uPlotPlugin;
+    }
+
+    private setOptionsWithUpdate(updateFn: (d: UPlotOptions, s?: UPlotData) => void) {
+        updateFn(this.options, this.series);
+        this.uplot.setSize({
+            width: this.options.width,
+            height: this.options.height,
+        });
+        this.uplot.redraw();
     }
 
     /*

@@ -73,7 +73,7 @@ export interface YagrConfig {
     timeline: number[];
 
     /** Tooltip config. Detemines tooltip's behavior */
-    tooltip: TooltipOptions;
+    tooltip: Partial<TooltipOptions>;
 
     /** Chart settings */
     settings: YagrChartSettings;
@@ -229,7 +229,7 @@ export interface RawSerieData {
     snapToValues?: SnapToValue | false;
 
     /** Title of serie */
-    title?: string;
+    title?: string | ((sIdx: number) => string);
 }
 
 export enum AxisSide {

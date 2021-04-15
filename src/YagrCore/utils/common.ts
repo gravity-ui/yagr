@@ -214,11 +214,7 @@ export const preprocess = (series: DataSeriesExtended[], timeline: number[], set
             }
 
             if (interpolation && val === interpolation.value) {
-                if (!idx || idx === line.length - 1) {
-                    resultLine.push(null);
-                } else {
-                    iGroup.push(idx);
-                }
+                iGroup.push(idx);
                 continue;
             }
 
@@ -243,8 +239,24 @@ export const preprocess = (series: DataSeriesExtended[], timeline: number[], set
             x1 = timeline[idx];
             resultLine.push(val);
         }
+        if (iGroup.length) {
+            for (const iIdx of iGroup) {
+                resultLine.push(interpolateImpl(
+                    timeline, (y1 as number | null),
+                    (y2 as number | null),
+                    x1 || timeline[0],
+                    x2 || timeline[timeline.length - 1],
+                    iIdx,
+                    interpolation && interpolation.type
+                ));   
+            }
+        }
         result.push(resultLine);
     }
 
     return result as DataSeries[];
+};
+
+export const exec = <T, ArgsT extends unknown[]>(s: T | ((...a: ArgsT) => T), ...args: ArgsT) => {
+    return typeof s === 'function' ? (s as ((...a: ArgsT) => T))(...args) : s;
 };

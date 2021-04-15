@@ -103,7 +103,6 @@ const generateChart = ({
             ...(config.tooltip || {}),
             enabled: true,
             total: true,
-            boundClassName: '.wrapper',
             tracking: type === 'area' || type === 'column' ? 'area' : 'sticky',
         },
         legend: {
@@ -161,19 +160,19 @@ const createChart = (config, repeat) => {
 //     }
 // });
 
-createChart({
-    length: 200, step: 50, count: 100, type: 'area',
-    config: {settings: {stacking: true}, processing: {interpolation: {value: 'nil', type: 'linear'}}},
-    fn: (idx, __, _, prev) => {
-        if (!idx) { return prev[idx] = getRandomInt(20, 30); }
-        const p = prev[idx - 1] + getRandomInt(0, 10) * (Math.random() > 0.5 ? - 1 : 1);
+// createChart({
+//     length: 200, step: 50, count: 100, type: 'area',
+//     config: {settings: {stacking: true}, processing: {interpolation: {value: 'nil', type: 'linear'}}},
+//     fn: (idx, __, _, prev) => {
+//         if (!idx) { return prev[idx] = getRandomInt(20, 30); }
+//         const p = prev[idx - 1] + getRandomInt(0, 10) * (Math.random() > 0.5 ? - 1 : 1);
 
-        if (Math.random() < 0.1) {
-            return 'nil'
-        }
-        return prev[idx] = p > 0 ? p : Math.abs(p);
-    }
-});
+//         if (Math.random() < 0.1) {
+//             return 'nil'
+//         }
+//         return prev[idx] = p > 0 ? p : Math.abs(p);
+//     }
+// });
 
 // createChart({
 //     length: 500, step: DAY, count: 1, type: 'line', title: 'line: 500 pts / stepped',
@@ -274,34 +273,46 @@ createChart({
 //     tooltip: {enabled: true}
 // }));
 
-// createChart(() => ({
-//     chart: {type: 'line', width: 600, height: 300},
-//     timeline: [1,2,3,4],
-//     series: [
-//         {data: [3,   3, 1, 3], color: 'green', title: 'sosi'},
-//         {data: [2,   1, 2, 2], color: '--some-variable'},
-//         {data: [1,   2, 3, 4], color: 'orange'},
-//     ],
-//     settings: {
-//         drawOrder: ['series', 'plotLines', 'axes'],
-//         stacking: false,
-//     },
-//     cursor: {
-//         snapToValues: 'left'
-//     },
-//     legend: {
-//         show: true,
-//     },
-//     axes: [
-//         {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.3)', border: [1, 'red', 'dash'], value: [2,3]}]}
-//     ],
-//     processing: {
-//         interpolation: {
-//             value: 'x',
-//             type: 'left',
-//         }
-//     },
-// }))
+createChart(() => ({
+    chart: {type: 'line', width: 600, height: 300},
+    timeline: [1,2,3,4],
+    series: [
+        {data: [2123332, 2123332, 2123332, 2123332], color: 'green', title: 'test'},
+        // {data: [2,   2, 2, 2], color: '--some-variable', title: 'red'},
+        // {data: [3, 3, 3, 3], color: 'orange', title: 'oran'},
+    ],
+    settings: {
+        drawOrder: ['plotLines', 'series', 'axes'],
+        stacking: false,
+    },
+    cursor: {
+        snapToValues: 'left'
+    },
+    markers: {
+        show: true,
+        size: 4,
+    },
+    legend: {
+        show: true,
+    },
+    axes: [
+        {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.9)', border: [1, 'red', 'dash'], value: [2,3]}]},
+        {scale: 'y', precision: 'auto'}
+    ],
+    processing: {
+        interpolation: {
+            value: 'x',
+            type: 'left',
+        }
+    },
+    names: {
+        fontSize: 12,
+        point: () => getRandomInt(1, 3),
+    },
+    scales: {
+        // y: {min: -1, max: 4}
+    }
+}))
 
 // createChart(() => ({
 //     chart: {type: 'column', width: 600, height: 300},

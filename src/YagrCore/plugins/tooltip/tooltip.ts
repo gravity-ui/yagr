@@ -82,7 +82,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 return pSettings.nullValues[n];
             }
 
-            return n;
+            return '-';
         }
 
         return n.toFixed(
