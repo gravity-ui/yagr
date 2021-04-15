@@ -15,12 +15,12 @@ export interface CursorOptions {
     /** Snap cursor to non-null value (default: SnapToValue.Closest) */
     snapToValues?: false | SnapToValue;
     /** X crosshair options */
-    x: {
+    x?: {
         visible?: boolean;
         style?: string; // css style
     };
     /** Y crosshair options */
-    y: {
+    y?: {
         visible?: boolean;
         style?: string;
     };

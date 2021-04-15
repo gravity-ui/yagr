@@ -322,6 +322,8 @@ export enum YagrTheme {
 
 export type SupportedLocales = 'en' | 'ru';
 
+export type DrawKey = 'plotLines' | DrawOrderKey.Axes | DrawOrderKey.Series;
+
 export interface YagrChartSettings {
     /** Should stack Y values (default: false) */
     stacking?: boolean;
@@ -336,7 +338,7 @@ export interface YagrChartSettings {
     minSelectionWidth?: number; // 15px
 
     /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
-    drawOrder?: (DrawOrderKey | 'plotLines')[];
+    drawOrder?: DrawKey[];
 
     /** Theme (default: 'light') */
     theme?: YagrTheme;
