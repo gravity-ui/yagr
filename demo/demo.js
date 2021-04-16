@@ -277,7 +277,7 @@ createChart(() => ({
     chart: {type: 'line', width: 600, height: 300},
     timeline: [1,2,3,4],
     series: [
-        {data: [2123332, 2123332, 2123332, 2123332], color: 'green', title: 'test'},
+        {data: [0, 0, 0, 0], color: 'green', title: 'test'},
         // {data: [2,   2, 2, 2], color: '--some-variable', title: 'red'},
         // {data: [3, 3, 3, 3], color: 'orange', title: 'oran'},
     ],
@@ -310,7 +310,7 @@ createChart(() => ({
         point: () => getRandomInt(1, 3),
     },
     scales: {
-        // y: {min: -1, max: 4}
+        y: {range: 'nice'}
     }
 }))
 

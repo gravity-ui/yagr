@@ -32,8 +32,12 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
         const minRange = scale.minRange || DEFAULT_SCALE_MIN_RANGE;
 
         if (Math.abs(max - min) < minRange) {
-            min -= minRange / 2;
-            max += minRange / 2;
+            if (min >= 0) {
+                max += minRange;
+            } else {
+                max += minRange / 2;
+                min -= minRange / 2;
+            }
         }
 
         min = typeof scale.min === 'number' ? scale.min : min;
@@ -94,7 +98,9 @@ export function niceScale(
     );
 
     if (dMin === dMax) {
-        return {min: dMin - 1, max: dMin + 1};
+        return dMin >= 0
+            ? {min: dMin, max: dMin + 2}
+            : {min: dMin - 1, max: dMin + 1};
     }
 
     const difference = dMax - dMin;

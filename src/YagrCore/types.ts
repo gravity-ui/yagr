@@ -284,11 +284,8 @@ export enum ScaleRange {
  * Settings of scale
  */
 export interface Scale {
-    /** Name of scale */
-    name: string;
-
-    /** Scale range visualisation */
-    type: ScaleType;
+    /** Scale range visualisation (default: linear) */
+    type?: ScaleType;
 
     /** Should normalize (default: false)  */
     normalize?: boolean;
