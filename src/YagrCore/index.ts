@@ -14,7 +14,6 @@ import tooltipPlugin from './plugins/tooltip/tooltip';
 import markersPlugin, {drawMarkersIfRequired} from './plugins/markers';
 import cursorPlugin from './plugins/cursor/cursor';
 import plotLinesPlugin from './plugins/plotLines/plotLines';
-import namesPlugin from './plugins/names/names';
 
 import {
     YagrConfig,
@@ -262,8 +261,6 @@ class Yagr {
             const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
             plugins.push(tooltipPluginInstance);
         }
-
-        plugins.push(namesPlugin((config as any).names as {}));
 
         const options: UPlotOptions = {
             width: this.root.clientWidth,
