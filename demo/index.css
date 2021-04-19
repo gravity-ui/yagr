@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+    --some-variable: rgb(200, 4, 44);
+    --some-variable-2: rgba(230, 10, 33, 0.9);
+}
+.container {
+    margin-bottom: 26px;
+    /* height: 400px; */
+}
+#root {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.playground-content {
+    display: flex;
+    flex-direction: row;
+}
+
+#container {
+    width: 50%;
+    height: 400px;
+    border: solid 1px #444;
+}
+
+#chart {
+    width: 50%;
+    height: 400px;
+}
