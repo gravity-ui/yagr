@@ -1,6 +1,6 @@
 {
   "name": "@yandex-data-ui/yagr",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "",
   "keywords": [],
   "main": "dist/index.js",
