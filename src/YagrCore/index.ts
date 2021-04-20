@@ -346,7 +346,7 @@ class Yagr {
                 serie.fill = serie.color;
                 serie.width = 2;
                 plugins.push(markersPlugin({
-                    size: 4,
+                    size: config.chart.pointsSize || 4,
                 }));
             }
 

@@ -136,6 +136,9 @@ export interface YagrChartOptions {
 
     /** padding in css px [top, right, bottom, left] (by default: utils.chart.getPaddingByAxes) */
     padding?: [number, number, number, number];
+
+    /** point size (default: 4px) */
+    pointsSize?: number;
 }
 
 /** Options how to redraw chart */
