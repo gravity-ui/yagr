@@ -369,9 +369,8 @@ class Yagr {
 
         /** Setting up scales */
         options.scales = options.scales || {};
+        const scales = options.scales;
         Object.entries(config.scales || {}).forEach(([scaleName, scaleConfig]) => {
-            const scales = options.scales;
-            if (!scales) { return; }
             scales[scaleName] = scales[scaleName] || {};
             const scale = scales[scaleName];
 
@@ -381,10 +380,10 @@ class Yagr {
 
             /** At first handle case when scale has setted min and max */
             if (forceMax !== null && forceMin !== null) {
-                if (forceMax < forceMin) {
-                    throw new Error('Invalid scale config. .max should be >= .min');
+                if (forceMax <= forceMin) {
+                    throw new Error('Invalid scale config. .max should be > .min');
                 }
-                scale.range = [forceMin, forceMin];
+                scale.range = [forceMin, forceMax];
                 return;
             }
 
@@ -392,12 +391,12 @@ class Yagr {
                 scale.distr = Scale.Distr.Logarithmic;
             }
 
-            if (scaleConfig.normalize) {
-                scale.range = [0, scaleConfig.normalizeBase || 100];
+            if (isLogarithmic || scaleName === DEFAULT_X_SCALE) {
                 return;
             }
 
-            if (isLogarithmic || scaleName === DEFAULT_X_SCALE) {
+            if (scaleConfig.normalize) {
+                scale.range = [0, scaleConfig.normalizeBase || 100];
                 return;
             }
 
