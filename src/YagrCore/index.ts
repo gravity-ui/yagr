@@ -7,6 +7,7 @@ import UPlot, {
     Series,
     DrawOrderKey,
     SyncPubSub,
+    Scale,
 } from 'uplot';
 
 import LegendPlugin from './plugins/legend/legend';
@@ -371,39 +372,44 @@ class Yagr {
         Object.entries(config.scales || {}).forEach(([scaleName, scaleConfig]) => {
             const scales = options.scales;
             if (!scales) { return; }
-
-            const isLogarithmic = scaleConfig.type === ScaleType.Logarithmic;
-            const isStacked = config.settings.stacking;
-
             scales[scaleName] = scales[scaleName] || {};
             const scale = scales[scaleName];
 
-            if (isStacked && scaleConfig.normalize) {
-                scale.range = [
-                    isLogarithmic ? 1 : 0,
-                    scaleConfig.normalizeBase || 100,
-                ];
+            const isLogarithmic = scaleConfig.type === ScaleType.Logarithmic;
+            const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
+            const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
+
+            /** At first handle case when scale has setted min and max */
+            if (forceMax !== null && forceMin !== null) {
+                if (forceMax < forceMin) {
+                    throw new Error('Invalid scale config. .max should be >= .min');
+                }
+                scale.range = [forceMin, forceMin];
+                return;
             }
 
             if (isLogarithmic) {
-                scale.distr = 3; /** @TODO Use type from uPlot */
+                scale.distr = Scale.Distr.Logarithmic;
             }
 
-            if (scaleName !== DEFAULT_X_SCALE) {
-                if (isEmptyDataSet) {
-                    scale.range = [
-                        typeof scaleConfig.min === 'number' ? scaleConfig.min : (isLogarithmic ? 1 : 0),
-                        typeof scaleConfig.max === 'number' ? scaleConfig.max : 100,
-                    ];
-                } else
-                if (!isLogarithmic) {
-                    if (typeof scaleConfig.min === 'number' && typeof scaleConfig.max === 'number') {
-                        scale.range = [scaleConfig.min, scaleConfig.max];
-                    } else {
-                        scale.range = getScaleRange(scaleConfig, () => this.references, config);
-                    }
-                }
+            if (scaleConfig.normalize) {
+                scale.range = [0, scaleConfig.normalizeBase || 100];
+                return;
             }
+
+            if (isLogarithmic || scaleName === DEFAULT_X_SCALE) {
+                return;
+            }
+
+            if (isEmptyDataSet) {
+                scale.range = [
+                    forceMin === null ? (isLogarithmic ? 1 : 0) : forceMin,
+                    forceMax === null ? 100 : forceMax,
+                ];
+                return;
+            }
+
+            scale.range = getScaleRange(scaleConfig, () => this.references, config);
         });
 
         if (!options.scales.x) {

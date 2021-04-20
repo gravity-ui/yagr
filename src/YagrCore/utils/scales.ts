@@ -6,8 +6,11 @@ import {YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 type ScaleType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
 export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefined), config: YagrConfig) => {
-    if (typeof scale.range === 'function') {
-        return scale.range;
+    const range = scale.range;
+    if (typeof range === 'function') {
+        return (u: UPlot, dataMin: number, dataMax: number) => {
+            return range(u, dataMin, dataMax, getRefs(), config);
+        };
     }
 
     if (scale.range === ScaleRange.Auto) {

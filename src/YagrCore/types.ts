@@ -1,10 +1,9 @@
-import {
+import uPlot, {
     Axis as UAxis,
     Hooks,
     DrawOrderKey,
     Series,
     Options,
-    Scale as UScale,
 } from 'uplot';
 
 import Yagr, {YagrMeta} from './index';
@@ -301,7 +300,7 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?: ScaleRange | UScale['range'];
+    range?: ScaleRange | ((u: uPlot, min: number, max: number, ref: RefPoints | undefined, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
     /** default: 5 */
     maxTicks?: number;

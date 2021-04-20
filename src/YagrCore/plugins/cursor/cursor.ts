@@ -24,6 +24,8 @@ export interface CursorOptions {
         visible?: boolean;
         style?: string;
     };
+    /** Max count of visible markers. If lines > value then markers will be hidden (default: 50) */
+    maxMarkers?: number;
 }
 
 const MAX_CURSORS = 50;
@@ -110,7 +112,8 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
                 if (cX) {
                     if (opts.x && opts.x.visible === false) {
                         cX.style.display = 'none';
-                    } else {
+                    }
+                    if (opts.x?.style) {
                         cX.style.borderRight = (opts.x && opts.x.style) || CURSOR_STYLE;
                     }
                 }
