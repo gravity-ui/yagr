@@ -167,3 +167,8 @@ class ThemedDefaults {
 }
 
 export const theme = new ThemedDefaults();
+
+
+export const TOOLTIP_Y_OFFSET = 24;
+export const TOOLTIP_X_OFFSET = 24;
+export const TOOLTIP_DEFAULT_MAX_LINES = 10;

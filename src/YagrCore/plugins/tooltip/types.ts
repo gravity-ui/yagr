@@ -67,6 +67,9 @@ export interface TooltipOptions {
     }) => void;
     /** Tooltip element className appendix */
     className?: string;
+
+    xOffset?: number;
+    yOffset?: number;
 }
 
 export type TooltipRow = {

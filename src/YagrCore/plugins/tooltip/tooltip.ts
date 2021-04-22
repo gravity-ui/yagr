@@ -6,6 +6,12 @@ import placement from './placement';
 import Yagr from '../../index';
 import {DataSeries, SnapToValue} from '../../types';
 
+import {
+    TOOLTIP_Y_OFFSET,
+    TOOLTIP_X_OFFSET,
+    TOOLTIP_DEFAULT_MAX_LINES,
+} from '../../defaults';
+
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
 import {
     TrackingOptions,
@@ -27,9 +33,6 @@ export interface TooltipState {
 }
 
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
-
-const ANCHOR_Y_OFFSET = 24;
-const DEFAULT_MAX_LINES = 10;
 
 function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
     const r = rows.slice(0, renderOptions.options.maxLines);
@@ -95,7 +98,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
     const opts: TooltipOptions = Object.assign({}, {
         tracking: TrackingOptions.Sticky,
-        maxLines: DEFAULT_MAX_LINES,
+        maxLines: TOOLTIP_DEFAULT_MAX_LINES,
         highlightLines: true,
         total: true,
         renderAll: false,
@@ -106,6 +109,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         showIndicies: false,
         hideNoData: false,
         className: 'yagr-tooltip_default',
+        xOffset: TOOLTIP_X_OFFSET,
+        yOffset: TOOLTIP_Y_OFFSET,
     }, options);
 
     let over: HTMLDivElement;
@@ -391,14 +396,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 const anchor = {
                     left: left + bLeft,
-                    top: bTop + top - ANCHOR_Y_OFFSET,
+                    top: bTop + top - (opts.yOffset || 0),
                 };
-
-                if (document.body.clientWidth - anchor.left < tOverlay.clientWidth - ANCHOR_Y_OFFSET) {
-                    anchor.left -= ANCHOR_Y_OFFSET;
-                } else {
-                    anchor.left += ANCHOR_Y_OFFSET;
-                }
 
                 renderTooltipCloses = () => {
                     tOverlay.innerHTML = opts.render(rows, {
@@ -409,8 +408,10 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         sum: opts.total ? opts.value(sum) : undefined,
                     });
 
-                    placement(tOverlay, anchor, 'right', 'start', {
+                    placement(tOverlay, anchor, 'right', {
                         bound,
+                        xOffset: opts.xOffset,
+                        yOffset: opts.yOffset,
                     });
 
                     emit('render');
