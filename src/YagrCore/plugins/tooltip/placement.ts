@@ -103,6 +103,8 @@ export default function (
     elem.style.maxWidth = '';
     elem.style.maxHeight = '';
 
+    const offset = (options[primary.offsetOpt] || 0);
+
     // Constrain the maximum size of the popup along the secondary axis.
     const secondaryMarginBefore = parseInt(elemStyle[secondary.marginBefore], 10);
     const secondaryMarginAfter = parseInt(elemStyle[secondary.marginAfter], 10);
@@ -120,7 +122,7 @@ export default function (
     // will switch to the side with more room.
     const margin = parseInt(elemStyle[primary.marginBefore], 10) + parseInt(elemStyle[primary.marginAfter], 10);
     const roomBefore = anchorRect[primary.before] - boundRect[primary.before] - margin;
-    const roomAfter = boundRect[primary.after] - anchorRect[primary.after] - margin;
+    const roomAfter = boundRect[primary.after] - anchorRect[primary.after] - margin - offset;
 
     if ((side === primary.before && elem[primary.offsetSize] > roomBefore)
         || (side === primary.after && elem[primary.offsetSize] > roomAfter)) {
@@ -155,7 +157,6 @@ export default function (
         );
     };
 
-    const offset = (options[primary.offsetOpt] || 0);
     if (side === primary.before) { // top or left
         elem.style[primary.before] = (
             scrollOffset + boundPrimaryPos(anchorRect[primary.before] - elem[primary.offsetSize] - margin) - offset
