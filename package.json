@@ -4,6 +4,7 @@
   "description": "",
   "keywords": [],
   "main": "dist/index.js",
+  "umd": "dist/yagr.umd.js",
   "module": "dist/yagr.es5.js",
   "files": [
     "dist",
