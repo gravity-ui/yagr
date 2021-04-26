@@ -3,7 +3,7 @@ import React from 'react';
 import Yagr, {YagrMeta} from './YagrCore';
 import {YagrConfig} from './YagrCore/types';
 
-interface YagrChartProps {
+export interface YagrChartProps {
     /** Chart ID */
     id: string;
     /** Config of chart */
