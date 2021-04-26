@@ -406,7 +406,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         x: x as number,
                         pinned: state.pinned,
                         sum: opts.total ? opts.value(sum) : undefined,
-                    });
+                    }, yagr.config);
 
                     placement(tOverlay, anchor, 'right', {
                         bound,

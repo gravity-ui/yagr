@@ -1,3 +1,4 @@
+import {YagrConfig} from "src/YagrCore/types";
 import Yagr from "../../index";
 import {TooltipState, TooltipAction} from "./tooltip";
 
@@ -36,7 +37,7 @@ export interface TooltipOptions {
     /** Sorter */
     sort: ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
     /** Custom tooltip renderer */
-    render: (rows: TooltipRows, renderOptions: TooltipRenderOpts) => string;
+    render: (rows: TooltipRows, renderOptions: TooltipRenderOpts, cfg: YagrConfig) => string;
     /** Is tooltip pinable */
     pinable: boolean;
     /** Value formatter */
