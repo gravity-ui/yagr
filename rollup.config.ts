@@ -52,8 +52,8 @@ const iife = (min) => ({
 export default [{
     input: `src/index.ts`,
     output: [
-        {file: pkg.umd, name: libraryName, format: 'umd', sourcemap: true},
-        {file: pkg.module, format: 'es', sourcemap: true},
+        {file: pkg.umd, name: libraryName, format: 'umd', sourcemap: true, moduleContext: 'this', context: 'this'},
+        {file: pkg.module, format: 'es', sourcemap: true, moduleContext: 'this', context: 'this'},
     ],
     external: [],
     watch: {
@@ -66,7 +66,6 @@ export default [{
         }),
         scss({
             output: (styles) => {
-                console.log('---------> ');
                 fs.writeFileSync('dist/index.css', styles);
             },
             bundle: 'index.css',
