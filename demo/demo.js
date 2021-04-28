@@ -100,10 +100,10 @@ const generateChart = ({
             stacking: type === 'area' || type === 'column',
         },
         tooltip: {
-            ...(config.tooltip || {}),
             enabled: true,
             total: true,
             tracking: type === 'area' || type === 'column' ? 'area' : 'sticky',
+            ...(config.tooltip || {}),
         },
         legend: {
             ...(config.legend || {}),
@@ -151,217 +151,205 @@ const createChart = (config, repeat) => {
     }
 }
 
-// createChart({
-//     length: 500, step: 50, count: 10, type: 'area', title: 'line: 500 pts / stepped',
-//     config: {settings: {stacking: true}, legend: {show: true}},
-//     fn: (idx, __, _, prev) => {
-//         if (!idx) { return prev[idx] = getRandomInt(0, 10); }
-//         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : 0.1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
-//     }
-// });
+createChart({
+    length: 500, step: 50, count: 10, type: 'area', title: 'line: 500 pts / stepped',
+    config: {settings: {stacking: true}, legend: {show: true}},
+    fn: (idx, __, _, prev) => {
+        if (!idx) { return prev[idx] = getRandomInt(0, 10); }
+        return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : 0.1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
+    }
+});
 
-// createChart({
-//     length: 200, step: 50, count: 100, type: 'area',
-//     config: {settings: {stacking: true}, processing: {interpolation: {value: 'nil', type: 'linear'}}},
-//     fn: (idx, __, _, prev) => {
-//         if (!idx) { return prev[idx] = getRandomInt(20, 30); }
-//         const p = prev[idx - 1] + getRandomInt(0, 10) * (Math.random() > 0.5 ? - 1 : 1);
+createChart({
+    length: 200, step: 50, count: 100, type: 'area',
+    config: {settings: {stacking: true}, processing: {interpolation: {value: 'nil', type: 'linear'}}},
+    fn: (idx, __, _, prev) => {
+        if (!idx) { return prev[idx] = getRandomInt(20, 30); }
+        const p = prev[idx - 1] + getRandomInt(0, 10) * (Math.random() > 0.5 ? - 1 : 1);
 
-//         if (Math.random() < 0.1) {
-//             return 'nil'
-//         }
-//         return prev[idx] = p > 0 ? p : Math.abs(p);
-//     }
-// });
+        if (Math.random() < 0.1) {
+            return 'nil'
+        }
+        return prev[idx] = p > 0 ? p : Math.abs(p);
+    }
+});
 
-// createChart({
-//     length: 500, step: DAY, count: 1, type: 'line', title: 'line: 500 pts / stepped',
-//     config: {settings: {interpolation: 'left'}},
-//     graph: (g) => {
-//         g.color = 'var(--some-variable)'
-//         return g;
-//     },
-//     fn: (idx, __, _, prev) => {
-//         if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
-//         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
-//     }
-// });
+createChart({
+    length: 500, step: DAY, count: 1, type: 'line', title: 'line: 500 pts / stepped',
+    config: {settings: {interpolation: 'left'}},
+    graph: (g) => {
+        g.color = 'var(--some-variable)'
+        return g;
+    },
+    fn: (idx, __, _, prev) => {
+        if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
+        return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
+    }
+});
 
-// createChart({
-//     length: 100, step: DAY, count: 20, type: 'area', title: 'line: 10000 pts / stepped',
-//     config: {settings: {interpolation: 'linear'}, legend: {show: true}},
-//     fn: (idx, __, _, prev) => {
-//         if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
-//         return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
-//     }
-// });
+createChart({
+    length: 100, step: DAY, count: 20, type: 'area', title: 'line: 10000 pts / stepped',
+    config: {settings: {interpolation: 'linear'}, legend: {show: true}},
+    fn: (idx, __, _, prev) => {
+        if (!idx) { return prev[idx] = getRandomInt(-100, 100); }
+        return prev[idx] = prev[idx - 1] + (Math.random() > 0.5 ? 1 : -1) * getRandomInt(5, Math.random() > 0.5 ? 50 : 10);
+    }
+});
 
-// createChart({
-//     length: 50, step: DAY, count: 5, type: 'line', title: 'line: 50pts Sinusoid / smooth ',
-//     fn: (idx, sidx) => {
-//         if (idx % 3 === 0) {return null;}
-//         return Math.abs(Math.sin(idx) * (sidx % 10));
-//     },
-//     graph: (g) => {
-//         g.spanGaps = true;
-//         return g
-//     },
-//     config: {settings: {interpolation: 'smooth', stacking: false}}
-// });
+createChart({
+    length: 50, step: DAY, count: 5, type: 'line', title: 'line: 50pts Sinusoid / smooth ',
+    fn: (idx, sidx) => {
+        if (idx % 3 === 0) {return null;}
+        return Math.abs(Math.sin(idx) * (sidx % 10));
+    },
+    graph: (g) => {
+        g.spanGaps = true;
+        return g
+    },
+    config: {settings: {interpolation: 'smooth', stacking: false}}
+});
 
-// createChart({
-//     length: 50, step: DAY, count: 5, type: 'area', title: 'line: 50pts Sinusoid / smooth ',
-//     fn: (idx, sidx) => {
-//         return Math.abs(Math.sin(idx) * (sidx % 10));
-//     },
-//     graph: (g) => {
-//         g.spanGaps = true;
-//         return g
-//     },
-//     config: {settings: {interpolation: 'smooth'}}
-// });
+createChart({
+    length: 50, step: DAY, count: 5, type: 'area', title: 'line: 50pts Sinusoid / smooth ',
+    fn: (idx, sidx) => {
+        return Math.abs(Math.sin(idx) * (sidx % 10));
+    },
+    graph: (g) => {
+        g.spanGaps = true;
+        return g
+    },
+    config: {settings: {interpolation: 'smooth'}}
+});
 
-// createChart({
-//     length: 30, step: DAY, count: 5, type: 'area',
-//     fn: (idx, sidx) => {
-//         if (!sidx) {return 1};
-//         const m = idx + sidx;
-//         if (sidx !== 1 && m % 3 && m % 2) {return 'NIL'};
-//         return Math.abs(Math.sin(idx) * (sidx % 10));
-//     },
-//     config: {
-//         settings: {
-//             stacking: true,
-//         },
-//         cursor: {
-//             snapToValues: 'left'
-//         },
-//         processing: {
-//             interpolation: {
-//                 value: 'NIL',
-//                 type: 'left'
-//             },
-//         },
-//         scales: {
-//             y: {normalize: true}
-//         }
-//     }
-// });
-
-// createChart(() => ({
-//     timeline: [1, 2, 3, 4, 5, 6, 7],
-//     data: [
-//         {data: [1, 2, 1, null, 1, 2, 1], color: 'red'},
-//         {data: [1, 'nil', 1, null, 'nil', 1, 1], color: 'darkorange'},
-//     ],
-//     axes: [
-//         {scale: 'x', values: (u, x) => x},
-//         {scale: 'y', precision: 'auto'}
-//     ],
-//     scales: {
-//         // y: {max: 3.5},
-//     },
-//     settings: {stacking: true},
-//     processing: {
-//         interpolation: {
-//             value: 'nil',
-//             type: 'linear'
-//         }
-//     },
-//     cursor: {snapToValues: 'left'},
-//     chart: {width: 600, height: 300, type: 'area'},
-//     tooltip: {enabled: true}
-// }));
+createChart({
+    length: 30, step: DAY, count: 5, type: 'area',
+    fn: (idx, sidx) => {
+        if (!sidx) {return 1};
+        const m = idx + sidx;
+        if (sidx !== 1 && m % 3 && m % 2) {return 'NIL'};
+        return Math.abs(Math.sin(idx) * (sidx % 10));
+    },
+    config: {
+        tooltip: {
+            tracking: 'area',
+        },
+        settings: {
+            stacking: true,
+        },
+        cursor: {
+            snapToValues: 'left'
+        },
+        processing: {
+            interpolation: {
+                value: 'NIL',
+                type: 'left'
+            },
+        },
+        scales: {
+            y: {normalize: true}
+        }
+    }
+});
 
 createChart(() => ({
-    chart: {type: 'line', width: 600, height: 300},
-    timeline: [1,2,3,4],
+    timeline: [1, 2, 3, 4, 5, 6, 7],
     series: [
-        {data: [0, 0, 0, 0], color: 'green', title: 'test'},
-        // {data: [2,   2, 2, 2], color: '--some-variable', title: 'red'},
-        // {data: [3, 3, 3, 3], color: 'orange', title: 'oran'},
+        {data: [1, 2, 1, null, 1, 2, 1], color: 'red'},
+        {data: [1, 'nil', 1, null, 'nil', 1, 1], color: 'darkorange'},
+    ],
+    axes: [
+        {scale: 'x', values: (u, x) => x},
+        {scale: 'y', precision: 'auto'}
+    ],
+    scales: {
+        // y: {max: 3.5},
+    },
+    settings: {stacking: true},
+    processing: {
+        interpolation: {
+            value: 'nil',
+            type: 'linear'
+        }
+    },
+    cursor: {snapToValues: 'left'},
+    chart: {width: 600, height: 300, type: 'area'},
+    tooltip: {enabled: true, tracking: 'area'},
+}));
+
+createChart(() => ({
+    chart: {type: 'area', width: 600, height: 300},
+    timeline: [1,2,3,4,5,6],
+    series: [
+        {data: [null, null, null, 1, 1, 1], color: `#${randomColor()}`},
+        {data: [1, 1, 1, null, null, null], color: `#${randomColor()}`},
+        {data: [1, 1, 1, null, null, null], color: `#${randomColor()}`},
+        {data: [1, 1, 1, null, null, null], color: `#${randomColor()}`},
+        {data: [null, null, null, 1, 1, 1], color: `#${randomColor()}`},
+        {data: [null, null, null, 1, 1, 1], color: `#${randomColor()}`},
     ],
     settings: {
         drawOrder: ['plotLines', 'series', 'axes'],
-        stacking: false,
+        stacking: true,
+    },
+    tooltip: {
+        tracking: 'area'
     },
     cursor: {
-        snapToValues: 'left'
-    },
-    markers: {
-        show: true,
-        size: 4,
+        // snapToValues: 'left'
     },
     legend: {
         show: true,
     },
-    axes: [
-        {scale: 'x', plotLines: [{color: 'rgba(200, 200, 0, 0.9)', border: [1, 'red', 'dash'], value: [2,3]}]},
-        {scale: 'y', precision: 'auto'}
-    ],
-    processing: {
-        interpolation: {
-            value: 'x',
-            type: 'left',
-        }
-    },
-    names: {
-        fontSize: 12,
-        point: () => getRandomInt(1, 3),
-    },
-    scales: {
-        y: {range: 'nice'}
-    }
 }))
 
-// createChart(() => ({
-//     chart: {type: 'column', width: 600, height: 300},
-//     timeline: [0, 1, 2, 3, 4, 5],
-//     tooltip: {
-//         tracking: 'sticky',
-//     },
-//     cursor: {
-//         snapToValues: 'left',
-//         // markersSize: 12,
-//         y: {
-//             visible: true,
-//             style: 'dash grey 2px'
-//         }
-//     },
-//     legend: {show: true,},
-//     data: [{
-//         color: 'darkgreen',
-//         data: [1, 1, 1, 1, 1, 1],
-//     }, {
-//         color: 'red',
-//         data: [1, 1, 2, 'NUN', 1, 1],
-//         spanGaps: false,
-//     }, {
-//         color: 'rgba(32, 32, 100, 1)',
-//         data: [30, 2, 30, 1, 1, 1],
-//         spanGaps: false,
-//     }],
-//     settings: {
-//         theme: 'light',
-//         stacking: true,
-//         drawOrder: ['series', 'axes'],
-//         timeMultiplier: 0.001,
-//     },
-//     axes: [
-//         {scale: 'x'},
-//         {scale: 'y', side: 'left'},
-//     ],
-//     scales: {
-//         x: {time: true},
-//         y: {normalize: false},
-//     },
-//     processing: {
-//         nulls: {
-//             '+inf': 'Infinity'
-//         },
-//         interpolate: {
-//             type: 'left',
-//             value: 'NUN',
-//         },
-//     }
-// }));
+createChart(() => ({
+    chart: {type: 'column', width: 600, height: 300},
+    timeline: [0, 1, 2, 3, 4, 5],
+    tooltip: {
+        tracking: 'sticky',
+    },
+    cursor: {
+        snapToValues: 'left',
+        // markersSize: 12,
+        y: {
+            visible: true,
+            style: 'dash grey 2px'
+        }
+    },
+    legend: {show: true,},
+    series: [{
+        color: 'darkgreen',
+        data: [1, 1, 1, 1, 1, 1],
+    }, {
+        color: 'red',
+        data: [1, 1, 2, 'NUN', 1, 1],
+        spanGaps: false,
+    }, {
+        color: 'rgba(32, 32, 100, 1)',
+        data: [30, 2, 30, 1, 1, 1],
+        spanGaps: false,
+    }],
+    settings: {
+        theme: 'light',
+        stacking: true,
+        drawOrder: ['series', 'axes'],
+        timeMultiplier: 0.001,
+    },
+    axes: [
+        {scale: 'x'},
+        {scale: 'y', side: 'left'},
+    ],
+    scales: {
+        x: {time: true},
+        y: {normalize: false},
+    },
+    processing: {
+        nulls: {
+            '+inf': 'Infinity'
+        },
+        interpolate: {
+            type: 'left',
+            value: 'NUN',
+        },
+    }
+}));

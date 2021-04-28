@@ -3,7 +3,7 @@ import UPlot, {Range} from 'uplot';
 import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
 import {YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 
-type ScaleType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
+type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
 export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefined), config: YagrConfig) => {
     const range = scale.range;
@@ -13,11 +13,26 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
         };
     }
 
+    const forceMin = typeof scale.min === 'number' ? scale.min : null;
+    const forceMax = typeof scale.max === 'number' ? scale.max : null;
+
+    /** At first handle case when scale has setted min and max */
+    if (forceMax !== null && forceMin !== null) {
+        if (forceMax <= forceMin) {
+            throw new Error('Invalid scale config. .max should be > .min');
+        }
+        return [forceMin, forceMax] as Range.MinMax;
+    }
+
+    if (scale.normalize) {
+        return [0, scale.normalizeBase || 100] as Range.MinMax;
+    }
+
     if (scale.range === ScaleRange.Auto) {
         return undefined;
     }
 
-    let rangeFn: ScaleType;
+    let rangeFn: ScaleRangeType;
 
     switch (scale.range) {
         case undefined:

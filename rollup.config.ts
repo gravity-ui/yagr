@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import sourceMaps from 'rollup-plugin-sourcemaps';
@@ -63,8 +65,11 @@ export default [{
             useTsconfigDeclarationDir: true,
         }),
         scss({
-            output: true,
-            bundle: 'yagr.css',
+            output: (styles) => {
+                console.log('---------> ');
+                fs.writeFileSync('dist/index.css', styles);
+            },
+            bundle: 'index.css',
         }),
         commonjs(),
         resolve(),

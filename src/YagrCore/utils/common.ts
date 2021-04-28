@@ -11,10 +11,9 @@ import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings} from '.
 export const findInRange = (
     ranges: DataSeries,
     value: number,
-    stickToRanges = false,
 ): number | null => {
     let i = 0;
-    let isFirstRange = true;
+    let previosExistingIdx = 0;
 
     while (i < ranges.length) {
         const y = ranges[i];
@@ -25,15 +24,15 @@ export const findInRange = (
         }
 
         if (value > y) {
-            return isFirstRange && !stickToRanges ? null : Math.max(0, i - 1);
+            return Math.max(0, previosExistingIdx);
         } else {
-            isFirstRange = false;
+            previosExistingIdx = i;
         }
 
         i += 1;
     }
 
-    return ranges.length - 1;
+    return previosExistingIdx;
 };
 
 /* Gets sum of all values of given data index by all series */
@@ -68,7 +67,7 @@ export const findSticky = (
     }
 
     if (!nearestValue || nearestIndex === undefined) {
-        return 0;
+        return null;
     }
 
     for (i = nearestIndex + 1; i < ranges.length; i++) {

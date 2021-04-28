@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "umd": "dist/yagr.umd.js",
   "module": "dist/yagr.es5.js",
+  "browser": "dist/yagr.iife.min.js",
   "files": [
     "dist",
     "typings"
