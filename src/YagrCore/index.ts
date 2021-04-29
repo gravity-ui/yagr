@@ -42,7 +42,6 @@ import {getSerie} from './utils/series';
 import {
     DEFAULT_X_SCALE,
     DEFAULT_X_SERIE_NAME,
-    DEFAULT_Y_SCALE,
     MIN_SELECTION_WIDTH,
     DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
@@ -418,11 +417,9 @@ class Yagr {
         const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE};
         options.axes[0] = getAxis(xAxis, config);
 
-        const yAxis = config.axes.find(({scale}) => scale === DEFAULT_Y_SCALE) || {scale: DEFAULT_Y_SCALE};
-        options.axes[1] = getAxis(yAxis, config);
-
-        if (config.axes.length >= 2) {
-            for (let aI = 2; aI < config.axes.length; aI++) {
+        for (let aI = 0; aI < config.axes.length; aI++) {
+            const axis = config.axes[aI];
+            if (axis && axis.scale !== DEFAULT_X_SCALE) {
                 options.axes.push(getAxis(config.axes[aI], config));
             }
         }
