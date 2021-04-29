@@ -13,17 +13,6 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
         };
     }
 
-    const forceMin = typeof scale.min === 'number' ? scale.min : null;
-    const forceMax = typeof scale.max === 'number' ? scale.max : null;
-
-    /** At first handle case when scale has setted min and max */
-    if (forceMax !== null && forceMin !== null) {
-        if (forceMax <= forceMin) {
-            throw new Error('Invalid scale config. .max should be > .min');
-        }
-        return [forceMin, forceMax] as Range.MinMax;
-    }
-
     if (scale.normalize) {
         return [0, scale.normalizeBase || 100] as Range.MinMax;
     }

@@ -5,8 +5,9 @@
   "keywords": [],
   "main": "dist/index.js",
   "umd": "dist/yagr.umd.js",
+  "mainFields": ["main", "umd"],
   "module": "dist/yagr.es5.js",
-  "browser": "dist/yagr.iife.min.js",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "typings"

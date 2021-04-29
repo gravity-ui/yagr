@@ -380,10 +380,20 @@ class Yagr {
 
             const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
             const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
+        
+            /** At first handle case when scale has setted min and max */
+            if (forceMax !== null && forceMin !== null) {
+                if (forceMax <= forceMin) {
+                    throw new Error('Invalid scale config. .max should be > .min');
+                }
+                scale.range = [forceMin, forceMax];
+            }
+
             const isLogScale = scaleConfig.type === ScaleType.Logarithmic;
 
             if (isLogScale) {
                 scale.distr = Scale.Distr.Logarithmic;
+                return;
             }
 
             if (isEmptyDataSet) {
