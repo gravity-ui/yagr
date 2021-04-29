@@ -46,6 +46,7 @@ import {
     DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
     theme,
+    DEFAULT_Y_SCALE,
 } from './defaults';
 import i18n from './locale';
 
@@ -417,11 +418,17 @@ class Yagr {
         const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE};
         options.axes[0] = getAxis(xAxis, config);
 
+        let hasOneYAxis = false;
         for (let aI = 0; aI < config.axes.length; aI++) {
             const axis = config.axes[aI];
             if (axis && axis.scale !== DEFAULT_X_SCALE) {
-                options.axes.push(getAxis(config.axes[aI], config));
+                hasOneYAxis = true;
+                options.axes.push(getAxis(axis, config));
             }
+        }
+
+        if (!hasOneYAxis) {
+            options.axes.push(getAxis({scale: DEFAULT_Y_SCALE}, config));
         }
 
         const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
