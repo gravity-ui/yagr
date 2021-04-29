@@ -53,7 +53,7 @@ export default [{
     input: `src/index.ts`,
     output: [
         {file: pkg.umd, name: libraryName, format: 'umd', sourcemap: true, moduleContext: 'this', context: 'this'},
-        {file: pkg.module, format: 'es', sourcemap: true, moduleContext: 'this', context: 'this'},
+        {file: './dist/yagr.es5.js', format: 'es', sourcemap: true, moduleContext: 'this', context: 'this'},
     ],
     external: [],
     watch: {
