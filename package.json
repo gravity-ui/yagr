@@ -1,11 +1,14 @@
 {
   "name": "@yandex-data-ui/yagr",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "keywords": [],
   "main": "dist/index.js",
   "umd": "dist/yagr.umd.js",
-  "mainFields": ["main", "umd"],
+  "mainFields": [
+    "main",
+    "umd"
+  ],
   "module": "dist/yagr.es5.js",
   "typings": "dist/index.d.ts",
   "files": [
