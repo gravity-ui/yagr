@@ -8,7 +8,6 @@ import json from 'rollup-plugin-json';
 import scss from 'rollup-plugin-scss';
 import {terser} from 'rollup-plugin-terser';
 
-const pkg = require('./package.json');
 const libraryName = 'yagr';
 
 const iife = (min) => ({
@@ -25,6 +24,7 @@ const iife = (min) => ({
         json(),
         typescript({
             typescript: require('typescript'),
+            tsconfig: './tsconfig.publish.json',
             useTsconfigDeclarationDir: true,
             objectHashIgnoreUnknownHack: true,
         }),
@@ -63,6 +63,7 @@ export default [{
         json(),
         typescript({
             useTsconfigDeclarationDir: true,
+            tsconfig: './tsconfig.publish.json'
         }),
         scss({
             output: (styles) => {
