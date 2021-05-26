@@ -1,4 +1,3 @@
-
 import {YagrConfig, SnapToValue} from '../../types';
 import UPlot, {Plugin} from 'uplot';
 
@@ -113,9 +112,7 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
                     if (opts.x && opts.x.visible === false) {
                         cX.style.display = 'none';
                     }
-                    if (opts.x?.style) {
-                        cX.style.borderRight = (opts.x && opts.x.style) || CURSOR_STYLE;
-                    }
+                    cX.style.borderRight = (opts.x && opts.x.style) || CURSOR_STYLE;
                 }
 
                 const cY: HTMLElement | null = u.root.querySelector('.u-cursor-y');
