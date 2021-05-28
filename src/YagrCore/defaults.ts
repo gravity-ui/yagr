@@ -114,8 +114,8 @@ export const BARS_DRAW_FACTOR = 0.5;
 export const BARS_DRAW_MAX = 100;
 
 export const PADDING_LEFT: Padding = [14, 14, 0, 4];
-export const PADDING_RIGHT: Padding = [14, 0, 0, 14];
-export const PADDING_BOTH: Padding = [14, 14, 0, 14];
+export const PADDING_RIGHT: Padding = [14, 4, 0, 14];
+export const PADDING_BOTH: Padding = [14, 4, 0, 4];
 
 export const SERIE_COLOR = 'rgba(0, 0, 0, 1)';
 export const SERIE_LINE_WIDTH = 2;
