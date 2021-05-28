@@ -65,12 +65,15 @@ export default function (
         anchor = initialAnchor;
     }
 
-    const anchorRect = Object.assign({
-        top: anchor.bottom || 0,
-        bottom: anchor.top || 0,
-        left: anchor.right || 0,
-        right: anchor.left || 0,
-    }, anchor);
+    const anchorRect = Object.assign(
+        {
+            top: anchor.bottom || 0,
+            bottom: anchor.top || 0,
+            left: anchor.right || 0,
+            right: anchor.left || 0,
+        },
+        anchor,
+    );
 
     const boundRect = {
         top: 0,
@@ -88,13 +91,13 @@ export default function (
 
     const elemStyle = getComputedStyle(elem);
 
-    const {
-        primary,
-        secondary,
-    } = Object.entries(NAMES).reduce((acc, [key, value]) => ({
-        primary: {...acc.primary, [key]: value[side === 'top' || side === 'bottom' ? 0 : 1]},
-        secondary: {...acc.secondary, [key]: value[side === 'top' || side === 'bottom' ? 1 : 0]},
-    }), {primary: {}, secondary: {}}) as {
+    const {primary, secondary} = Object.entries(NAMES).reduce(
+        (acc, [key, value]) => ({
+            primary: {...acc.primary, [key]: value[side === 'top' || side === 'bottom' ? 0 : 1]},
+            secondary: {...acc.secondary, [key]: value[side === 'top' || side === 'bottom' ? 1 : 0]},
+        }),
+        {primary: {}, secondary: {}},
+    ) as {
         primary: Props;
         secondary: Props;
     };
@@ -103,7 +106,7 @@ export default function (
     elem.style.maxWidth = '';
     elem.style.maxHeight = '';
 
-    const offset = (options[primary.offsetOpt] || 0);
+    const offset = options[primary.offsetOpt] || 0;
 
     // Constrain the maximum size of the popup along the secondary axis.
     const secondaryMarginBefore = parseInt(elemStyle[secondary.marginBefore], 10);
@@ -124,8 +127,10 @@ export default function (
     const roomBefore = anchorRect[primary.before] - boundRect[primary.before] - margin;
     const roomAfter = boundRect[primary.after] - anchorRect[primary.after] - margin - offset;
 
-    if ((side === primary.before && elem[primary.offsetSize] > roomBefore)
-        || (side === primary.after && elem[primary.offsetSize] > roomAfter)) {
+    if (
+        (side === primary.before && elem[primary.offsetSize] > roomBefore) ||
+        (side === primary.after && elem[primary.offsetSize] > roomAfter)
+    ) {
         side = roomBefore > roomAfter ? primary.before : primary.after;
     }
 
@@ -157,26 +162,26 @@ export default function (
         );
     };
 
-    if (side === primary.before) { // top or left
-        elem.style[primary.before] = (
-            scrollOffset + boundPrimaryPos(anchorRect[primary.before] - elem[primary.offsetSize] - margin) - offset
-        ) + 'px';
+    if (side === primary.before) {
+        // top or left
+        elem.style[primary.before] =
+            scrollOffset +
+            boundPrimaryPos(anchorRect[primary.before] - elem[primary.offsetSize] - margin) -
+            offset +
+            'px';
         elem.style[primary.after] = 'auto';
-    } else { // bottom or right
-        elem.style[primary.before] = (
-            scrollOffset + boundPrimaryPos(anchorRect[primary.after]) + offset
-        ) + 'px';
+    } else {
+        // bottom or right
+        elem.style[primary.before] = scrollOffset + boundPrimaryPos(anchorRect[primary.after]) + offset + 'px';
         elem.style[primary.after] = 'auto';
     }
 
     // Set the position of the popup element along the secondary axis.
     const secondaryScrollOffset = window[secondary.scrollOffset] as unknown as number;
 
-    elem.style[secondary.before] = (
-        secondaryScrollOffset + boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore)
-    ) + 'px';
+    elem.style[secondary.before] =
+        secondaryScrollOffset + boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore) + 'px';
     elem.style[secondary.after] = 'auto';
-            
 
     elem.dataset.side = side;
 }

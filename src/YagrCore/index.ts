@@ -89,7 +89,7 @@ class Yagr {
     references?: RefPoints;
     plugins: YagrPlugins;
     sync: SyncPubSub;
-    i18n: ReturnType<typeof i18n>
+    i18n: ReturnType<typeof i18n>;
 
     private _startTime: number;
     private _drawn: boolean;
@@ -105,29 +105,32 @@ class Yagr {
             throw new Error('Specify config.timeline: number[]');
         }
 
-        const config: YagrConfig = Object.assign({
-            title: {},
-            timeline: [],
-            data: [],
-            axes: [],
-            series: [],
-            scales: {
-                x: {time: true},
-                y: {},
+        const config: YagrConfig = Object.assign(
+            {
+                title: {},
+                timeline: [],
+                data: [],
+                axes: [],
+                series: [],
+                scales: {
+                    x: {time: true},
+                    y: {},
+                },
+                hooks: {},
+                settings: {},
+                chart: {},
+                cursor: {},
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    enabled: true,
+                },
+                grid: null,
+                markers: {},
             },
-            hooks: {},
-            settings: {},
-            chart: {},
-            cursor: {},
-            legend: {
-                show: false
-            },
-            tooltip: {
-                enabled: true,
-            },
-            grid: null,
-            markers: {},
-        }, pConfig);
+            pConfig,
+        );
 
         config.chart.type = config.chart.type || ChartTypes.Line;
 
@@ -149,7 +152,6 @@ class Yagr {
         }
 
         try {
-
             theme.setTheme(settings.theme || YagrTheme.Light);
             this.root.classList.remove('yagr_theme_dark');
             this.root.classList.remove('yagr_theme_light');
@@ -172,11 +174,7 @@ class Yagr {
         }
 
         try {
-            this.uplot = new UPlot(
-                this.options,
-                this.series,
-                this.plugins.legend.init,
-            );
+            this.uplot = new UPlot(this.options, this.series, this.plugins.legend.init);
             this.canvas = root.querySelector('canvas') as HTMLCanvasElement;
         } catch (error) {
             this.execHooks(config.hooks.error, {
@@ -217,9 +215,12 @@ class Yagr {
     }
 
     focus(lineId: string | null, focus: boolean) {
-        const serieIdx = lineId && this.uplot.series.findIndex((serie) => {
-            return serie.id === lineId;
-        }) || null;
+        const serieIdx =
+            (lineId &&
+                this.uplot.series.findIndex((serie) => {
+                    return serie.id === lineId;
+                })) ||
+            null;
         this.uplot.setSeries(serieIdx, {focus});
     }
 
@@ -270,18 +271,21 @@ class Yagr {
             plugins: plugins,
             // @see https://github.com/leeoniya/uPlot/issues/429
             focus: {alpha: settings.stacking ? 1.1 : DEFAULT_FOCUS_ALPHA},
-            series: [{
-                id: DEFAULT_X_SERIE_NAME,
-                color: '',
-                name: '',
-                $c: config.timeline,
-                _valuesCount: config.timeline.length,
-            }],
+            series: [
+                {
+                    id: DEFAULT_X_SERIE_NAME,
+                    color: '',
+                    name: '',
+                    $c: config.timeline,
+                    _valuesCount: config.timeline.length,
+                },
+            ],
             ms: settings.timeMultiplier || 1,
             hooks: config.hooks || {},
         };
 
-        const isEmptyDataSet = config.timeline.length === 0 ||
+        const isEmptyDataSet =
+            config.timeline.length === 0 ||
             config.series.length === 0 ||
             config.series.every(({data}) => data.length === 0);
 
@@ -307,10 +311,9 @@ class Yagr {
         }
 
         /** first serie is always X */
-        const seriesOptions = (config.series || []).map((
-            rawSerie: RawSerieData,
-            idx
-        ) => getSerie(rawSerie, config, idx));
+        const seriesOptions = (config.series || []).map((rawSerie: RawSerieData, idx) =>
+            getSerie(rawSerie, config, idx),
+        );
 
         /* First serie is always X serie */
         const resultingSeriesOptions: Series[] = options.series;
@@ -319,7 +322,7 @@ class Yagr {
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie: Series = (seriesOptions[i] || {});
+            const serie: Series = seriesOptions[i] || {};
 
             serie.points = serie.points || {};
 
@@ -345,15 +348,14 @@ class Yagr {
                 serie.stroke = serie.color;
                 serie.fill = serie.color;
                 serie.width = 2;
-                plugins.push(markersPlugin({
-                    size: config.chart.pointsSize || 4,
-                }));
+                plugins.push(
+                    markersPlugin({
+                        size: config.chart.pointsSize || 4,
+                    }),
+                );
             }
 
-            serie.interpolation =
-                serie.interpolation ||
-                settings.interpolation ||
-                InterpolationSetting.Linear;
+            serie.interpolation = serie.interpolation || settings.interpolation || InterpolationSetting.Linear;
 
             serie.paths = pathsRenderer;
             resultingSeriesOptions.push(serie);
@@ -380,7 +382,7 @@ class Yagr {
 
             const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
             const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
-        
+
             /** At first handle case when scale has setted min and max */
             if (forceMax !== null && forceMin !== null) {
                 if (forceMax <= forceMin) {
@@ -397,10 +399,7 @@ class Yagr {
             }
 
             if (isEmptyDataSet) {
-                scale.range = [
-                    forceMin === null ? (isLogScale ? 1 : 0) : forceMin,
-                    forceMax === null ? 100 : forceMax,
-                ];
+                scale.range = [forceMin === null ? (isLogScale ? 1 : 0) : forceMin, forceMax === null ? 100 : forceMax];
                 return;
             }
 
@@ -415,7 +414,9 @@ class Yagr {
 
         /** Setting up minimal axes */
         options.axes = options.axes || [];
-        const xAxis = config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE) || {scale: DEFAULT_X_SCALE};
+        const xAxis = (config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE)) || {
+            scale: DEFAULT_X_SCALE,
+        };
         options.axes[0] = getAxis(xAxis, config);
 
         let hasOneYAxis = false;
@@ -438,7 +439,9 @@ class Yagr {
         options.hooks = config.hooks || {};
         options.hooks.draw = options.hooks.draw || [];
         options.hooks.draw.push(() => {
-            if (this._drawn) { return; }
+            if (this._drawn) {
+                return;
+            }
             this._drawn = true;
             const renderTime = performance.now() - this._startTime;
             this._meta.renderTime = renderTime;
@@ -470,17 +473,15 @@ class Yagr {
                 DEFAULT_CANVAS_PIXEL_RATIO,
                 DEFAULT_CANVAS_PIXEL_RATIO,
                 u.width * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
-                u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO);
+                u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
+            );
             ctx.restore();
         });
 
         options.hooks.setSelect = options.hooks.setSelect || [];
         options.hooks.setSelect.push((u: UPlot) => {
             const {left, width} = u.select;
-            const [_from, _to] = [
-                u.posToVal(left, DEFAULT_X_SCALE),
-                u.posToVal(left + width, DEFAULT_X_SCALE),
-            ];
+            const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
 
             this.execHooks(config.hooks.onSelect, {
                 from: Math.ceil(_from * 1000),
@@ -491,11 +492,10 @@ class Yagr {
         });
 
         options.drawOrder = settings.drawOrder
-            ? settings.drawOrder.filter((key) => key === DrawOrderKey.Series ||  key === DrawOrderKey.Axes) as DrawOrderKey[]
-            : [
-                DrawOrderKey.Series,
-                DrawOrderKey.Axes,
-            ];
+            ? (settings.drawOrder.filter(
+                  (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Axes,
+              ) as DrawOrderKey[])
+            : [DrawOrderKey.Series, DrawOrderKey.Axes];
 
         /** Disabling uPlot legend. */
         options.legend = {show: false};
@@ -527,9 +527,7 @@ class Yagr {
         }
 
         if (/** condition for non transforming*/ undefined) {
-            return [
-                timeline,
-            ].concat(series.reverse() as any) as UPlotData;
+            return [timeline].concat(series.reverse() as any) as UPlotData;
         }
 
         let accum: number[] = [];
@@ -545,9 +543,8 @@ class Yagr {
 
             const serieConfigIndex = this.options.series.length - realSerieIdx;
             const serieOptions = this.options.series[serieConfigIndex];
-            const scaleConfig = (
-                serieOptions.scale ? this.config.scales[serieOptions.scale] : this.config.scales.y
-            ) || {};
+            const scaleConfig =
+                (serieOptions.scale ? this.config.scales[serieOptions.scale] : this.config.scales.y) || {};
 
             let shouldCalculateRefPoints = false;
 
@@ -569,8 +566,7 @@ class Yagr {
                     if (serieOptions.type === ChartTypes.Line || serieOptions.type === ChartTypes.Dots) {
                         dataLine.push(null);
                         continue;
-                    } else
-                    if (serieOptions.show) {
+                    } else if (serieOptions.show) {
                         dataLine.push(null);
                         continue;
                     } else {
@@ -602,12 +598,10 @@ class Yagr {
 
                 if (shouldCalculateRefPoints) {
                     const cv = value || 0;
-                    serieOptions.refPoints.max = serieOptions.refPoints.max === undefined
-                        ? cv
-                        : Math.max(serieOptions.refPoints.max, cv);
-                    serieOptions.refPoints.min = serieOptions.refPoints.min === undefined
-                        ? cv
-                        : Math.min(serieOptions.refPoints.min, cv);
+                    serieOptions.refPoints.max =
+                        serieOptions.refPoints.max === undefined ? cv : Math.max(serieOptions.refPoints.max, cv);
+                    serieOptions.refPoints.min =
+                        serieOptions.refPoints.min === undefined ? cv : Math.min(serieOptions.refPoints.min, cv);
                     serieOptions.refPoints.sum = (serieOptions.refPoints.sum || 0) + cv;
                 }
 
@@ -630,20 +624,29 @@ class Yagr {
     }
 
     private calculateRefPoints() {
-        let max, min, sum, count = 0;
+        let max,
+            min,
+            sum,
+            count = 0;
 
         for (const {refPoints} of this.options.series) {
-            if (!refPoints) { continue; }
+            if (!refPoints) {
+                continue;
+            }
             count += refPoints.count || 0;
             max = max === undefined ? refPoints.max : Math.max(refPoints.max || -Infinity, max);
             min = min === undefined ? refPoints.min : Math.min(refPoints.min || Infinity, min);
             sum = sum === undefined ? refPoints.sum : sum + (refPoints.sum || 0);
         }
 
-        const avg = sum && (sum / count);
+        const avg = sum && sum / count;
 
         this.references = {
-            max, min, sum, avg, count,
+            max,
+            min,
+            sum,
+            avg,
+            count,
         };
     }
 
@@ -683,10 +686,7 @@ class Yagr {
      */
     private onResize = (args: ResizeObserverEntry[]) => {
         const [resize] = args;
-        if (
-            this._cache.height === resize.contentRect.height &&
-            this._cache.width === resize.contentRect.width
-        ) {
+        if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
             return;
         }
 
@@ -716,14 +716,12 @@ class Yagr {
                 typeof hook === 'function' && hook(...args);
             });
         }
-    }
+    };
 
     private get clientHeight() {
         const DEFAULT_FONT_SIZE = 14;
         const MARGIN = 8;
-        const offset = this.config.title.text
-            ? (this.config.title.fontSize || DEFAULT_FONT_SIZE) + MARGIN
-            : 0;
+        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_FONT_SIZE) + MARGIN : 0;
         return this.root.clientHeight - offset;
     }
 }

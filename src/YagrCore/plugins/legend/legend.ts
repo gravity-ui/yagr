@@ -42,11 +42,7 @@ const hasOneVisibleLine = (series: Series[]) => {
 };
 
 const getPrependingTitle = (i18n: Yagr['i18n'], series: Series[]) => {
-    return series.length > 3 && i18n(
-        hasOneVisibleLine(series)
-            ? 'hide-all'
-            : 'show-all',
-    );
+    return series.length > 3 && i18n(hasOneVisibleLine(series) ? 'hide-all' : 'show-all');
 };
 
 export default class Legend {
@@ -72,13 +68,16 @@ export default class Legend {
             paginated: false,
         };
 
-        this.options = Object.assign({
-            show: false,
-            position: LegendPosition.Bottom,
-            fontSize: DEFAULT_FONT_SIZE,
-            maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
-            className: undefined,
-        }, options || {});
+        this.options = Object.assign(
+            {
+                show: false,
+                position: LegendPosition.Bottom,
+                fontSize: DEFAULT_FONT_SIZE,
+                maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
+                className: undefined,
+            },
+            options || {},
+        );
 
         if (this.options.show) {
             this.calc();
@@ -86,14 +85,18 @@ export default class Legend {
     }
 
     redraw() {
-        if (!this.options.show) { return; }
+        if (!this.options.show) {
+            return;
+        }
         this.destroy();
         this.calc();
         this.prepareLegend();
     }
 
     destroy() {
-        if (this._onDestroy) { this._onDestroy(); }
+        if (this._onDestroy) {
+            this._onDestroy();
+        }
         this.legendEl?.remove();
     }
 
@@ -114,7 +117,9 @@ export default class Legend {
     private applyHandlers() {
         const {yagr, uplot: u} = this;
 
-        if (!u) { return () => {}; }
+        if (!u) {
+            return () => {};
+        }
 
         const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-id]');
         const unsubsribe: (() => void)[] = [];
@@ -133,7 +138,9 @@ export default class Legend {
                 let idx = 0;
                 const serie = u.series.find((serie) => {
                     const r = serie.id === serieId;
-                    if (!r) { idx += 1; }
+                    if (!r) {
+                        idx += 1;
+                    }
                     return r;
                 });
                 if (!serie) {
@@ -158,7 +165,9 @@ export default class Legend {
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
             const serieId = serieNode.getAttribute('data-serie-id');
-            if (serieId === ALL) { return; }
+            if (serieId === ALL) {
+                return;
+            }
             yagr.focus(serieId, true);
         };
 
@@ -188,7 +197,9 @@ export default class Legend {
 
     private prepareLegend() {
         const {uplot: u, options} = this;
-        if (!u) { return; }
+        if (!u) {
+            return;
+        }
 
         const wrapEl = u.root.querySelector('.u-wrap') as HTMLElement;
         const legendEl = document.createElement('div');
@@ -316,31 +327,37 @@ export default class Legend {
             series.push(uplotOptions.series[i]);
         }
 
-        const content = series.map((serie) => {
-            let id, content;
+        const content = series
+            .map((serie) => {
+                let id, content;
 
-            if (typeof serie === 'string') {
-                id = ALL;
-                content = serie;
-            } else {
-                const iconCname = `yagr-legend__icon yagr-legend__icon_${serie.type}`;
-                id = serie.id;
-                content = `
+                if (typeof serie === 'string') {
+                    id = ALL;
+                    content = serie;
+                } else {
+                    const iconCname = `yagr-legend__icon yagr-legend__icon_${serie.type}`;
+                    id = serie.id;
+                    content = `
                     ${serie.color ? `<span class="${iconCname}" style="background-color: ${serie.color};"></span>` : ''}
                     ${serie.name || serie}
                 `;
-            }
+                }
 
-            const visible = typeof serie === 'string' ? true : serie.show;
+                const visible = typeof serie === 'string' ? true : serie.show;
 
-            return `<div class="yagr-legend__item ${visible ? '' : 'yagr-legend__item_hidden'}" data-serie-id="${id}">${content}</div>`;
-        }).join('');
+                return `<div class="yagr-legend__item ${
+                    visible ? '' : 'yagr-legend__item_hidden'
+                }" data-serie-id="${id}">${content}</div>`;
+            })
+            .join('');
 
         return `<div class="yagr-legend__items">${content}</div>`;
     }
 
     private calc() {
-        if (!this.options.show) { return; }
+        if (!this.options.show) {
+            return;
+        }
         const uplotOptions = this.yagr.options;
 
         const chartHeight = uplotOptions.height - TOTAL_LEGEND_VERTICAL_PADDING;
@@ -366,5 +383,4 @@ export default class Legend {
         this.state.rowsPerPage = rowsPerPage;
         this.itemsHtml = html;
     }
-
 }
