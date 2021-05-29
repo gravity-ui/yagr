@@ -123,13 +123,22 @@ export function toFixed(num: number, fixed: number) {
     return frac.length >= fixed ? `${int}.${frac.slice(0, fixed)}` : `${int}.${frac}${'0'.repeat(fixed - frac.length)}`;
 }
 
-/* Finds non neares null value in data series by given direction */
+/**
+ * Finds nearest non-null value's index in data series by given direction
+ *
+ * @param {DataSeriesExtended} data - Series data
+ * @param {Series} series - Series options
+ * @param {number} idx - cursor index
+ * @param {SnapToValue | false} defaultSnapTo - default value for direction
+ * @param {unknown} skipValue - value to skip
+ * @returns {number}
+ */
 export function findDataIdx(
     data: DataSeriesExtended,
     series: Series,
     idx: number,
     defaultSnapTo: SnapToValue | false = SnapToValue.Closest,
-    trimValue: unknown = null,
+    skipValue: unknown = null,
 ) {
     let corL = idx,
         corR = idx;
@@ -142,7 +151,7 @@ export function findDataIdx(
 
     if (direction === SnapToValue.Left || direction === SnapToValue.Closest) {
         for (let i = idx - 1; i >= 0; i--) {
-            if (data[i] !== trimValue) {
+            if (data[i] !== skipValue) {
                 corL = i;
                 break;
             }
@@ -151,7 +160,7 @@ export function findDataIdx(
 
     if (direction === SnapToValue.Right || direction === SnapToValue.Closest) {
         for (let i = idx + 1; i < data.length; i++) {
-            if (data[i] !== trimValue) {
+            if (data[i] !== skipValue) {
                 corR = i;
                 break;
             }
@@ -171,7 +180,7 @@ export function findDataIdx(
 /*
  * Interpolation function
  */
-export const interpolateImpl = (
+const interpolateImpl = (
     timeline: number[],
     y1: number | null,
     y2: number | null,
