@@ -11,6 +11,9 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 
+export const LIGHT_DEFAULT_LINE_COLOR = '#222222';
+export const DARK_DEFAULT_LINE_COLOR = '#eeeeee';
+
 export const DEFAULT_AXIS_FONT_SIZE = 11;
 export const AXIS_LABEL_FONT = 'normal 11px Lucida Grande, Arial, Helvetica, sans-serif';
 export const AXIS_VALUES_FONT = '11px Lucida Grande, Arial, Helvetica, sans-serif';
@@ -158,6 +161,10 @@ class ThemedDefaults {
 
     get SHIFT() {
         return this.theme === YagrTheme.Light ? LIGHTEN_COLOR_SHIFT : DARKEN_COLOR_SHIFT;
+    }
+
+    get DEFAULT_LINE_COLOR() {
+        return this.theme === YagrTheme.Light ? LIGHT_DEFAULT_LINE_COLOR : DARK_DEFAULT_LINE_COLOR;
     }
 }
 
