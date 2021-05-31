@@ -1,4 +1,4 @@
-import {findInRange, findSticky} from '../../src/YagrCore/utils/common';
+import {findInRange, findSticky} from '../src/YagrCore/utils/common';
 
 describe('utils:findInRange', () => {
     describe('stickToRanges = true', () => {

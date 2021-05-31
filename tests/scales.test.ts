@@ -1,5 +1,5 @@
-import {Scale, ScaleType, ChartTypes, YagrConfig} from '../../src/YagrCore/types';
-import {offsetScale} from '../../src/YagrCore/utils/scales';
+import {Scale, ScaleType, ChartTypes, YagrConfig} from '../src/YagrCore/types';
+import {offsetScale} from '../src/YagrCore/utils/scales';
 
 type TArgs = [number, number, Scale, YagrConfig];
 type TResult = {min: number; max: number};
