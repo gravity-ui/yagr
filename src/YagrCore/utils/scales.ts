@@ -5,7 +5,7 @@ import {YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
-export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefined), config: YagrConfig) => {
+export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined, config: YagrConfig) => {
     const range = scale.range;
     if (typeof range === 'function') {
         return (u: UPlot, dataMin: number, dataMax: number) => {
@@ -25,9 +25,16 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
 
     switch (scale.range) {
         case undefined:
-        case ScaleRange.Nice: { rangeFn = niceScale; break; }
-        case ScaleRange.Offset: { rangeFn = offsetScale; break; }
-        default: throw new Error(`Unknown scale range type ${scale.range}`);
+        case ScaleRange.Nice: {
+            rangeFn = niceScale;
+            break;
+        }
+        case ScaleRange.Offset: {
+            rangeFn = offsetScale;
+            break;
+        }
+        default:
+            throw new Error(`Unknown scale range type ${scale.range}`);
     }
 
     return (_: UPlot, dataMin: number, dataMax: number): Range.MinMax => {
@@ -62,13 +69,7 @@ export const getScaleRange = (scale: Scale, getRefs: (() => RefPoints | undefine
     };
 };
 
-
-export function offsetScale(
-    dataMin: number,
-    dataMax: number,
-    scaleConfig: Scale,
-    config: YagrConfig,
-) {
+export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale, config: YagrConfig) {
     const startFromZero = dataMin >= 0 && config.settings.stacking;
 
     return {
@@ -85,12 +86,7 @@ export function offsetScale(
  * with extra options implementing consistent incr proximity if dataMin ~= dataMax. (16.01.2020)
  * with extra options for small ranges between max and min (27.01.2020)
  */
-export function niceScale(
-    dataMin: number,
-    dataMax: number,
-    scaleConfig: Scale,
-    config: YagrConfig,
-) {
+export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale, config: YagrConfig) {
     const startFromZero = dataMin >= 0 && config.settings.stacking;
 
     /**
@@ -98,27 +94,22 @@ export function niceScale(
      * range after usage of given max-min from scale config creates not centered lines
      */
     const dMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : dataMax;
-    const dMin = startFromZero ? 0 : (
-        typeof scaleConfig.min === 'number'
-            ? scaleConfig.min
-            : dataMin
-    );
+    const dMin = startFromZero ? 0 : typeof scaleConfig.min === 'number' ? scaleConfig.min : dataMin;
 
     if (dMin === dMax) {
-        return dMin >= 0
-            ? {min: dMin, max: dMin + 2}
-            : {min: dMin - 1, max: dMin + 1};
+        return dMin >= 0 ? {min: dMin, max: dMin + 2} : {min: dMin - 1, max: dMin + 1};
     }
 
     const difference = dMax - dMin;
     const range = niceNum(difference, false);
     const incr = niceNum(range / ((scaleConfig.maxTicks || DEFAULT_MAX_TICKS) - 1), true);
     let min = (startFromZero ? Math.min(0, dMin) : Math.floor(dMin / incr) * incr) || 0;
-    let max = (Math.ceil(dMax / incr) * incr) || 100;
+    let max = Math.ceil(dMax / incr) * incr || 100;
 
     /** Workaround for weird ranges */
     if (min === max) {
-        min -= 1; max += 1;
+        min -= 1;
+        max += 1;
     }
 
     return {
@@ -131,17 +122,21 @@ function niceNum(delta: number, round: boolean) {
     const exp = Math.floor(Math.log10(delta));
     const frac = delta / 10 ** exp;
 
-    const niceFrac = round ? (
-        frac < 1.5 ? 1 :
-            frac < 3 ? 2 :
-                frac < 7 ? 5 :
-                    10
-    ) : (
-        frac <= 1 ? 1 :
-            frac <= 2 ? 2 :
-                frac <= 5 ? 5 :
-                    10
-    );
+    const niceFrac = round
+        ? frac < 1.5
+            ? 1
+            : frac < 3
+            ? 2
+            : frac < 7
+            ? 5
+            : 10
+        : frac <= 1
+        ? 1
+        : frac <= 2
+        ? 2
+        : frac <= 5
+        ? 5
+        : 10;
 
     return niceFrac * 10 ** exp;
 }
