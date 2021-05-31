@@ -19,6 +19,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
+    "test": "jest",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
@@ -54,6 +55,7 @@
     "jest": "^26.6.3",
     "lint-staged": "^8.0.0",
     "monaco-editor": "^0.23.0",
+    "prettier": "^2.3.0",
     "react": "^17.0.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.67.0",
@@ -71,6 +73,6 @@
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
-    "uplot": "1.6.8"
+    "uplot": "1.6.10"
   }
 }

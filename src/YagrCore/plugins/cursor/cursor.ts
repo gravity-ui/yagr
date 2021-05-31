@@ -33,22 +33,20 @@ const MAX_CURSORS = 50;
  *
  */
 export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): Plugin {
-    const snapTo = opts.snapToValues === false
-        ? false
-        : opts.snapToValues || SnapToValue.Closest;
+    const snapTo = opts.snapToValues === false ? false : opts.snapToValues || SnapToValue.Closest;
 
     const processing = config.processing || {};
     const pInterpolation = Boolean(processing.interpolation);
     const iValue = processing.interpolation?.value;
 
     /*
-    * This function finds non null value index and returns
-    * it's value for drawIdx hook for cursor
-    */
+     * This function finds non null value index and returns
+     * it's value for drawIdx hook for cursor
+     */
     const snapOnValues = (self: UPlot, seriesIdx: number, hoveredIdx: number) => {
         const series = self.series[seriesIdx];
         const seriesData = series.$c || self.data[seriesIdx];
-        
+
         const shouldTrim = pInterpolation && series.$c[hoveredIdx] === iValue;
 
         if (shouldTrim || (seriesData[hoveredIdx] === null && snapTo)) {
@@ -59,8 +57,8 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     };
 
     /*
-    * Draws HTML points for cursor to transform
-    */
+     * Draws HTML points for cursor to transform
+     */
     function cursorPoint(u: UPlot, seriesIndex: number) {
         const serie = u.series[seriesIndex];
         const pt = document.createElement('div');
@@ -77,7 +75,7 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
         pt.classList.add('yagr-point');
 
         const size = (serie.cursorOptions ? serie.cursorOptions.markersSize : opts?.markersSize) || MARKER_DIAMETER;
-        const margin = ((size - 2) / -2) - 1;
+        const margin = (size - 2) / -2 - 1;
 
         pt.style.width = `${size}px`;
         pt.style.height = `${size}px`;

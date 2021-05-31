@@ -1,4 +1,3 @@
-
 import * as defaults from '../defaults';
 import {colorParser} from './colors';
 
@@ -8,8 +7,8 @@ import {genId} from './common';
 export function getSerie(rawSerie: RawSerieData, config: YagrConfig, serieIdx: number) {
     return {
         ...rawSerie,
-        name: rawSerie.name || ('Serie ' + (serieIdx + 1)),
-        color: colorParser.parse(rawSerie.color),
+        name: rawSerie.name || 'Serie ' + (serieIdx + 1),
+        color: colorParser.parse(rawSerie.color) || defaults.theme.DEFAULT_LINE_COLOR,
         id: (rawSerie.id === undefined ? rawSerie.name : String(rawSerie.id)) || genId(),
         show: rawSerie.visible === undefined ? true : rawSerie.visible,
         $c: rawSerie.data,

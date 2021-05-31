@@ -4,7 +4,7 @@ import * as defaults from '../defaults';
 export function getPaddingByAxes(options: Options): Padding {
     let hasLeftAxis = false;
     let hasRightAxis = false;
-    
+
     options.axes?.forEach((axis) => {
         if (axis.scale === defaults.DEFAULT_X_SCALE) {
             return;
@@ -20,11 +20,9 @@ export function getPaddingByAxes(options: Options): Padding {
 
     if (hasLeftAxis && !hasRightAxis) {
         return defaults.PADDING_LEFT;
-    } else
-    if (hasRightAxis && !hasLeftAxis) {
+    } else if (hasRightAxis && !hasLeftAxis) {
         return defaults.PADDING_RIGHT;
     } else {
         return defaults.PADDING_BOTH;
     }
 }
-

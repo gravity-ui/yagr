@@ -11,6 +11,9 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 
+export const LIGHT_DEFAULT_LINE_COLOR = '#222222';
+export const DARK_DEFAULT_LINE_COLOR = '#eeeeee';
+
 export const DEFAULT_AXIS_FONT_SIZE = 11;
 export const AXIS_LABEL_FONT = 'normal 11px Lucida Grande, Arial, Helvetica, sans-serif';
 export const AXIS_VALUES_FONT = '11px Lucida Grande, Arial, Helvetica, sans-serif';
@@ -24,7 +27,7 @@ export const Y_AXIS_SIZE = (self: uPlot, values: string[], axisIdx: number) => {
         return DEFAULT_Y_AXIS_SIZE;
     }
 
-    const longesValue = values.reduce((l, c) => l.length > c.length ? l : c);
+    const longesValue = values.reduce((l, c) => (l.length > c.length ? l : c));
     const {ctx} = self;
     ctx.save();
     const axis = self.axes[axisIdx];
@@ -57,7 +60,7 @@ export const YEAR = DAY * 365;
 
 export const X_AXIS_TICK_GAP = 6;
 export const X_AXIS_SIZE = 32;
-export const X_AXIS_SPACE = 80;  
+export const X_AXIS_SPACE = 80;
 export const X_AXIS_INCRS = [
     // seconds divisors (# os ms)
     1,
@@ -103,12 +106,7 @@ export const X_AXIS_INCRS = [
     YEAR * 10,
 ];
 
-export const TYPES_ORDER = [
-    'dots',
-    'line',
-    'area',
-    'column',
-];
+export const TYPES_ORDER = ['dots', 'line', 'area', 'column'];
 
 export const BARS_DRAW_FACTOR = 0.5;
 export const BARS_DRAW_MAX = 100;
@@ -164,10 +162,13 @@ class ThemedDefaults {
     get SHIFT() {
         return this.theme === YagrTheme.Light ? LIGHTEN_COLOR_SHIFT : DARKEN_COLOR_SHIFT;
     }
+
+    get DEFAULT_LINE_COLOR() {
+        return this.theme === YagrTheme.Light ? LIGHT_DEFAULT_LINE_COLOR : DARK_DEFAULT_LINE_COLOR;
+    }
 }
 
 export const theme = new ThemedDefaults();
-
 
 export const TOOLTIP_Y_OFFSET = 24;
 export const TOOLTIP_X_OFFSET = 24;

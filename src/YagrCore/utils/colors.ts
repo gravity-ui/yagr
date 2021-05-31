@@ -19,14 +19,15 @@ export default class ColorParser {
     parse(color: string) {
         color = color || '000';
         const isVar = color.startsWith('var(--');
-        let res = color, pure = true, prop;
+        let res = color,
+            pure = true,
+            prop;
         const ctx = this.context as HTMLElement;
 
         if (isVar || color.startsWith('--')) {
             pure = false;
             prop = isVar ? color.slice(4, -1) : color;
-        } else 
-        if (!color.startsWith('#') || !color.startsWith('rgb')) {
+        } else if (!color.startsWith('#') || !color.startsWith('rgb')) {
             ctx.style.color = color;
             prop = 'color';
             pure = false;

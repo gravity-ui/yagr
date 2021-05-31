@@ -60,12 +60,14 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
     };
 
     initChart() {
-        if (!this.charRef.current) { return; }
+        if (!this.charRef.current) {
+            return;
+        }
         const {onChartLoad, config, onSelect} = this.props;
 
         config.hooks = config.hooks || {};
         const hooks = config.hooks;
-       
+
         if (onChartLoad) {
             const load = hooks.load || [];
             load.push(({chart, meta}) => {
@@ -81,6 +83,5 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
         }
 
         this.chart = new Yagr(this.charRef.current, this.props.config);
-
     }
 }

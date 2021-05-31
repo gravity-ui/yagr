@@ -1,11 +1,7 @@
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
 
-import {
-    YagrConfig,
-    AxisOptions,
-    AxisSide,
-} from '../types';
+import {YagrConfig, AxisOptions, AxisSide} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
 
@@ -33,14 +29,15 @@ export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align
     };
 };
 
-
 export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue = '') => {
     return (n: number | null) => {
         if (n === null) {
             return nullValue;
         }
 
-        if (n === 0) { return '0'; }
+        if (n === 0) {
+            return '0';
+        }
 
         const abs = Math.abs(n);
         const precisionNum = precision === 'auto' ? 2 : precision;
@@ -48,12 +45,13 @@ export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue 
         const [pow, suffix] = getUnitSuffix(abs);
         const transformedValue = n / pow;
 
-        return (precision === 'auto'
-            ? String(transformedValue).replace(/\.(\d{5,})/, (match) => {
-                return match.slice(0, 6);
-            })
-            : toFixed(transformedValue, precisionNum)) + suffix;
-
+        return (
+            (precision === 'auto'
+                ? String(transformedValue).replace(/\.(\d{5,})/, (match) => {
+                      return match.slice(0, 6);
+                  })
+                : toFixed(transformedValue, precisionNum)) + suffix
+        );
     };
 };
 
@@ -62,10 +60,7 @@ export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue 
  */
 const getNumericValueFormatter = (axisConfig: AxisOptions) => {
     const p = axisConfig.precision;
-    const numFormatter = getDefaultNumberFormatter(
-        typeof p === 'number' ? p : p || 'auto',
-        '',
-    );
+    const numFormatter = getDefaultNumberFormatter(typeof p === 'number' ? p : p || 'auto', '');
     return function defaultNumericValueFormatter(_: unknown, ticks: number[]) {
         return ticks.map(numFormatter);
     };
@@ -77,7 +72,7 @@ const minuteFormatter = uPlot.fmtDate('{MM}:{ss}');
 const secondFormatter = uPlot.fmtDate('{MM}:{ss}.{fff}');
 
 const getTimeFormatter = (config: YagrConfig) => {
-    const msm = (config.settings.timeMultiplier || 1);
+    const msm = config.settings.timeMultiplier || 1;
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];
         const rangeMs = range / msm;
@@ -85,11 +80,9 @@ const getTimeFormatter = (config: YagrConfig) => {
         let formatter = dayTimeFormatter;
         if (rangeMs <= defaults.SECOND) {
             formatter = secondFormatter;
-        } else 
-        if (rangeMs <= defaults.MINUTE) {
+        } else if (rangeMs <= defaults.MINUTE) {
             formatter = minuteFormatter;
-        } else
-        if (rangeMs <= defaults.DAY) {
+        } else if (rangeMs <= defaults.DAY) {
             formatter = dateTimeFormatter;
         }
 

@@ -12,4 +12,3 @@ import './Yagr.scss';
 
 import Yagr from './YagrCore/index';
 export default Yagr;
-

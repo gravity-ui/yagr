@@ -7,7 +7,7 @@ const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
     [DrawOrderKey.Series]: 0,
     [DrawOrderKey.Axes]: 1,
-    'plotLines': 2,
+    plotLines: 2,
 };
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
@@ -16,19 +16,20 @@ const DRAW_MAP = {
 export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConfig[] = []) {
     const thresholds: Record<string, PlotLineConfig[]> = {};
 
-    const drawIndicies = (cfg.settings.drawOrder
-        ? cfg.settings.drawOrder.map((key) => (DRAW_MAP)[key])
-        : [0, 1, 2]).join('');
-    
-    const hook = {
-        '012': 'draw',
-        '102': 'draw',
-        '201': 'drawClear',
-        '210': 'drawClear',
-        '120': 'drawAxes',
-        '021': 'drawSeries',
-    }[drawIndicies] || 'drawClear';
-    
+    const drawIndicies = (cfg.settings.drawOrder ? cfg.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join(
+        '',
+    );
+
+    const hook =
+        {
+            '012': 'draw',
+            '102': 'draw',
+            '201': 'drawClear',
+            '210': 'drawClear',
+            '120': 'drawAxes',
+            '021': 'drawSeries',
+        }[drawIndicies] || 'drawClear';
+
     function renderPlotLines(u: UPlot) {
         const {ctx} = u;
         const {height, top, width, left} = u.bbox;
@@ -36,7 +37,9 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
         const thresholdsValues = Object.values(thresholds);
 
         for (const plotLineConfig of plotLines.concat(...thresholdsValues)) {
-            if (!plotLineConfig.scale) { continue; }
+            if (!plotLineConfig.scale) {
+                continue;
+            }
 
             ctx.save();
             ctx.fillStyle = colorParser.parse(plotLineConfig.color);
@@ -50,9 +53,8 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
                         return val;
                     }
 
-                    const pos = val > 0
-                        ? (scale === DEFAULT_X_SCALE ? u.width : 0)
-                        : (scale === DEFAULT_X_SCALE ? 0 : u.height);
+                    const pos =
+                        val > 0 ? (scale === DEFAULT_X_SCALE ? u.width : 0) : scale === DEFAULT_X_SCALE ? 0 : u.height;
 
                     return u.posToVal(pos, scale);
                 });
@@ -71,7 +73,9 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
                     /** Workaround to ensure that plot line will not be drawn over axes */
                     const last = u.data[0][u.data[0].length - 1] as number;
                     const lastValue = u.valToPos(last, scale, true);
-                    if (from - lastValue > MAX_X_SCALE_LINE_OFFSET) { continue; }
+                    if (from - lastValue > MAX_X_SCALE_LINE_OFFSET) {
+                        continue;
+                    }
 
                     ctx.fillRect(from, top, plotLineConfig.width || 1, height);
                 } else {
@@ -82,11 +86,14 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
         }
     }
 
-    const handler = hook === 'drawSeries' ? (u: UPlot, sIdx: number) => {
-        if (sIdx === u.series.length - 1) {
-            renderPlotLines(u);
-        }
-    } : renderPlotLines;
+    const handler =
+        hook === 'drawSeries'
+            ? (u: UPlot, sIdx: number) => {
+                  if (sIdx === u.series.length - 1) {
+                      renderPlotLines(u);
+                  }
+              }
+            : renderPlotLines;
 
     return {
         setThreshold: (key: string, threshold: PlotLineConfig[]) => {
@@ -94,7 +101,7 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
         },
         addPlotlines: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
             for (const p of additionalPlotLines) {
-                plotLines.push(scale ? ({scale, ...p}) : p);
+                plotLines.push(scale ? {scale, ...p} : p);
             }
         },
         uPlotPlugin: {

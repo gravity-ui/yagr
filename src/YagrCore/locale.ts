@@ -1,11 +1,11 @@
 const LOCALIZATIONS: Record<string, Record<string, string>> = {
-    'ru': {
+    ru: {
         'hide-all': 'Скрыть все линии',
         'show-all': 'Показать все линии',
     },
-    'en': {
+    en: {
         'hide-all': 'Hide lines',
-        'show-all': 'Show lines'
+        'show-all': 'Show lines',
     },
 };
 
@@ -14,7 +14,7 @@ export default (locale: keyof typeof LOCALIZATIONS | Record<string, string> = 'e
         LOCALIZATIONS.custom = locale;
         locale = 'custom';
     }
-    
+
     return (key: string) => {
         return LOCALIZATIONS[locale as string][key] || key;
     };

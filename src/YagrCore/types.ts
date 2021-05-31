@@ -1,10 +1,4 @@
-import uPlot, {
-    Axis as UAxis,
-    Hooks,
-    DrawOrderKey,
-    Series,
-    Options,
-} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
 
 import Yagr, {YagrMeta} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -33,8 +27,6 @@ declare module 'uplot' {
         _valuesCount: number;
     }
 }
-
-
 
 /**
  * Main Yagr chart config
@@ -98,7 +90,7 @@ export interface YagrConfig {
     process?: (opts: Options) => Options;
 }
 
-type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>
+type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
 
 export interface YagrHooks extends Hooks.Arrays {
     load?: Handler<{chart: Yagr; meta: YagrMeta}>;
@@ -161,7 +153,7 @@ export enum ChartTypes {
 }
 
 /** Data values of lines */
-export type DataSeriesExtended = (number | string | null)[]
+export type DataSeriesExtended = (number | string | null)[];
 export type DataSeries = (number | null)[];
 
 export type RefPoints = {
@@ -276,7 +268,6 @@ export enum InterpolationSetting {
     Smooth = 'smooth',
 }
 
-
 export enum ScaleRange {
     Nice = 'nice',
     Offset = 'offset',
@@ -303,7 +294,15 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?: ScaleRange | ((u: uPlot, min: number, max: number, ref: RefPoints | undefined, cfg: YagrConfig) => [min: number, max: number]);
+    range?:
+        | ScaleRange
+        | ((
+              u: uPlot,
+              min: number,
+              max: number,
+              ref: RefPoints | undefined,
+              cfg: YagrConfig,
+          ) => [min: number, max: number]);
     offset?: number;
     /** default: 5 */
     maxTicks?: number;

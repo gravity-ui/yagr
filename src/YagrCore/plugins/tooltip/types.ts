@@ -1,6 +1,6 @@
-import {YagrConfig} from "src/YagrCore/types";
-import Yagr from "../../index";
-import {TooltipState, TooltipAction} from "./tooltip";
+import {YagrConfig} from 'src/YagrCore/types';
+import Yagr from '../../index';
+import {TooltipState, TooltipAction} from './tooltip';
 
 export enum TrackingOptions {
     /** Tracks serie only if mouse hovered on series' area */
@@ -56,21 +56,25 @@ export interface TooltipOptions {
     /** Value precision (default: 2) */
     precision?: number;
     /** Calls when tooltip changes state */
-    onStateChange?: (elem: HTMLElement, api: {
-        action: TooltipAction;
-        state: TooltipState;
-        actions: {
-            pin: (state: boolean) => void;
-            show: () => void;
-            hide: () => void;
-        };
-        yagr: Yagr;
-    }) => void;
+    onStateChange?: (
+        elem: HTMLElement,
+        api: {
+            action: TooltipAction;
+            state: TooltipState;
+            actions: {
+                pin: (state: boolean) => void;
+                show: () => void;
+                hide: () => void;
+            };
+            yagr: Yagr;
+        },
+    ) => void;
     /** Tooltip element className appendix */
     className?: string;
 
     xOffset?: number;
     yOffset?: number;
+    stickToRanges?: boolean;
 }
 
 export type TooltipRow = {

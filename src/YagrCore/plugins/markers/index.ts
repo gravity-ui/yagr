@@ -3,15 +3,7 @@ import UPlot, {Plugin} from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../../defaults';
 import {MarkersOptions} from '../../types';
 
-const renderCircle = (
-    u: UPlot,
-    x: number,
-    y: number,
-    r: number,
-    s: number,
-    color: string,
-    yScale?: string,
-) => {
+const renderCircle = (u: UPlot, x: number, y: number, r: number, s: number, color: string, yScale?: string) => {
     const {ctx} = u;
     const cx = Math.round(u.valToPos(x, DEFAULT_X_SCALE, true));
     const cy = Math.round(u.valToPos(y, yScale || DEFAULT_Y_SCALE, true));
@@ -45,13 +37,14 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
 
         if (val === null) {
             prev = val;
-            j++; continue;
+            j++;
+            continue;
         }
 
         const next = u.data[i][j + 1];
 
         if (prev === null && next === null) {
-            renderCircle(u, u.data[0][j] as number, val, 2, 1, color, scale || DEFAULT_Y_SCALE);
+            renderCircle(u, u.data[0][j] as number, val as number, 2, 1, color, scale || DEFAULT_Y_SCALE);
         }
         prev = val;
         j++;
@@ -75,7 +68,15 @@ export default function MarkersPlugin(opts: MarkersOptions): Plugin {
             const val = u.data[i][j];
 
             if (val !== null) {
-                renderCircle(u, u.data[0][j] as number, val, size, lineWidth, color, scale || DEFAULT_Y_SCALE);
+                renderCircle(
+                    u,
+                    u.data[0][j] as number,
+                    val as number,
+                    size,
+                    lineWidth,
+                    color,
+                    scale || DEFAULT_Y_SCALE,
+                );
             }
             j++;
         }
