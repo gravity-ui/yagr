@@ -1,4 +1,4 @@
-import {preprocess} from '../../src/YagrCore/utils/common';
+import {preprocess} from '../src/YagrCore/utils/common';
 
 describe('utils:preprocess', () => {
     describe('nullValues', () => {

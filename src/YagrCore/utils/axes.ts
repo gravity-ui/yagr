@@ -68,10 +68,10 @@ const getNumericValueFormatter = (axisConfig: AxisOptions) => {
 
 const dayTimeFormatter = uPlot.fmtDate('{DD}.{MM}.{YYYY}');
 const dateTimeFormatter = uPlot.fmtDate('{HH}:{mm}:{ss}');
-const minuteFormatter = uPlot.fmtDate('{MM}:{ss}');
-const secondFormatter = uPlot.fmtDate('{MM}:{ss}.{fff}');
+const minuteFormatter = uPlot.fmtDate('{mm}:{ss}');
+const secondFormatter = uPlot.fmtDate('{mm}:{ss}.{fff}');
 
-const getTimeFormatter = (config: YagrConfig) => {
+export const getTimeFormatter = (config: YagrConfig) => {
     const msm = config.settings.timeMultiplier || 1;
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];

@@ -5,18 +5,22 @@ export function getPaddingByAxes(options: Options): Padding {
     let hasLeftAxis = false;
     let hasRightAxis = false;
 
-    options.axes?.forEach((axis) => {
-        if (axis.scale === defaults.DEFAULT_X_SCALE) {
-            return;
-        }
+    if (options.axes) {
+        options.axes.forEach((axis) => {
+            if (axis.scale === defaults.DEFAULT_X_SCALE) {
+                return;
+            }
 
-        if (axis.side === undefined || axis.side === 3) {
-            hasLeftAxis = true;
-        }
-        if (axis.side === 1) {
-            hasRightAxis = true;
-        }
-    });
+            if (axis.side === undefined || axis.side === 3) {
+                hasLeftAxis = true;
+            }
+            if (axis.side === 1) {
+                hasRightAxis = true;
+            }
+        });
+    } else {
+        hasLeftAxis = true;
+    }
 
     if (hasLeftAxis && !hasRightAxis) {
         return defaults.PADDING_LEFT;

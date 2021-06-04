@@ -27,7 +27,7 @@ export default class ColorParser {
         if (isVar || color.startsWith('--')) {
             pure = false;
             prop = isVar ? color.slice(4, -1) : color;
-        } else if (!color.startsWith('#') || !color.startsWith('rgb')) {
+        } else if (!color.startsWith('#') && !color.startsWith('rgb')) {
             ctx.style.color = color;
             prop = 'color';
             pure = false;

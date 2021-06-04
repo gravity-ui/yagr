@@ -1,5 +1,5 @@
-import {SnapToValue} from '../../src/YagrCore/types';
-import {findDataIdx} from '../../src/YagrCore/utils/common';
+import {SnapToValue} from '../src/YagrCore/types';
+import {findDataIdx} from '../src/YagrCore/utils/common';
 
 describe('utils:findDataIdx', () => {
     describe('closest', () => {
