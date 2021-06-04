@@ -29,10 +29,10 @@ function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
     renderOptions.options.sort && r.sort(renderOptions.options.sort);
 
     return r
-        .map(({value, name, color, active, normalized}) => {
+        .map(({value, name, color, active, normalized, seriesIdx}) => {
             const val = `${value}${typeof normalized === 'number' ? ' ' + normalized.toFixed(0) + '%' : ''}`;
             const label = active ? `<b>${name} : ${val}</b>` : `${name} : ${val}`;
-            return `<div class="yagr-tooltip__item" data-series-name="${name}">
+            return `<div class="yagr-tooltip__item" data-series="${seriesIdx}">
 <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${label}
 </div>`;
         })
@@ -160,17 +160,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
     const checkFocus = (event: MouseEvent) => {
         const target = event.target as HTMLElement | null;
-        let serieName: string | undefined;
+        let serieIdx: string | undefined;
 
         if (target && tOverlay.contains(target) && target.classList.contains('yagr-tooltip__item')) {
-            serieName = target.dataset['seriesName'];
+            serieIdx = target.dataset['series'];
         }
 
-        const serie = serieName
-            ? yagr.uplot.series.find((s) => {
-                  return s.name === serieName;
-              })
-            : null;
+        const serie = serieIdx ? yagr.uplot.series[Number(serieIdx)] : null;
 
         yagr.focus(serie ? serie.id : null, true);
     };
@@ -343,6 +339,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         value: displayValue,
                         y: yValue,
                         color: serie.color,
+                        seriesIdx: i - 1,
                     };
 
                     if (serie.normalizedData) {

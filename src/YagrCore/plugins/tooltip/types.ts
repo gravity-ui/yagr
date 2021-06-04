@@ -90,6 +90,8 @@ export type TooltipRow = {
     className?: string;
     /** Y Axis value */
     y?: number | null;
+    /** Index of series in u.series */
+    seriesIdx: number;
 
     /** Original value before all transormations */
     originalValue?: number | null;
