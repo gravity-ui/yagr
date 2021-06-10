@@ -112,10 +112,7 @@ class Yagr {
                 data: [],
                 axes: [],
                 series: [],
-                scales: {
-                    x: {time: true},
-                    y: {},
-                },
+                scales: {},
                 hooks: {},
                 settings: {},
                 chart: {},
@@ -368,6 +365,13 @@ class Yagr {
         }
 
         options.series = resultingSeriesOptions;
+
+        if (!config.scales || Object.keys(config.scales).length === 0) {
+            config.scales = {
+                x: {},
+                y: {},
+            };
+        }
 
         /** Setting up scales */
         options.scales = options.scales || {};
