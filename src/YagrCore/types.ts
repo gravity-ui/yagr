@@ -22,8 +22,12 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 declare module 'uplot' {
     interface Series extends ProcessedSeriesData {
         id: string;
+        color: string;
+        name: string;
+
         /** Current focus state */
         _focus?: boolean | null;
+        /** Real values count */
         _valuesCount: number;
     }
 }
@@ -89,6 +93,11 @@ export interface YagrConfig {
     /** uPlot */
     process?: (opts: Options) => Options;
 }
+
+export type MinimalValidConfig = Partial<YagrConfig> & {
+    timeline: Number[];
+    series: RawSerieData[];
+};
 
 type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
 
@@ -169,10 +178,10 @@ export type RefPoints = {
  */
 export interface RawSerieData {
     /** Name of serie. Renders in tooltip */
-    name: string;
+    name?: string;
 
     /** Color of serie */
-    color: string;
+    color?: string;
 
     /** Unique ID */
     id?: string;

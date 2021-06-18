@@ -29,6 +29,7 @@ import {
     PlotLineConfig,
     YagrHooks,
     DataSeries,
+    MinimalValidConfig,
 } from './types';
 
 import {genId, getSumByIdx, preprocess} from './utils/common';
@@ -96,19 +97,14 @@ class Yagr {
     private _meta: Partial<YagrMeta> = {};
     private _cache: CachedProps;
 
-    constructor(root: HTMLElement, pConfig: Partial<YagrConfig>) {
+    constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
         this._startTime = performance.now();
         this._meta = {};
         this._drawn = false;
 
-        if (!pConfig.timeline) {
-            throw new Error('Specify config.timeline: number[]');
-        }
-
         const config: YagrConfig = Object.assign(
             {
                 title: {},
-                timeline: [],
                 data: [],
                 axes: [],
                 series: [],
@@ -322,7 +318,7 @@ class Yagr {
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie: Series = seriesOptions[i] || {};
+            const serie = seriesOptions[i] || {};
 
             serie.points = serie.points || {};
 
