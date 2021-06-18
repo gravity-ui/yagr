@@ -1,4 +1,4 @@
-# Ẏagr
+# Ẏagr [![build status](https://teamcity.yandex-team.ru/app/rest/builds/buildType:DataUI_Yagr_BuildAndPublish/statusIcon.svg)](https://teamcity.yandex-team.ru/buildConfiguration/DataUI_Yagr_BuildAndPublish)
 
 Yagr is high performance HTML5 canvas chart renderer for timeseries data based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts. 
 
