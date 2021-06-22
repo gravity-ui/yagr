@@ -55,12 +55,8 @@ const findValue = (
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo, interpolation.value);
         value = source[nonNullIdx];
     } else if (value === null) {
-        const snapTo =
-            serie.snapToValues === undefined
-                ? cursor.snapToValues === undefined
-                    ? SnapToValue.Closest
-                    : cursor.snapToValues
-                : serie.snapToValues;
+        const cursorSnapToValues = cursor.snapToValues ?? SnapToValue.Closest;
+        const snapTo = serie.snapToValues ?? cursorSnapToValues;
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo, null);
         value = source[nonNullIdx];
     }
