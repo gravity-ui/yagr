@@ -33,11 +33,12 @@ const MAX_CURSORS = 50;
  *
  */
 export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): Plugin {
-    const snapTo = opts.snapToValues === false ? false : opts.snapToValues || SnapToValue.Closest;
-
     const processing = config.processing || {};
     const pInterpolation = Boolean(processing.interpolation);
     const iValue = processing.interpolation?.value;
+
+    const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || SnapToValue.Closest;
+    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || SnapToValue.Closest : false;
 
     /*
      * This function finds non null value index and returns
@@ -46,11 +47,12 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     const snapOnValues = (self: UPlot, seriesIdx: number, hoveredIdx: number) => {
         const series = self.series[seriesIdx];
         const seriesData = series.$c || self.data[seriesIdx];
+        const value = seriesData[hoveredIdx];
 
-        const shouldTrim = pInterpolation && series.$c[hoveredIdx] === iValue;
-
-        if (shouldTrim || (seriesData[hoveredIdx] === null && snapTo)) {
-            return findDataIdx(seriesData, series, hoveredIdx, snapTo, iValue || null);
+        if (pInterpolation && value === iValue) {
+            return findDataIdx(seriesData, series, hoveredIdx, snapToInterpolated, iValue);
+        } else if (value === null) {
+            return findDataIdx(seriesData, series, hoveredIdx, snapToNulls, null);
         }
 
         return hoveredIdx;
@@ -99,9 +101,7 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
                 show: totalLines - emptyLines <= MAX_CURSORS ? cursorPoint : false,
             };
 
-            if (opts.snapToValues !== false) {
-                uplotOptions.cursor.dataIdx = snapOnValues;
-            }
+            uplotOptions.cursor.dataIdx = snapOnValues;
         },
         hooks: {
             init: (u) => {
