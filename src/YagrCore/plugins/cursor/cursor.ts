@@ -1,7 +1,7 @@
 import {YagrConfig, SnapToValue} from '../../types';
 import UPlot, {Plugin} from 'uplot';
 
-import {CURSOR_STYLE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
+import {CURSOR_STYLE, DEFAULT_X_SCALE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
 import CP from '../../utils/colors';
 import {findDataIdx} from '../../utils/common';
 
@@ -46,6 +46,11 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
      */
     const snapOnValues = (self: UPlot, seriesIdx: number, hoveredIdx: number) => {
         const series = self.series[seriesIdx];
+
+        if (series.scale === DEFAULT_X_SCALE) {
+            return hoveredIdx;
+        }
+
         const seriesData = series.$c || self.data[seriesIdx];
         const value = seriesData[hoveredIdx];
 
