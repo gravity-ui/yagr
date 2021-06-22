@@ -4,7 +4,7 @@ import {CursorOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
-import {DataSeries, SnapToValue} from '../../types';
+import {DataSeries, ProcessingInterpolation, SnapToValue} from '../../types';
 
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES} from '../../defaults';
 
@@ -40,15 +40,24 @@ function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
 }
 
 // eslint-disable-next-line complexity
-const findValue = (cursor: CursorOptions, data: DataSeries, serie: Series, idx: number, stripValue: unknown = null) => {
+const findValue = (
+    cursor: CursorOptions,
+    data: DataSeries,
+    serie: Series,
+    idx: number,
+    interpolation?: ProcessingInterpolation,
+) => {
     const source = Array.isArray(serie.$c) ? serie.$c : data;
-
-    const snapTo = cursor.snapToValues === false ? false : cursor.snapToValues || SnapToValue.Closest;
-
     let value = source[idx];
 
-    if (value === stripValue) {
-        const nonNullIdx = findDataIdx(source, serie, idx, snapTo, stripValue);
+    if (interpolation && value === interpolation.value) {
+        const snapTo = interpolation.snapToValues || SnapToValue.Closest;
+        const nonNullIdx = findDataIdx(source, serie, idx, snapTo, interpolation.value);
+        value = source[nonNullIdx];
+    } else if (value === null) {
+        const cursorSnapToValues = cursor.snapToValues ?? SnapToValue.Closest;
+        const snapTo = serie.snapToValues ?? cursorSnapToValues;
+        const nonNullIdx = findDataIdx(source, serie, idx, snapTo, null);
         value = source[nonNullIdx];
     }
 
@@ -241,6 +250,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         }
     };
 
+    const interpolation = pSettings.interpolation;
+    const stripValue = interpolation ? interpolation.value : undefined;
+
     const plugin: Plugin = {
         hooks: {
             init: (u) => {
@@ -306,8 +318,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    const stripValue = pSettings.interpolation?.value;
-                    let value = findValue(yagr.config.cursor, dataSeries, serie, idx, stripValue);
+                    let value = findValue(yagr.config.cursor, dataSeries, serie, idx, interpolation);
                     let dValue = value;
 
                     if (typeof value === 'string') {

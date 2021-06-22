@@ -102,14 +102,20 @@ export interface YagrHooks extends Hooks.Arrays {
     resize?: Handler<ResizeObserverEntry[]>;
 }
 
+export interface ProcessingInterpolation {
+    /** Interpolation type */
+    type: 'left' | 'right' | 'linear';
+
+    /** Cursor and tooltip snapToValue option */
+    snapToValues?: SnapToValue;
+
+    /** Values to interpolate */
+    value?: unknown;
+}
+
 export interface ProcessingSettings {
     /** Should interpolate missing data (default: false) */
-    interpolation?: {
-        /** Interpolation type */
-        type: 'left' | 'right' | 'linear';
-        /** Values to interpolate */
-        value?: unknown;
-    };
+    interpolation?: ProcessingInterpolation;
     nullValues?: Record<string, string | null>;
 }
 
