@@ -27,7 +27,7 @@ export interface TooltipOptions {
      *  - 'area'    : track by area
      *  - 'sticky'  : finds closest dataline
      */
-    tracking: TrackingOptions;
+    tracking: TrackingOptions | ((y: number, ranges: (number | null | string)[]) => number);
     /** Limit for lines in tooltip */
     maxLines: number;
     /** Should highlight focused line in tooltip */
@@ -95,8 +95,9 @@ export type TooltipRow = {
 
     /** Original value before all transormations */
     originalValue?: number | null;
-    /** Normalized value */
-    normalized?: number | null;
+
+    /** Transformed value */
+    transformed?: number | null | string;
 };
 
 export type TooltipRows = TooltipRow[];
