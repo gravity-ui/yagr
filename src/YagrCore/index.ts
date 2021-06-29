@@ -238,11 +238,6 @@ class Yagr {
         this.sync.unsub(this.uplot);
     }
 
-    isChartInViewPort() {
-        // @TODO Implement correct behavior when think about elements with scroll
-        return true;
-    }
-
     /*
      * Main data procesing function.
      * Configures options, series, axis, grids and scales
@@ -368,7 +363,13 @@ class Yagr {
         /** Setting up scales */
         options.scales = options.scales || {};
         const scales = options.scales;
-        Object.entries(config.scales || {}).forEach(([scaleName, scaleConfig]) => {
+
+        const scalesToMap = config.scales ? {...config.scales} : {};
+        if (!Object.keys(config.scales).length) {
+            scalesToMap.y = {};
+        }
+
+        Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
             scales[scaleName] = scales[scaleName] || {};
             const scale = scales[scaleName];
 
