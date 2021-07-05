@@ -12,7 +12,7 @@ export function getSerie(rawSerie: RawSerieData, config: YagrConfig, serieIdx: n
         name: rawSerie.name || 'Serie ' + (serieIdx + 1),
         color: rawSerie.color ? colorParser.parse(rawSerie.color) : defaults.theme.DEFAULT_LINE_COLOR,
         id: (rawSerie.id === undefined ? rawSerie.name : String(rawSerie.id)) || genId(),
-        show: rawSerie.visible === undefined ? true : rawSerie.visible,
+        show: rawSerie.visible ?? true,
         $c: rawSerie.data,
         width: rawSerie.width || defaults.SERIE_LINE_WIDTH,
         lineColor: colorParser.parse(rawSerie.lineColor || defaults.SERIE_AREA_BORDER_COLOR),
