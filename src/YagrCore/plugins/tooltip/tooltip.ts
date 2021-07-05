@@ -287,13 +287,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 const {data} = u;
 
-                if (
-                    data === null ||
-                    idx === null ||
-                    idx === undefined ||
-                    top === undefined ||
-                    !yagr.isChartInViewPort()
-                ) {
+                if (data === null || idx === null || idx === undefined || top === undefined) {
                     return;
                 }
 

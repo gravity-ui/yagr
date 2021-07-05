@@ -29,6 +29,7 @@ import {
     PlotLineConfig,
     YagrHooks,
     DataSeries,
+    MinimalValidConfig,
 } from './types';
 
 import {genId, getSumByIdx, preprocess} from './utils/common';
@@ -96,19 +97,14 @@ class Yagr {
     private _meta: Partial<YagrMeta> = {};
     private _cache: CachedProps;
 
-    constructor(root: HTMLElement, pConfig: Partial<YagrConfig>) {
+    constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
         this._startTime = performance.now();
         this._meta = {};
         this._drawn = false;
 
-        if (!pConfig.timeline) {
-            throw new Error('Specify config.timeline: number[]');
-        }
-
         const config: YagrConfig = Object.assign(
             {
                 title: {},
-                timeline: [],
                 data: [],
                 axes: [],
                 series: [],
@@ -239,11 +235,6 @@ class Yagr {
         this.sync.unsub(this.uplot);
     }
 
-    isChartInViewPort() {
-        // @TODO Implement correct behavior when think about elements with scroll
-        return true;
-    }
-
     /*
      * Main data procesing function.
      * Configures options, series, axis, grids and scales
@@ -319,7 +310,7 @@ class Yagr {
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie: Series = seriesOptions[i] || {};
+            const serie = seriesOptions[i] || {};
 
             serie.points = serie.points || {};
 
@@ -376,7 +367,13 @@ class Yagr {
         /** Setting up scales */
         options.scales = options.scales || {};
         const scales = options.scales;
-        Object.entries(config.scales || {}).forEach(([scaleName, scaleConfig]) => {
+
+        const scalesToMap = config.scales ? {...config.scales} : {};
+        if (!Object.keys(config.scales).length) {
+            scalesToMap.y = {};
+        }
+
+        Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
             scales[scaleName] = scales[scaleName] || {};
             const scale = scales[scaleName];
 

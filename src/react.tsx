@@ -1,13 +1,13 @@
 import React from 'react';
 
 import Yagr, {YagrMeta} from './YagrCore';
-import {YagrConfig} from './YagrCore/types';
+import {MinimalValidConfig} from './YagrCore/types';
 
 export interface YagrChartProps {
     /** Chart ID */
     id: string;
     /** Config of chart */
-    config: Partial<YagrConfig>;
+    config: MinimalValidConfig;
     /** Root component class name */
     className?: string;
     /** Debug data */
