@@ -25,6 +25,7 @@ declare module 'uplot' {
         /** Current focus state */
         _focus?: boolean | null;
         _valuesCount: number;
+        _transformed?: boolean;
     }
 }
 
@@ -230,6 +231,8 @@ export interface RawSerieData {
 
     /** Title of serie */
     title?: string | ((sIdx: number) => string);
+
+    transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 }
 
 export enum AxisSide {
@@ -285,6 +288,8 @@ export enum ScaleRange {
 export interface Scale {
     /** Scale range visualisation (default: linear) */
     type?: ScaleType;
+
+    transform?: (v: number | null, series: DataSeries[], idx: number) => number;
 
     /** Should normalize (default: false)  */
     normalize?: boolean;

@@ -29,11 +29,10 @@ function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
     renderOptions.options.sort && r.sort(renderOptions.options.sort);
 
     return r
-        .map(({value, name, color, active, normalized, seriesIdx}) => {
-            const val = `${value}${typeof normalized === 'number' ? ' ' + normalized.toFixed(0) + '%' : ''}`;
-            const label = active ? `<b>${name} : ${val}</b>` : `${name} : ${val}`;
-            return `<div class="yagr-tooltip__item" data-series="${seriesIdx}">
-<span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${label}
+        .map(({value, name, color, active, transformed, seriesIdx}) => {
+            const val = `${value}${typeof transformed === 'number' ? ' ' + transformed.toFixed(0) : ''}`;
+            return `<div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
+<span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name} : ${val}
 </div>`;
         })
         .join('\n');
@@ -331,6 +330,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     }
 
                     const realY = dataSeries[idx];
+
                     const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
                     ys.push(yValue);
 
@@ -354,7 +354,11 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     };
 
                     if (serie.normalizedData) {
-                        rowData.normalized = serie.normalizedData[idx];
+                        rowData.transformed = serie.normalizedData[idx];
+                    }
+
+                    if (serie._transformed) {
+                        rowData.transformed = dataSeries[idx];
                     }
 
                     rows.push(rowData);
@@ -374,6 +378,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         activeIndex = findInRange(rowYs, cursorValue, opts.stickToRanges);
                     } else if (opts.tracking === TrackingOptions.Sticky) {
                         activeIndex = findSticky(rowYs, cursorValue);
+                    } else if (typeof opts.tracking === 'function') {
+                        activeIndex = opts.tracking(cursorValue, rowYs);
                     }
 
                     if (activeIndex !== null) {

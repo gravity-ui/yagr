@@ -566,6 +566,16 @@ class Yagr {
                     value = null;
                 }
 
+                if (serieOptions.transform) {
+                    serieOptions._transformed = true;
+                    value = serieOptions.transform(value, series, idx);
+                }
+
+                if (scaleConfig.transform) {
+                    serieOptions._transformed = true;
+                    value = scaleConfig.transform(value, series, idx);
+                }
+
                 if (value === null) {
                     if (serieOptions.type === ChartTypes.Line || serieOptions.type === ChartTypes.Dots) {
                         dataLine.push(null);
