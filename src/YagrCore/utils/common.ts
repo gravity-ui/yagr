@@ -40,12 +40,16 @@ export const findInRange = (ranges: DataSeries, value: number, stickToRanges = t
 };
 
 /* Gets sum of all values of given data index by all series */
-export const getSumByIdx = (series: DataSeriesExtended[], idx: number) => {
+export const getSumByIdx = (series: DataSeriesExtended[], idx: number, options: Series[]) => {
     let sum = 0;
-    for (const serie of series) {
+    series.forEach((serie, i) => {
+        if (!options[options.length - i - 1].show) {
+            return;
+        }
+
         const value = serie[idx];
         sum += typeof value === 'number' ? value : 0;
-    }
+    });
     return sum;
 };
 
