@@ -3,11 +3,13 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
         'hide-all': 'Скрыть все линии',
         'show-all': 'Показать все линии',
         sum: 'Сумма',
+        scale: 'Шкала',
     },
     en: {
         'hide-all': 'Hide lines',
         'show-all': 'Show lines',
         sum: 'Total',
+        scale: 'Scale',
     },
 };
 

@@ -49,7 +49,7 @@ function renderTooltip(data: TooltipRenderOptions) {
         const sectionTitleBody = getOptionValue(data.options.title, x.scale);
         const scaleBody = data.options.scales
             ? `${getOptionValue(data.options.scales, x.scale) || ''}`
-            : `${data.yagr.i18n('axis')}: ${x.scale}`;
+            : `${data.yagr.i18n('scale')}: ${x.scale}`;
         return `
 <div class="__section">
     ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}

@@ -40,11 +40,10 @@ import {
     DEFAULT_X_SCALE,
     DEFAULT_X_SERIE_NAME,
     MIN_SELECTION_WIDTH,
-    // DEFAULT_FOCUS_ALPHA,
+    DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
     theme,
     DEFAULT_Y_SCALE,
-    DEFAULT_FOCUS_ALPHA,
 } from './defaults';
 import i18n from './locale';
 
