@@ -117,8 +117,9 @@ export interface ProcessingInterpolation {
 }
 
 export interface ProcessingSettings {
-    /** Should interpolate missing data (default: false) */
+    /** Should interpolate missing data (default: undefined) */
     interpolation?: ProcessingInterpolation;
+    /** Values to map as nulls as key-value object */
     nullValues?: Record<string, string | null>;
 }
 
@@ -229,6 +230,7 @@ export interface RawSerieData {
     /** Title of serie */
     title?: string | ((sIdx: number) => string);
 
+    /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 }
 

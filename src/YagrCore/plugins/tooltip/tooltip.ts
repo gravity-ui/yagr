@@ -131,7 +131,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     const opts: TooltipOptions = Object.assign<{}, TooltipOptions, Partial<TooltipOptions>>(
         {},
         {
-            tracking: 'sticky',
+            tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
             maxLines: TOOLTIP_DEFAULT_MAX_LINES,
             highlight: true,
             sum: true,

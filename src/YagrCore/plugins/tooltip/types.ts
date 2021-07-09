@@ -2,8 +2,11 @@ import Yagr from '../../index';
 import {TooltipState, TooltipAction} from './tooltip';
 
 export type TrackingOptions =
-    | 'area' /** Tracks serie only if mouse hovered on series' area */
-    | 'sticky' /** Tracks mouse to closest line */
+    /** Tracks serie only if mouse hovered on series' area */
+    | 'area'
+    /** Tracks mouse to closest line */
+    | 'sticky'
+    /** Custom tracking function */
     | ((y: number, ranges: (number | null | string)[]) => number);
 export interface TooltipRenderOpts {
     /** Tooltip option */
@@ -83,10 +86,15 @@ export interface TooltipOptions {
     /** Tooltip element className appendix */
     className?: string;
 
+    /** Tooltip x-offset */
     xOffset?: number;
+    /** Tooltip y-offset */
     yOffset?: number;
+    /** Should stick to series if out of ranges in tracking */
     stickToRanges?: boolean;
+    /** Title of tooltip and sections */
     title?: PerScale<TitleRenderer>;
+    /** Titles of scales of sections */
     scales?: PerScale<string>;
 }
 
