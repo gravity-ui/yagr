@@ -47,7 +47,7 @@ export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[
         const serie = series[i];
         const opts = seriesOptions[seriesOptions.length - i - 1];
         i += 1;
-        if (opts.scale !== scale) {
+        if (opts.scale !== scale || !opts.show) {
             continue;
         }
         const value = serie[idx];
