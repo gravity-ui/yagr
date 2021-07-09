@@ -29,7 +29,7 @@ export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin
 function renderItems(rows: TooltipRow[]) {
     return rows
         .map(({value, name, color, active, transformed, seriesIdx}) => {
-            const val = `${value}${typeof transformed === 'number' ? ' ' + transformed.toFixed(0) : ''}`;
+            const val = `${value}${typeof transformed === 'number' ? ' ' + transformed.toFixed(2) : ''}`;
             return `
 <div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
     <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name} : ${val}
@@ -47,9 +47,12 @@ function renderTooltip(data: TooltipRenderOptions) {
 
     const sections = data.sections.map((x) => {
         const sectionTitleBody = getOptionValue(data.options.title, x.scale);
-        const scaleBody = data.options.scales
-            ? `${getOptionValue(data.options.scales, x.scale) || ''}`
-            : `${data.yagr.i18n('scale')}: ${x.scale}`;
+        const scaleBody =
+            data.sections.length > 1
+                ? data.options.scales
+                    ? `${getOptionValue(data.options.scales, x.scale) || ''}`
+                    : `${data.yagr.i18n('scale')}: ${x.scale}`
+                : '';
         return `
 <div class="__section">
     ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
@@ -358,7 +361,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 const visibleEntries = Object.entries(rowsBySections);
 
-                Object.entries(rowsBySections).forEach(([scale, serieIndicies]) => {
+                visibleEntries.forEach(([scale, serieIndicies]) => {
                     sections[scale] = sections[scale] || [];
                     const section = sections[scale];
                     const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
