@@ -37,8 +37,8 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     const pInterpolation = Boolean(processing.interpolation);
     const iValue = processing.interpolation?.value;
 
-    const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || SnapToValue.Closest;
-    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || SnapToValue.Closest : false;
+    const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || 'closest';
+    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || 'closest' : false;
 
     /*
      * This function finds non null value index and returns

@@ -1,15 +1,17 @@
+/* eslint-disable complexity, no-nested-ternary */
+
 import {Plugin, Series} from 'uplot';
 
 import {CursorOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
-import {DataSeries, ProcessingInterpolation, SnapToValue} from '../../types';
+import {DataSeries, ProcessingInterpolation} from '../../types';
 
-import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES} from '../../defaults';
+import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
-import {TrackingOptions, TooltipOptions, TooltipRows, TooltipRow, TooltipRenderOpts} from './types';
+import {TooltipOptions, TooltipRenderOptions, TooltipRow, TrackingOptions, ValueFormatter} from './types';
 
 export interface TooltipState {
     /** Is tooltip pinned */
@@ -24,18 +26,52 @@ export interface TooltipState {
 
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
 
-function renderTooltip(rows: TooltipRows, renderOptions: TooltipRenderOpts) {
-    const r = rows.slice(0, renderOptions.options.maxLines);
-    renderOptions.options.sort && r.sort(renderOptions.options.sort);
-
-    return r
+function renderItems(rows: TooltipRow[]) {
+    return rows
         .map(({value, name, color, active, transformed, seriesIdx}) => {
             const val = `${value}${typeof transformed === 'number' ? ' ' + transformed.toFixed(0) : ''}`;
-            return `<div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
-<span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name} : ${val}
+            return `
+<div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
+    <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name} : ${val}
 </div>`;
         })
-        .join('\n');
+        .join('');
+}
+
+function renderTooltip(data: TooltipRenderOptions) {
+    const [allTitle, sectionTitle] = data.options.title
+        ? typeof data.options.title === 'string'
+            ? [data.options.title, false]
+            : ['', true]
+        : ['', false];
+
+    const sections = data.sections.map((x) => {
+        const sectionTitleBody = getOptionValue(data.options.title, x.scale);
+        const scaleBody = data.options.scales
+            ? `${getOptionValue(data.options.scales, x.scale) || ''}`
+            : `${data.yagr.i18n('axis')}: ${x.scale}`;
+        return `
+<div class="__section">
+    ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
+    ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
+    <div class="__section_body">${renderItems(x.rows)}</div>
+    ${
+        x.sum
+            ? `
+        <div class="__section_sum">
+            ${data.yagr.i18n('sum')}: ${x.sum}
+        </div>
+    `
+            : ''
+    }
+</div>`;
+    });
+
+    return `${allTitle ? `<div class="__title">${allTitle}</div>` : ''}${sections.join('')}`;
+}
+
+function getOptionValue<T>(option: T | {[key in string]: T}, scale: string): T {
+    return (typeof option === 'object' ? (option as {[key in string]: T})[scale] : option) as T;
 }
 
 // eslint-disable-next-line complexity
@@ -50,11 +86,11 @@ const findValue = (
     let value = source[idx];
 
     if (interpolation && value === interpolation.value) {
-        const snapTo = interpolation.snapToValues || SnapToValue.Closest;
+        const snapTo = interpolation.snapToValues || 'closest';
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo, interpolation.value);
         value = source[nonNullIdx];
     } else if (value === null) {
-        const cursorSnapToValues = cursor.snapToValues ?? SnapToValue.Closest;
+        const cursorSnapToValues = cursor.snapToValues ?? 'closest';
         const snapTo = serie.snapToValues ?? cursorSnapToValues;
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo, null);
         value = source[nonNullIdx];
@@ -73,14 +109,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
     let renderTooltipCloses = () => {};
 
-    const defaultTooltipValueFormatter = (n: number | null, precision?: number) => {
+    const defaultTooltipValueFormatter = (n: string | number | null, precision?: number) => {
         if (n === null) {
             return '-';
         }
 
         if (typeof n === 'string') {
             if (pSettings.nullValues && pSettings.nullValues.hasOwnProperty(n)) {
-                return pSettings.nullValues[n];
+                return pSettings.nullValues[n] as string;
             }
 
             return '-';
@@ -92,14 +128,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         );
     };
 
-    const opts: TooltipOptions = Object.assign(
+    const opts: TooltipOptions = Object.assign<{}, TooltipOptions, Partial<TooltipOptions>>(
         {},
         {
-            tracking: TrackingOptions.Sticky,
+            tracking: 'sticky',
             maxLines: TOOLTIP_DEFAULT_MAX_LINES,
-            highlightLines: true,
-            total: true,
-            renderAll: false,
+            highlight: true,
+            sum: true,
             render: renderTooltip,
             pinable: true,
             value: defaultTooltipValueFormatter,
@@ -277,7 +312,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     ? document.querySelector(opts.boundClassName) || document.body
                     : document.body;
             },
-            // eslint-disable-next-line complexity
+
             setCursor: (u) => {
                 const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
 
@@ -292,18 +327,21 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 }
 
                 const x = data[0][idx];
-                const rows: TooltipRows = [];
-                const cursorValue = Number(u.posToVal(top, 'y').toFixed(2));
-                const availableLines = u.series.filter((s) => s.showInTooltip !== false).length - 1;
 
-                let sum = 0;
+                const sum: Record<string, number> = {};
+                const sections: Record<
+                    string,
+                    {
+                        active: number;
+                        rows: TooltipRow[];
+                        realYs: (number | null)[];
+                    }
+                > = {};
+
+                const rowsBySections: Record<string, number[]> = {};
+
                 let i = 1;
-
-                const ys = [];
-                const rowYs = [];
-
                 while (i < u.series.length) {
-                    const dataSeries = u.data[i] as DataSeries;
                     const serie = u.series[i];
 
                     if (!serie.show) {
@@ -311,78 +349,100 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         continue;
                     }
 
-                    let value = findValue(yagr.config.cursor, dataSeries, serie, idx, interpolation);
-                    let dValue = value;
+                    const scale = serie.scale || DEFAULT_Y_SCALE;
 
-                    if (typeof value === 'string') {
-                        dValue = value;
-                        value = null;
-                    }
-
-                    if (opts.total) {
-                        sum += value || 0;
-                    }
-
-                    const realY = dataSeries[idx];
-
-                    const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
-                    ys.push(yValue);
-
+                    rowsBySections[scale] = rowsBySections[scale] || [];
+                    rowsBySections[scale].push(i);
                     i += 1;
-
-                    if ((value === null && opts.hideNoData) || serie.showInTooltip === false) {
-                        continue;
-                    }
-
-                    const displayValue = serie.formatter
-                        ? serie.formatter(dValue, serie)
-                        : opts.value(dValue, serie.precision);
-
-                    const rowData: TooltipRow = {
-                        name: serie.name,
-                        originalValue: value,
-                        value: displayValue,
-                        y: yValue,
-                        color: serie.color,
-                        seriesIdx: i - 1,
-                    };
-
-                    if (serie.normalizedData) {
-                        rowData.transformed = serie.normalizedData[idx];
-                    }
-
-                    if (serie._transformed) {
-                        rowData.transformed = dataSeries[idx];
-                    }
-
-                    rows.push(rowData);
-                    rowYs.push(realY);
                 }
 
-                if (rows.length === 0) {
+                const visibleEntries = Object.entries(rowsBySections);
+
+                Object.entries(rowsBySections).forEach(([scale, serieIndicies]) => {
+                    sections[scale] = sections[scale] || [];
+                    const section = sections[scale];
+                    const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
+
+                    const valueRender = getOptionValue<ValueFormatter>(opts.value, scale);
+
+                    for (const seriesIdx of serieIndicies) {
+                        const seriesData = u.data[seriesIdx] as DataSeries;
+                        const serie = u.series[seriesIdx];
+
+                        let value = findValue(yagr.config.cursor, seriesData, serie, idx, interpolation);
+                        let dValue = value;
+
+                        if (typeof value === 'string') {
+                            dValue = value;
+                            value = null;
+                        }
+
+                        if (getOptionValue(opts.sum, scale)) {
+                            sum[scale] = sum[scale] || 0;
+                            sum[scale] += value || 0;
+                        }
+
+                        const realY = seriesData[idx];
+                        const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
+
+                        if ((value === null && opts.hideNoData) || serie.showInTooltip === false) {
+                            continue;
+                        }
+
+                        const displayValue = serie.formatter
+                            ? serie.formatter(dValue, serie)
+                            : valueRender(dValue, serie.precision);
+
+                        const rowData: TooltipRow = {
+                            name: serie.name,
+                            originalValue: value,
+                            value: displayValue,
+                            y: yValue,
+                            color: serie.color,
+                            seriesIdx,
+                        };
+
+                        if (serie.normalizedData) {
+                            rowData.transformed = serie.normalizedData[idx];
+                        }
+
+                        if (serie._transformed) {
+                            rowData.transformed = seriesData[idx];
+                        }
+
+                        section.rows = section.rows || [];
+                        section.rows.push(rowData);
+                        section.realYs = section.realYs || [];
+                        section.realYs.push(realY);
+                    }
+
+                    if (getOptionValue(opts.highlight, scale)) {
+                        const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
+                        let activeIndex: number | null = 0;
+                        if (tracking === 'area') {
+                            activeIndex = findInRange(section.realYs, cursorValue, opts.stickToRanges);
+                        } else if (tracking === 'sticky') {
+                            activeIndex = findSticky(section.realYs, cursorValue);
+                        } else if (typeof tracking === 'function') {
+                            activeIndex = tracking(cursorValue, section.realYs);
+                        }
+
+                        if (activeIndex !== null) {
+                            section.rows[activeIndex].active = true;
+                        }
+                    }
+
+                    const sort = getOptionValue(opts.sort, scale);
+                    if (sort) {
+                        section.rows.sort(sort);
+                    }
+                });
+
+                if (visibleEntries.length === 0) {
                     onMouseLeave();
                     return;
                 } else {
                     onMouseEnter();
-                }
-
-                if (opts.highlightLines) {
-                    let activeIndex: number | null = i - 1;
-                    if (opts.tracking === TrackingOptions.Area) {
-                        activeIndex = findInRange(rowYs, cursorValue, opts.stickToRanges);
-                    } else if (opts.tracking === TrackingOptions.Sticky) {
-                        activeIndex = findSticky(rowYs, cursorValue);
-                    } else if (typeof opts.tracking === 'function') {
-                        activeIndex = opts.tracking(cursorValue, rowYs);
-                    }
-
-                    if (activeIndex !== null) {
-                        rows[activeIndex].active = true;
-                    }
-                }
-
-                if (opts.sort) {
-                    rows.sort(opts.sort);
                 }
 
                 const bbox = over.getBoundingClientRect();
@@ -396,17 +456,19 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 };
 
                 renderTooltipCloses = () => {
-                    tOverlay.innerHTML = opts.render(
-                        rows,
-                        {
-                            options: opts,
-                            lines: availableLines,
-                            x: x as number,
-                            pinned: state.pinned,
-                            sum: opts.total ? opts.value(sum) : undefined,
-                        },
-                        yagr.config,
-                    );
+                    tOverlay.innerHTML = opts.render({
+                        sections: Object.entries(sections).map(([scale, sec]) => {
+                            return {
+                                scale,
+                                rows: sec.rows,
+                                sum: sum[scale],
+                            };
+                        }),
+                        options: opts,
+                        x,
+                        pinned: state.pinned,
+                        yagr,
+                    });
 
                     placement(tOverlay, anchor, 'right', {
                         bound,

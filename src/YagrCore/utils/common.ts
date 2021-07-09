@@ -40,9 +40,16 @@ export const findInRange = (ranges: DataSeries, value: number, stickToRanges = t
 };
 
 /* Gets sum of all values of given data index by all series */
-export const getSumByIdx = (series: DataSeriesExtended[], idx: number) => {
+export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[], idx: number, scale: string) => {
     let sum = 0;
-    for (const serie of series) {
+    let i = 0;
+    while (i < series.length) {
+        const serie = series[i];
+        const opts = seriesOptions[seriesOptions.length - i - 1];
+        i += 1;
+        if (opts.scale !== scale) {
+            continue;
+        }
         const value = serie[idx];
         sum += typeof value === 'number' ? value : 0;
     }
@@ -137,7 +144,7 @@ export function findDataIdx(
     data: DataSeriesExtended,
     series: Series,
     idx: number,
-    defaultSnapTo: SnapToValue | false = SnapToValue.Closest,
+    defaultSnapTo: SnapToValue | false = 'closest',
     skipValue: unknown = null,
 ) {
     let corL = idx,
@@ -149,7 +156,7 @@ export function findDataIdx(
         return idx;
     }
 
-    if (direction === SnapToValue.Left || direction === SnapToValue.Closest) {
+    if (direction === 'left' || direction === 'closest') {
         for (let i = idx - 1; i >= 0; i--) {
             if (data[i] !== skipValue) {
                 corL = i;
@@ -158,7 +165,7 @@ export function findDataIdx(
         }
     }
 
-    if (direction === SnapToValue.Right || direction === SnapToValue.Closest) {
+    if (direction === 'right' || direction === 'closest') {
         for (let i = idx + 1; i < data.length; i++) {
             if (data[i] !== skipValue) {
                 corR = i;
@@ -167,10 +174,10 @@ export function findDataIdx(
         }
     }
 
-    if (direction === SnapToValue.Left) {
+    if (direction === 'left') {
         return corL;
     }
-    if (direction === SnapToValue.Right) {
+    if (direction === 'right') {
         return corR;
     }
 
@@ -187,7 +194,7 @@ const interpolateImpl = (
     x1: number,
     x2: number,
     xIdx: number,
-    type: 'left' | 'right' | 'linear' = 'linear',
+    type: 'left' | 'right' | 'linear' | number = 'linear',
 ) => {
     let result = null;
     const x = timeline[xIdx];
@@ -212,6 +219,9 @@ const interpolateImpl = (
         case 'right': {
             result = y2;
             break;
+        }
+        default: {
+            result = type;
         }
     }
     return result;

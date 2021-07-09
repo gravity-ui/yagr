@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
 import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
-import {YagrConfig, Scale, ScaleRange, RefPoints} from '../types';
+import {YagrConfig, Scale, RefPoints} from '../types';
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
@@ -17,7 +17,7 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
         return [0, scale.normalizeBase || 100] as Range.MinMax;
     }
 
-    if (scale.range === ScaleRange.Auto) {
+    if (scale.range === 'auto') {
         return undefined;
     }
 
@@ -25,11 +25,11 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
 
     switch (scale.range) {
         case undefined:
-        case ScaleRange.Nice: {
+        case 'nice': {
             rangeFn = niceScale;
             break;
         }
-        case ScaleRange.Offset: {
+        case 'offset': {
             rangeFn = offsetScale;
             break;
         }
@@ -69,8 +69,8 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
     };
 };
 
-export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale, config: YagrConfig) {
-    const startFromZero = dataMin >= 0 && config.settings.stacking;
+export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale) {
+    const startFromZero = dataMin >= 0 && scaleConfig.stacking;
 
     return {
         min: startFromZero
@@ -86,8 +86,8 @@ export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale
  * with extra options implementing consistent incr proximity if dataMin ~= dataMax. (16.01.2020)
  * with extra options for small ranges between max and min (27.01.2020)
  */
-export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale, config: YagrConfig) {
-    const startFromZero = dataMin >= 0 && config.settings.stacking;
+export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) {
+    const startFromZero = dataMin >= 0 && scaleConfig.stacking;
 
     /**
      * This code handles case when scale has user max/min and niceScale's
