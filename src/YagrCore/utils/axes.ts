@@ -19,9 +19,6 @@ const AXIS_SIDE_TO_ALIGN = {
     bottom: undefined,
 };
 
-/*
- * @TODO Remove after Uplot will change axis side to named enum
- */
 export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align']) => {
     return {
         side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : Axis.Side.Left,

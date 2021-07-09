@@ -1,4 +1,3 @@
-import {SnapToValue} from '../src/YagrCore/types';
 import {findDataIdx} from '../src/YagrCore/utils/common';
 
 describe('utils:findDataIdx', () => {
@@ -49,7 +48,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     1,
-                    SnapToValue.Left,
+                    'left',
                 ),
             ).toBe(0);
         });
@@ -66,7 +65,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     2,
-                    SnapToValue.Left,
+                    'left',
                 ),
             ).toBe(0);
         });
@@ -85,7 +84,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     1,
-                    SnapToValue.Right,
+                    'right',
                 ),
             ).toBe(3);
         });
@@ -102,7 +101,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     2,
-                    SnapToValue.Right,
+                    'right',
                 ),
             ).toBe(3);
         });
@@ -123,7 +122,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     1,
-                    SnapToValue.Closest,
+                    'closest',
                     'x',
                 ),
             ).toBe(0);
@@ -141,7 +140,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     2,
-                    SnapToValue.Closest,
+                    'closest',
                     'x',
                 ),
             ).toBe(3);
@@ -161,7 +160,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     1,
-                    SnapToValue.Left,
+                    'left',
                     'x',
                 ),
             ).toBe(0);
@@ -179,7 +178,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     2,
-                    SnapToValue.Left,
+                    'left',
                     'x',
                 ),
             ).toBe(0);
@@ -199,7 +198,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     1,
-                    SnapToValue.Right,
+                    'right',
                     'x',
                 ),
             ).toBe(3);
@@ -217,7 +216,7 @@ describe('utils:findDataIdx', () => {
                         color: 'red',
                     },
                     2,
-                    SnapToValue.Right,
+                    'right',
                     'x',
                 ),
             ).toBe(3);

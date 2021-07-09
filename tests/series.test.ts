@@ -1,5 +1,5 @@
 import {colorParser} from '../src/YagrCore/utils/colors';
-import {ChartTypes, YagrConfig} from '../src/YagrCore/types';
+import {YagrConfig} from '../src/YagrCore/types';
 import {getSerie} from '../src/YagrCore/utils/series';
 import {
     DEFAULT_Y_SCALE,
@@ -27,7 +27,7 @@ describe('series options', () => {
     });
 
     it('should setup default .type ', () => {
-        expect(getSerie(empty, cfg, 1)).toHaveProperty('type', ChartTypes.Line);
+        expect(getSerie(empty, cfg, 1)).toHaveProperty('type', 'line');
     });
 
     it('should set default Y scale ', () => {

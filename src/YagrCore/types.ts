@@ -49,14 +49,6 @@ export interface YagrConfig {
         fontSize?: number; // @TODO
     };
 
-    /** Graph subtitle style. @TODO Implement this, currently stuck into uPlot */
-    subtitle: {
-        text: string;
-        color?: string;
-        font?: string;
-        fontSize?: number;
-    };
-
     /** Chart inline legend configuration */
     legend: LegendOptions;
 
