@@ -3,20 +3,13 @@ import UPlot, {Options, Series} from 'uplot';
 import Yagr from '../../index';
 import {DEFAULT_X_SERIE_NAME} from '../../defaults';
 
-export enum LegendPosition {
-    Top = 'top',
-    Bottom = 'bottom',
-
-    // Not implemented
-    // Left = 'left',
-    // Right = 'right',
-}
+export type LegendPosition = 'top' | 'bottom';
 export interface LegendOptions {
     /** Show legend (default: false) */
     show?: boolean;
     /** Root classname */
     className?: string;
-    /** Legend placement position @TODO Implement me please */
+    /** Legend placement position */
     position?: LegendPosition;
     /** Maximal space fro legend as a fraction of chart height (default: 0.3) */
     maxLegendSpace?: number;
@@ -71,7 +64,7 @@ export default class Legend {
         this.options = Object.assign(
             {
                 show: false,
-                position: LegendPosition.Bottom,
+                position: 'bottom',
                 fontSize: DEFAULT_FONT_SIZE,
                 maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
                 className: undefined,
@@ -214,7 +207,7 @@ export default class Legend {
             u.root.classList.add('yagr-legend_' + options?.position);
         }
 
-        if (options.position === LegendPosition.Top) {
+        if (options.position === 'top') {
             const titleEl = u.root.querySelector('.u-title');
             const firstEl = titleEl || wrapEl;
             firstEl.before(legendEl);

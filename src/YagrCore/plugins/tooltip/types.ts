@@ -21,13 +21,13 @@ export interface TooltipRenderOpts {
     pinned: boolean;
 }
 
-interface TooltipSection {
+interface TooltipScale {
     scale: string;
     rows: TooltipRow[];
     sum?: number;
 }
 export interface TooltipRenderOptions {
-    sections: TooltipSection[];
+    scales: TooltipScale[];
     options: TooltipOptions;
     x: number;
     pinned: boolean;
@@ -92,9 +92,9 @@ export interface TooltipOptions {
     yOffset?: number;
     /** Should stick to series if out of ranges in tracking */
     stickToRanges?: boolean;
-    /** Title of tooltip and sections */
+    /** Title of tooltip and scale sections */
     title?: PerScale<TitleRenderer>;
-    /** Titles of scales of sections */
+    /** Titles of scales of scale sections */
     scales?: PerScale<string>;
 }
 

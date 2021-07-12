@@ -1,59 +1,60 @@
 <html>
-    <head>
-        <title>Yagr</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-        <script src="../dist/yagr.iife.js"></script>
-        <link
-			rel="stylesheet"
-			data-name="vs/editor/editor.main"
-			href="../node_modules/monaco-editor/min/vs/editor/editor.main.css"
-		/>
-        <link rel="stylesheet" href="../dist/index.css" />
-        <link rel="stylesheet" href="./index.css" />
-        <script>
-			var require = { paths: { vs: '../node_modules/monaco-editor/min/vs' } };
-		</script>
-        <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
-		<script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
-		<script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
-    </head>
-    <body>
-        <div class="playground-content">
-            <div id="container"></div>
-            <div id="chart"></div>
-        </div>
+
+<head>
+    <title>Yagr</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="../dist/yagr.iife.js"></script>
+    <link rel="stylesheet" data-name="vs/editor/editor.main"
+        href="../node_modules/monaco-editor/min/vs/editor/editor.main.css" />
+    <link rel="stylesheet" href="../dist/index.css" />
+    <link rel="stylesheet" href="./index.css" />
+    <script>
+        var require = { paths: { vs: '../node_modules/monaco-editor/min/vs' } };
+    </script>
+    <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+</head>
+
+<body>
+    <div class="playground-content">
+        <div id="container"></div>
+        <div id="chart"></div>
+    </div>
 
 
-        <script>
-            const cfg = {
-                timeline: [1, 2, 3],
-                series: [
-                    {data: [1, 2, 3], color: 'red'}
-                ],
-                settings: {
-                    adaptive: true,
-                },
-            };
+    <script>
+        window.of = (n) => new Array(n).fill('x').map((e, i) => i);
+        const cfg = {
+            timeline: [1, 2, 3],
+            series: [
+                { data: [1, 2, 3], color: 'red' }
+            ],
+            settings: {
+                adaptive: true,
+            },
+        };
 
-            let yagr = new Yagr(window.chart, cfg);
+        let yagr = new Yagr(window.chart, cfg);
 
 
-            const editor = monaco.editor.create(document.getElementById('container'), {
-				value: `module.exports = ` + JSON.stringify(cfg, null, 4),
-				language: 'javascript'
-			});
+        const editor = monaco.editor.create(document.getElementById('container'), {
+            value: `module.exports = ` + JSON.stringify(cfg, null, 4),
+            language: 'javascript'
+        });
 
-            editor.onDidChangeModelContent(() => {
-                try {
-                    const val = eval('(' + editor.getValue().replace(/^module\.exports\s*=s*/, '') + ')');
-                    console.log('val', val);
+        editor.onDidChangeModelContent(() => {
+            try {
+                const val = eval('(' + editor.getValue().replace(/^module\.exports\s*=s*/, '') + ')');
+                console.log('val', val);
 
-                    yagr.dispose();
-                    yagr = new Yagr(window.chart, val);
-                } catch(err) {
-                    console.log('err', err);
-                }
-            })
-        </script>
-    </body>
+                yagr.dispose();
+                yagr = new Yagr(window.chart, val);
+            } catch (err) {
+                console.log('err', err);
+            }
+        })
+    </script>
+</body>
+
 </html>

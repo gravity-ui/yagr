@@ -45,10 +45,10 @@ function renderTooltip(data: TooltipRenderOptions) {
             : ['', true]
         : ['', false];
 
-    const sections = data.sections.map((x) => {
+    const sections = data.scales.map((x) => {
         const sectionTitleBody = getOptionValue(data.options.title, x.scale);
         const scaleBody =
-            data.sections.length > 1
+            data.scales.length > 1
                 ? data.options.scales
                     ? `${getOptionValue(data.options.scales, x.scale) || ''}`
                     : `${data.yagr.i18n('scale')}: ${x.scale}`
@@ -460,7 +460,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 renderTooltipCloses = () => {
                     tOverlay.innerHTML = opts.render({
-                        sections: Object.entries(sections).map(([scale, sec]) => {
+                        scales: Object.entries(sections).map(([scale, sec]) => {
                             return {
                                 scale,
                                 rows: sec.rows,
