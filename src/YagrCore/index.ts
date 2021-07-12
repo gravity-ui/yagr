@@ -526,7 +526,7 @@ class Yagr {
             return [timeline].concat(series.reverse() as any) as UPlotData;
         }
 
-        const accum: Record<string, number[]> = {y: []};
+        const accum: Record<string, number[]> = {};
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
