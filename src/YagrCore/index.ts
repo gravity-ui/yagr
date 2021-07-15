@@ -415,10 +415,7 @@ class Yagr {
         const axes = options.axes;
 
         Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-            axes.push({
-                ...getAxis(axisConfig, config),
-                scale,
-            });
+            axes.push(getAxis({...axisConfig, scale}, config));
         });
 
         if (!config.axes[DEFAULT_X_SCALE]) {
