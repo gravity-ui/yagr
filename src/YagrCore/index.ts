@@ -18,12 +18,8 @@ import plotLinesPlugin from './plugins/plotLines/plotLines';
 
 import {
     YagrConfig,
-    ChartTypes,
-    InterpolationSetting,
-    ScaleType,
     RawSerieData,
     AxisOptions,
-    YagrTheme,
     RefPoints,
     RedrawOptions,
     PlotLineConfig,
@@ -106,7 +102,7 @@ class Yagr {
             {
                 title: {},
                 data: [],
-                axes: [],
+                axes: {},
                 series: [],
                 scales: {},
                 hooks: {},
@@ -125,7 +121,7 @@ class Yagr {
             pConfig,
         );
 
-        config.chart.type = config.chart.type || ChartTypes.Line;
+        config.chart.type = config.chart.type || 'line';
 
         this.id = root.id || genId();
         this.root = root;
@@ -145,7 +141,7 @@ class Yagr {
         }
 
         try {
-            theme.setTheme(settings.theme || YagrTheme.Light);
+            theme.setTheme(settings.theme || 'light');
             this.root.classList.remove('yagr_theme_dark');
             this.root.classList.remove('yagr_theme_light');
             this.root.classList.add('yagr_theme_' + theme.theme);
@@ -201,7 +197,9 @@ class Yagr {
             show: typeof value === 'undefined' ? !serie.show : value,
         });
         this.options.series = this.uplot.series;
-        if (this.config.settings.stacking) {
+        const scaleName = serie.scale || DEFAULT_Y_SCALE;
+        const scale = this.config.scales[scaleName];
+        if (scale && scale.stacking) {
             this.uplot.setData(this.transformSeries());
             this.uplot.redraw();
         }
@@ -257,8 +255,7 @@ class Yagr {
             height: this.clientHeight,
             title: config.title?.text,
             plugins: plugins,
-            // @see https://github.com/leeoniya/uPlot/issues/429
-            focus: {alpha: settings.stacking ? 1.1 : DEFAULT_FOCUS_ALPHA},
+            focus: {alpha: DEFAULT_FOCUS_ALPHA},
             series: [
                 {
                     id: DEFAULT_X_SERIE_NAME,
@@ -314,27 +311,27 @@ class Yagr {
 
             serie.points = serie.points || {};
 
-            if (serie.type === ChartTypes.Area) {
+            if (serie.type === 'area') {
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
                 serie.width = serie.lineWidth;
                 serie.points.show = false;
             }
 
-            if (serie.type === ChartTypes.Line) {
-                serie.stroke = serie.color;
+            if (serie.type === 'line') {
+                serie.stroke = getSerieFocusColors(serie.color);
                 serie.points.show = drawMarkersIfRequired;
             }
 
-            if (serie.type === ChartTypes.Bars) {
+            if (serie.type === 'column') {
                 serie.stroke = getSerieFocusColors(serie.color);
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.points.show = false;
             }
 
-            if (serie.type === ChartTypes.Dots) {
+            if (serie.type === 'dots') {
                 serie.stroke = serie.color;
-                serie.fill = serie.color;
+                serie.fill = getSerieFocusColors(serie.color);
                 serie.width = 2;
                 plugins.push(
                     markersPlugin({
@@ -343,7 +340,7 @@ class Yagr {
                 );
             }
 
-            serie.interpolation = serie.interpolation || settings.interpolation || InterpolationSetting.Linear;
+            serie.interpolation = serie.interpolation || settings.interpolation || 'linear';
 
             serie.paths = pathsRenderer;
             resultingSeriesOptions.push(serie);
@@ -392,7 +389,7 @@ class Yagr {
                 scale.range = [forceMin, forceMax];
             }
 
-            const isLogScale = scaleConfig.type === ScaleType.Logarithmic;
+            const isLogScale = scaleConfig.type === 'logarithmic';
 
             if (isLogScale) {
                 scale.distr = Scale.Distr.Logarithmic;
@@ -415,22 +412,21 @@ class Yagr {
 
         /** Setting up minimal axes */
         options.axes = options.axes || [];
-        const xAxis = (config.axes.length && config.axes.find(({scale}) => scale === DEFAULT_X_SCALE)) || {
-            scale: DEFAULT_X_SCALE,
-        };
-        options.axes[0] = getAxis(xAxis, config);
+        const axes = options.axes;
 
-        let hasOneYAxis = false;
-        for (let aI = 0; aI < config.axes.length; aI++) {
-            const axis = config.axes[aI];
-            if (axis && axis.scale !== DEFAULT_X_SCALE) {
-                hasOneYAxis = true;
-                options.axes.push(getAxis(axis, config));
-            }
+        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
+            axes.push({
+                ...getAxis(axisConfig, config),
+                scale,
+            });
+        });
+
+        if (!config.axes[DEFAULT_X_SCALE]) {
+            axes.push(getAxis({scale: DEFAULT_X_SCALE}, config));
         }
 
-        if (!hasOneYAxis) {
-            options.axes.push(getAxis({scale: DEFAULT_Y_SCALE}, config));
+        if (!axes.find(({scale}) => scale !== DEFAULT_X_SCALE)) {
+            axes.push(getAxis({scale: DEFAULT_Y_SCALE}, config));
         }
 
         const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
@@ -517,7 +513,6 @@ class Yagr {
         const result = [];
         const config = this.config;
         const timeline = config.timeline;
-        const settings = config.settings;
         let processing = config.processing || false;
 
         let series: DataSeries[] = this.config.series.map(({data}) => data) as DataSeries[];
@@ -531,11 +526,7 @@ class Yagr {
             return [timeline].concat(series.reverse() as any) as UPlotData;
         }
 
-        let accum: number[] = [];
-
-        if (settings.stacking) {
-            accum = new Array(timeline.length).fill(0);
-        }
+        const accum: Record<string, number[]> = {};
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
@@ -544,8 +535,8 @@ class Yagr {
 
             const serieConfigIndex = this.options.series.length - realSerieIdx;
             const serieOptions = this.options.series[serieConfigIndex];
-            const scaleConfig =
-                (serieOptions.scale ? this.config.scales[serieOptions.scale] : this.config.scales.y) || {};
+            const scale = serieOptions.scale || DEFAULT_Y_SCALE;
+            const scaleConfig = this.config.scales[scale] || {};
 
             let shouldCalculateRefPoints = false;
 
@@ -555,6 +546,13 @@ class Yagr {
             }
 
             let empty = true;
+
+            if (scaleConfig.stacking && !accum[scale]) {
+                // @see https://github.com/leeoniya/uPlot/issues/429
+                // @ts-ignore
+                this.options.focus.alpha = 1.1;
+                accum[scale] = new Array(timeline.length).fill(0);
+            }
 
             for (let idx = 0; idx < serie.length; idx++) {
                 let value = serie[idx] as number | null;
@@ -574,7 +572,7 @@ class Yagr {
                 }
 
                 if (value === null) {
-                    if (serieOptions.type === ChartTypes.Line || serieOptions.type === ChartTypes.Dots) {
+                    if (serieOptions.type === 'line' || serieOptions.type === 'dots') {
                         dataLine.push(null);
                         continue;
                     } else if (serieOptions.show) {
@@ -588,22 +586,22 @@ class Yagr {
                 empty = false;
 
                 if (scaleConfig.normalize) {
-                    const sum = getSumByIdx(series, idx, this.options.series);
+                    const sum = getSumByIdx(series, this.options.series, idx, scale);
                     value = (value / sum) * (scaleConfig.normalizeBase || 100);
 
                     serieOptions.normalizedData = serieOptions.normalizedData || [];
                     serieOptions.normalizedData[idx] = value;
                 }
 
-                if (settings.stacking) {
+                if (scaleConfig.stacking) {
                     if (!serieOptions.show) {
                         value = 0;
                     }
 
-                    value = accum[idx] += value;
+                    value = accum[scale][idx] += value;
                 }
 
-                if (scaleConfig.type === ScaleType.Logarithmic && value === 0) {
+                if (scaleConfig.type === 'logarithmic' && value === 0) {
                     value = 1;
                 }
 
@@ -665,7 +663,7 @@ class Yagr {
         const plotLines: PlotLineConfig[] = [];
 
         /** Collecting plot lines from config axes for plotLines plugin */
-        config.axes.forEach((axisConfig: AxisOptions) => {
+        Object.values(config.axes).forEach((axisConfig: AxisOptions) => {
             if (axisConfig.plotLines) {
                 axisConfig.plotLines.forEach((plotLine) => {
                     if (!axisConfig.scale) {

@@ -3,7 +3,7 @@ import {Series} from 'uplot';
 import * as defaults from '../defaults';
 import {colorParser} from './colors';
 
-import {YagrConfig, RawSerieData, ChartTypes} from '../types';
+import {YagrConfig, RawSerieData} from '../types';
 import {genId} from './common';
 
 export function getSerie(rawSerie: RawSerieData, config: YagrConfig, serieIdx: number): Series {
@@ -18,7 +18,7 @@ export function getSerie(rawSerie: RawSerieData, config: YagrConfig, serieIdx: n
         lineColor: colorParser.parse(rawSerie.lineColor || defaults.SERIE_AREA_BORDER_COLOR),
         lineWidth: rawSerie.lineWidth || defaults.SERIE_AREA_BORDER_WIDTH,
         scale: rawSerie.scale || defaults.DEFAULT_Y_SCALE,
-        type: rawSerie.type || config.chart.type || ChartTypes.Line,
+        type: rawSerie.type || config.chart.type || 'line',
 
         _valuesCount: 0,
     };

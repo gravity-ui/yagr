@@ -1,14 +1,13 @@
-import {YagrConfig} from 'src/YagrCore/types';
 import Yagr from '../../index';
 import {TooltipState, TooltipAction} from './tooltip';
 
-export enum TrackingOptions {
+export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
-    Area = 'area',
+    | 'area'
     /** Tracks mouse to closest line */
-    Sticky = 'sticky',
-}
-
+    | 'sticky'
+    /** Custom tracking function */
+    | ((y: number, ranges: (number | null | string)[]) => number);
 export interface TooltipRenderOpts {
     /** Tooltip option */
     options: TooltipOptions;
@@ -21,40 +20,55 @@ export interface TooltipRenderOpts {
     /** Is tooltip pinned */
     pinned: boolean;
 }
+
+interface TooltipScale {
+    scale: string;
+    rows: TooltipRow[];
+    sum?: number;
+}
+export interface TooltipRenderOptions {
+    scales: TooltipScale[];
+    options: TooltipOptions;
+    x: number;
+    pinned: boolean;
+    yagr: Yagr;
+}
+
+export type TitleRenderer = string | ((data: TooltipRenderOptions) => string);
+export type ValueFormatter = (value: string | number | null, precision?: number) => string;
+export type PerScale<T> = T | {[scale in string]: T};
+export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 export interface TooltipOptions {
     enabled?: boolean;
     /** Tracking policy:
      *  - 'area'    : track by area
      *  - 'sticky'  : finds closest dataline
      */
-    tracking: TrackingOptions | ((y: number, ranges: (number | null | string)[]) => number);
+    tracking: PerScale<TrackingOptions>;
     /** Limit for lines in tooltip */
-    maxLines: number;
+    maxLines: PerScale<number>;
     /** Should highlight focused line in tooltip */
-    highlightLines: boolean;
-    /** Show Total row */
-    total: boolean;
+    highlight: PerScale<boolean>;
+    /** Show sum row */
+    sum: PerScale<boolean>;
     /** Sorter */
-    sort: ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
+    sort?: PerScale<SortFn>;
     /** Custom tooltip renderer */
-    render: (rows: TooltipRows, renderOptions: TooltipRenderOpts, cfg: YagrConfig) => string;
+    render: (data: TooltipRenderOptions) => string;
     /** Is tooltip pinable */
     pinable: boolean;
     /** Value formatter */
-    value: (value: string | number | null, precision?: number) => string;
-    /**
-     * @TODO Not implemented
-     * Show DataLine index
-     */
-    showIndicies: boolean;
+    value: PerScale<ValueFormatter>;
+    /** Show DataLine index */
+    showIndicies: PerScale<boolean>;
     /** Don't render null data points in tooltip */
-    hideNoData?: boolean;
+    hideNoData?: PerScale<boolean>;
     /** Show percent row in tooltip */
-    percent?: boolean;
+    percent?: PerScale<boolean>;
     /** Element bound for tooltip (default: document.body) */
     boundClassName?: string;
     /** Value precision (default: 2) */
-    precision?: number;
+    precision?: PerScale<number>;
     /** Calls when tooltip changes state */
     onStateChange?: (
         elem: HTMLElement,
@@ -72,9 +86,16 @@ export interface TooltipOptions {
     /** Tooltip element className appendix */
     className?: string;
 
+    /** Tooltip x-offset */
     xOffset?: number;
+    /** Tooltip y-offset */
     yOffset?: number;
+    /** Should stick to series if out of ranges in tracking */
     stickToRanges?: boolean;
+    /** Title of tooltip and scale sections */
+    title?: PerScale<TitleRenderer>;
+    /** Titles of scales of scale sections */
+    scales?: PerScale<string>;
 }
 
 export type TooltipRow = {
@@ -99,5 +120,3 @@ export type TooltipRow = {
     /** Transformed value */
     transformed?: number | null | string;
 };
-
-export type TooltipRows = TooltipRow[];

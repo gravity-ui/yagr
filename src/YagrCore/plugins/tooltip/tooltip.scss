@@ -10,6 +10,14 @@
     font-family: var(--yagr-tooltip-font-family);
     pointer-events: none;
 
+    &__item {
+        white-space: nowrap;
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: center;
+    }
+
     &__item._active {
         font-weight: bold;
     }
@@ -20,12 +28,30 @@
 
         box-shadow: 2px 0px 3px rgba(0, 0, 0, 0.1);
 
-        div {
-            white-space: nowrap;
-            display: flex;
-            flex-direction: row;
-            justify-content: left;
-            align-items: center;
+        .__title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .__section {
+            margin-bottom: 4px;
+            &:last-child {
+                margin: 0;
+            }
+        }
+        .__section_title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .__section_scale {
+            margin-bottom: 2px;
+            background-color: #eee;
+            padding: 2px;
+        }
+        .__section_body {
+        }
+        .__section_sum {
         }
 
         .yagr-tooltip__mark {

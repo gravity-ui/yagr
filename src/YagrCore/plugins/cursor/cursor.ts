@@ -37,8 +37,8 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
     const pInterpolation = Boolean(processing.interpolation);
     const iValue = processing.interpolation?.value;
 
-    const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || SnapToValue.Closest;
-    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || SnapToValue.Closest : false;
+    const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || 'closest';
+    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || 'closest' : false;
 
     /*
      * This function finds non null value index and returns
@@ -70,8 +70,7 @@ export default function CursorPlugin(opts: CursorOptions, config: YagrConfig): P
         const serie = u.series[seriesIndex];
         const pt = document.createElement('div');
 
-        // @TODO возможно сюда надо добавить возможность вообще не рендерить точку курсора, если возможно
-        // по признаку в serie (нужен PR в uPlot)
+        // @TODO possibly not to render at all. Requires PR into uPlot
         if (serie.empty) {
             pt.style.display = 'none';
             return pt;

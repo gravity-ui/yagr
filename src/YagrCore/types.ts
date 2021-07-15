@@ -29,6 +29,7 @@ declare module 'uplot' {
         _focus?: boolean | null;
         /** Real values count */
         _valuesCount: number;
+        /** Is series data transformd */
         _transformed?: boolean;
     }
 }
@@ -48,19 +49,11 @@ export interface YagrConfig {
         fontSize?: number; // @TODO
     };
 
-    /** Graph subtitle style. @TODO Implement this, currently stuck into uPlot */
-    subtitle: {
-        text: string;
-        color?: string;
-        font?: string;
-        fontSize?: number;
-    };
-
     /** Chart inline legend configuration */
     legend: LegendOptions;
 
     /** Config for axes. Determines style and labeling */
-    axes: AxisOptions[];
+    axes: Record<string, AxisOptions>;
 
     /** Options for cursor plugin. Determines style, visibility and points render */
     cursor: CursorOptions;
@@ -124,8 +117,9 @@ export interface ProcessingInterpolation {
 }
 
 export interface ProcessingSettings {
-    /** Should interpolate missing data (default: false) */
+    /** Should interpolate missing data (default: undefined) */
     interpolation?: ProcessingInterpolation;
+    /** Values to map as nulls as key-value object */
     nullValues?: Record<string, string | null>;
 }
 
@@ -134,7 +128,7 @@ export interface ProcessingSettings {
  */
 export interface YagrChartOptions {
     /** Chart visualization type */
-    type: ChartTypes;
+    type: ChartType;
 
     /** width (by default: 100% of root) */
     width?: number;
@@ -161,12 +155,7 @@ export interface RedrawOptions {
     plotLines?: boolean;
 }
 
-export enum ChartTypes {
-    Area = 'area',
-    Line = 'line',
-    Bars = 'column',
-    Dots = 'dots',
-}
+export type ChartType = 'area' | 'line' | 'column' | 'dots';
 
 /** Data values of lines */
 export type DataSeriesExtended = (number | string | null)[];
@@ -209,7 +198,7 @@ export interface RawSerieData {
     scale?: string;
 
     /** Visualisation type */
-    type?: ChartTypes;
+    type?: ChartType;
 
     /** Interpolation type */
     interpolation?: InterpolationSetting;
@@ -241,15 +230,11 @@ export interface RawSerieData {
     /** Title of serie */
     title?: string | ((sIdx: number) => string);
 
+    /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 }
 
-export enum AxisSide {
-    Top = 'top',
-    Bottom = 'bottom',
-    Left = 'left',
-    Right = 'right',
-}
+export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 
 export interface AxisOptions extends Omit<UAxis, 'side'> {
     /** Config for plotlines */
@@ -276,27 +261,21 @@ export interface PlotLineConfig {
     width?: number;
 }
 
-/**
- * Setting for line interpolation
- */
-export enum InterpolationSetting {
-    Linear = 'linear',
-    Left = 'left',
-    Right = 'right',
-    Smooth = 'smooth',
-}
+/** Setting for line interpolation type */
+export type InterpolationSetting = 'linear' | 'left' | 'right' | 'smooth';
 
-export enum ScaleRange {
-    Nice = 'nice',
-    Offset = 'offset',
-    Auto = 'auto',
-}
+/** Setting for scale range type */
+export type ScaleRange = 'nice' | 'offset' | 'auto';
+
 /**
  * Settings of scale
  */
 export interface Scale {
     /** Scale range visualisation (default: linear) */
     type?: ScaleType;
+
+    /** Should stack Y values (default: false) */
+    stacking?: boolean;
 
     transform?: (v: number | null, series: DataSeries[], idx: number) => number;
 
@@ -328,24 +307,12 @@ export interface Scale {
     maxTicks?: number;
 }
 
-export enum ScaleType {
-    Linear = 'linear',
-    Logarithmic = 'logarithmic',
-}
-
-export enum YagrTheme {
-    Light = 'light',
-    Dark = 'dark',
-}
-
+export type ScaleType = 'linear' | 'logarithmic';
+export type YagrTheme = 'light' | 'dark';
 export type SupportedLocales = 'en' | 'ru';
-
 export type DrawKey = 'plotLines' | DrawOrderKey.Axes | DrawOrderKey.Series;
 
 export interface YagrChartSettings {
-    /** Should stack Y values (default: false) */
-    stacking?: boolean;
-
     /** Should chart redraw on container resize (default: true) */
     adaptive?: boolean;
 
@@ -399,8 +366,4 @@ export interface MarkersOptions {
     lineWidth?: number;
 }
 
-export enum SnapToValue {
-    Left = 'left',
-    Right = 'right',
-    Closest = 'closest',
-}
+export type SnapToValue = 'left' | 'right' | 'closest';

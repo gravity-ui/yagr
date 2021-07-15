@@ -1,27 +1,24 @@
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
 
-import {YagrConfig, AxisOptions, AxisSide} from '../types';
+import {YagrConfig, AxisOptions} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
-    [AxisSide.Right]: Axis.Side.Right,
-    [AxisSide.Top]: Axis.Side.Top,
-    [AxisSide.Bottom]: Axis.Side.Bottom,
-    [AxisSide.Left]: Axis.Side.Left,
+    right: Axis.Side.Right,
+    top: Axis.Side.Top,
+    bottom: Axis.Side.Bottom,
+    left: Axis.Side.Left,
 };
 
 const AXIS_SIDE_TO_ALIGN = {
-    [AxisSide.Left]: Axis.Align.Right,
-    [AxisSide.Right]: Axis.Align.Left,
-    [AxisSide.Top]: undefined,
-    [AxisSide.Bottom]: undefined,
+    left: Axis.Align.Right,
+    right: Axis.Align.Left,
+    top: undefined,
+    bottom: undefined,
 };
 
-/*
- * @TODO Remove after Uplot will change axis side to named enum
- */
 export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align']) => {
     return {
         side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : Axis.Side.Left,
@@ -124,7 +121,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
         size: axisConfig.size || defaults.Y_AXIS_SIZE,
         values: axisConfig.values || getNumericValueFormatter(axisConfig),
         scale: axisConfig.scale || defaults.DEFAULT_Y_SCALE,
-        ...getAxisPositioning(axisConfig.side || AxisSide.Left, axisConfig.align),
+        ...getAxisPositioning(axisConfig.side || 'left', axisConfig.align),
     });
 
     if (axisConfig.space) {
