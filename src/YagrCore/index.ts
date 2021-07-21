@@ -19,7 +19,6 @@ import plotLinesPlugin from './plugins/plotLines/plotLines';
 import {
     YagrConfig,
     RawSerieData,
-    AxisOptions,
     RefPoints,
     RedrawOptions,
     PlotLineConfig,
@@ -415,10 +414,7 @@ class Yagr {
         const axes = options.axes;
 
         Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-            axes.push({
-                ...getAxis(axisConfig, config),
-                scale,
-            });
+            axes.push(getAxis({...axisConfig, scale}, config));
         });
 
         if (!config.axes[DEFAULT_X_SCALE]) {
@@ -663,14 +659,10 @@ class Yagr {
         const plotLines: PlotLineConfig[] = [];
 
         /** Collecting plot lines from config axes for plotLines plugin */
-        Object.values(config.axes).forEach((axisConfig: AxisOptions) => {
+        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
             if (axisConfig.plotLines) {
                 axisConfig.plotLines.forEach((plotLine) => {
-                    if (!axisConfig.scale) {
-                        throw new Error('Specify axis.scale');
-                    }
-
-                    plotLines.push({...plotLine, scale: axisConfig.scale});
+                    plotLines.push({...plotLine, scale});
                 });
             }
         });
