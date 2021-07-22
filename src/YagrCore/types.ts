@@ -251,13 +251,13 @@ export interface PlotLineConfig {
     /** Scale of plotLineConfig */
     scale?: string;
 
-    /** Value of plotLine or [from, to] */
+    /** Value of plotLine or [from, to] on given scale */
     value: number | [number, number];
 
     /** Color of line */
     color: string;
 
-    /** Line width in px */
+    /** Line width in px/devicePixelRatio */
     width?: number;
 }
 
