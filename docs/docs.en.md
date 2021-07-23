@@ -4,7 +4,7 @@ Yagr is a high level wrapper for [uPlot](https://github.com/leeoniya/uPlot).
 
 ## Why Yagr?
 
-Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins to implement different interesting visualizations, but uPlot is too low level library. If you need a lot of common chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you prefer uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior.
+Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins to implement different visualizations, but uPlot is too low level library. If you need a lot of common chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior.
 
 ## Why not Yagr
 
@@ -18,7 +18,7 @@ If you doesn't need Yagr features but need something specific which not implemen
 -   [Scales with configurable range functions and transformations](#scales)
 -   [Plot lines and bands. Configurable draw layer](#plot-lines)
 -   [Responsive charts](#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
--   High support of stacked areas/columns
+-   High level support of stacked areas/columns
 -   [Light/Dark theme](#settings.theme)
 -   [Data normalization](#scale.normalize)
 -   [Configurable crosshairs, cursor markers and snapping](#cursor)
@@ -89,7 +89,7 @@ Yagr has 4 stages:
 -   **Render** - renders node with custom renderer, also render legend if required.
 -   **Listen** - yagr instance awaits for events, triggers hooks, rerenders chart and
 
-## Data alignment
+When yagr instance is removing `yagr.dispose()` should be called to dispose all handlers and event listeners in chart instance.
 
 ## React
 
@@ -113,9 +113,20 @@ function App({config}: {config: YagrConfig}) {
 Yagr support 4 timeseries vizualization types:
 
 -   `'line'`
+
+    <img src="../imgs/line.png" width="600">
+
 -   `'area'`
+
+    <img src="../imgs/area.png" width="600">
+
 -   `'dots'`
+
+    <img src="../imgs/dots.png" width="600">
+
 -   `'column'`
+
+    <img src="../imgs/column.png" width="600">
 
 You can configure chart type for whole chart:
 
@@ -132,12 +143,12 @@ chart: {
     type: 'line'
 },
 series: [
-    {data: [1, 2, 3], color: 'red', type: 'area'}, // will render area
     {data: [2, 4, 1], color: 'green'},             // will render line (by default in chart.type)
+    {data: [1, 2, 3], color: 'red', type: 'area'}, // will render area
 ]
 ```
 
-### Chart appearance and style
+Keep in mind that Yagr draws first series from the last one to the first, so if you render non-transparent area at first, it can overlap other series. Be careful.
 
 ### Scales
 
@@ -297,14 +308,17 @@ type SnapToValue = 'left' | 'right' | 'closest';
 Snap to values allows to render markers only on existing points on timeline. If cursor points to value X value on which Y has null with `snapToValues` you can configure which real point to highligh with marker.
 
 -   `'left'` - finds nearest non-null value to the left
+
     <img src="../imgs/snap-left.png" width="600">
 
 -   `'right'` - finds nearest non-null value to the right
+
     <img src="../imgs/snap-right.png" width="600">
 
 -   `'closest'` - finds nearest non-null
 
 -   `false` - doesn't snaping to non-null values
+
     <img src="../imgs/snap-false.png" width="600">
 
 #### cursor.markersSize?: number
@@ -538,4 +552,50 @@ Produces:
 }
 ```
 
-In this example we marked with `x` all apeared artifacts.
+In this example we marked with `x` all artifacts. By default uPlot can handle such input if we replace `x` with undefined and set `spanGaps = true` in series options. But there are problems with stacked areas and columns. So Yagr has solution. If you have data alignment artifacts you can setup processing options:
+
+```ts
+timeline: [1, 2, 3],
+series: [{
+    name: 'Source',
+    data: [1, 'x', 3],
+}],
+processing: {
+    interpolation: {
+        value: 'x',
+        type: 'linear'
+    }
+}
+```
+
+Will produce chart where data `[1, 'x', 3]` will be rendered as `[1, 2, 3]` by linear interpolation type of initial value `'x'`.
+
+### Processing
+
+Data processing settings here.
+
+#### nullValues: Record<string, null>
+
+#### interpolation.value
+
+Value in series data to be replaced with interpolation value.
+
+#### interpolation.type
+
+Type of interpolation.
+
+-   `linear` - use simple linear interpolation between two points.
+
+<img src="../imgs/proc-linear.png" width="600">
+
+-   `left` - takes previous point's value.
+
+    <img src="../imgs/proc-left.png" width="600">
+
+-   `right` - takes next point's value.
+
+    <img src="../imgs/proc-right.png" width="600">
+
+-   `<your value>` - replace value with yours
+
+    <img src="../imgs/proc-const.png" width="600">
