@@ -17,18 +17,17 @@ If you doesn't need Yagr features but need something specific which not implemen
 -   [Axes with extra options for decimals precision](#axes)
 -   [Scales with configurable range functions and transformations](#scales)
 -   [Plot lines and bands. Configurable draw layer](#plot-lines)
--   Responsive charts (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
+-   [Responsive charts](#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
 -   High support of stacked areas/columns
--   Light/Dark theme
+-   [Light/Dark theme](#settings.theme)
 -   [Data normalization](#scale.normalize)
 -   [Configurable crosshairs, cursor markers and snapping](#cursor)
 -   Typescript
 -   [Localization](#localization)
--   Support of missing data
 -   CSS Variables in color names
--   Paginated inline legend
+-   [Paginated inline legend](#legend)
 -   Error handling and extended hooks
--   Data alignment and interpolation for missing data
+-   [Data alignment and interpolation for missing data](#data-alignment)
 
 ## Quick start
 
@@ -287,9 +286,36 @@ export interface PlotLineConfig {
 
 ### Cursor
 
-#### Markers
+Yagr allows to setup chart's cursor behavior. You can configure crosshairs, markers size and count, and snapping behavior.
 
-#### Crosshair
+#### cursor.snapToValues?: SnapToValue | false
+
+```ts
+type SnapToValue = 'left' | 'right' | 'closest';
+```
+
+Snap to values allows to render markers only on existing points on timeline. If cursor points to value X value on which Y has null with `snapToValues` you can configure which real point to highligh with marker.
+
+-   `'left'` - finds nearest non-null value to the left
+    <img src="../imgs/snap-left.png" width="600">
+
+-   `'right'` - finds nearest non-null value to the right
+    <img src="../imgs/snap-right.png" width="600">
+
+-   `'closest'` - finds nearest non-null
+
+-   `false` - doesn't snaping to non-null values
+    <img src="../imgs/snap-false.png" width="600">
+
+#### cursor.markersSize?: number
+
+Radius of markers
+
+#### cursor.maxMarkers?: number
+
+Maximal count of markers. If count of lines > `maxMarkers`, then markers don't drawing.
+
+#### Crosshairs
 
 You can set X and Y crosshairs in cursor options:
 
@@ -483,4 +509,33 @@ Yagr supports English (`'en'`) and Russian (`'ru'`) language. You can provide yo
 
 ### Data alignment
 
-Sometimes you have different data sources on different time grid.
+Sometimes you have different data sources on different time grid. And when you point them on a single timeline there is data alignment artifacts appearing.
+
+```
+Source 1: [
+    timestamps: [1, 20, 30],
+    values:     [1, 1,  1],
+]
+
+Source 2: [
+    timestamps: [0, 15, 30, 45],
+    values:     [2, 2,  2,  2],
+]
+```
+
+Produces:
+
+```
+{
+    timeline: [0, 1, 15, 20, 30, 45],
+    series: [{
+        name: 'Source 1',
+        data: [x, 1, x,  1,  1,  x]
+    }, {
+        name: 'Source 2',
+        data: [2, x, 2,  x,  2,  2]
+    }]
+}
+```
+
+In this example we marked with `x` all apeared artifacts.
