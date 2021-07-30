@@ -314,7 +314,7 @@ class Yagr {
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
                 serie.width = serie.lineWidth;
-                serie.points.show = false;
+                serie.points.show = drawMarkersIfRequired;
             }
 
             if (serie.type === 'line') {
@@ -392,6 +392,8 @@ class Yagr {
 
             if (isLogScale) {
                 scale.distr = Scale.Distr.Logarithmic;
+                scale.range = getScaleRange(scaleConfig, () => this.references, config);
+
                 return;
             }
 
