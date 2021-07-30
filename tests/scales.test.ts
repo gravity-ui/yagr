@@ -33,6 +33,10 @@ describe('utils:scales', () => {
                     [-100, 100, SIMPLE_STACKED],
                     {min: -105, max: 105},
                 ],
+                'should end with zero, if dataMax <= 0:  (50, 1000) -> (-1050, 0)': [
+                    [-1000, -50, SIMPLE_STACKED],
+                    {min: -1050, max: 0},
+                ],
             },
             'bars (stacked)': {
                 'should start from zero, if dataMin >= 0:  (50, 1000) -> (0, 1100)': [
