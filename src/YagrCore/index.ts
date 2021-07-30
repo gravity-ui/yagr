@@ -314,7 +314,7 @@ class Yagr {
                 serie.fill = getSerieFocusColors(serie.color);
                 serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
                 serie.width = serie.lineWidth;
-                serie.points.show = false;
+                serie.points.show = drawMarkersIfRequired;
             }
 
             if (serie.type === 'line') {
