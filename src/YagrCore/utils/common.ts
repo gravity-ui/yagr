@@ -15,7 +15,6 @@ export const findInRange = (ranges: DataSeries, value: number, stickToRanges = t
     let prev = 0;
     let isFirst = true;
     let allNulls = true;
-
     while (i < ranges.length) {
         const y = ranges[i];
 
@@ -26,7 +25,7 @@ export const findInRange = (ranges: DataSeries, value: number, stickToRanges = t
 
         allNulls = false;
 
-        if (value > y) {
+        if (y >= 0 ? value > y : value < y) {
             return isFirst ? (stickToRanges ? i : null) : prev;
         }
 

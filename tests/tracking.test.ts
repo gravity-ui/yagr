@@ -19,6 +19,14 @@ describe('utils:findInRange', () => {
             expect(findInRange(range, 3)).toBe(5);
             expect(findInRange(range, 120)).toBe(1);
         });
+
+        it('should work with negative numbers', () => {
+            const range = [-300, -200, -100];
+
+            expect(findInRange(range, -250)).toBe(0);
+            expect(findInRange(range, -150)).toBe(1);
+            expect(findInRange(range, 100)).toBe(2);
+        });
     });
 
     describe('stickToRanges = false', () => {
