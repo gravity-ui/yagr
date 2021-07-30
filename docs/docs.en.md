@@ -1,6 +1,6 @@
 # Yagr
 
-Yagr is a high level wrapper for [uPlot](https://github.com/leeoniya/uPlot).
+Yagr is a high level wrapper for extra-fast canvas chart rendering library [uPlot](https://github.com/leeoniya/uPlot).
 
 ## Why Yagr?
 
@@ -8,7 +8,7 @@ Why not use uPlot directly? uPlot is very flexible library and it provides amazi
 
 ## Why not Yagr
 
-If you doesn't need Yagr features but need something specific which not implemented in Yagr then and you should use uPlot directly or welcome to the issues(#@TODO). Otherwise, I recommend to use Yagr and try to extend it, feel free to ask questions and bring you ideas into our [Issues Page](#@TODO).
+If you doesn't need Yagr features but need something specific which is not implemented in Yagr then you should use uPlot directly or welcome to the issues(#@TODO). Otherwise, I recommend to use Yagr and try to extend it, feel free to ask questions and bring you ideas into our [Issues Page](#@TODO).
 
 ### Features
 
@@ -439,14 +439,21 @@ Should hide rows if Y value is equal to `null`
 
 #### tooltip.percent?: PerScale<boolean>
 
-    /** Element bound for tooltip (default: document.body) */
-    boundClassName?: string;
+**Not implemented** Should show percents in tooltip rows.
+
+#### tooltip.boundClassName?: string
+
+CSS selector to find element in which tooltip will be rendered (visualy, not in DOM)
+
     /** Value precision (default: 2) */
-    precision?: PerScale<number>;
+
+#### tooltip.precision?: PerScale<number>
+
+Decimals count in numbers when formatting in tooltip.
 
 ### Settings
 
-Settings
+Global chart settings goes here.
 
 #### settings.zoom?: boolean
 
