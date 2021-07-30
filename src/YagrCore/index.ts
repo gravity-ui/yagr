@@ -392,6 +392,8 @@ class Yagr {
 
             if (isLogScale) {
                 scale.distr = Scale.Distr.Logarithmic;
+                scale.range = getScaleRange(scaleConfig, () => this.references, config);
+
                 return;
             }
 

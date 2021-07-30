@@ -103,8 +103,17 @@ export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) 
     const difference = dMax - dMin;
     const range = niceNum(difference, false);
     const incr = niceNum(range / ((scaleConfig.maxTicks || DEFAULT_MAX_TICKS) - 1), true);
-    let min = (startFromZero ? Math.min(0, dMin) : Math.floor(dMin / incr) * incr) || 0;
     let max = Math.ceil(dMax / incr) * incr || 100;
+    let min = 0;
+
+    /** Define min scale value */
+    if (startFromZero) {
+        min = Math.min(0, dMin);
+    } else if (scaleConfig.type === 'logarithmic') {
+        min = dMin < 1 ? 1 : dMin;
+    } else {
+        min = Math.floor(dMin / incr) * incr || 0
+    }
 
     /** Workaround for weird ranges */
     if (min === max) {
