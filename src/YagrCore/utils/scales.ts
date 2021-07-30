@@ -71,12 +71,13 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
 
 export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale) {
     const startFromZero = dataMin >= 0 && scaleConfig.stacking;
+    const endWithZero = dataMax <= 0 && scaleConfig.stacking;
 
     return {
         min: startFromZero
             ? 0
             : Math.round(dataMin - Math.abs(dataMin) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET)),
-        max: Math.round(dataMax + Math.abs(dataMax) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET)),
+        max: endWithZero ? 0 : Math.round(dataMax + Math.abs(dataMax) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET)),
     };
 }
 
@@ -88,12 +89,13 @@ export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale
  */
 export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) {
     const startFromZero = dataMin >= 0 && scaleConfig.stacking;
+    const endWithZero = dataMax <= 0 && scaleConfig.stacking;
 
     /**
      * This code handles case when scale has user max/min and niceScale's
      * range after usage of given max-min from scale config creates not centered lines
      */
-    const dMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : dataMax;
+    const dMax = endWithZero ? 0 : typeof scaleConfig.max === 'number' ? scaleConfig.max : dataMax;
     const dMin = startFromZero ? 0 : typeof scaleConfig.min === 'number' ? scaleConfig.min : dataMin;
 
     if (dMin === dMax) {
@@ -112,7 +114,7 @@ export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) 
     } else if (scaleConfig.type === 'logarithmic') {
         min = dMin < 1 ? 1 : dMin;
     } else {
-        min = Math.floor(dMin / incr) * incr || 0
+        min = Math.floor(dMin / incr) * incr || 0;
     }
 
     /** Workaround for weird ranges */
