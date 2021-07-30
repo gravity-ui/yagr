@@ -113,10 +113,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     let renderTooltipCloses = () => {};
 
     const defaultTooltipValueFormatter = (n: string | number | null, precision?: number) => {
-        if (n === null) {
-            return '-';
-        }
-
         if (typeof n === 'string') {
             if (pSettings.nullValues && pSettings.nullValues.hasOwnProperty(n)) {
                 return pSettings.nullValues[n] as string;
@@ -125,10 +121,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             return '-';
         }
 
-        return n.toFixed(
-            // eslint-disable-next-line no-nested-ternary
-            typeof precision === 'number' ? precision : typeof options.precision === 'number' ? options.precision : 2,
-        );
+        if (typeof n === 'number') {
+            return n.toFixed(
+                // eslint-disable-next-line no-nested-ternary
+                typeof precision === 'number' ? precision : typeof options.precision === 'number' ? options.precision : 2,
+            );
+        }
+
+        return '-';
     };
 
     const opts: TooltipOptions = Object.assign<{}, TooltipOptions, Partial<TooltipOptions>>(
