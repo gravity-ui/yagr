@@ -124,7 +124,11 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         if (typeof n === 'number') {
             return n.toFixed(
                 // eslint-disable-next-line no-nested-ternary
-                typeof precision === 'number' ? precision : typeof options.precision === 'number' ? options.precision : 2,
+                typeof precision === 'number'
+                    ? precision
+                    : typeof options.precision === 'number'
+                    ? options.precision
+                    : 2,
             );
         }
 
@@ -362,7 +366,10 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 const visibleEntries = Object.entries(rowsBySections);
 
                 visibleEntries.forEach(([scale, serieIndicies]) => {
-                    sections[scale] = sections[scale] || [];
+                    sections[scale] = sections[scale] || {
+                        realYs: [],
+                        rows: [],
+                    };
                     const section = sections[scale];
                     const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
 
@@ -419,7 +426,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         section.realYs.push(realY);
                     }
 
-                    if (getOptionValue(opts.highlight, scale)) {
+                    if (getOptionValue(opts.highlight, scale) && section.rows.length) {
                         const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
                         let activeIndex: number | null = 0;
                         if (tracking === 'area') {
