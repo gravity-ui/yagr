@@ -363,9 +363,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     i += 1;
                 }
 
-                const visibleEntries = Object.entries(rowsBySections);
+                const rowEntries = Object.entries(rowsBySections);
 
-                visibleEntries.forEach(([scale, serieIndicies]) => {
+                rowEntries.forEach(([scale, serieIndicies]) => {
                     sections[scale] = sections[scale] || {
                         realYs: [],
                         rows: [],
@@ -448,11 +448,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                     }
                 });
 
-                if (visibleEntries.length === 0) {
+                const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
+
+                if (hasOneRow) {
+                    onMouseEnter();
+                } else {
                     onMouseLeave();
                     return;
-                } else {
-                    onMouseEnter();
                 }
 
                 const bbox = over.getBoundingClientRect();
