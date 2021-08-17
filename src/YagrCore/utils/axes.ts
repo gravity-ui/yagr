@@ -104,7 +104,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
 
     if (axisConfig.scale === defaults.DEFAULT_X_SCALE) {
         return Object.assign(axis, {
-            gap: axisConfig.gap || defaults.X_AXIS_TICK_GAP,
+            gap: axisConfig.gap ?? defaults.X_AXIS_TICK_GAP,
             size: axisConfig.size || defaults.X_AXIS_SIZE,
             values: axisConfig.values || getTimeFormatter(config),
             ticks: axisConfig.ticks || defaults.theme.X_AXIS_TICKS,
@@ -117,7 +117,7 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
     }
 
     Object.assign(axis, {
-        gap: axisConfig.gap || defaults.Y_AXIS_TICK_GAP,
+        gap: axisConfig.gap ?? defaults.Y_AXIS_TICK_GAP,
         size: axisConfig.size || defaults.Y_AXIS_SIZE,
         values: axisConfig.values || getNumericValueFormatter(axisConfig),
         scale: axisConfig.scale || defaults.DEFAULT_Y_SCALE,
