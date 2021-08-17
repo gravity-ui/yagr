@@ -1,20 +1,22 @@
 # Yagr
 
-Yagr is a high level wrapper for extra-fast canvas chart rendering library [uPlot](https://github.com/leeoniya/uPlot).
+Yagr - это высокоуровневая оберта над сверхбыстрой библиотекой для отрисовки графиков [uPlot](https://github.com/leeoniya/uPlot).
 
-## Why Yagr?
+## Почему стоит использовать Yagr?
 
-Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior, and also allows to extend uPlot object directly.
+Почему не использовать uPlot напрямую? uPlot очень гибкая библиотека, она предоставляет прекрасный API чтобы создавать свои собственные плагины и кастомизировать визуализацию данных, но uPlot слишком низкоуровневый. Если вам нужны такие распространенные для визуализации временных графиков возможности как [тултип-легенда](#TODO), [стэкирование](#TODO), нормализация и так далее, то с uPlot вам придется реализовывать все эти возможности самим. В Yagr уже реализованы многие из этих возможностей. Yagr довольно конфигурируем и позволяет расширять и дополнять стандартное поведение, а также дает доступ до расширения uPlot напрямую.
 
-## Why not Yagr
+## Почему не стоит использовать Yagr?
 
-If you doesn't need Yagr features but need something specific which is not implemented in Yagr then you should use uPlot directly or welcome to the issues(#@TODO). Otherwise, I recommend to use Yagr and try to extend it, feel free to ask questions and bring you ideas into our [Issues Page](#@TODO).
+В первую очередь, Yagr предназначен для отрисовки временных данных. Если вам не нужны возможности Yagr, и при этом вам требуются какие-то специфические возможности, которых нет в Yagr, возможно вам стоит подумать над тем, чтобы использовать uPlot напрямую. Или добро пожаловать в [issues](#TODO). В других случаях, рекомендуем использовать Yagr и попытаться расширить его.
 
-### Features
+First of all Yagr is made to render timeseries data. If you doesn't need Yagr features but need something specific which is not implemented in Yagr then you should use uPlot directly or welcome to the issues(#@TODO). Otherwise, I recommend to use Yagr and try to extend it, feel free to ask questions and bring you ideas into our [Issues Page](#@TODO).
 
--   [Lines, Areas, Columns, Dots as visualization type. Configurable per series](#visualization-types)
--   [Configurable Legend Tooltip](#tooltip)
--   [Axes with extra options for decimals precision](#axes)
+### Возможности
+
+-   [Типы визуализаций: линии, области, столбцы, точки. Настраивается для каждой последовательности](#TODO)
+-   [Настраиваемый тултип-легенда](#todo)
+-   [Оси с дополнительными опциями точности](#todo)
 -   [Scales with configurable range functions and transformations](#scales)
 -   [Plot lines and bands. Configurable draw layer](#plot-lines)
 -   [Responsive charts](#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))

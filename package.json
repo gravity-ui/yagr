@@ -25,6 +25,7 @@
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
     "build:tsc": "tsc -p tsconfig.json && npm run copy:scss",
     "build": "rm -rf dist && npm run build:tsc && rollup -c rollup.config.ts",
+    "build:docs": "node docs/create.js",
     "start": "rollup -c rollup.config.ts -w",
     "precommit": "lint-staged"
   },
@@ -39,6 +40,7 @@
     ]
   },
   "devDependencies": {
+    "@doc-tools/transform": "^2.0.0-alpha.4",
     "@types/jest": "^26.0.22",
     "@types/lodash.debounce": "^4.0.6",
     "@types/node": "^10.11.0",
