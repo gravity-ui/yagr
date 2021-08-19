@@ -149,7 +149,7 @@ class Yagr {
             const {options, series} = this.process();
             this._cache = {height: options.height, width: options.width};
 
-            this.options = config.process ? config.process(options) : options;
+            this.options = config.editUplotOptions ? config.editUplotOptions(options) : options;
             this.series = series;
             this.plugins.legend = new LegendPlugin(this, config.legend);
         } catch (error) {

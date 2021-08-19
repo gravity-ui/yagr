@@ -1,6 +1,6 @@
 # Yagr
 
-Yagr is a high level wrapper for extra-fast canvas chart rendering library [uPlot](https://github.com/leeoniya/uPlot).
+Yagr is a high level library for rendering HTML5 Canvas charts based on extra-fast library [uPlot](https://github.com/leeoniya/uPlot).
 
 ## Why Yagr?
 
@@ -24,7 +24,7 @@ If you doesn't need Yagr features but need something specific which is not imple
 -   [Configurable crosshairs, cursor markers and snapping](#cursor)
 -   Typescript
 -   [Localization](#localization)
--   CSS Variables in color names
+-   [CSS Variables in color names](#css)
 -   [Paginated inline legend](#legend)
 -   Error handling and extended hooks
 -   [Data alignment and interpolation for missing data](#data-alignment)
@@ -67,29 +67,26 @@ Yagr will render simple line chart with two lines:
 
 <img src="../imgs/1.png" width="600">
 
-By default Yagr turns on some plugins such as tooltip and axes formating, details of default behavior you can see in plugins section.
+By default Yagr turns on some plugins such as tooltip and axes formating, details of default behavior you can see in plugins section. See [documentation](#documentation) for configuration.
 
-To undestand Yagr you should know about N restrictions of implementations:
+To undestand Yagr you should know about some restrictions of implementations:
 
--   all series should be [aligned on single timeline](#data-alignment)
--   you should or define chart size in config, or define it via CSS and use `settings.adaptive: true`
--
+-   all series should be aligned on single timeline. This restriction can cause some alignment artifacts when you have different data sources which timestamps doesn't match each other. See [data alignment section](#data-alignment) to undestand how to handle such cases.
+-   you should or define chart size in config, or use `settings.adaptive: true` and define size of chart's root HTML element by CSS.
 
-## Lifecycle
-
-### Stages
+## Lifecycle stages
 
 <img src="../imgs/yagr-stages.png" width="800">
 
 Yagr has 4 stages:
 
--   **Processing** - on this stage yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, caches everything which will be useful later and prepares to create uPlot config.
+-   **Processing** - on this stage Yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, scale and series transforms, caches everything which will be useful later and prepares to create uPlot config.
 -   **Generate config and plugins** - initialize and configure plugins, parse CSS-colors, preparing default settings for scales, axes, register default hooks, finally creates config and data series for uPlot.
 -   **Create uPlot instance** - creates uPlot instance.
 -   **Render** - renders node with custom renderer, also render legend if required.
 -   **Listen** - yagr instance awaits for events, triggers hooks, rerenders chart and
 
-When yagr instance is removing `yagr.dispose()` should be called to dispose all handlers and event listeners in chart instance.
+When yagr instance is removing `yagr.dispose()` should be called to dispose all handlers and event listeners of chart instance.
 
 ## React
 
@@ -106,7 +103,7 @@ function App({config}: {config: YagrConfig}) {
 }
 ```
 
-## Configuration
+## Documentation
 
 ### Visualization types
 
@@ -514,6 +511,12 @@ By default: `['series', 'axes', 'plotLines']`, which means that axes will be ove
 
 ### uPlot
 
+You can access uPlot instance via `yagr.uplot`.
+
+#### config.editUplotOptions: (opts: Options) => Options;
+
+This method allows to edit uPlot options after all Yagr transformations. It's useful in cases when you need extend Yagr's behavior or implement some new plugin.
+
 ### Localization
 
 Yagr supports English (`'en'`) and Russian (`'ru'`) language. You can provide your own localization keys by `settings.locale`.
@@ -622,3 +625,28 @@ Type of interpolation. Examples are given for dataset:
 -   `<your value>` - replace value with yours
 
 <img src="../imgs/proc-const.png" width="600">
+
+### CSS and named colors
+
+Yagr supports CSS variables and CSS named color values (eg. `cyan`). One you should take an attention is that you CSS variable should be available to resolve in `yagr.root` HTML element:
+
+```html
+<div id="graph"></div>
+
+<style>
+    #graph {
+        --custom-color: red;
+    }
+</style>
+<script>
+    new Yagr(window.graph, {
+        timline: [1, 2, 3],
+        series: [
+            {
+                data: [1, 2, 3],
+                color: '--custom-color', // or var(--custom-color)
+            },
+        ],
+    });
+</script>
+```

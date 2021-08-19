@@ -82,10 +82,11 @@ export interface YagrConfig {
     /** uPlot hooks */
     hooks: Hooks.Arrays & YagrHooks;
 
+    /** Yagr data processing options */
     processing?: ProcessingSettings;
 
-    /** uPlot */
-    process?: (opts: Options) => Options;
+    /** uPlot options transform method */
+    editUplotOptions?: (opts: Options) => Options;
 }
 
 export type MinimalValidConfig = Partial<YagrConfig> & {
