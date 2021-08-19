@@ -589,20 +589,36 @@ Value in series data to be replaced with interpolation value.
 
 #### interpolation.type
 
-Type of interpolation.
+Type of interpolation. Examples are given for dataset:
+
+```js
+['x', 2, 'x', 'x', 4, 'x'];
+```
 
 -   `linear` - use simple linear interpolation between two points.
 
 <img src="../imgs/proc-linear.png" width="600">
 
--   `left` - takes previous point's value.
+-   `left` - takes previous point's value if given point is not last one
 
-    <img src="../imgs/proc-left.png" width="600">
+<img src="../imgs/proc-left.png" width="600">
 
--   `right` - takes next point's value.
+-   `previous` - takes previous point's value
 
-    <img src="../imgs/proc-right.png" width="600">
+<img src="../imgs/proc-previous.png" width="600">
+
+-   `right` - takes next point's value if given point is not first on
+
+<img src="../imgs/proc-right.png" width="600">
+
+-   `next` - takes next point's value
+
+<img src="../imgs/proc-next.png" width="600">
+
+-   `closest` - takes closest point's value
+
+<img src="../imgs/proc-closest.png" width="600">
 
 -   `<your value>` - replace value with yours
 
-    <img src="../imgs/proc-const.png" width="600">
+<img src="../imgs/proc-const.png" width="600">
