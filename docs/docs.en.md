@@ -80,7 +80,7 @@ To undestand Yagr you should know about some restrictions of implementations:
 
 Yagr has 4 stages:
 
--   **Processing** - on this stage Yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, scale and series transforms, caches everything which will be useful later and prepares to create uPlot config.
+-   **Processing** - on this stage yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, caches everything which will be useful later and prepares to create uPlot config.
 -   **Generate config and plugins** - initialize and configure plugins, parse CSS-colors, preparing default settings for scales, axes, register default hooks, finally creates config and data series for uPlot.
 -   **Create uPlot instance** - creates uPlot instance.
 -   **Render** - renders node with custom renderer, also render legend if required.
