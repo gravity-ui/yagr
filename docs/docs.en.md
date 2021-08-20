@@ -147,6 +147,86 @@ series: [
 
 Keep in mind that Yagr draws first series from the last one to the first, so if you render non-transparent area at first, it can overlap other series. Be careful.
 
+### Series
+
+Series type extends (uPlot series)[https://github.com/leeoniya/uPlot/blob/f099796c4e7b659cfd22c668bbb919aa3cbd84c8/dist/uPlot.d.ts#L777] with extra features:
+
+#### series.name?: string
+
+Name of serie. Renders in tooltip and inline legend. If not passed then generates `Series <series index>` name.
+
+#### series.color?: string
+
+Single property to avoid uPlot's fill/stroke for different serie types. For lines and points color means the stroke color, for areas and columns means fill color. If not passed sets to black.
+
+#### series.id?: string
+
+Series ID, if not passed generates automatically.
+
+#### series.width?: number
+
+Width of line (line type charts).
+
+#### series.lineColor? string
+
+Color of line (area type charts).
+
+#### series.lineWidth?: number
+
+Line's width over area (area type charts)
+
+#### series.spanGaps?: boolean
+
+Should join paths over null-points
+
+#### series.scale?: string
+
+Scale of series
+
+#### series.type?: ChartType
+
+Series visualisation type.
+
+#### series.interpolation?: InterpolationSetting
+
+Series line interpolation type.
+
+#### series.cursorOptions?: CursorOptions
+
+Cursor options for series.
+
+#### series.visible?: boolean;
+
+Series visibility.
+
+#### series.formatter?: (value: string | number | null, serie: Series) => string
+
+Formatter for series' points values (formatting in tooltip).
+
+#### series.data: (number | string | null)[]
+
+Series data.
+
+#### series.refPoints?: RefPoints
+
+Calculated references points for Yagr plot. If not provided, Yagr calculates them by itself. Useful in cases when you preload ad process data on server-side and can easily precalculate reference points for Yagr and therefore a little bit optimize Yagr.
+
+#### series.showInTooltip?: boolean
+
+Should show series in tooltip, added to implement more flexible patterns of lines hiding.
+
+#### series.precision?: number
+
+Series's precision in tooltip. Uses to override axes precision.
+
+#### snapToValues?: SnapToValue | false
+
+Snap dataIdx value (default: closest). Use to override `cursor.snapToValues`.
+
+#### series.transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null
+
+Series data transformation method.
+
 ### Scales
 
 Scales is a key-value object, where keys are scale names and values scale configs.
@@ -227,8 +307,10 @@ axes: {
 
 #### axes.precision
 
--   `number`
--   `'auto'`
+Setups axis labels precision.
+
+-   `number` - decimals count
+-   `'auto'` - calculates automaticaly minimal correct precision
 
 Precision for axis ticks.
 
@@ -386,7 +468,7 @@ Configuration for this example:
 
 Max count of lines in tooltip.
 
-### tooltip.sum: PerScale<boolean>
+#### tooltip.sum: PerScale<boolean>
 
 Should show sum row in tooltip.
 
