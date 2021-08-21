@@ -193,6 +193,7 @@ const interpolateImpl = (
     x1: number,
     x2: number,
     xIdx: number,
+    iGroup: number[],
     type: ProcessingInterpolation['type'] | number = 'linear',
 ) => {
     let result = null;
@@ -220,11 +221,11 @@ const interpolateImpl = (
             break;
         }
         case 'left': {
-            result = xIdx === timeline.length - 1 ? null : y1;
+            result = iGroup[iGroup.length - 1] === timeline.length - 1 ? null : y1;
             break;
         }
         case 'right': {
-            result = xIdx === 0 ? null : y2;
+            result = iGroup[0] === 0 ? null : y2;
             break;
         }
         case 'closest': {
@@ -293,6 +294,7 @@ export const preprocess = (
                         x1 || timeline[0],
                         x2 || timeline[timeline.length - 1],
                         iIdx,
+                        iGroup,
                         interpolation && interpolation.type,
                     );
                 }
@@ -316,6 +318,7 @@ export const preprocess = (
                         x1 || timeline[0],
                         x2 || timeline[timeline.length - 1],
                         iIdx,
+                        iGroup,
                         interpolation && interpolation.type,
                     ),
                 );
