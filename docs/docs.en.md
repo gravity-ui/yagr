@@ -4,7 +4,7 @@ Yagr is a high level library for rendering HTML5 Canvas charts based on extra-fa
 
 ## Why Yagr?
 
-Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior, and also allows to extend uPlot object directly.
+Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common for chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior, and also allows to extend uPlot object directly.
 
 ## Why not Yagr
 
@@ -26,7 +26,7 @@ If you doesn't need Yagr features but need something specific which is not imple
 -   [Localization](#localization)
 -   [CSS Variables in color names](#css)
 -   [Paginated inline legend](#legend)
--   Error handling and extended hooks
+-   [Error handling and extended hooks](#hooks)
 -   [Data alignment and interpolation for missing data](#data-alignment)
 
 ## Quick start
@@ -87,6 +87,18 @@ Yagr has 4 stages:
 -   **Listen** - yagr instance awaits for events, triggers hooks, rerenders chart and
 
 When yagr instance is removing `yagr.dispose()` should be called to dispose all handlers and event listeners of chart instance.
+
+## Hooks
+
+Yagr hooks defined as `Hooks.Arrays & YagrHooks` where `YagrHooks` are:
+
+-   `load` - calls when chart fully processed and rendered and Yagr initialized all plugins.
+-   `onSelect` - calls when user selects some range on chart
+-   `error` - calls when there was runtime error in sume stage of lifecycle
+-   `processed` - calls when data is processed
+-   `inited` - equivalent of `ready` of uPlot
+-   `dispose` - calls when Yagr instance is deleting
+-   `resize` - calls on any chart resize
 
 ## React
 

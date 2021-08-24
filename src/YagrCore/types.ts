@@ -79,8 +79,8 @@ export interface YagrConfig {
     /** Raw series data and options */
     series: RawSerieData[];
 
-    /** uPlot hooks */
-    hooks: Hooks.Arrays & YagrHooks;
+    /** uPlot hooks + Yagr hooks */
+    hooks: YagrHooks;
 
     /** Yagr data processing options */
     processing?: ProcessingSettings;
