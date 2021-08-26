@@ -37,6 +37,14 @@
 
         let yagr = new Yagr(window.chart, cfg);
 
+        yagr.root.addEventListener('click', (evt) => {
+            if (!evt.metaKey) { return; }
+            const dataUrl = yagr.toDataUrl().replace('image/png', 'image/octet-stream');
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'demo' + Math.random().toString(32) + '.png';
+            a.click();
+        })
 
         const editor = monaco.editor.create(document.getElementById('container'), {
             value: `module.exports = ` + JSON.stringify(cfg, null, 4),

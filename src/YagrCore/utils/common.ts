@@ -1,5 +1,5 @@
 import {Series} from 'uplot';
-import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings} from '../types';
+import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, ProcessingInterpolation} from '../types';
 
 /**
  * Finds index of point in ranges of Y-Axis values.
@@ -193,7 +193,8 @@ const interpolateImpl = (
     x1: number,
     x2: number,
     xIdx: number,
-    type: 'left' | 'right' | 'linear' | number = 'linear',
+    iGroup: number[],
+    type: ProcessingInterpolation['type'] | number = 'linear',
 ) => {
     let result = null;
     const x = timeline[xIdx];
@@ -211,12 +212,26 @@ const interpolateImpl = (
             }
             break;
         }
-        case 'left': {
+        case 'previous': {
             result = y1;
             break;
         }
-        case 'right': {
+        case 'next': {
             result = y2;
+            break;
+        }
+        case 'left': {
+            result = iGroup[iGroup.length - 1] === timeline.length - 1 ? null : y1;
+            break;
+        }
+        case 'right': {
+            result = iGroup[0] === 0 ? null : y2;
+            break;
+        }
+        case 'closest': {
+            const lD = Math.abs(x1 - timeline[xIdx]);
+            const rD = Math.abs(x2 - timeline[xIdx]);
+            result = lD < rD ? y1 : y2;
             break;
         }
         default: {
@@ -279,6 +294,7 @@ export const preprocess = (
                         x1 || timeline[0],
                         x2 || timeline[timeline.length - 1],
                         iIdx,
+                        iGroup,
                         interpolation && interpolation.type,
                     );
                 }
@@ -302,6 +318,7 @@ export const preprocess = (
                         x1 || timeline[0],
                         x2 || timeline[timeline.length - 1],
                         iIdx,
+                        iGroup,
                         interpolation && interpolation.type,
                     ),
                 );

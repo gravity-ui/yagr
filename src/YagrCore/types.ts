@@ -107,7 +107,15 @@ export interface YagrHooks extends Hooks.Arrays {
 
 export interface ProcessingInterpolation {
     /** Interpolation type */
-    type: 'left' | 'right' | 'linear';
+    /**
+     * - previous: takes previous existing value
+     * - left: takes previous existing value except for last point
+     * - next: takes next existing value
+     * - right: takes next existing value except for first point
+     * - linear: calcs value by linear interpolation
+     * - closes: takes closes existing value
+     */
+    type: 'previous' | 'left' | 'next' | 'right' | 'linear' | 'closest';
 
     /** Cursor and tooltip snapToValue option */
     snapToValues?: SnapToValue;
