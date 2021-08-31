@@ -161,7 +161,7 @@ class Yagr {
 
             const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};
-            this.options = config.process ? config.process(options) : options;
+            this.options = config.editUplotOptions ? config.editUplotOptions(options) : options;
         } catch (error) {
             this.execHooks(config.hooks.error, {
                 type: 'config',

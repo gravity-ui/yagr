@@ -88,7 +88,7 @@ export interface YagrConfig {
     processing?: ProcessingSettings;
 
     /** uPlot */
-    process?: (opts: Options) => Options;
+    editUplotOptions?: (opts: Options) => Options;
 }
 
 export type MinimalValidConfig = Partial<YagrConfig> & {
