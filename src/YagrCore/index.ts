@@ -515,16 +515,26 @@ class Yagr {
 
         let series: DataSeries[] = this.config.series.map(({data}) => data) as DataSeries[];
 
-        if (processing) {
+        if (processing && processing.interpolation) {
             series = preprocess(series, timeline, processing);
             processing = false;
         }
 
-        if (/** condition for non transforming*/ undefined) {
-            return [timeline].concat(series.reverse() as any) as UPlotData;
-        }
+        const shouldMapNullValues = Boolean(processing && processing.nullValues);
+        const nullValues = (processing && processing.nullValues) || {};
 
-        const accum: Record<string, number[]> = {};
+        /**
+         * Stacks are represented as:
+         * {
+         *    [scale]: {
+         *        [],  // stacking group idx 0 (default for all on scale),
+         *        [],  // stacking group idx 1
+         *    ]
+         * }
+         *
+         * All stacked points are accumulating inside of series' scale group
+         */
+        const stacks: Record<string, number[][]> = {};
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
@@ -535,6 +545,8 @@ class Yagr {
             const serieOptions = this.options.series[serieConfigIndex];
             const scale = serieOptions.scale || DEFAULT_Y_SCALE;
             const scaleConfig = this.config.scales[scale] || {};
+            const isStacking = scaleConfig.stacking;
+            const sGroup = serieOptions.stackGroup || 0;
 
             let shouldCalculateRefPoints = false;
 
@@ -545,17 +557,22 @@ class Yagr {
 
             let empty = true;
 
-            if (scaleConfig.stacking && !accum[scale]) {
+            if (isStacking && !stacks[scale]) {
                 // @see https://github.com/leeoniya/uPlot/issues/429
                 // @ts-ignore
                 this.options.focus.alpha = 1.1;
-                accum[scale] = new Array(timeline.length).fill(0);
+                stacks[scale] = [];
+            }
+
+            if (isStacking && !stacks[scale][sGroup]) {
+                stacks[scale] = [];
+                stacks[scale][sGroup] = new Array(timeline.length).fill(0);
             }
 
             for (let idx = 0; idx < serie.length; idx++) {
-                let value = serie[idx] as number | null;
+                let value = serie[idx];
 
-                if (processing && processing.nullValues[value]) {
+                if (shouldMapNullValues && nullValues[String(value)]) {
                     value = null;
                 }
 
@@ -596,7 +613,7 @@ class Yagr {
                         value = 0;
                     }
 
-                    value = accum[scale][idx] += value;
+                    value = stacks[scale][sGroup][idx] += value;
                 }
 
                 if (scaleConfig.type === 'logarithmic' && value === 0) {

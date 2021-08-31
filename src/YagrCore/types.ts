@@ -17,6 +17,9 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 
     /** Reference points of series */
     refPoints?: RefPoints;
+
+    /** Stacking groups */
+    stackGroup?: number;
 }
 
 declare module 'uplot' {
@@ -240,6 +243,8 @@ export interface RawSerieData {
 
     /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
+
+    stackGroup?: number;
 }
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';

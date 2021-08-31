@@ -21,6 +21,7 @@
   "scripts": {
     "test": "jest --coverage",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "prebuild": "rimraf dist",
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
     "build:tsc": "tsc -p tsconfig.json && npm run copy:scss",
