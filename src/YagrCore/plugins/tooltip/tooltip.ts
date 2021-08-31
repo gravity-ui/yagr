@@ -2,7 +2,7 @@
 
 import {Plugin, Series} from 'uplot';
 
-import {CursorOptions} from '../cursor/cursor';
+import {CursorOptions, CursorSyncOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
@@ -321,6 +321,12 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             },
 
             setCursor: (u) => {
+                const syncOptions = yagr.config.cursor.sync as CursorSyncOptions;
+
+                if (!syncOptions.tooltip && !yagr.state.isMouseOver) {
+                    return;
+                }
+
                 const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
 
                 if ((left < 0 || top < 0) && !state.pinned) {

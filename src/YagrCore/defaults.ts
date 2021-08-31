@@ -11,6 +11,8 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 
+export const DEFAULT_SYNC_KEY = 'sync';
+
 export const LIGHT_DEFAULT_LINE_COLOR = '#222222';
 export const DARK_DEFAULT_LINE_COLOR = '#eeeeee';
 

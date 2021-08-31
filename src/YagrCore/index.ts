@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import debounce from 'lodash.debounce';
 
 import UPlot, {
@@ -13,7 +15,7 @@ import UPlot, {
 import LegendPlugin from './plugins/legend/legend';
 import tooltipPlugin from './plugins/tooltip/tooltip';
 import markersPlugin, {drawMarkersIfRequired} from './plugins/markers';
-import cursorPlugin from './plugins/cursor/cursor';
+import cursorPlugin, {CursorSyncOptions} from './plugins/cursor/cursor';
 import plotLinesPlugin from './plugins/plotLines/plotLines';
 
 import {
@@ -45,6 +47,7 @@ import {
     DEFAULT_Y_SCALE,
 } from './defaults';
 import i18n from './locale';
+import {getSyncOptions} from './utils/cursor';
 
 export interface YagrEvent {
     chart: Yagr;
@@ -67,6 +70,11 @@ interface YagrPlugins {
     legend?: LegendPlugin;
 }
 
+export interface YagrState {
+    isMouseOver: boolean;
+    stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
+}
+
 /*
  * Main core-module of Yagr.
  * Implements data processing and autoconfigurable wrapper
@@ -86,16 +94,19 @@ class Yagr {
     plugins: YagrPlugins;
     sync: SyncPubSub;
     i18n: ReturnType<typeof i18n>;
+    state: YagrState;
 
     private _startTime: number;
-    private _drawn: boolean;
     private _meta: Partial<YagrMeta> = {};
     private _cache: CachedProps;
 
     constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
         this._startTime = performance.now();
         this._meta = {};
-        this._drawn = false;
+        this.state = {
+            isMouseOver: false,
+            stage: 'config',
+        };
 
         const config: YagrConfig = Object.assign(
             {
@@ -120,6 +131,8 @@ class Yagr {
             pConfig,
         );
 
+        config.cursor.sync = getSyncOptions(config.cursor.sync);
+
         config.chart.type = config.chart.type || 'line';
 
         this.id = root.id || genId();
@@ -130,7 +143,7 @@ class Yagr {
 
         this.plugins = {};
         this.config = config;
-        this.sync = UPlot.sync('sync');
+        this.sync = UPlot.sync(config.cursor.sync.key as string);
 
         const settings = config.settings;
 
@@ -141,17 +154,28 @@ class Yagr {
 
         try {
             theme.setTheme(settings.theme || 'light');
-            this.root.classList.remove('yagr_theme_dark');
-            this.root.classList.remove('yagr_theme_light');
-            this.root.classList.add('yagr_theme_' + theme.theme);
+            root.classList.remove('yagr_theme_dark');
+            root.classList.remove('yagr_theme_light');
+            root.classList.add('yagr_theme_' + theme.theme);
             this.i18n = i18n(settings.locale || 'en');
 
-            const {options, series} = this.process();
+            const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};
-
             this.options = config.process ? config.process(options) : options;
+        } catch (error) {
+            this.execHooks(config.hooks.error, {
+                type: 'config',
+                error,
+                chart: this,
+            });
+            throw error;
+        }
+
+        this.state.stage = 'processing';
+
+        try {
+            const series = this.transformSeries();
             this.series = series;
-            this.plugins.legend = new LegendPlugin(this, config.legend);
         } catch (error) {
             this.execHooks(config.hooks.error, {
                 type: 'processing',
@@ -160,6 +184,10 @@ class Yagr {
             });
             throw error;
         }
+
+        this.plugins.legend = new LegendPlugin(this, config.legend);
+
+        this.state.stage = 'uplot';
 
         try {
             this.uplot = new UPlot(this.options, this.series, this.plugins.legend.init);
@@ -184,6 +212,8 @@ class Yagr {
                 processTime,
             },
         });
+
+        this.state.stage = 'render';
     }
 
     redraw(options: RedrawOptions) {
@@ -216,6 +246,7 @@ class Yagr {
 
     dispose = () => {
         this.resizeOb && this.resizeOb.unobserve(this.root);
+        this.unsubscribe();
         this.uplot.destroy();
         this.execHooks(this.config.hooks.dispose, this);
     };
@@ -233,11 +264,10 @@ class Yagr {
     }
 
     /*
-     * Main data procesing function.
-     * Configures options, series, axis, grids and scales
+     * Main config processing options
+     * Configures options, axess, grids, scales etc
      */
-    // eslint-disable-next-line complexity
-    private process() {
+    private createUplotOptions() {
         const {config} = this;
         const plugins: Plugin[] = [];
 
@@ -434,10 +464,10 @@ class Yagr {
         options.hooks = config.hooks || {};
         options.hooks.draw = options.hooks.draw || [];
         options.hooks.draw.push(() => {
-            if (this._drawn) {
+            if (this.state.stage === 'listen') {
                 return;
             }
-            this._drawn = true;
+            this.state.stage = 'listen';
             const renderTime = performance.now() - this._startTime;
             this._meta.renderTime = renderTime;
             this.execHooks(config.hooks.load, {
@@ -497,9 +527,8 @@ class Yagr {
         options.padding = config.chart.padding || getPaddingByAxes(options);
 
         this.options = options;
-        const series = this.transformSeries();
 
-        return {options, series};
+        return options;
     }
 
     /*
@@ -727,7 +756,14 @@ class Yagr {
             this.resizeOb.observe(this.root);
         }
 
-        this.unsubscribe();
+        const syncOptions = this.config.cursor.sync as CursorSyncOptions;
+
+        if (!syncOptions.tooltip) {
+            if (!this.config.hooks.dispose) {
+                this.config.hooks.dispose = [];
+            }
+            this.config.hooks.dispose.push(this.trackMouse());
+        }
     };
 
     private execHooks = <T>(hooks: T | undefined, ...args: unknown[]) => {
@@ -737,6 +773,22 @@ class Yagr {
             });
         }
     };
+
+    private trackMouse() {
+        const mouseOver = () => {
+            this.state.isMouseOver = true;
+        };
+        const mouseLeave = () => {
+            this.state.isMouseOver = false;
+        };
+        this.root.addEventListener('mouseover', mouseOver);
+        this.root.addEventListener('mouseleave', mouseLeave);
+
+        return () => {
+            this.root.removeEventListener('mouseover', mouseOver);
+            this.root.removeEventListener('mouseleave', mouseLeave);
+        };
+    }
 
     private get clientHeight() {
         const DEFAULT_FONT_SIZE = 14;

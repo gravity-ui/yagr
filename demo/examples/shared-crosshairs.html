@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Yagr</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+            }
+            #root {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+            <div id="chart1" class=".container"></div>
+            <div id="chart2" class="container"></div>
+        </div>
+    
+
+    <script>
+        const y1 = new Yagr(chart1, {
+            timeline: [1, 2, 3],
+            series: [{data: [1, 2, 3], color: 'red'}],
+            cursor: {sync: {tooltip: false}},
+        });
+
+        const y2 = new Yagr(chart2, {
+            timeline: [1, 2, 3],
+            series: [{data: [3, 2, 1], color: 'green'}],
+            cursor: {sync: {tooltip: false}},
+        })
+
+        y1.subscribe();
+        y2.subscribe();
+    </script>
+    </body>
+</html>

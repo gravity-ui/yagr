@@ -1,6 +1,6 @@
 import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
 
-import Yagr, {YagrMeta} from './index';
+import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
 import {CursorOptions} from './plugins/cursor/cursor';
@@ -101,7 +101,7 @@ type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C
 export interface YagrHooks extends Hooks.Arrays {
     load?: Handler<{chart: Yagr; meta: YagrMeta}>;
     onSelect?: Handler<{from: number; to: number}>;
-    error?: Handler<{type: 'processing' | 'uplot'; error: Error; yagr: Yagr}>;
+    error?: Handler<{type: YagrState['stage']; error: Error; yagr: Yagr}>;
     processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
     inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
     dispose?: Handler<Yagr>;
