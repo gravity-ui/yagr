@@ -1,10 +1,10 @@
 # Yagr
 
-Yagr is a high level library for rendering HTML5 Canvas charts based on extra-fast library [uPlot](https://github.com/leeoniya/uPlot).
+Yagr is a high level library for rendering HTML5 Canvas charts based on the extra-fast library [uPlot](https://github.com/leeoniya/uPlot).
 
 ## Why Yagr?
 
-Why not use uPlot directly? uPlot is very flexible library and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common for chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable and you can extend it or customize view and behavior, and also allows to extend uPlot object directly.
+Why not to use uPlot directly? uPlot is very flexible library, and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common for chart [features](#features) such as [legend tooltip](#tooltip), [stacking](#stacking), [normalization](#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable, and you can extend it or customize view and behavior, and also it allows to extend uPlot object directly.
 
 ## Why not Yagr
 
@@ -676,13 +676,38 @@ Will produce chart where data `[1, 'x', 3]` will be rendered as `[1, 2, 3]` by l
 
 ### Processing
 
-Data processing settings here.
+Settings for data transformations before options generation and rendering. If this section is empty, than Yagr just skips [processing stage](#lifecycle-stages)
 
-#### nullValues: Record<string, null>
+#### nullValues: Record<string, string | null>
+
+Map of string values which Yagr will replace with `null` in resulting series but will show given string value (or null) in tooltip. For instance it's usefull to show Infinity values of asymptotic growth:
+
+<img src="../imgs/null-values.png" width="600">
+
+Config:
+
+```
+module.exports = {
+    "timeline": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+    "series": [{
+        "data": [1, 100, 1000, 10000, '+inf', 10000, 1000, 100, 1],
+        "color": "red"
+    }],
+    processing: {
+        nullValues: {
+            '+inf': 'Infinity'
+        }
+    },
+}
+```
+
+#### Data Interpolation
+
+Interpolation options define how to transform data alignment artifacts.
 
 #### interpolation.value
 
-Value in series data to be replaced with interpolation value.
+Value in series `data` field which will been replaced with interpolated value.
 
 #### interpolation.type
 
