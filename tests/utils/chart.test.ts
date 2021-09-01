@@ -1,6 +1,6 @@
 import {Options} from 'uplot';
-import {PADDING_BOTH, PADDING_LEFT, PADDING_RIGHT} from '../src/YagrCore/defaults';
-import {getPaddingByAxes} from '../src/YagrCore/utils/chart';
+import {PADDING_BOTH, PADDING_LEFT, PADDING_RIGHT} from '../../src/YagrCore/defaults';
+import {getPaddingByAxes} from '../../src/YagrCore/utils/chart';
 
 describe('utils:charts', () => {
     it('empty is left', () => {

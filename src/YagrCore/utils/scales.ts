@@ -110,9 +110,9 @@ export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) 
     const difference = dMax - dMin;
     const range = niceNum(difference, false);
     const incr = niceNum(range / ((scaleConfig.maxTicks || DEFAULT_MAX_TICKS) - 1), true);
-    let max = Math.ceil(dMax / incr) * incr || 100;
+    let max = Math.ceil(dMax / incr) * incr;
+    max = isNaN(max) ? 100 : max;
     let min = (startFromZero ? Math.min(0, dMin) : Math.floor(dMin / incr) * incr) || 0;
-
 
     /** Workaround for weird ranges */
     if (min === max) {

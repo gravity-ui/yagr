@@ -32,7 +32,7 @@ export interface CursorOptions {
     maxMarkers?: number;
 
     /** Cursror sync options */
-    sync?: true | Partial<CursorSyncOptions>;
+    sync?: true | string;
 }
 
 const MAX_CURSORS = 50;

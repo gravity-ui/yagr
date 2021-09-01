@@ -1,4 +1,4 @@
-const m = (query: string) => ({
+const m = (query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -9,10 +9,8 @@ const m = (query: string) => ({
     dispatchEvent: jest.fn(),
 });
 
-// @ts-ignore
 global.window = {
     matchMedia: m,
 };
-
-// @ts-ignore
 global.matchMedia = m;
+HTMLCanvasElement.prototype.getContext = () => {};

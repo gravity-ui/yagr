@@ -44,12 +44,10 @@ export interface YagrConfig {
     /** Main chart visualization config */
     chart: YagrChartOptions;
 
-    /** Graph title style */
+    /** Graph title style. To customize other properties use CSS */
     title: {
         text: string;
-        color?: string; // @TODO
-        font?: string; // @TODO
-        fontSize?: number; // @TODO
+        fontSize?: number;
     };
 
     /** Chart inline legend configuration */

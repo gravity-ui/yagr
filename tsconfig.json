@@ -24,9 +24,7 @@
     "outDir": "./dist"
   },
   "include": [
-    "./jest.config.ts",
     "./src",
-    "./tests",
     "./typings",
   ]
 }

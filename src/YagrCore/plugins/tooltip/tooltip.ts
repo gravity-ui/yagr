@@ -2,7 +2,7 @@
 
 import {Plugin, Series} from 'uplot';
 
-import {CursorOptions, CursorSyncOptions} from '../cursor/cursor';
+import {CursorOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
@@ -141,7 +141,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
             maxLines: TOOLTIP_DEFAULT_MAX_LINES,
             highlight: true,
-            sum: true,
+            sum: false,
             render: renderTooltip,
             pinable: true,
             value: defaultTooltipValueFormatter,
@@ -321,13 +321,12 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             },
 
             setCursor: (u) => {
-                const syncOptions = yagr.config.cursor.sync as CursorSyncOptions;
+                const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
 
-                if (!syncOptions.tooltip && !yagr.state.isMouseOver) {
+                if (opts.show && opts.show(yagr, u) === false) {
+                    hide();
                     return;
                 }
-
-                const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
 
                 if ((left < 0 || top < 0) && !state.pinned) {
                     hide();

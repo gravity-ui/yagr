@@ -7,7 +7,7 @@ const cfg: Config.InitialOptions = {
     collectCoverageFrom: ['./src/**/*.{js,ts,tsx}'],
     coverageReporters: ['json', 'html'],
     coverageDirectory: './coverage',
-    setupFiles: ['<rootDir>/tests/setup.ts'],
+    setupFiles: ['<rootDir>/tests/setup.js'],
 };
 
 export default cfg;

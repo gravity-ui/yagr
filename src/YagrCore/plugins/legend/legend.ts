@@ -93,7 +93,7 @@ export default class Legend {
         this.legendEl?.remove();
     }
 
-    init = (u: UPlot, done: Function) => {
+    init = (u: UPlot) => {
         this.uplot = u;
 
         /** Removing native uPlot legend */
@@ -104,7 +104,6 @@ export default class Legend {
         if (this.options.show) {
             this.prepareLegend();
         }
-        done();
     };
 
     private applyHandlers() {

@@ -15,7 +15,7 @@ import UPlot, {
 import LegendPlugin from './plugins/legend/legend';
 import tooltipPlugin from './plugins/tooltip/tooltip';
 import markersPlugin, {drawMarkersIfRequired} from './plugins/markers';
-import cursorPlugin, {CursorSyncOptions} from './plugins/cursor/cursor';
+import cursorPlugin from './plugins/cursor/cursor';
 import plotLinesPlugin from './plugins/plotLines/plotLines';
 
 import {
@@ -45,9 +45,10 @@ import {
     DEFAULT_CANVAS_PIXEL_RATIO,
     theme,
     DEFAULT_Y_SCALE,
+    DEFAULT_SYNC_KEY,
+    DEFAULT_TITLE_FONT_SIZE,
 } from './defaults';
 import i18n from './locale';
-import {getSyncOptions} from './utils/cursor';
 
 export interface YagrEvent {
     chart: Yagr;
@@ -92,7 +93,7 @@ class Yagr {
     canvas: HTMLCanvasElement;
     references?: RefPoints;
     plugins: YagrPlugins;
-    sync: SyncPubSub;
+    sync?: SyncPubSub;
     i18n: ReturnType<typeof i18n>;
     state: YagrState;
 
@@ -131,7 +132,7 @@ class Yagr {
             pConfig,
         );
 
-        config.cursor.sync = getSyncOptions(config.cursor.sync);
+        const sync = config.cursor.sync;
 
         config.chart.type = config.chart.type || 'line';
 
@@ -143,7 +144,10 @@ class Yagr {
 
         this.plugins = {};
         this.config = config;
-        this.sync = UPlot.sync(config.cursor.sync.key as string);
+
+        if (sync) {
+            this.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
+        }
 
         const settings = config.settings;
 
@@ -190,7 +194,7 @@ class Yagr {
         this.state.stage = 'uplot';
 
         try {
-            this.uplot = new UPlot(this.options, this.series, this.plugins.legend.init);
+            this.uplot = new UPlot(this.options, this.series, this.initRender);
             this.canvas = root.querySelector('canvas') as HTMLCanvasElement;
         } catch (error) {
             this.execHooks(config.hooks.error, {
@@ -256,11 +260,15 @@ class Yagr {
     }
 
     subscribe() {
-        this.sync.sub(this.uplot);
+        if (this.sync) {
+            this.sync.sub(this.uplot);
+        }
     }
 
     unsubscribe() {
-        this.sync.unsub(this.uplot);
+        if (this.sync) {
+            this.sync.unsub(this.uplot);
+        }
     }
 
     /*
@@ -291,6 +299,7 @@ class Yagr {
                     color: '',
                     name: '',
                     $c: config.timeline,
+                    scale: DEFAULT_X_SCALE,
                     _valuesCount: config.timeline.length,
                 },
             ],
@@ -315,9 +324,11 @@ class Yagr {
             setScale: settings.zoom === undefined ? true : settings.zoom,
         };
 
-        options.cursor.sync = options.cursor.sync || {
-            key: this.sync.key,
-        };
+        if (this.sync) {
+            options.cursor.sync = options.cursor.sync || {
+                key: this.sync.key,
+            };
+        }
 
         if (config.cursor) {
             const cursorPluginInstance = cursorPlugin(config.cursor, config);
@@ -594,7 +605,6 @@ class Yagr {
             }
 
             if (isStacking && !stacks[scale][sGroup]) {
-                stacks[scale] = [];
                 stacks[scale][sGroup] = new Array(timeline.length).fill(0);
             }
 
@@ -756,14 +766,13 @@ class Yagr {
             this.resizeOb.observe(this.root);
         }
 
-        const syncOptions = this.config.cursor.sync as CursorSyncOptions;
-
-        if (!syncOptions.tooltip) {
-            if (!this.config.hooks.dispose) {
-                this.config.hooks.dispose = [];
-            }
-            this.config.hooks.dispose.push(this.trackMouse());
+        if (!this.config.hooks.dispose) {
+            this.config.hooks.dispose = [];
         }
+
+        /** Unsubscribe in init required to avoid chars been synced without action from developer */
+        this.unsubscribe();
+        this.config.hooks.dispose.push(this.trackMouse());
     };
 
     private execHooks = <T>(hooks: T | undefined, ...args: unknown[]) => {
@@ -790,10 +799,23 @@ class Yagr {
         };
     }
 
+    private initRender = (u: uPlot, done: Function) => {
+        /** Init legend if required */
+        this.plugins.legend?.init(u);
+
+        /** Setup font size for title if required */
+        if (this.config.title && this.config.title.fontSize) {
+            const size = this.config.title.fontSize;
+            const t = this.root.querySelector('.u-title') as HTMLElement;
+            t.setAttribute('style', `font-size:${size}px;line-height:${size}px;`);
+        }
+
+        done();
+    };
+
     private get clientHeight() {
-        const DEFAULT_FONT_SIZE = 14;
         const MARGIN = 8;
-        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_FONT_SIZE) + MARGIN : 0;
+        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
         return this.root.clientHeight - offset;
     }
 }

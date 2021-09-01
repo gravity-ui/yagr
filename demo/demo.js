@@ -84,6 +84,7 @@ const generateChart = ({
                 time: true,
             },
             y: {
+                stacking: type === 'area' || type === 'column',
                 type: 'linear',
                 range: 'nice',
             },
@@ -97,7 +98,6 @@ const generateChart = ({
         },
         settings: {
             ...(config.settings || {}),
-            stacking: type === 'area' || type === 'column',
         },
         tooltip: {
             enabled: true,
