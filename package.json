@@ -20,8 +20,8 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src tests --ext .js,.jsx,.ts,.tsx",
+    "typecheck": "tsc -p tsconfig.json",
     "prebuild": "rimraf dist",
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
     "build:tsc": "tsc -p tsconfig.json && npm run copy:scss",
@@ -50,6 +50,7 @@
     "commitizen": "^3.0.0",
     "copyfiles": "^2.4.1",
     "eslint": "^7.21.0",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-security": "^1.4.0",
     "husky": "^1.0.1",
