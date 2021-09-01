@@ -18,7 +18,7 @@ If you doesn't need Yagr features but need something specific which is not imple
 -   [Scales with configurable range functions and transformations](#scales)
 -   [Plot lines and bands. Configurable draw layer](#plot-lines)
 -   [Responsive charts](#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
--   High level support of stacked areas/columns
+-   [High level support of stacked areas/columns](#stacking)
 -   [Light/Dark theme](#settings.theme)
 -   [Data normalization](#scale.normalize)
 -   [Configurable crosshairs, cursor markers and snapping](#cursor)
@@ -80,11 +80,12 @@ To undestand Yagr you should know about some restrictions of implementations:
 
 Yagr has 4 stages:
 
--   **Processing** - on this stage yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, caches everything which will be useful later and prepares to create uPlot config.
--   **Generate config and plugins** - initialize and configure plugins, parse CSS-colors, preparing default settings for scales, axes, register default hooks, finally creates config and data series for uPlot.
--   **Create uPlot instance** - creates uPlot instance.
--   **Render** - renders node with custom renderer, also render legend if required.
--   **Listen** - yagr instance awaits for events, triggers hooks, rerenders chart and
+-   `config`: **Generate config and plugins** - initialize and configure plugins, parse CSS-colors, preparing default settings for scales, axes, register default hooks, finally creates config and data series for uPlot.
+
+-   `processing`: **Processing** - on this stage yagr makes all data transformation if required: data alignment with interpolation, stacking, normalization, caches everything which will be useful later and prepares to create uPlot config.
+-   `uplot`: **Create uPlot instance** - creates uPlot instance.
+-   `render`: **Render** - renders node with custom renderer, also render legend if required.
+-   `listen`: **Listen** - yagr instance awaits for events, triggers hooks, rerenders chart and
 
 When yagr instance is removing `yagr.dispose()` should be called to dispose all handlers and event listeners of chart instance.
 
@@ -94,7 +95,7 @@ Yagr hooks defined as `Hooks.Arrays & YagrHooks` where `YagrHooks` are:
 
 -   `load` - calls when chart fully processed and rendered and Yagr initialized all plugins.
 -   `onSelect` - calls when user selects some range on chart
--   `error` - calls when there was runtime error in sume stage of lifecycle
+-   `error` - calls when there was runtime error in some stage of lifecycle
 -   `processed` - calls when data is processed
 -   `inited` - equivalent of `ready` of uPlot
 -   `dispose` - calls when Yagr instance is deleting
@@ -233,11 +234,15 @@ Series's precision in tooltip. Uses to override axes precision.
 
 #### snapToValues?: SnapToValue | false
 
-Snap dataIdx value (default: closest). Use to override `cursor.snapToValues`.
+Snap dataIdx value (default: `closest`). Use to override `cursor.snapToValues`.
 
 #### series.transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null
 
 Series data transformation method.
+
+#### series.stackGroup?: number
+
+Stack group of series. Used to combient series to different stacks. Keep in mind that stacks are just a sum of all real values and if there are artifacts of data alignment on a given X-point on some lines then stacks will be calculated wrong. To avoid it there is a special data interpolation options in Yagr (see [data alignment](#data-alignment) for more information). `null` values in stacks will be interpreted as zeros.
 
 ### Scales
 
@@ -293,7 +298,7 @@ Minimal value of scale range between min and max. Use for stabilize nice-scale w
 
 #### scale.stacking: boolean
 
-Should stack values on given scale. False by default.
+Should stack values on given scale. False by default. See [stacking](#series.stackGroup?:-number) for more info.
 
 #### scale.transform
 
@@ -476,11 +481,11 @@ Configuration for this example:
 
 #### tooltip.enabled: boolean
 
-#### tooltip.maxLines: PerScale<number>
+#### tooltip.maxLines: PerScale<number> = 10;
 
 Max count of lines in tooltip.
 
-#### tooltip.sum: PerScale<boolean>
+#### tooltip.sum: PerScale<boolean> = false
 
 Should show sum row in tooltip.
 
@@ -506,7 +511,7 @@ Rows comparator function.
 
 #### tooltip.render: (data: TooltipRenderOptions) => string
 
-Tooltip renderer. See [TooltipRenderOptions](#@TODO)
+Tooltip renderer. See [TooltipRenderOptions](#@custom-renderer)
 
 #### tooltip.pinable: boolean
 
@@ -541,6 +546,46 @@ CSS selector to find element in which tooltip will be rendered (visualy, not in 
 #### tooltip.precision?: PerScale<number>
 
 Decimals count in numbers when formatting in tooltip.
+
+#### Custom renderer
+
+You can replace native tooltip render with your own renderer wich accepts `TooltipRenderOptions` type.
+
+```ts
+type TooltipRow = {
+    /** Name of DataLine, gets from series.name */
+    name?: string;
+    /** Current Y value of DataLine */
+    value: string | number | null;
+    /** Color of DataLine */
+    color: string;
+    /** Is cursor over DataLine */
+    active?: boolean;
+    /** Custom className */
+    className?: string;
+    /** Y Axis value */
+    y?: number | null;
+    /** Index of series in u.series */
+    seriesIdx: number;
+    /** Original value before all transormations */
+    originalValue?: number | null;
+    /** Transformed value  */
+    transformed?: number | null | string;
+};
+
+interface TooltipScale {
+    scale: string;
+    rows: TooltipRow[];
+    sum?: number;
+}
+interface TooltipRenderOptions {
+    scales: TooltipScale[];
+    options: TooltipOptions;
+    x: number;
+    pinned: boolean;
+    yagr: Yagr;
+}
+```
 
 ### Settings
 
