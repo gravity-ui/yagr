@@ -5,11 +5,6 @@ import {CURSOR_STYLE, DEFAULT_X_SCALE, MARKER_DIAMETER, SERIE_COLOR} from '../..
 import CP from '../../utils/colors';
 import {findDataIdx} from '../../utils/common';
 
-export interface CursorSyncOptions {
-    key: string;
-    tooltip: boolean;
-}
-
 /**
  * Options for cursor plugin.
  */
@@ -31,7 +26,7 @@ export interface CursorOptions {
     /** Max count of visible markers. If lines > value then markers will be hidden (default: 50) */
     maxMarkers?: number;
 
-    /** Cursror sync options */
+    /** Cursror sync key (default if true) */
     sync?: true | string;
 }
 
