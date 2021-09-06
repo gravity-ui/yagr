@@ -260,15 +260,11 @@ class Yagr {
     }
 
     subscribe() {
-        if (this.sync) {
-            this.sync.sub(this.uplot);
-        }
+        this.sync?.sub(this.uplot);
     }
 
     unsubscribe() {
-        if (this.sync) {
-            this.sync.unsub(this.uplot);
-        }
+        this.sync?.unsub(this.uplot);
     }
 
     /*
