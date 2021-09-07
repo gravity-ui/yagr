@@ -25,6 +25,9 @@ export interface CursorOptions {
     };
     /** Max count of visible markers. If lines > value then markers will be hidden (default: 50) */
     maxMarkers?: number;
+
+    /** Cursror sync key (default if true) */
+    sync?: true | string;
 }
 
 const MAX_CURSORS = 50;

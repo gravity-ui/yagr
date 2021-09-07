@@ -1,4 +1,4 @@
-import {findDataIdx} from '../src/YagrCore/utils/common';
+import {findDataIdx} from '../../src/YagrCore/utils/common';
 
 describe('utils:findDataIdx', () => {
     describe('closest', () => {

@@ -1,5 +1,5 @@
 import {Series} from 'uplot';
-import {getSumByIdx} from '../src/YagrCore/utils/common';
+import {getSumByIdx} from '../../src/YagrCore/utils/common';
 
 describe('utils:getSumByIdx', () => {
     it('should sum all series by idx', () => {

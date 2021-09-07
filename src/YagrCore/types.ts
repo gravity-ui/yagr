@@ -1,6 +1,6 @@
 import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
 
-import Yagr, {YagrMeta} from './index';
+import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
 import {CursorOptions} from './plugins/cursor/cursor';
@@ -17,6 +17,9 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 
     /** Reference points of series */
     refPoints?: RefPoints;
+
+    /** Stacking groups */
+    stackGroup?: number;
 }
 
 declare module 'uplot' {
@@ -41,12 +44,10 @@ export interface YagrConfig {
     /** Main chart visualization config */
     chart: YagrChartOptions;
 
-    /** Graph title style */
+    /** Graph title style. To customize other properties use CSS */
     title: {
         text: string;
-        color?: string; // @TODO
-        font?: string; // @TODO
-        fontSize?: number; // @TODO
+        fontSize?: number;
     };
 
     /** Chart inline legend configuration */
@@ -85,7 +86,7 @@ export interface YagrConfig {
     processing?: ProcessingSettings;
 
     /** uPlot */
-    process?: (opts: Options) => Options;
+    editUplotOptions?: (opts: Options) => Options;
 }
 
 export type MinimalValidConfig = Partial<YagrConfig> & {
@@ -98,7 +99,7 @@ type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C
 export interface YagrHooks extends Hooks.Arrays {
     load?: Handler<{chart: Yagr; meta: YagrMeta}>;
     onSelect?: Handler<{from: number; to: number}>;
-    error?: Handler<{type: 'processing' | 'uplot'; error: Error; yagr: Yagr}>;
+    error?: Handler<{type: YagrState['stage']; error: Error; yagr: Yagr}>;
     processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
     inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
     dispose?: Handler<Yagr>;
@@ -240,6 +241,8 @@ export interface RawSerieData {
 
     /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
+
+    stackGroup?: number;
 }
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';

@@ -1,4 +1,4 @@
-import {findInRange, findSticky} from '../src/YagrCore/utils/common';
+import {findInRange, findSticky} from '../../src/YagrCore/utils/common';
 
 describe('utils:findInRange', () => {
     describe('stickToRanges = true', () => {
@@ -26,6 +26,12 @@ describe('utils:findInRange', () => {
             expect(findInRange(range, -250)).toBe(0);
             expect(findInRange(range, -150)).toBe(1);
             expect(findInRange(range, 100)).toBe(2);
+        });
+
+        it('should work with negative and positive numbers', () => {
+            const range = [5, 4, -3, -1];
+
+            expect(findInRange(range, 2)).toBe(1);
         });
     });
 

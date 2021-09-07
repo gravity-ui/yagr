@@ -1,4 +1,4 @@
-import {preprocess} from '../src/YagrCore/utils/common';
+import {preprocess} from '../../src/YagrCore/utils/common';
 
 describe('utils:preprocess', () => {
     describe('nullValues', () => {
@@ -90,7 +90,7 @@ describe('utils:preprocess', () => {
             ).toEqual([[100, 100, 0]]);
         });
 
-        it('should bring left border to null', () => {
+        it('should bring left border to null, except continues empty line', () => {
             expect(
                 preprocess([[100, 'x', 'x']], [1, 2, 3], {
                     interpolation: {
@@ -98,7 +98,16 @@ describe('utils:preprocess', () => {
                         type: 'left',
                     },
                 }),
-            ).toEqual([[100, 100, 100]]);
+            ).toEqual([[100, null, null]]);
+
+            expect(
+                preprocess([[100, 'x', 100, 'x']], [1, 2, 3, 4], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'left',
+                    },
+                }),
+            ).toEqual([[100, 100, 100, null]]);
 
             expect(
                 preprocess([['x', 100, 'x']], [1, 2, 3], {
@@ -107,7 +116,7 @@ describe('utils:preprocess', () => {
                         type: 'left',
                     },
                 }),
-            ).toEqual([[null, 100, 100]]);
+            ).toEqual([[null, 100, null]]);
         });
 
         it('should avoid nulls', () => {
@@ -143,7 +152,7 @@ describe('utils:preprocess', () => {
             ).toEqual([[100, 0, 0]]);
         });
 
-        it('should bring right border to null', () => {
+        it('should bring right border to null, except starting empty line', () => {
             expect(
                 preprocess([[100, 'x', 'x']], [1, 2, 3], {
                     interpolation: {
@@ -160,7 +169,16 @@ describe('utils:preprocess', () => {
                         type: 'right',
                     },
                 }),
-            ).toEqual([[100, 100, null]]);
+            ).toEqual([[null, 100, null]]);
+
+            expect(
+                preprocess([['x', 100, 'x', 100]], [1, 2, 3, 4], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'right',
+                    },
+                }),
+            ).toEqual([[null, 100, 100, 100]]);
         });
 
         it('should avoid nulls', () => {
@@ -181,6 +199,90 @@ describe('utils:preprocess', () => {
                     },
                 }),
             ).toEqual([[100, null, 0, 0]]);
+        });
+    });
+
+    describe('interpolation: previous', () => {
+        it('base', () => {
+            expect(
+                preprocess([[100, 'x', 0]], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'previous',
+                    },
+                }),
+            ).toEqual([[100, 100, 0]]);
+        });
+
+        it('should bring right border to null, including continues empty line', () => {
+            expect(
+                preprocess([[100, 'x', 'x']], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'previous',
+                    },
+                }),
+            ).toEqual([[100, 100, 100]]);
+
+            expect(
+                preprocess([['x', 100, 'x']], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'previous',
+                    },
+                }),
+            ).toEqual([[null, 100, 100]]);
+
+            expect(
+                preprocess([['x', 100, 'x', 100]], [1, 2, 3, 4], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'previous',
+                    },
+                }),
+            ).toEqual([[null, 100, 100, 100]]);
+        });
+    });
+
+    describe('interpolation: next', () => {
+        it('base', () => {
+            expect(
+                preprocess([[100, 'x', 0]], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'next',
+                    },
+                }),
+            ).toEqual([[100, 0, 0]]);
+        });
+
+        it('should bring right border to null, include starting empty line', () => {
+            expect(
+                preprocess([[100, 'x', 'x']], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'next',
+                    },
+                }),
+            ).toEqual([[100, null, null]]);
+
+            expect(
+                preprocess([['x', 100, 'x']], [1, 2, 3], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'next',
+                    },
+                }),
+            ).toEqual([[100, 100, null]]);
+
+            expect(
+                preprocess([['x', 100, 'x', 100]], [1, 2, 3, 4], {
+                    interpolation: {
+                        value: 'x',
+                        type: 'next',
+                    },
+                }),
+            ).toEqual([[100, 100, 100, 100]]);
         });
     });
 });

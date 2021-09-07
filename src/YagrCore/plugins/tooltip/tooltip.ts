@@ -141,7 +141,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
             tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
             maxLines: TOOLTIP_DEFAULT_MAX_LINES,
             highlight: true,
-            sum: true,
+            sum: false,
             render: renderTooltip,
             pinable: true,
             value: defaultTooltipValueFormatter,
@@ -322,6 +322,11 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
             setCursor: (u) => {
                 const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
+
+                if (opts.show && opts.show(yagr, u) === false) {
+                    hide();
+                    return;
+                }
 
                 if ((left < 0 || top < 0) && !state.pinned) {
                     hide();

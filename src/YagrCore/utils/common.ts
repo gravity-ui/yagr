@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 import {Series} from 'uplot';
 import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, ProcessingInterpolation} from '../types';
 
@@ -11,31 +13,56 @@ import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, Process
  * @returns {number | null}
  */
 export const findInRange = (ranges: DataSeries, value: number, stickToRanges = true): number | null => {
-    let i = 0;
-    let prev = 0;
-    let isFirst = true;
-    let allNulls = true;
-    while (i < ranges.length) {
-        const y = ranges[i];
+    const positive = value >= 0;
+    let max = -Infinity,
+        maxIdx = null;
+    let min = Infinity,
+        minIdx = null;
 
+    ranges.forEach((y, i) => {
         if (y === null) {
-            i += 1;
-            continue;
+            return;
+        }
+        if (y > max) {
+            max = y;
+            maxIdx = i;
         }
 
-        allNulls = false;
-
-        if (y >= 0 ? value > y : value < y) {
-            return isFirst ? (stickToRanges ? i : null) : prev;
+        if (y < min) {
+            min = y;
+            minIdx = i;
         }
+    });
 
-        prev = i;
-        isFirst = false;
+    const diffs = ranges.reduce(
+        ({arr, minIdx}, y) => {
+            let diff: number | null;
 
-        i += 1;
+            if (y === null || (positive ? y < 0 : y >= 0)) {
+                diff = null;
+            } else if (positive) {
+                diff = value > y ? null : y - value;
+            } else {
+                diff = value < y ? null : Math.abs(y - value);
+            }
+
+            const idx = arr.push(diff) - 1;
+
+            const currentMin = minIdx === null ? Infinity : (arr[minIdx] as number);
+            const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
+            if (nextMin !== currentMin) {
+                minIdx = idx;
+            }
+            return {arr, minIdx};
+        },
+        {arr: [], minIdx: null} as {arr: DataSeries; minIdx: number | null},
+    );
+
+    if (diffs.minIdx === null && stickToRanges) {
+        return value >= max ? maxIdx : value <= min ? minIdx : null;
     }
 
-    return allNulls ? null : prev;
+    return diffs.minIdx;
 };
 
 /* Gets sum of all values of given data index by all series */
