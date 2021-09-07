@@ -11,7 +11,9 @@ import {DataSeries, ProcessingInterpolation} from '../../types';
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
-import {TooltipOptions, TooltipRenderOptions, TooltipRow, TrackingOptions, ValueFormatter} from './types';
+import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter} from './types';
+
+import {renderTooltip} from './render';
 
 export interface TooltipState {
     /** Is tooltip pinned */
@@ -25,53 +27,6 @@ export interface TooltipState {
 }
 
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
-
-function renderItems(rows: TooltipRow[]) {
-    return rows
-        .map(({value, name, color, active, transformed, seriesIdx}) => {
-            const val = `${value}${typeof transformed === 'number' ? ' ' + transformed.toFixed(2) : ''}`;
-            return `
-<div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
-    <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name} : ${val}
-</div>`;
-        })
-        .join('');
-}
-
-function renderTooltip(data: TooltipRenderOptions) {
-    const [allTitle, sectionTitle] = data.options.title
-        ? typeof data.options.title === 'string'
-            ? [data.options.title, false]
-            : ['', true]
-        : ['', false];
-
-    const sections = data.scales.map((x) => {
-        const sectionTitleBody = getOptionValue(data.options.title, x.scale);
-        const scaleBody =
-            data.scales.length > 1
-                ? data.options.scales
-                    ? `${getOptionValue(data.options.scales, x.scale) || ''}`
-                    : `${data.yagr.i18n('scale')}: ${x.scale}`
-                : '';
-        return `
-<div class="__section">
-    ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
-    ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
-    <div class="__section_body">${renderItems(x.rows)}</div>
-    ${
-        x.sum
-            ? `
-        <div class="__section_sum">
-            ${data.yagr.i18n('sum')}: ${x.sum}
-        </div>
-    `
-            : ''
-    }
-</div>`;
-    });
-
-    return `${allTitle ? `<div class="__title">${allTitle}</div>` : ''}${sections.join('')}`;
-}
 
 function getOptionValue<T>(option: T | {[key in string]: T}, scale: string): T {
     return (typeof option === 'object' ? (option as {[key in string]: T})[scale] : option) as T;
@@ -100,6 +55,20 @@ const findValue = (
     }
 
     return value;
+};
+
+const DEFAULT_TOOLTIP_OPTIONS = {
+    maxLines: TOOLTIP_DEFAULT_MAX_LINES,
+    highlight: true,
+    sum: false,
+    render: renderTooltip,
+    pinable: true,
+    sort: undefined,
+    showIndicies: false,
+    hideNoData: false,
+    className: 'yagr-tooltip_default',
+    xOffset: TOOLTIP_X_OFFSET,
+    yOffset: TOOLTIP_Y_OFFSET,
 };
 
 /*
@@ -135,25 +104,12 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         return '-';
     };
 
-    const opts: TooltipOptions = Object.assign<{}, TooltipOptions, Partial<TooltipOptions>>(
-        {},
-        {
-            tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
-            maxLines: TOOLTIP_DEFAULT_MAX_LINES,
-            highlight: true,
-            sum: false,
-            render: renderTooltip,
-            pinable: true,
-            value: defaultTooltipValueFormatter,
-            sort: undefined,
-            showIndicies: false,
-            hideNoData: false,
-            className: 'yagr-tooltip_default',
-            xOffset: TOOLTIP_X_OFFSET,
-            yOffset: TOOLTIP_Y_OFFSET,
-        },
-        options,
-    );
+    const opts: TooltipOptions = {
+        ...DEFAULT_TOOLTIP_OPTIONS,
+        tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
+        value: defaultTooltipValueFormatter,
+        ...options,
+    };
 
     let over: HTMLDivElement;
     let bLeft: number;
@@ -243,25 +199,19 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
         state.pinned = pinState;
 
+        yagr.plugins.cursor?.pin(pinState);
+
         if (pinState) {
             tOverlay.classList.add('yagr-tooltip_pinned');
             if (list) {
                 list.style.height = list?.clientHeight + 'px';
             }
 
-            const pointsHolder = document.createElement('div');
-            pointsHolder.classList.add('yagr-points-holder');
-            over.querySelectorAll('.yagr-point').forEach((elem) => {
-                pointsHolder.appendChild(elem.cloneNode(true));
-            });
-            over.appendChild(pointsHolder);
-
             if (opts.render === renderTooltip) {
                 document.addEventListener('mousemove', checkFocus);
                 document.addEventListener('mousedown', detectClickOutside);
             }
         } else {
-            over.querySelector('.yagr-points-holder')?.remove();
             tOverlay.classList.remove('yagr-tooltip_pinned');
 
             if (opts.render === renderTooltip) {

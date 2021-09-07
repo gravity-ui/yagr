@@ -68,6 +68,7 @@ type CachedProps = {
 
 interface YagrPlugins {
     plotLines?: ReturnType<typeof plotLinesPlugin>;
+    cursor?: ReturnType<typeof cursorPlugin>;
     legend?: LegendPlugin;
 }
 
@@ -245,6 +246,7 @@ class Yagr {
                     return serie.id === lineId;
                 })) ||
             null;
+        this.plugins.cursor?.focus(serieIdx, focus);
         this.uplot.setSeries(serieIdx, {focus});
     }
 
@@ -327,7 +329,8 @@ class Yagr {
         }
 
         if (config.cursor) {
-            const cursorPluginInstance = cursorPlugin(config.cursor, config);
+            this.plugins.cursor = cursorPlugin(config.cursor, this);
+            const cursorPluginInstance = this.plugins.cursor.uPlotPlugin;
             plugins.push(cursorPluginInstance);
         }
 
