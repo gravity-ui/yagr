@@ -132,11 +132,6 @@ export default function CursorPlugin(
             }
         },
         focus: (serieIdx: number | null, focus: boolean) => {
-            // if (serieIdx === null) {
-            //     Object.values(mem).forEach((el) => {
-            //         el.style.display = focus ? 'block' : 'none';
-            //     });
-            // } else {
             Object.entries(mem).forEach(([idx, item]) => {
                 if (serieIdx === null) {
                     item.style.display = focus ? 'block' : 'none';
@@ -145,7 +140,6 @@ export default function CursorPlugin(
 
                 item.style.display = idx === String(serieIdx) && focus ? 'block' : 'none';
             });
-            // }
         },
         uPlotPlugin: {
             opts: (_, uplotOptions) => {

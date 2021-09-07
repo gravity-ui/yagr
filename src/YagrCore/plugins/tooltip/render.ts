@@ -38,7 +38,7 @@ export function renderTooltip(data: TooltipRenderOptions) {
     ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
     <div class="__section_body">${renderItems(x.rows, data.options)}</div>
     ${
-        x.sum
+        getOptionValue(data.options.sum, x.scale)
             ? `
         <div class="__section_sum">
             ${data.yagr.i18n('sum')}: ${x.sum}
