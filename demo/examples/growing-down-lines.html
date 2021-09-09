@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>Yagr</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <script src="../helpers.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+            }
+            #root {
+                display: grid;
+                grid-gap: 12px;
+                grid-template-columns: 1fr 1fr;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+            <div id="chart1" class="container"></div>
+            <div id="chart2" class="container"></div>
+            <div id="chart3" class="container"></div>
+            <div id="chart4" class="container"></div>
+        </div>
+    
+
+    <script>
+        const negate = x => -x;
+
+        new Yagr(chart1, {
+            title: {
+                text: 'Inverting scale',
+            },
+            timeline: [1, 2, 3, 4],
+            series: [
+                {data: [1, 2, 3, 2], color: 'green'},
+                {data: [2, 1, 1, 3], color: 'red'},
+                {data: [4, 3, 0.3, 4], color: 'blue'},
+                {data: [3, 2, 5, 1], color: 'orange', scale: 'r'}
+            ],
+            axes: {
+                r: {side: 'right'},
+                y: {},
+            },
+            scales: {
+                r: {},
+                y: {
+                    max: 0,
+                    transform: negate,
+                }
+            }
+        });
+
+        new Yagr(chart2, {
+            title: {
+                text: 'Transform series',
+            },
+            timeline: [1, 2, 3, 4],
+            series: [
+                {data: [1, 2, 3, 2], color: 'green', transform: negate, name: 'transformed 1'},
+                {data: [2, 1, 1, 3], color: 'red', transform: negate, name: 'transformed 2'},
+                {data: [4, 3, 0.3, 4], color: 'blue'},
+            ],
+            tooltip: {
+                sum: false,
+            }
+        });
+
+        new Yagr(chart3, {
+            title: {
+                text: 'Stacking groups',
+            },
+            chart: {
+                type: 'area'
+            },
+            scales: {
+                y: {stacking: true}
+            },
+            timeline: [1, 2, 3, 4],
+            series: [
+                {data: [4, 3, 0.3, 4], color: 'blue', stackGroup: 0},
+
+                {data: [2, 1, 1, 3], color: 'red', transform: negate, name: 'transformed 2', stackGroup: 1},
+                {data: [1, 2, 3, 2], color: 'green', transform: negate, name: 'transformed 1', stackGroup: 1},
+                
+                {data: [1, 2, 2, 1], color: 'orange', stackGroup: 0},
+            ],
+            tooltip: {
+                tracking: 'area',
+                sum: false,
+            }
+        });
+
+        new Yagr(chart4, {
+            title: {
+                text: 'On different scales',
+            },
+            chart: {
+                type: 'area'
+            },
+            scales: {
+                y: {stacking: true, min: 0, max: 10},
+                r: {stacking: true, transform: negate, min: -20},
+            },
+            timeline: [1, 2, 3, 4],
+            series: [
+                {data: [4, 3, 0.3, 4], color: 'blue', scale: 'y'},
+                {data: [1, 2, 2, 1], color: 'orange', scale: 'y'},
+
+                {data: [2, 1, 1, 3], color: 'red', name: 'transformed 2', scale: 'r'},
+                {data: [1, 2, 3, 2], color: 'green', name: 'transformed 1', scale: 'r'},
+            ],
+            axes: {
+                y: {},
+                r: {side: 'right'},
+            },
+            tooltip: {
+                tracking: 'area',
+                sum: false,
+            }
+        });
+    </script>
+    </body>
+</html>

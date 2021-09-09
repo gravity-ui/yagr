@@ -20,6 +20,7 @@ export function getSerie(rawSerie: RawSerieData, config: YagrConfig, serieIdx: n
         scale: rawSerie.scale || defaults.DEFAULT_Y_SCALE,
         type: rawSerie.type || config.chart.type || 'line',
 
+        stackGroup: rawSerie.stackGroup ?? 0,
         _valuesCount: 0,
     };
 }

@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import debounce from 'lodash.debounce';
 
 import UPlot, {
@@ -43,6 +45,8 @@ import {
     DEFAULT_CANVAS_PIXEL_RATIO,
     theme,
     DEFAULT_Y_SCALE,
+    DEFAULT_SYNC_KEY,
+    DEFAULT_TITLE_FONT_SIZE,
 } from './defaults';
 import i18n from './locale';
 
@@ -67,6 +71,11 @@ interface YagrPlugins {
     legend?: LegendPlugin;
 }
 
+export interface YagrState {
+    isMouseOver: boolean;
+    stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
+}
+
 /*
  * Main core-module of Yagr.
  * Implements data processing and autoconfigurable wrapper
@@ -84,18 +93,21 @@ class Yagr {
     canvas: HTMLCanvasElement;
     references?: RefPoints;
     plugins: YagrPlugins;
-    sync: SyncPubSub;
+    sync?: SyncPubSub;
     i18n: ReturnType<typeof i18n>;
+    state: YagrState;
 
     private _startTime: number;
-    private _drawn: boolean;
     private _meta: Partial<YagrMeta> = {};
     private _cache: CachedProps;
 
     constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
         this._startTime = performance.now();
         this._meta = {};
-        this._drawn = false;
+        this.state = {
+            isMouseOver: false,
+            stage: 'config',
+        };
 
         const config: YagrConfig = Object.assign(
             {
@@ -120,6 +132,8 @@ class Yagr {
             pConfig,
         );
 
+        const sync = config.cursor.sync;
+
         config.chart.type = config.chart.type || 'line';
 
         this.id = root.id || genId();
@@ -130,7 +144,10 @@ class Yagr {
 
         this.plugins = {};
         this.config = config;
-        this.sync = UPlot.sync('sync');
+
+        if (sync) {
+            this.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
+        }
 
         const settings = config.settings;
 
@@ -141,17 +158,28 @@ class Yagr {
 
         try {
             theme.setTheme(settings.theme || 'light');
-            this.root.classList.remove('yagr_theme_dark');
-            this.root.classList.remove('yagr_theme_light');
-            this.root.classList.add('yagr_theme_' + theme.theme);
+            root.classList.remove('yagr_theme_dark');
+            root.classList.remove('yagr_theme_light');
+            root.classList.add('yagr_theme_' + theme.theme);
             this.i18n = i18n(settings.locale || 'en');
 
-            const {options, series} = this.process();
+            const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};
-
             this.options = config.editUplotOptions ? config.editUplotOptions(options) : options;
+        } catch (error) {
+            this.execHooks(config.hooks.error, {
+                type: 'config',
+                error,
+                chart: this,
+            });
+            throw error;
+        }
+
+        this.state.stage = 'processing';
+
+        try {
+            const series = this.transformSeries();
             this.series = series;
-            this.plugins.legend = new LegendPlugin(this, config.legend);
         } catch (error) {
             this.execHooks(config.hooks.error, {
                 type: 'processing',
@@ -161,8 +189,12 @@ class Yagr {
             throw error;
         }
 
+        this.plugins.legend = new LegendPlugin(this, config.legend);
+
+        this.state.stage = 'uplot';
+
         try {
-            this.uplot = new UPlot(this.options, this.series, this.plugins.legend.init);
+            this.uplot = new UPlot(this.options, this.series, this.initRender);
             this.canvas = root.querySelector('canvas') as HTMLCanvasElement;
         } catch (error) {
             this.execHooks(config.hooks.error, {
@@ -184,6 +216,8 @@ class Yagr {
                 processTime,
             },
         });
+
+        this.state.stage = 'render';
     }
 
     redraw(options: RedrawOptions) {
@@ -216,6 +250,7 @@ class Yagr {
 
     dispose = () => {
         this.resizeOb && this.resizeOb.unobserve(this.root);
+        this.unsubscribe();
         this.uplot.destroy();
         this.execHooks(this.config.hooks.dispose, this);
     };
@@ -225,19 +260,18 @@ class Yagr {
     }
 
     subscribe() {
-        this.sync.sub(this.uplot);
+        this.sync?.sub(this.uplot);
     }
 
     unsubscribe() {
-        this.sync.unsub(this.uplot);
+        this.sync?.unsub(this.uplot);
     }
 
     /*
-     * Main data procesing function.
-     * Configures options, series, axis, grids and scales
+     * Main config processing options
+     * Configures options, axess, grids, scales etc
      */
-    // eslint-disable-next-line complexity
-    private process() {
+    private createUplotOptions() {
         const {config} = this;
         const plugins: Plugin[] = [];
 
@@ -261,6 +295,7 @@ class Yagr {
                     color: '',
                     name: '',
                     $c: config.timeline,
+                    scale: DEFAULT_X_SCALE,
                     _valuesCount: config.timeline.length,
                 },
             ],
@@ -285,9 +320,11 @@ class Yagr {
             setScale: settings.zoom === undefined ? true : settings.zoom,
         };
 
-        options.cursor.sync = options.cursor.sync || {
-            key: this.sync.key,
-        };
+        if (this.sync) {
+            options.cursor.sync = options.cursor.sync || {
+                key: this.sync.key,
+            };
+        }
 
         if (config.cursor) {
             const cursorPluginInstance = cursorPlugin(config.cursor, config);
@@ -434,10 +471,10 @@ class Yagr {
         options.hooks = config.hooks || {};
         options.hooks.draw = options.hooks.draw || [];
         options.hooks.draw.push(() => {
-            if (this._drawn) {
+            if (this.state.stage === 'listen') {
                 return;
             }
-            this._drawn = true;
+            this.state.stage = 'listen';
             const renderTime = performance.now() - this._startTime;
             this._meta.renderTime = renderTime;
             this.execHooks(config.hooks.load, {
@@ -497,9 +534,8 @@ class Yagr {
         options.padding = config.chart.padding || getPaddingByAxes(options);
 
         this.options = options;
-        const series = this.transformSeries();
 
-        return {options, series};
+        return options;
     }
 
     /*
@@ -515,16 +551,26 @@ class Yagr {
 
         let series: DataSeries[] = this.config.series.map(({data}) => data) as DataSeries[];
 
-        if (processing) {
+        if (processing && processing.interpolation) {
             series = preprocess(series, timeline, processing);
             processing = false;
         }
 
-        if (/** condition for non transforming*/ undefined) {
-            return [timeline].concat(series.reverse() as any) as UPlotData;
-        }
+        const shouldMapNullValues = Boolean(processing && processing.nullValues);
+        const nullValues = (processing && processing.nullValues) || {};
 
-        const accum: Record<string, number[]> = {};
+        /**
+         * Stacks are represented as:
+         * {
+         *    [scale]: {
+         *        [],  // stacking group idx 0 (default for all on scale),
+         *        [],  // stacking group idx 1
+         *    ]
+         * }
+         *
+         * All stacked points are accumulating inside of series' scale group
+         */
+        const stacks: Record<string, number[][]> = {};
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
             const dataLine: (number | null)[] = [];
@@ -535,6 +581,8 @@ class Yagr {
             const serieOptions = this.options.series[serieConfigIndex];
             const scale = serieOptions.scale || DEFAULT_Y_SCALE;
             const scaleConfig = this.config.scales[scale] || {};
+            const isStacking = scaleConfig.stacking;
+            const sGroup = serieOptions.stackGroup || 0;
 
             let shouldCalculateRefPoints = false;
 
@@ -545,17 +593,21 @@ class Yagr {
 
             let empty = true;
 
-            if (scaleConfig.stacking && !accum[scale]) {
+            if (isStacking && !stacks[scale]) {
                 // @see https://github.com/leeoniya/uPlot/issues/429
                 // @ts-ignore
                 this.options.focus.alpha = 1.1;
-                accum[scale] = new Array(timeline.length).fill(0);
+                stacks[scale] = [];
+            }
+
+            if (isStacking && !stacks[scale][sGroup]) {
+                stacks[scale][sGroup] = new Array(timeline.length).fill(0);
             }
 
             for (let idx = 0; idx < serie.length; idx++) {
-                let value = serie[idx] as number | null;
+                let value = serie[idx];
 
-                if (processing && processing.nullValues[value]) {
+                if (shouldMapNullValues && nullValues[String(value)]) {
                     value = null;
                 }
 
@@ -596,7 +648,7 @@ class Yagr {
                         value = 0;
                     }
 
-                    value = accum[scale][idx] += value;
+                    value = stacks[scale][sGroup][idx] += value;
                 }
 
                 if (scaleConfig.type === 'logarithmic' && value === 0) {
@@ -710,7 +762,13 @@ class Yagr {
             this.resizeOb.observe(this.root);
         }
 
+        if (!this.config.hooks.dispose) {
+            this.config.hooks.dispose = [];
+        }
+
+        /** Unsubscribe in init required to avoid chars been synced without action from developer */
         this.unsubscribe();
+        this.config.hooks.dispose.push(this.trackMouse());
     };
 
     private execHooks = <T>(hooks: T | undefined, ...args: unknown[]) => {
@@ -721,10 +779,39 @@ class Yagr {
         }
     };
 
+    private trackMouse() {
+        const mouseOver = () => {
+            this.state.isMouseOver = true;
+        };
+        const mouseLeave = () => {
+            this.state.isMouseOver = false;
+        };
+        this.root.addEventListener('mouseover', mouseOver);
+        this.root.addEventListener('mouseleave', mouseLeave);
+
+        return () => {
+            this.root.removeEventListener('mouseover', mouseOver);
+            this.root.removeEventListener('mouseleave', mouseLeave);
+        };
+    }
+
+    private initRender = (u: uPlot, done: Function) => {
+        /** Init legend if required */
+        this.plugins.legend?.init(u);
+
+        /** Setup font size for title if required */
+        if (this.config.title && this.config.title.fontSize) {
+            const size = this.config.title.fontSize;
+            const t = this.root.querySelector('.u-title') as HTMLElement;
+            t.setAttribute('style', `font-size:${size}px;line-height:${size}px;`);
+        }
+
+        done();
+    };
+
     private get clientHeight() {
-        const DEFAULT_FONT_SIZE = 14;
         const MARGIN = 8;
-        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_FONT_SIZE) + MARGIN : 0;
+        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
         return this.root.clientHeight - offset;
     }
 }

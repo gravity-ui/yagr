@@ -1,6 +1,6 @@
 {
   "name": "@yandex-data-ui/yagr",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "",
   "keywords": [],
   "main": "dist/index.js",
@@ -20,7 +20,8 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "eslint src tests --ext .js,.jsx,.ts,.tsx",
+    "typecheck": "tsc -p tsconfig.json",
     "prebuild": "rimraf dist",
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
     "build:tsc": "tsc -p tsconfig.json && npm run copy:scss",
@@ -50,6 +51,7 @@
     "commitizen": "^3.0.0",
     "copyfiles": "^2.4.1",
     "eslint": "^7.21.0",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-security": "^1.4.0",
     "husky": "^1.0.1",
@@ -68,12 +70,13 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.18.0",
     "ts-jest": "^26.5.4",
+    "ts-node": "^10.2.1",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^4.2.3"
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
-    "uplot": "1.6.10"
+    "uplot": "1.6.15"
   }
 }

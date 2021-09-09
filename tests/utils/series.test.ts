@@ -1,12 +1,12 @@
-import {colorParser} from '../src/YagrCore/utils/colors';
-import {YagrConfig} from '../src/YagrCore/types';
-import {getSerie} from '../src/YagrCore/utils/series';
+import {colorParser} from '../../src/YagrCore/utils/colors';
+import {YagrConfig} from '../../src/YagrCore/types';
+import {getSerie} from '../../src/YagrCore/utils/series';
 import {
     DEFAULT_Y_SCALE,
     SERIE_AREA_BORDER_COLOR,
     SERIE_AREA_BORDER_WIDTH,
     SERIE_LINE_WIDTH,
-} from '../src/YagrCore/defaults';
+} from '../../src/YagrCore/defaults';
 
 describe('series options', () => {
     colorParser.setContext({
