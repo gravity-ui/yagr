@@ -1,6 +1,6 @@
 ## Tooltip
 
-Yagr has default legend tooltip. You can easy implement your own renderer.
+Yagr has default legend tooltip. By default it has pretty simple renderer, but you can easy implement your own renderer.
 Most of tooltip options are typeof `PerScale`, which means that it could be `value` or `{scale: value}`. You can see example of multi-scale tooltip on picture:
 
 ![alt text](../assets/tooltip-scales.png "Plot Lines" =600x100%)

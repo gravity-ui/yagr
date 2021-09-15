@@ -13,4 +13,4 @@ Legend is a Highcharts-like inline ligend plugin.
 
 -   `config.legend.position = 'top' | 'bottom'` - legend placement position
 -   `config.legend.maxLegendSpace?: number` - fracion of chart area to render legend
--   `fontSize?: number` - legend font size
+-   `fontSize?: number` - legend items' font size

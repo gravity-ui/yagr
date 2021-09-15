@@ -37,7 +37,7 @@ export interface TooltipRenderOptions {
 
 export type TitleRenderer = string | ((data: TooltipRenderOptions) => string);
 export type ValueFormatter = (value: string | number | null, precision?: number) => string;
-export type PerScale<T> = T | {[scale in string]: T};
+export type PerScale<T> = T | {[scale: string]: T};
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 export interface TooltipOptions {
     enabled?: boolean;

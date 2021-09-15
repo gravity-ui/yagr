@@ -19,22 +19,21 @@
         </style>
     </head>
     <body>
-        <h1>Only crosshair</h1>
         <div class="grid">
             <div id="chart1" class="container left"></div>
             <div id="chart2" class="container right"></div>
         </div>
 
-        <h1>With tooltip</h1>
         <div class="grid">
             <div id="chart3" class="container left"></div>
             <div id="chart4" class="container right"></div>
         </div>
     
     <script>
-        const showTooltip = (y) => y.state.isMouseOver;
+       const showTooltip = (y) => y.state.isMouseOver;
 
         const y1 = new Yagr(chart1, {
+            title: {text: 'Example 1'},
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3], color: 'red'}],
             cursor: {sync: 'a'},
@@ -43,17 +42,19 @@
         });
 
         const y2 = new Yagr(chart2, {
+            title: {text: 'Example 2'},
             timeline: [1, 2, 3],
             series: [{data: [3, 2, 1], color: 'green'}],
             cursor: {sync: 'a'},
             tooltip: {show: showTooltip},
             settings: {adaptive: true},
-        })
+        });
 
         y1.subscribe();
         y2.subscribe();
 
         const y3 = new Yagr(chart3, {
+            title: {text: 'Example 3'},
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3], color: 'red'}],
             cursor: {sync: 'b'},
@@ -61,6 +62,7 @@
         });
 
         const y4 = new Yagr(chart4, {
+            title: {text: 'Example 4'},
             timeline: [1, 2, 3],
             series: [{data: [3, 2, 1], color: 'green'}],
             cursor: {sync: 'b'},
