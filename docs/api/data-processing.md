@@ -63,7 +63,7 @@ Will produce chart where data `[1, 'x', 3]` will be rendered as `[1, 2, 3]` by l
 
 Map of string values which Yagr will replace with `null` in resulting series but will show given string value (or null) in tooltip. For instance it's usefull to show Infinity values of asymptotic growth:
 
-![alt text](../assets/null-values.png "Null values" =600x100%)
+![Null values](../assets/null-values.png =600x100%)
 
 Config:
 
@@ -98,7 +98,7 @@ Interpolation options define how to transform data alignment artifacts.
 
 -   `linear` - use simple linear interpolation between two points.
 
-![alt text](../assets/proc-linear.png "proc-linear" =600x100%)
+    ![alt text](../assets/proc-linear.png "proc-linear" =600x100%)
 
 -   `left` - takes previous point's value if given point is not last one
     ![alt text](../assets/proc-left.png "proc-left" =600x100%)

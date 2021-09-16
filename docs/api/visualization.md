@@ -6,7 +6,7 @@ Yagr support 4 timeseries vizualization types:
 
 -   `'line'`
 
-![alt text](../assets/line.png "Line" =600x100%)
+![Line](../assets/line.png =600x100%)
 
 ## Area
 
@@ -14,19 +14,19 @@ Areas are lines filled area under the line. If two areas overlaping with the low
 
 -   `'area'`
 
-![alt text](../assets/area.png "area" =600x100%)
+![Area](../assets/area.png =600x100%)
 
 ## Dots
 
 -   `'dots'`
 
-![alt text](../assets/dots.png "dots" =600x100%)
+![Dots](../assets/dots.png =600x100%)
 
 ## Column
 
 -   `'column'`
 
-![alt text](../assets/column.png "column" =600x100%)
+![Column](../assets/column.png =600x100%)
 
 ## Configuration
 

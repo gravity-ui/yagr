@@ -1,67 +1,24 @@
-# Ẏagr [![build status](https://teamcity.yandex-team.ru/app/rest/builds/buildType:DataUI_Yagr_BuildAndPublish/statusIcon.svg)](https://teamcity.yandex-team.ru/buildConfiguration/DataUI_Yagr_BuildAndPublish)
+# Ẏagr
 
-Yagr is high performance HTML5 canvas chart renderer for timeseries data based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts. 
+Yagr is high performance HTML5 canvas chart renderer based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts.
 
 ## Features
 
- - Lines, Areas, Columns, Dots as visualization type. Configurable per series.
- - Configurable Legend Tooltip
- - Different scaling, axes with extra options for decimals precision
- - Plot lines and bands. Configurable draw layer.
- - Configurable Tooltip
- - Responsive charts (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
- - High support of stacked areas/columns
- - Light/Dark theme
- - Data normalization
- - Configurable crosshairs, cursor markers and snapping
- - Typescript
- - Localization
- - Support of missing data
- - CSS Variables as color names
- - Paginated inline legend
- - Error handling and extended hooks
+-   [Lines, Areas, Columns, Dots as visualization type. Configurable per series](./docs/api/visualization.md#visualization-types)
+-   [Configurable Legend Tooltip](./docs/plugins/tooltip.md#tooltip)
+-   [Axes with extra options for decimals precision](./docs/api/axes.md#axes)
+-   [Scales with configurable range functions and transformations](./docs/api/scales.md#scales)
+-   [Plot lines and bands. Configurable draw layer](./docs/plugins/plot-lines.md#plot-lines)
+-   [Responsive charts](./docs/api/settings.md#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
+-   [High level support of stacked areas/columns](./docs/api/scales.md#stacking)
+-   [Light/Dark theme](./docs/api/settings.md#Theme)
+-   [Data normalization](./docs/api/scales.md#Normalization)
+-   [Configurable crosshairs, cursor markers and snapping](./docs/api/cursor.md#cursor)
+-   Typescript
+-   [Localization](./docs/api/settings.md#localization)
+-   [CSS Variables in color names](./docs/api/css.md#css)
+-   [Paginated inline legend](./docs/plugins/legend.md#legend)
+-   [Error handling and extended hooks](./docs/api/lifecycle.md#hooks)
+-   [Data alignment and interpolation for missing data](./docs/api/data-processing.md#data-alignment)
 
-## Usage 
-
-Let's see a minimal chart's config:
-
-```ts
-import Yagr from 'yagr';
-
-const config = {
-    timeline: [0, 1000, 2000],
-    graphs: [
-        {data: [1, 2, 3], color: 'red'},
-        {data: [2, 4, 1], color: 'green'}
-    ],
-};
-
-const y = new Yagr(document.getElementById('chart'), config);
-```
-
-This code produces simple line chart:
-
-<img src="./imgs/1.png" width="600">
-
-# Feature examples 
-
-## Visualization types 
-
-There are 4 types supported in Yagr: 
- - Line 
- - Area
- - Columns
- - Dots
-
-You can choose whole chart type by:
-
-```js
-config.chart.type = 'area';
-```
-
-or setup each series: 
-
-```js
-config.data[0].type = 'line'
-config.data[1].type = 'area'
-```
+## [Documentation](./docs/index.md)

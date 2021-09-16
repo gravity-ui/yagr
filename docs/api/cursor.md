@@ -15,15 +15,15 @@ type SnapToValue = 'left' | 'right' | 'closest';
 Snap to values allows to render markers only on existing points on timeline. If cursor points to value X value on which Y has null with `snapToValues` you can configure which real point to highligh with marker.
 
 -   `'left'` - finds nearest non-null value to the left
-    ![alt text](../assets/snap-left.png "snap-left" =600x100%)
+    ![Snap to left](../assets/snap-left.png =600x100%)
 
 -   `'right'` - finds nearest non-null value to the right
-    ![alt text](../assets/snap-right.png "snap-right" =600x100%)
+    ![Snap to right](../assets/snap-right.png =600x100%)
 
 -   `'closest'` - finds nearest non-null
 
 -   `false` - doesn't snaping to non-null values
-    ![alt text](../assets/snap-false.png "snap-false" =600x100%)
+    ![Without snapping](../assets/snap-false.png =600x100%)
 
 ### Markers
 
