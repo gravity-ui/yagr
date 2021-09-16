@@ -360,3 +360,12 @@ export const preprocess = (
 export const exec = <T, ArgsT extends unknown[]>(s: T | ((...a: ArgsT) => T), ...args: ArgsT) => {
     return typeof s === 'function' ? (s as (...a: ArgsT) => T)(...args) : s;
 };
+
+export function debounce<T extends Array<unknown> = []>(func: (...args: T) => void, timeout = 300) {
+    let timer: ReturnType<typeof setTimeout>;
+
+    return (...args: T) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => func(...args), timeout);
+    };
+}

@@ -1,7 +1,5 @@
 /* eslint-disable complexity */
 
-import debounce from 'lodash.debounce';
-
 import UPlot, {
     Options as UPlotOptions,
     AlignedData as UPlotData,
@@ -29,7 +27,7 @@ import {
     MinimalValidConfig,
 } from './types';
 
-import {genId, getSumByIdx, preprocess} from './utils/common';
+import {debounce, genId, getSumByIdx, preprocess} from './utils/common';
 import {getScaleRange} from './utils/scales';
 import {pathsRenderer} from './utils/paths';
 import {getAxis} from './utils/axes';
@@ -761,7 +759,7 @@ class Yagr {
 
     private init = () => {
         if (this.config.settings.adaptive) {
-            this.resizeOb = new ResizeObserver(debounce(this.onResize, 100));
+            this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.settings.resizeDebounceMs || 100));
             this.resizeOb.observe(this.root);
         }
 
