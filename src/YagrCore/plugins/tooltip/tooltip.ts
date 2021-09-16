@@ -14,6 +14,7 @@ import {findInRange, findDataIdx, findSticky} from '../../utils/common';
 import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter} from './types';
 
 import {renderTooltip} from './render';
+import {getOptionValue} from './utils';
 
 export interface TooltipState {
     /** Is tooltip pinned */
@@ -27,10 +28,6 @@ export interface TooltipState {
 }
 
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
-
-function getOptionValue<T>(option: T | {[key in string]: T}, scale: string): T {
-    return (typeof option === 'object' ? (option as {[key in string]: T})[scale] : option) as T;
-}
 
 // eslint-disable-next-line complexity
 const findValue = (

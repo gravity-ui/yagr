@@ -4,7 +4,7 @@ import UPlot, {Plugin} from 'uplot';
 import {CURSOR_STYLE, DEFAULT_X_SCALE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
 import CP from '../../utils/colors';
 import {findDataIdx} from '../../utils/common';
-import Yagr from 'src';
+import type Yagr from '../..';
 
 /**
  * Options for cursor plugin.

@@ -1,5 +1,6 @@
 /* eslint-disable complexity, no-nested-ternary */
 import {TooltipRenderOptions, TooltipRow} from './types';
+import {getOptionValue} from './utils';
 
 function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) {
     return rows
@@ -50,8 +51,4 @@ export function renderTooltip(data: TooltipRenderOptions) {
     });
 
     return `${allTitle ? `<div class="__title">${allTitle}</div>` : ''}${sections.join('')}`;
-}
-
-function getOptionValue<T>(option: T | {[key in string]: T}, scale: string): T {
-    return (typeof option === 'object' ? (option as {[key in string]: T})[scale] : option) as T;
 }
