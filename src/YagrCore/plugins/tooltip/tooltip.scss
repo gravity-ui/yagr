@@ -74,4 +74,11 @@
     ._hidden-rows-number {
         white-space: nowrap;
     }
+
+    &__idx {
+        width: 25px;
+        white-space: nowrap;
+        max-width: 25px;
+        overflow: hidden;
+    }
 }
