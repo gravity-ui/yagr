@@ -404,9 +404,11 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                             continue;
                         }
 
+                        const seriesPrecision = serie.precision ?? getOptionValue(opts.precision, scale);
+
                         const displayValue = serie.formatter
                             ? serie.formatter(dValue, serie)
-                            : valueRender(dValue, serie.precision);
+                            : valueRender(dValue, seriesPrecision);
 
                         const rowData: TooltipRow = {
                             name: serie.name,
