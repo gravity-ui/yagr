@@ -41,8 +41,8 @@
     ]
   },
   "devDependencies": {
+    "@doc-tools/docs": "^1.13.1",
     "@types/jest": "^26.0.22",
-    "@types/lodash.debounce": "^4.0.6",
     "@types/node": "^10.11.0",
     "@types/react": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
@@ -76,8 +76,6 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@doc-tools/docs": "^1.12.3",
-    "lodash.debounce": "^4.0.8",
     "uplot": "1.6.15"
   }
 }

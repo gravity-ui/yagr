@@ -348,6 +348,9 @@ export interface YagrChartSettings {
 
     /** Locale */
     locale?: SupportedLocales | Record<string, string>;
+
+    /** Debounce timer for ResizeObserver to trigger: (default 100 ms) */
+    resizeDebounceMs?: number;
 }
 
 /**
