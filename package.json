@@ -1,18 +1,27 @@
 {
-  "name": "@yandex-data-ui/yagr",
+  "name": "yagr",
   "version": "1.2.0",
-  "description": "",
-  "keywords": [],
+  "description": "High level wrapper for uPlot",
+  "keywords": [
+    "canvas",
+    "chart",
+    "graph",
+    "plot",
+    "visualization"
+  ],
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "typings"
   ],
-  "author": "Trdat Mkrtchian <zeffirsky@yandex-team.ru>",
+  "authors": [
+    "Trdat Mkrtchian <zeffirsky@yandex-team.ru>",
+    "Artem Luchin <kloof@yandex-team.ru>"
+  ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/yandex-cloud/yagr"
   },
   "license": "MIT",
   "engines": {
