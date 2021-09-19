@@ -17,9 +17,6 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 
     /** Reference points of series */
     refPoints?: RefPoints;
-
-    /** Stacking groups */
-    stackGroup?: number;
 }
 
 declare module 'uplot' {
@@ -34,6 +31,8 @@ declare module 'uplot' {
         _valuesCount: number;
         /** Is series data transformd */
         _transformed?: boolean;
+        _color?: string;
+        _modifiedColor?: string;
     }
 }
 
@@ -243,6 +242,7 @@ export interface RawSerieData {
     /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 
+    /** Stacking groups */
     stackGroup?: number;
 }
 
@@ -374,11 +374,14 @@ export interface MarkersOptions {
     /** Show markers or not */
     show?: boolean;
 
-    /** Size of circle point */
+    /** Size of circle point (default: 2px) */
     size?: number;
 
-    /** Width of stroke of circle point */
-    lineWidth?: number;
+    /** Width of stroke of circle point (default: 1px) */
+    strokeWidth?: number;
+
+    /** Stroke color of marker (default: #ffffff) */
+    strokeColor?: string;
 }
 
 export type SnapToValue = 'left' | 'right' | 'closest';
