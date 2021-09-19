@@ -97,23 +97,22 @@ Interpolation options define how to transform data alignment artifacts.
 ```
 
 -   `linear` - use simple linear interpolation between two points.
-
-    ![alt text](../assets/proc-linear.png "proc-linear" =600x100%)
+    ![Linear](../assets/proc-linear.png "proc-linear" =600x100%)
 
 -   `left` - takes previous point's value if given point is not last one
-    ![alt text](../assets/proc-left.png "proc-left" =600x100%)
+    ![Left](../assets/proc-left.png "proc-left" =600x100%)
 
 -   `previous` - takes previous point's value
-    ![alt text](../assets/proc-previous.png "proc-previous" =600x100%)
+    ![Previous](../assets/proc-previous.png "proc-previous" =600x100%)
 
 -   `right` - takes next point's value if given point is not first on
-    ![alt text](../assets/proc-right.png "proc-right" =600x100%)
+    ![Right](../assets/proc-right.png "proc-right" =600x100%)
 
 -   `next` - takes next point's value
-    ![alt text](../assets/proc-next.png "proc-next" =600x100%)
+    ![Next](../assets/proc-next.png "proc-next" =600x100%)
 
 -   `closest` - takes closest point's value
-    ![alt text](../assets/proc-closest.png "proc-closest" =600x100%)
+    ![Closest](../assets/proc-closest.png "proc-closest" =600x100%)
 
 -   `<your value>` - replace value with yours
-    ![alt text](../assets/proc-const.png "proc-const" =600x100%)
+    ![Given value](../assets/proc-const.png "proc-const" =600x100%)

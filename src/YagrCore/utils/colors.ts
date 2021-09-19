@@ -68,7 +68,12 @@ export const getSerieFocusColors = (color: string) => {
     const shift = theme.SHIFT;
     const mainColor = ColorParser.parseRgba(color) || DEFAULT_SHADE_COLOR;
     const modified = colorParser.shade(mainColor, shift);
-    return (u: UPlot, idx: number) => {
+
+    const colorFn = (u: UPlot, idx: number) => {
         return u.series[idx]._focus === false ? modified : color;
     };
+
+    colorFn.defocusColor = modified;
+
+    return colorFn;
 };
