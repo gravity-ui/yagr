@@ -348,31 +348,37 @@ class Yagr {
 
             serie.points = serie.points || {};
 
+            const colorFn = getSerieFocusColors(serie.color);
+
+            serie._color = serie.color;
+            serie._modifiedColor = colorFn.defocusColor;
+
             if (serie.type === 'area') {
-                serie.fill = getSerieFocusColors(serie.color);
+                serie.fill = colorFn;
                 serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
                 serie.width = serie.lineWidth;
                 serie.points.show = drawMarkersIfRequired;
             }
 
             if (serie.type === 'line') {
-                serie.stroke = getSerieFocusColors(serie.color);
+                serie.stroke = colorFn;
                 serie.points.show = drawMarkersIfRequired;
             }
 
             if (serie.type === 'column') {
-                serie.stroke = getSerieFocusColors(serie.color);
-                serie.fill = getSerieFocusColors(serie.color);
+                serie.stroke = colorFn;
+                serie.fill = colorFn;
                 serie.points.show = false;
             }
 
             if (serie.type === 'dots') {
                 serie.stroke = serie.color;
-                serie.fill = getSerieFocusColors(serie.color);
+                serie.fill = colorFn;
                 serie.width = 2;
                 plugins.push(
                     markersPlugin({
                         size: config.chart.pointsSize || 4,
+                        ...config.markers,
                     }),
                 );
             }

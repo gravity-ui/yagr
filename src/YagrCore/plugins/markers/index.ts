@@ -3,7 +3,16 @@ import UPlot, {Plugin} from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../../defaults';
 import {MarkersOptions} from '../../types';
 
-const renderCircle = (u: UPlot, x: number, y: number, r: number, s: number, color: string, yScale?: string) => {
+const renderCircle = (
+    u: UPlot,
+    x: number,
+    y: number,
+    r: number,
+    s: number,
+    color: string,
+    strokeColor: string,
+    yScale?: string,
+) => {
     const {ctx} = u;
     const cx = Math.round(u.valToPos(x, DEFAULT_X_SCALE, true));
     const cy = Math.round(u.valToPos(y, yScale || DEFAULT_Y_SCALE, true));
@@ -15,7 +24,7 @@ const renderCircle = (u: UPlot, x: number, y: number, r: number, s: number, colo
 
     if (s) {
         ctx.lineWidth = s;
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = strokeColor;
         ctx.stroke();
     }
 
@@ -57,24 +66,24 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
  * This plugin configures points markers
  */
 export default function MarkersPlugin(opts: MarkersOptions): Plugin {
-    const {size = 4, lineWidth = 2} = opts;
+    const {size = 4, strokeWidth = 2, strokeColor = '#ffffff'} = opts;
 
     function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
-        const {color, scale} = u.series[i];
+        const {scale, _focus, _color, _modifiedColor, color} = u.series[i];
 
         let j = i0;
 
         while (j <= i1) {
             const val = u.data[i][j];
-
             if (val !== null) {
                 renderCircle(
                     u,
                     u.data[0][j] as number,
                     val as number,
                     size,
-                    lineWidth,
-                    color,
+                    strokeWidth,
+                    (_focus || _focus === null ? _color : _modifiedColor) || color,
+                    strokeColor,
                     scale || DEFAULT_Y_SCALE,
                 );
             }
@@ -93,6 +102,7 @@ export default function MarkersPlugin(opts: MarkersOptions): Plugin {
                 }
             });
         },
+
         hooks: {},
     };
 }
