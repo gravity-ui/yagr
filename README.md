@@ -1,4 +1,4 @@
-# Ẏagr <img src="./docs/assets/yagr.svg" width="20px" height="20px">
+# Ẏagr <img src="./docs/assets/yagr.svg" width="24px" height="24px">
 
 Yagr is high performance HTML5 canvas chart renderer based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts.
 
