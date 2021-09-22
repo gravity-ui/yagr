@@ -2,6 +2,8 @@
 
 Yagr is high performance HTML5 canvas chart renderer based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts.
 
+<img src="./docs/assets/demo.png" width="800" >
+
 ## Features
 
 -   [Lines, Areas, Columns, Dots as visualization type. Configurable per series](./docs/api/visualization.md#visualization-types)
