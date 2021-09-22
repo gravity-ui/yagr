@@ -1,7 +1,7 @@
 import {YagrConfig} from '../../src/YagrCore/types';
 import {getTimeFormatter} from '../../src/YagrCore/utils/axes';
 
-describe('axes:getTimeFormatter', () => {
+describe.skip('axes:getTimeFormatter', () => {
     const formatter = getTimeFormatter({
         settings: {
             timeMultiplier: 1e-3,
