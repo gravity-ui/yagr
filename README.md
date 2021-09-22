@@ -1,4 +1,4 @@
-# Ẏagr
+# Ẏagr <img src="./docs/assets/yagr.svg" width="24px" height="24px">
 
 Yagr is high performance HTML5 canvas chart renderer based on [uPlot](https://github.com/leeoniya/uPlot). It provides high-level features for uPlot charts.
 
@@ -11,6 +11,7 @@ Yagr is high performance HTML5 canvas chart renderer based on [uPlot](https://gi
 -   [Plot lines and bands. Configurable draw layer](./docs/plugins/plot-lines.md#plot-lines)
 -   [Responsive charts](./docs/api/settings.md#settings.adaptive) (requires [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver))
 -   [High level support of stacked areas/columns](./docs/api/scales.md#stacking)
+-   [Configurable markers](./docs/api/markers.md)
 -   [Light/Dark theme](./docs/api/settings.md#Theme)
 -   [Data normalization](./docs/api/scales.md#Normalization)
 -   [Configurable crosshairs, cursor markers and snapping](./docs/api/cursor.md#cursor)
