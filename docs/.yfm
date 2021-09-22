@@ -1,3 +1,11 @@
-strict: true
-breaks: false
-singlePage: true
+allowHTML: true
+apply-presets: true
+varsPreset: external
+
+docs-viewer:
+    project-name: yagr
+    logo-title: Yagr
+    favicon-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
+    logo-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
+    logo-dark-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
+    no-index: true
