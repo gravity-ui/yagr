@@ -375,7 +375,11 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                         const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
                         let activeIndex: number | null = 0;
                         if (tracking === 'area') {
-                            activeIndex = findInRange(section, cursorValue, opts.stickToRanges);
+                            activeIndex = findInRange(
+                                section,
+                                cursorValue,
+                                getOptionValue<boolean | undefined>(opts.stickToRanges, scale),
+                            );
                         } else if (tracking === 'sticky') {
                             activeIndex = findSticky(section, cursorValue);
                         } else if (typeof tracking === 'function') {

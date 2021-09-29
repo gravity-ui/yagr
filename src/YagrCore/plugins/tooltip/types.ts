@@ -94,7 +94,7 @@ export interface TooltipOptions {
     /** Tooltip y-offset */
     yOffset?: number;
     /** Should stick to series if out of ranges in tracking */
-    stickToRanges?: boolean;
+    stickToRanges?: PerScale<boolean>;
     /** Title of tooltip and scale sections */
     title?: PerScale<TitleRenderer>;
     /** Titles of scales of scale sections */
