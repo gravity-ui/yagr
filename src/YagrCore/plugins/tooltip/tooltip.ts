@@ -11,7 +11,7 @@ import {DataSeries, ProcessingInterpolation} from '../../types';
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
-import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter} from './types';
+import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection} from './types';
 
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
@@ -288,14 +288,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                 const x = data[0][idx];
 
                 const sum: Record<string, number> = {};
-                const sections: Record<
-                    string,
-                    {
-                        active: number;
-                        rows: TooltipRow[];
-                        realYs: (number | null)[];
-                    }
-                > = {};
+                const sections: Record<string, TooltipSection> = {};
 
                 const rowsBySections: Record<string, number[]> = {};
 
@@ -319,7 +312,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                 rowEntries.forEach(([scale, serieIndicies]) => {
                     sections[scale] = sections[scale] || {
-                        realYs: [],
                         rows: [],
                     };
                     const section = sections[scale];
@@ -362,8 +354,10 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                             originalValue: value,
                             value: displayValue,
                             y: yValue,
+                            displayY: realY,
                             color: serie.color,
                             seriesIdx,
+                            rowIdx: section.rows ? section.rows[section.rows.length - 1]?.rowIdx + 1 : 0,
                         };
 
                         if (serie.normalizedData) {
@@ -376,19 +370,17 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
 
                         section.rows = section.rows || [];
                         section.rows.push(rowData);
-                        section.realYs = section.realYs || [];
-                        section.realYs.push(realY);
                     }
 
                     if (getOptionValue(opts.highlight, scale) && section.rows.length) {
                         const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
                         let activeIndex: number | null = 0;
                         if (tracking === 'area') {
-                            activeIndex = findInRange(section.realYs, cursorValue, opts.stickToRanges);
+                            activeIndex = findInRange(section, cursorValue, opts.stickToRanges);
                         } else if (tracking === 'sticky') {
-                            activeIndex = findSticky(section.realYs, cursorValue);
+                            activeIndex = findSticky(section, cursorValue);
                         } else if (typeof tracking === 'function') {
-                            activeIndex = tracking(cursorValue, section.realYs);
+                            activeIndex = tracking(section, cursorValue);
                         }
 
                         if (activeIndex !== null) {

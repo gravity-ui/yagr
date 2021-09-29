@@ -70,7 +70,7 @@ type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
 1.  `'sticky'` - finds closest line index
 2.  `'area'` - finds overlaped by cursor area's index
-3.  `(y: number, ranges: (number | null | string)[]) => number | null` - custom function which gives cursor Y value and list of Y values of lines. Should return active line index or null
+3.  `(section: TooltipSection, y: number) => number | null` - custom function which gives cursor Y value and list of Y values of lines. Should return active line index or null
 
 ### Render
 
@@ -108,11 +108,10 @@ type TooltipRow = {
     transformed?: number | null | string;
 };
 
-interface TooltipScale {
-    scale: string;
+interface TooltipSection {
     rows: TooltipRow[];
-    sum?: number;
 }
+
 interface TooltipRenderOptions {
     scales: TooltipScale[];
     options: TooltipOptions;

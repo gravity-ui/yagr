@@ -2,17 +2,20 @@
 
 import {Series} from 'uplot';
 import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, ProcessingInterpolation} from '../types';
+import {TooltipSection} from '../plugins/tooltip/types';
 
 /**
  * Finds index of point in ranges of Y-Axis values.
  * Returns index of starting range when idx < Y <= idx next
  *
- * @param {DataSeries} ranges - list or values in ranges, represent Y values
+ * @param {TooltipSection} section - tooltip section
  * @param {number} value - Y value of cursor
  * @param {boolean} stickToRanges - if true, then always return index of range
  * @returns {number | null}
  */
-export const findInRange = (ranges: DataSeries, value: number, stickToRanges = true): number | null => {
+export const findInRange = (section: TooltipSection, value: number, stickToRanges = true): number | null => {
+    const ranges = section.rows.map((x) => x.displayY);
+
     const positive = value >= 0;
     let max = -Infinity,
         maxIdx = null;
@@ -50,6 +53,10 @@ export const findInRange = (ranges: DataSeries, value: number, stickToRanges = t
 
             const currentMin = minIdx === null ? Infinity : (arr[minIdx] as number);
             const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
+
+            if (diff !== null && currentMin === diff) {
+                minIdx = idx;
+            }
             if (nextMin !== currentMin) {
                 minIdx = idx;
             }
@@ -85,11 +92,13 @@ export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[
 /**
  * Finds index of nearest non-null point in range of Y-Axis values
  *
- * @param {DataSeries} ranges
+ * @param {TooltipSection} section
  * @param {number} value
  * @returns {number | null}
  */
-export const findSticky = (ranges: DataSeries, value: number): number | null => {
+export const findSticky = (section: TooltipSection, value: number): number | null => {
+    const ranges = section.rows.map((x) => x.displayY);
+
     let nearestIndex;
     let nearestValue;
 
