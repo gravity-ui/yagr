@@ -24,6 +24,8 @@ export default class ColorParser {
             prop;
         const ctx = this.context as HTMLElement;
 
+        const pColor = ctx.style.color;
+
         if (isVar || color.startsWith('--')) {
             pure = false;
             prop = isVar ? color.slice(4, -1) : color;
@@ -34,7 +36,7 @@ export default class ColorParser {
         }
 
         res = pure ? res : getComputedStyle(ctx).getPropertyValue(prop as string);
-
+        ctx.style.color = pColor;
         return res;
     }
 
