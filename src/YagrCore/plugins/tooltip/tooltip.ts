@@ -357,7 +357,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                             displayY: realY,
                             color: serie.color,
                             seriesIdx,
-                            rowIdx: section.rows ? section.rows[section.rows.length - 1]?.rowIdx + 1 : 0,
+                            rowIdx: section.rows.length ? section.rows[section.rows.length - 1].rowIdx + 1 : 0,
                         };
 
                         if (serie.normalizedData) {
@@ -368,7 +368,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
                             rowData.transformed = seriesData[idx];
                         }
 
-                        section.rows = section.rows || [];
                         section.rows.push(rowData);
                     }
 

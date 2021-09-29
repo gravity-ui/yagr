@@ -3,8 +3,9 @@ import {findInRange, findSticky} from '../../src/YagrCore/utils/common';
 
 const fromArr = (n: (number | null)[]): TooltipSection => {
     return {
-        rows: n.map((y) => {
+        rows: n.map((y, i) => {
             return {
+                rowIdx: i,
                 active: false,
                 displayY: y,
             } as TooltipRow;

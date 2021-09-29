@@ -14,62 +14,53 @@ import {TooltipSection} from '../plugins/tooltip/types';
  * @returns {number | null}
  */
 export const findInRange = (section: TooltipSection, value: number, stickToRanges = true): number | null => {
-    const ranges = section.rows.map((x) => x.displayY);
-
     const positive = value >= 0;
     let max = -Infinity,
         maxIdx = null;
     let min = Infinity,
         minIdx = null;
 
-    ranges.forEach((y, i) => {
-        if (y === null) {
-            return;
-        }
-        if (y > max) {
-            max = y;
-            maxIdx = i;
+    const diffs: Array<number | null> = [];
+    let result: number | null = null;
+
+    section.rows.forEach((row) => {
+        const {displayY: y, rowIdx} = row;
+
+        let diff: number | null;
+
+        if (y !== null) {
+            if (y > max) {
+                max = y;
+                maxIdx = row.rowIdx;
+            }
+
+            if (y < min) {
+                min = y;
+                minIdx = row.rowIdx;
+            }
         }
 
-        if (y < min) {
-            min = y;
-            minIdx = i;
+        if (y === null || (positive ? y < 0 : y >= 0)) {
+            diff = null;
+        } else if (positive) {
+            diff = value > y ? null : y - value;
+        } else {
+            diff = value < y ? null : Math.abs(y - value);
+        }
+
+        const currentMin = result === null ? Infinity : (diffs[result] as number);
+        const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
+
+        if ((diff !== null && currentMin === diff) || nextMin !== currentMin) {
+            result = rowIdx;
         }
     });
 
-    const diffs = ranges.reduce(
-        ({arr, minIdx}, y) => {
-            let diff: number | null;
-
-            if (y === null || (positive ? y < 0 : y >= 0)) {
-                diff = null;
-            } else if (positive) {
-                diff = value > y ? null : y - value;
-            } else {
-                diff = value < y ? null : Math.abs(y - value);
-            }
-
-            const idx = arr.push(diff) - 1;
-
-            const currentMin = minIdx === null ? Infinity : (arr[minIdx] as number);
-            const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
-
-            if (diff !== null && currentMin === diff) {
-                minIdx = idx;
-            }
-            if (nextMin !== currentMin) {
-                minIdx = idx;
-            }
-            return {arr, minIdx};
-        },
-        {arr: [], minIdx: null} as {arr: DataSeries; minIdx: number | null},
-    );
-
-    if (diffs.minIdx === null && stickToRanges) {
+    if (result === null && stickToRanges) {
         return value >= max ? maxIdx : value <= min ? minIdx : null;
     }
 
-    return diffs.minIdx;
+    return result;
 };
 
 /* Gets sum of all values of given data index by all series */
