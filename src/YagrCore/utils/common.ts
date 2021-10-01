@@ -2,67 +2,65 @@
 
 import {Series} from 'uplot';
 import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, ProcessingInterpolation} from '../types';
+import {TooltipSection} from '../plugins/tooltip/types';
 
 /**
  * Finds index of point in ranges of Y-Axis values.
  * Returns index of starting range when idx < Y <= idx next
  *
- * @param {DataSeries} ranges - list or values in ranges, represent Y values
+ * @param {TooltipSection} section - tooltip section
  * @param {number} value - Y value of cursor
  * @param {boolean} stickToRanges - if true, then always return index of range
  * @returns {number | null}
  */
-export const findInRange = (ranges: DataSeries, value: number, stickToRanges = true): number | null => {
+export const findInRange = (section: TooltipSection, value: number, stickToRanges = true): number | null => {
     const positive = value >= 0;
     let max = -Infinity,
         maxIdx = null;
     let min = Infinity,
         minIdx = null;
 
-    ranges.forEach((y, i) => {
-        if (y === null) {
-            return;
-        }
-        if (y > max) {
-            max = y;
-            maxIdx = i;
+    const diffs: Array<number | null> = [];
+    let result: number | null = null;
+
+    section.rows.forEach((row) => {
+        const {displayY: y, rowIdx} = row;
+
+        let diff: number | null;
+
+        if (y !== null) {
+            if (y > max) {
+                max = y;
+                maxIdx = row.rowIdx;
+            }
+
+            if (y < min) {
+                min = y;
+                minIdx = row.rowIdx;
+            }
         }
 
-        if (y < min) {
-            min = y;
-            minIdx = i;
+        if (y === null || (positive ? y < 0 : y >= 0)) {
+            diff = null;
+        } else if (positive) {
+            diff = value > y ? null : y - value;
+        } else {
+            diff = value < y ? null : Math.abs(y - value);
+        }
+
+        const currentMin = result === null ? Infinity : (diffs[result] as number);
+        const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
+
+        if ((diff !== null && currentMin === diff) || nextMin !== currentMin) {
+            result = rowIdx;
         }
     });
 
-    const diffs = ranges.reduce(
-        ({arr, minIdx}, y) => {
-            let diff: number | null;
-
-            if (y === null || (positive ? y < 0 : y >= 0)) {
-                diff = null;
-            } else if (positive) {
-                diff = value > y ? null : y - value;
-            } else {
-                diff = value < y ? null : Math.abs(y - value);
-            }
-
-            const idx = arr.push(diff) - 1;
-
-            const currentMin = minIdx === null ? Infinity : (arr[minIdx] as number);
-            const nextMin = diff === null ? currentMin : Math.min(currentMin, diff);
-            if (nextMin !== currentMin) {
-                minIdx = idx;
-            }
-            return {arr, minIdx};
-        },
-        {arr: [], minIdx: null} as {arr: DataSeries; minIdx: number | null},
-    );
-
-    if (diffs.minIdx === null && stickToRanges) {
+    if (result === null && stickToRanges) {
         return value >= max ? maxIdx : value <= min ? minIdx : null;
     }
 
-    return diffs.minIdx;
+    return result;
 };
 
 /* Gets sum of all values of given data index by all series */
@@ -85,11 +83,13 @@ export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[
 /**
  * Finds index of nearest non-null point in range of Y-Axis values
  *
- * @param {DataSeries} ranges
+ * @param {TooltipSection} section
  * @param {number} value
  * @returns {number | null}
  */
-export const findSticky = (ranges: DataSeries, value: number): number | null => {
+export const findSticky = (section: TooltipSection, value: number): number | null => {
+    const ranges = section.rows.map((x) => x.displayY);
+
     let nearestIndex;
     let nearestValue;
 

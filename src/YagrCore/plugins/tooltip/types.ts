@@ -8,7 +8,7 @@ export type TrackingOptions =
     /** Tracks mouse to closest line */
     | 'sticky'
     /** Custom tracking function */
-    | ((y: number, ranges: (number | null | string)[]) => number);
+    | ((s: TooltipSection, y: number) => number | null);
 export interface TooltipRenderOpts {
     /** Tooltip option */
     options: TooltipOptions;
@@ -94,7 +94,7 @@ export interface TooltipOptions {
     /** Tooltip y-offset */
     yOffset?: number;
     /** Should stick to series if out of ranges in tracking */
-    stickToRanges?: boolean;
+    stickToRanges?: PerScale<boolean>;
     /** Title of tooltip and scale sections */
     title?: PerScale<TitleRenderer>;
     /** Titles of scales of scale sections */
@@ -114,12 +114,18 @@ export type TooltipRow = {
     className?: string;
     /** Y Axis value */
     y?: number | null;
+    /** real Y value on graph */
+    displayY: number | null;
     /** Index of series in u.series */
     seriesIdx: number;
-
+    /** Index of row in section */
+    rowIdx: number;
     /** Original value before all transormations */
     originalValue?: number | null;
-
     /** Transformed value */
     transformed?: number | null | string;
 };
+
+export interface TooltipSection {
+    rows: TooltipRow[];
+}
