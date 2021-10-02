@@ -104,7 +104,7 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
                 plotLines.push(scale ? {scale, ...p} : p);
             }
         },
-        uPlotPlugin: {
+        plugin: {
             hooks: {
                 // @TODO Add feature to draw plot lines over series
                 [hook]: handler,
