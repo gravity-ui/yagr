@@ -25,7 +25,6 @@ import {
     YagrHooks,
     DataSeries,
     MinimalValidConfig,
-    YagrPlugin,
 } from './types';
 
 import {debounce, genId, getSumByIdx, preprocess} from './utils/common';
@@ -67,8 +66,8 @@ type CachedProps = {
 
 interface YagrPlugins {
     tooltip?: TooltipPlugin;
-    plotLines?: YagrPlugin<ReturnType<typeof plotLinesPlugin>>;
-    cursor?: YagrPlugin<ReturnType<typeof cursorPlugin>>;
+    plotLines?: ReturnType<typeof plotLinesPlugin>;
+    cursor?: ReturnType<typeof cursorPlugin>;
     legend?: LegendPlugin;
 }
 export interface YagrState {
@@ -281,7 +280,7 @@ class Yagr {
         /** Setting up TooltipPugin */
         if (config.tooltip && config.tooltip.enabled !== false) {
             const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
-            plugins.push(tooltipPluginInstance.plugin);
+            plugins.push(tooltipPluginInstance.uplot);
             this.plugins.tooltip = tooltipPluginInstance;
         }
 
@@ -329,9 +328,9 @@ class Yagr {
         }
 
         if (config.cursor) {
-            this.plugins.cursor = cursorPlugin(config.cursor, this);
-            const cursorPluginInstance = this.plugins.cursor.plugin;
-            plugins.push(cursorPluginInstance);
+            const cPlugin = cursorPlugin(config.cursor, this);
+            this.plugins.cursor = cPlugin;
+            plugins.push(cPlugin.uplot);
         }
 
         /** first serie is always X */
@@ -732,7 +731,7 @@ class Yagr {
 
         const plInstance = plotLinesPlugin(config, plotLines);
         this.plugins.plotLines = plInstance;
-        return plInstance.plugin;
+        return plInstance.uplot;
     }
 
     private setOptionsWithUpdate(updateFn: (d: UPlotOptions, s?: UPlotData) => void) {

@@ -15,7 +15,6 @@ import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSect
 
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
-import {YagrPlugin} from 'src';
 
 export interface TooltipState {
     /** Is tooltip pinned */
@@ -69,12 +68,13 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     yOffset: TOOLTIP_Y_OFFSET,
 };
 
-export type TooltipPlugin = YagrPlugin<{
+export type TooltipPlugin = {
     state: TooltipState;
     pin(pinState: boolean, position?: {x: number; y: number}): void;
     show(): void;
     hide(): void;
-}>;
+    uplot: Plugin;
+};
 
 /*
  * Tooltip plugin constructor.
@@ -265,7 +265,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
     const interpolation = pSettings.interpolation;
     const stripValue = interpolation ? interpolation.value : undefined;
 
-    const plugin: Plugin = {
+    const uPlotPlugin: Plugin = {
         hooks: {
             init: (u) => {
                 over = u.root.querySelector('.u-over') as HTMLDivElement;
@@ -490,7 +490,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         pin,
         show,
         hide,
-        plugin,
+        uplot: uPlotPlugin,
     };
 }
 

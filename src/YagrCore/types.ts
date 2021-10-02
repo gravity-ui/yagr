@@ -1,4 +1,4 @@
-import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options, Plugin} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
 
 import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -385,7 +385,3 @@ export interface MarkersOptions {
 }
 
 export type SnapToValue = 'left' | 'right' | 'closest';
-
-export type YagrPlugin<T extends {}> = {
-    plugin: Plugin;
-} & T;

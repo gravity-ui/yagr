@@ -9,6 +9,16 @@ const DRAW_MAP = {
     [DrawOrderKey.Axes]: 1,
     plotLines: 2,
 };
+
+const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'> = {
+    '012': 'draw',
+    '102': 'draw',
+    '201': 'drawClear',
+    '210': 'drawClear',
+    '120': 'drawAxes',
+    '021': 'drawSeries',
+};
+
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
@@ -20,15 +30,7 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
         '',
     );
 
-    const hook =
-        {
-            '012': 'draw',
-            '102': 'draw',
-            '201': 'drawClear',
-            '210': 'drawClear',
-            '120': 'drawAxes',
-            '021': 'drawSeries',
-        }[drawIndicies] || 'drawClear';
+    const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
     function renderPlotLines(u: UPlot) {
         const {ctx} = u;
@@ -104,7 +106,7 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
                 plotLines.push(scale ? {scale, ...p} : p);
             }
         },
-        plugin: {
+        uplot: {
             hooks: {
                 // @TODO Add feature to draw plot lines over series
                 [hook]: handler,
