@@ -8,4 +8,5 @@ docs-viewer:
     favicon-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
     logo-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
     logo-dark-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
+    github-url-prefix: https://github.com/yandex-cloud/yagr/tree/master/docs
     no-index: true
