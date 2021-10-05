@@ -34,7 +34,7 @@ const y = new Yagr(document.body, config);
 
 Yagr will render simple line chart with two lines:
 
-![Sample chart](./assets/1.png =600x100%)
+![Sample chart](../assets/1.png =600x100%)
 
 By default Yagr turns on some plugins such as tooltip and axes formating, details of default behavior you can see in plugins section. See [documentation](./api/visualization.md) for configuration.
 

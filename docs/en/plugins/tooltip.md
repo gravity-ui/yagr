@@ -3,7 +3,7 @@
 Yagr has default legend tooltip. By default it has pretty simple renderer, but you can easy implement your own renderer.
 Most of tooltip options are typeof `PerScale`, which means that it could be `value` or `{scale: value}`. You can see example of multi-scale tooltip on picture:
 
-![Tooltip exanple](../assets/tooltip-scales.png =600x100%)
+![Tooltip exanple](../../assets/tooltip-scales.png =600x100%)
 
 Configuration for this example:
 

@@ -2,7 +2,7 @@
 
 Plot Lines plugin allows to render custom lines on bands over the chart:
 
-![Plot lines](../assets/plotlines.png "Plot Lines" =600x100%)
+![Plot lines](../../assets/plotlines.png "Plot Lines" =600x100%)
 
 Plotlines are binded to axes which are binded to scales, so to render plotline you should pass it's config to given axis:
 
@@ -33,7 +33,7 @@ axes: {
 }
 ```
 
-By default plotlines drawing over the series and axes, you can choose draw layer in [settings.drawOrder](#settings.drawOrder)
+By default plotlines drawing over the series and axes, you can choose draw layer in [settings.drawOrder](../api/settings.md#drawOrder)
 
 ## Plot line config
 
