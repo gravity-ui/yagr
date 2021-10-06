@@ -28,4 +28,3 @@ If you doesn't need Yagr features but need something specific which is not imple
 -   [Paginated inline legend](./plugins/legend.md#legend)
 -   [Error handling and extended hooks](./api/lifecycle.md#hooks)
 -   [Data alignment and interpolation for missing data](./api/data-processing.md#data-alignment)
-    p
