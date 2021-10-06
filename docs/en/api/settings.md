@@ -55,16 +55,16 @@ type InterpolationSetting = 'linear' | 'left' | 'right' | 'smooth';
 Interpolation of line curves. Don't confuse it with [data alignment interpolation](#data-alignment)
 
 -   `linear` - linear interpolation
-    ![Interpolation linear](../assets/interpolation-linear.png =600x100%)
+    ![Interpolation linear](../../assets/interpolation-linear.png =600x100%)
 
 -   `left` - left interpolation (previous point value)
-    ![Interpolation left](../assets/interpolation-left.png =600x100%)
+    ![Interpolation left](../../assets/interpolation-left.png =600x100%)
 
 -   `right` - right interpolation (next point value)
-    ![Interpolation right](../assets/interpolation-right.png =600x100%)
+    ![Interpolation right](../../assets/interpolation-right.png =600x100%)
 
 -   `smooth` - smooth interpolation (Bezier's curves interpolation)
-    ![Interpolation smooth](../assets/interpolation-smooth.png =600x100%)
+    ![Interpolation smooth](../../assets/interpolation-smooth.png =600x100%)
 
 ### Draw layers order
 

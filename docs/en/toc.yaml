@@ -40,13 +40,16 @@ items:
                   href: ./plugins/tooltip.md
                 - name: Legend
                   href: ./plugins/legend.md
-    - name: Examples
-      items:
-          - name: Shared crosshairs
-            href: ./examples/crosshairs.md
-          - name: Multiscales
-            href: ./examples/multiscales.md
-          - name: Plot Lines
-            href: ./examples/plotlines.md
+
+    # Temporary disabled until realize how to insert examples into YFM
+    # - name: Examples
+    #   items:
+    #       - name: Shared crosshairs
+    #         href: ./examples/crosshairs.md
+    #       - name: Multiscales
+    #         href: ./examples/multiscales.md
+    #       - name: Plot Lines
+    #         href: ./examples/plotlines.md
+
     - name: Contibuting
       href: contribution.md

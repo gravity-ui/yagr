@@ -1,6 +1,6 @@
 ## Lifecycle stages
 
-![Lifecycle](../assets/yagr-stages.png "Yagr stages" =600x100%)
+![Lifecycle](../../assets/yagr-stages.png "Yagr stages" =600x100%)
 
 Yagr has 4 stages:
 
