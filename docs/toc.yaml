@@ -48,5 +48,5 @@ items:
             href: ./examples/multiscales.md
           - name: Plot Lines
             href: ./examples/plotlines.md
-    - name: Contibution
+    - name: Contibuting
       href: contribution.md
