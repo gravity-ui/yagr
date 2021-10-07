@@ -41,7 +41,7 @@ const findValue = (
     let value = source[idx];
 
     if (interpolation && value === interpolation.value) {
-        const snapTo = interpolation.snapToValues || 'closest';
+        const snapTo = interpolation.snapToValues ?? 'closest';
         const nonNullIdx = findDataIdx(source, serie, idx, snapTo, interpolation.value);
         value = source[nonNullIdx];
     } else if (value === null) {

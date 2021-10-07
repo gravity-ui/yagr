@@ -119,7 +119,7 @@ export interface ProcessingInterpolation {
     type: 'previous' | 'left' | 'next' | 'right' | 'linear' | 'closest';
 
     /** Cursor and tooltip snapToValue option */
-    snapToValues?: SnapToValue;
+    snapToValues?: SnapToValue | false;
 
     /** Values to interpolate */
     value?: unknown;
