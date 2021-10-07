@@ -42,7 +42,7 @@ export default function CursorPlugin(
 ): {
     pin: (v: boolean) => void;
     focus: (i: number | null, f: boolean) => void;
-    uPlotPlugin: Plugin;
+    uplot: Plugin;
 } {
     const config = yagr.config;
     const processing = config.processing || {};
@@ -141,7 +141,7 @@ export default function CursorPlugin(
                 item.style.display = idx === String(serieIdx) && focus ? 'block' : 'none';
             });
         },
-        uPlotPlugin: {
+        uplot: {
             opts: (_, uplotOptions) => {
                 uplotOptions.cursor = uplotOptions.cursor || {};
 

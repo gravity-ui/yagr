@@ -68,11 +68,19 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     yOffset: TOOLTIP_Y_OFFSET,
 };
 
+export type TooltipPlugin = {
+    state: TooltipState;
+    pin(pinState: boolean, position?: {x: number; y: number}): void;
+    show(): void;
+    hide(): void;
+    uplot: Plugin;
+};
+
 /*
  * Tooltip plugin constructor.
  * Every charts has it's own tooltip plugin instance
  */
-function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): Plugin {
+function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): TooltipPlugin {
     const pSettings = yagr.config.processing || {};
 
     /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
@@ -192,7 +200,23 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         }
     };
 
-    function pin(pinState: boolean) {
+    function pin(pinState: boolean, position?: {x: number; y: number}) {
+        if (position) {
+            placement(
+                tOverlay,
+                {
+                    left: position.x + bLeft,
+                    top: bTop + position.y - (opts.yOffset || 0),
+                },
+                'right',
+                {
+                    bound,
+                    xOffset: opts.xOffset,
+                    yOffset: opts.yOffset,
+                },
+            );
+        }
+
         const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
         state.pinned = pinState;
 
@@ -241,7 +265,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
     const interpolation = pSettings.interpolation;
     const stripValue = interpolation ? interpolation.value : undefined;
 
-    const plugin: Plugin = {
+    const uPlotPlugin: Plugin = {
         hooks: {
             init: (u) => {
                 over = u.root.querySelector('.u-over') as HTMLDivElement;
@@ -461,7 +485,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): P
         },
     };
 
-    return plugin;
+    return {
+        state,
+        pin,
+        show,
+        hide,
+        uplot: uPlotPlugin,
+    };
 }
 
 export default YagrTooltipPlugin;

@@ -11,7 +11,7 @@ import UPlot, {
 } from 'uplot';
 
 import LegendPlugin from './plugins/legend/legend';
-import tooltipPlugin from './plugins/tooltip/tooltip';
+import tooltipPlugin, {TooltipPlugin} from './plugins/tooltip/tooltip';
 import markersPlugin, {drawMarkersIfRequired} from './plugins/markers';
 import cursorPlugin from './plugins/cursor/cursor';
 import plotLinesPlugin from './plugins/plotLines/plotLines';
@@ -65,11 +65,11 @@ type CachedProps = {
 };
 
 interface YagrPlugins {
+    tooltip?: TooltipPlugin;
     plotLines?: ReturnType<typeof plotLinesPlugin>;
     cursor?: ReturnType<typeof cursorPlugin>;
     legend?: LegendPlugin;
 }
-
 export interface YagrState {
     isMouseOver: boolean;
     stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
@@ -280,7 +280,8 @@ class Yagr {
         /** Setting up TooltipPugin */
         if (config.tooltip && config.tooltip.enabled !== false) {
             const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
-            plugins.push(tooltipPluginInstance);
+            plugins.push(tooltipPluginInstance.uplot);
+            this.plugins.tooltip = tooltipPluginInstance;
         }
 
         const options: UPlotOptions = {
@@ -327,9 +328,9 @@ class Yagr {
         }
 
         if (config.cursor) {
-            this.plugins.cursor = cursorPlugin(config.cursor, this);
-            const cursorPluginInstance = this.plugins.cursor.uPlotPlugin;
-            plugins.push(cursorPluginInstance);
+            const cPlugin = cursorPlugin(config.cursor, this);
+            this.plugins.cursor = cPlugin;
+            plugins.push(cPlugin.uplot);
         }
 
         /** first serie is always X */
@@ -728,9 +729,9 @@ class Yagr {
             }
         });
 
-        const plugin = plotLinesPlugin(config, plotLines);
-        this.plugins.plotLines = plugin;
-        return plugin.uPlotPlugin;
+        const plInstance = plotLinesPlugin(config, plotLines);
+        this.plugins.plotLines = plInstance;
+        return plInstance.uplot;
     }
 
     private setOptionsWithUpdate(updateFn: (d: UPlotOptions, s?: UPlotData) => void) {
@@ -750,6 +751,15 @@ class Yagr {
         const [resize] = args;
         if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
             return;
+        }
+
+        if (this.plugins.tooltip) {
+            const t = this.plugins.tooltip;
+
+            if (t.state.pinned && t.state.visible) {
+                t.hide();
+                t.pin(false);
+            }
         }
 
         this.setOptionsWithUpdate((options) => {
