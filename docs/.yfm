@@ -5,7 +5,7 @@ varsPreset: external
 docs-viewer:
     project-name: yagr
     logo-title: Yagr
-    favicon-src: https://github.com/yandex-cloud/yagr/raw/master/docs/assets/yagr.svg
+    favicon-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/yagr.svg
     logo-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/docslogo.svg
     logo-dark-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/docslogo-dark.svg
     github-url-prefix: https://github.com/yandex-cloud/yagr/tree/master/docs
