@@ -4,7 +4,7 @@ Yagr is a high level library for rendering HTML5 Canvas charts based on the extr
 
 ## Why Yagr?
 
-Why not to use uPlot directly? uPlot is very flexible library, and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common for chart [features](#features) such as [legend tooltip](./plugins/tooltip.md#tooltip), [stacking](./api/scales.md#stacking), [normalization](./api/scales.md#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr already have implented much of that features. Yagr pretty much configurable, and you can extend it or customize view and behavior, and also it allows to extend uPlot object directly.
+Why not to use uPlot directly? uPlot is very flexible library, and it provides amazing API to create your own plugins and implement different visualizations, but uPlot is too low level library. If you need a lot of common for chart [features](#features) such as [legend tooltip](./plugins/tooltip.md#tooltip), [stacking](./api/scales.md#stacking), [normalization](./api/scales.md#normalization) etc then you should implement them by yourself if you choose uPlot. Yagr has already implented many of that features. Yagr pretty much configurable, and you can extend it or customize view and behavior, and also it allows to extend uPlot object directly.
 
 ## Why not Yagr
 
