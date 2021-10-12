@@ -113,14 +113,14 @@ export default class Legend {
             return () => {};
         }
 
-        const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-id]');
+        const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-idx]');
         const unsubsribe: (() => void)[] = [];
 
         const onSerieClick = (serieNode: HTMLElement) => () => {
-            const serieId = serieNode.getAttribute('data-serie-id');
+            const serieIdx = serieNode.getAttribute('data-serie-idx');
             const seriesToToggle: [number, Series, boolean][] = [];
 
-            if (serieId === ALL) {
+            if (serieIdx === ALL) {
                 const nextToggleState = !hasOneVisibleLine(u.series);
 
                 for (let idx = 1; idx < u.series.length; idx++) {
@@ -128,8 +128,8 @@ export default class Legend {
                 }
             } else {
                 let idx = 0;
-                const serie = u.series.find((serie) => {
-                    const r = serie.id === serieId;
+                const serie = u.series.find(() => {
+                    const r = idx === Number(serieIdx);
                     if (!r) {
                         idx += 1;
                     }
@@ -142,12 +142,12 @@ export default class Legend {
             }
 
             seriesToToggle.forEach(([idx, serie, nextState]) => {
-                const node = u.root.querySelector(`[data-serie-id="${serie.id}"]`);
+                const node = u.root.querySelector(`[data-serie-idx="${idx}"]`);
                 yagr.toggleSerieVisibility(idx, serie, nextState);
                 node?.classList[serie.show ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
 
-            const allSeriesItem = u.root.querySelector(`[data-serie-id="${ALL}"]`);
+            const allSeriesItem = u.root.querySelector(`[data-serie-idx="${ALL}"]`);
 
             if (allSeriesItem) {
                 const title = getPrependingTitle(this.yagr.i18n, u.series);
@@ -156,11 +156,16 @@ export default class Legend {
         };
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
-            const serieId = serieNode.getAttribute('data-serie-id');
-            if (serieId === ALL) {
+            const serieIdx = serieNode.getAttribute('data-serie-idx');
+            const targetSerie = this.yagr.options.series.find((_, idx) => idx === Number(serieIdx));
+
+            if (serieIdx === ALL) {
                 return;
             }
-            yagr.focus(serieId, true);
+
+            if (targetSerie) {
+                yagr.focus(targetSerie.id, true);
+            }
         };
 
         const onSerieMouseLeave = () => {
@@ -310,6 +315,23 @@ export default class Legend {
         return pagination;
     }
 
+    private createIconLineElement(serie: Series) {
+        const iconLineElement = document.createElement('span');
+                    
+        iconLineElement.classList.add('yagr-legend__icon', `yagr-legend__icon_${serie.type}`);
+        iconLineElement.style.backgroundColor = serie.color;
+
+        return iconLineElement;
+    }
+
+    private createSerieNameElement(serie: Series) {
+        const serieNameElement = document.createElement('span');
+
+        serieNameElement.innerText = serie.name || 'unnamed';
+
+        return serieNameElement;
+    }
+
     private renderItems(uplotOptions: Options) {
         const title = getPrependingTitle(this.yagr.i18n, uplotOptions.series);
 
@@ -319,27 +341,27 @@ export default class Legend {
             series.push(uplotOptions.series[i]);
         }
 
-        const content = series
-            .map((serie) => {
-                let id, content;
+        const content = series 
+            .map((serie, index) => {
+
+                let idx, content;
 
                 if (typeof serie === 'string') {
-                    id = ALL;
+                    idx = ALL;
                     content = serie;
                 } else {
-                    const iconCname = `yagr-legend__icon yagr-legend__icon_${serie.type}`;
-                    id = serie.id;
-                    content = `
-                    ${serie.color ? `<span class="${iconCname}" style="background-color: ${serie.color};"></span>` : ''}
-                    ${serie.name || serie}
-                `;
+                    const icon = this.createIconLineElement(serie);
+                    const name = this.createSerieNameElement(serie);
+
+                    idx = index;
+                    content = `${icon.outerHTML}${name.outerHTML}`;
                 }
 
                 const visible = typeof serie === 'string' ? true : serie.show;
 
                 return `<div class="yagr-legend__item ${
                     visible ? '' : 'yagr-legend__item_hidden'
-                }" data-serie-id="${id}">${content}</div>`;
+                }" data-serie-idx="${idx}">${content}</div>`;
             })
             .join('');
 
