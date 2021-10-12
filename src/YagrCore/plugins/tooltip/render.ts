@@ -1,10 +1,10 @@
 /* eslint-disable complexity, no-nested-ternary */
 import {TooltipRenderOptions, TooltipRow} from './types';
-import {getOptionValue} from './utils';
+import {getOptionValue, escapeHTML} from './utils';
 
 function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) {
     return rows
-        .map(({value, name, color, active, transformed, seriesIdx}, i) => {
+        .map(({value, name = 'unnamed', color, active, transformed, seriesIdx}, i) => {
             const val = `
 <span class="yagr-tooltip__val">${value}</span>
     ${typeof transformed === 'number' ? `<span class="yagr_tooltip__tf">${transformed.toFixed(2)}</span>` : ''}
@@ -12,7 +12,7 @@ function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) 
             return `
 <div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
     ${opts.showIndicies ? `<span class="yagr-tooltip__idx">${rows.length - i}</span>` : ''}
-    <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${name}&nbsp;&nbsp;${val}
+    <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${escapeHTML(name)}&nbsp;&nbsp;${val}
 </div>`;
         })
         .join('');
