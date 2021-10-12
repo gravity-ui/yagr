@@ -25,7 +25,7 @@ interface LegendState {
     pageSize: number;
 }
 
-const ALL = 'yagr.series.all';
+const ALL_SERIES_IDX = -1;
 const TOTAL_LEGEND_VERTICAL_PADDING = 20;
 const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
@@ -117,10 +117,10 @@ export default class Legend {
         const unsubsribe: (() => void)[] = [];
 
         const onSerieClick = (serieNode: HTMLElement) => () => {
-            const serieIdx = serieNode.getAttribute('data-serie-idx');
+            const serieIdx = Number(serieNode.getAttribute('data-serie-idx'));
             const seriesToToggle: [number, Series, boolean][] = [];
 
-            if (serieIdx === ALL) {
+            if (serieIdx === ALL_SERIES_IDX) {
                 const nextToggleState = !hasOneVisibleLine(u.series);
 
                 for (let idx = 1; idx < u.series.length; idx++) {
@@ -129,7 +129,7 @@ export default class Legend {
             } else {
                 let idx = 0;
                 const serie = u.series.find(() => {
-                    const r = idx === Number(serieIdx);
+                    const r = idx === serieIdx;
                     if (!r) {
                         idx += 1;
                     }
@@ -147,7 +147,7 @@ export default class Legend {
                 node?.classList[serie.show ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
 
-            const allSeriesItem = u.root.querySelector(`[data-serie-idx="${ALL}"]`);
+            const allSeriesItem = u.root.querySelector(`[data-serie-idx="${ALL_SERIES_IDX}"]`);
 
             if (allSeriesItem) {
                 const title = getPrependingTitle(this.yagr.i18n, u.series);
@@ -156,10 +156,10 @@ export default class Legend {
         };
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
-            const serieIdx = serieNode.getAttribute('data-serie-idx');
-            const targetSerie = this.yagr.options.series.find((_, idx) => idx === Number(serieIdx));
+            const serieIdx = Number(serieNode.getAttribute('data-serie-idx'));
+            const targetSerie = this.yagr.options.series.find((_, idx) => idx === serieIdx);
 
-            if (serieIdx === ALL) {
+            if (serieIdx === ALL_SERIES_IDX) {
                 return;
             }
 
@@ -347,7 +347,7 @@ export default class Legend {
                 let idx, content;
 
                 if (typeof serie === 'string') {
-                    idx = ALL;
+                    idx = ALL_SERIES_IDX;
                     content = serie;
                 } else {
                     const icon = this.createIconLineElement(serie);
