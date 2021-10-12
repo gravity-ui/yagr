@@ -1,5 +1,7 @@
 ### master
 
+- Fix a problem with quoted series names in legend
+
 ### 1.3.3 (11-10-2021)
 
 #### Tooltip
