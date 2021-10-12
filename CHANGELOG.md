@@ -1,5 +1,9 @@
 ### master
 
+#### Tooltip
+
+- Properly render serie name by escaping html
+
 ### 1.3.3 (11-10-2021)
 
 #### Tooltip
