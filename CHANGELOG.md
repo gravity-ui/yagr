@@ -4,6 +4,10 @@
 
 - Properly render serie name by escaping html
 
+#### Legend
+
+- Fix a problem with quoted series names
+
 ### 1.3.3 (11-10-2021)
 
 #### Tooltip
