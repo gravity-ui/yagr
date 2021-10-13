@@ -1,5 +1,9 @@
 ### master
 
+#### Tooltip
+
+- Properly render serie name by escaping html
+
 #### Legend
 
 - Fix a problem with quoted series names
