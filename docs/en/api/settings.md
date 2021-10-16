@@ -44,7 +44,7 @@ Width in pixels of the minimal permitted range selection.
 
 If true, then charts will be responsive and occupy 100% of the container width and height. Adaptive charts will also autoresize if required. Responsiveness implemented with [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
 
-### interpolation: {
+### Interpolation
 
 `settings.interpolation?: InterpolationSetting`
 
@@ -68,7 +68,7 @@ Interpolation of line curves Don't confuse it with [data alignment interpolation
 
 ### Draw layer order
 
-`settings.drawOrder`
+`settings.drawOrder` - defines order in which will be drawn axes, series, plot lines and bands.
 
 Draw layer order: `'plotLines' | 'axes' | 'series'`.
 By default, `['series', 'axes', 'plotLines']`, which means that axes will be over series but under plotLines.
