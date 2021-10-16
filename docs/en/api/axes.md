@@ -1,6 +1,6 @@
 ## Axes
 
-Axes is key-value object, where keys are axis names (one-to-one with scales) and values axes configs. Axis config has type `AxisOptions` which extends uPlot `Axis`. See [axes config in uPlot](https://github.com/leeoniya/uPlot/blob/c58561b91bb47e74f00ce43760c3edf988557e2e/dist/uPlot.d.ts#L904).
+Axes is a key-value object where keys are axis names (one-to-one with scales) and values are axis configs. Axis config has type `AxisOptions`, which extends uPlot `Axis`. See [axes config in uPlot](https://github.com/leeoniya/uPlot/blob/c58561b91bb47e74f00ce43760c3edf988557e2e/dist/uPlot.d.ts#L904).
 
 Example:
 
@@ -14,14 +14,14 @@ axes: {
 
 ## Configuration
 
-Axis configuration pass to uPlot `axes`.
+Most options are described in uPlot axes config. See [axes config in uPlot](https://github.com/leeoniya/uPlot/blob/c58561b91bb47e74f00ce43760c3edf988557e2e/dist/uPlot.d.ts#L904).
 
 ### Precision
 
-`axes.precision` - setups axis labels precision.
+`axes.precision` - sets up axis label precision
 
--   `number` - decimals count
--   `'auto'` - calculates automaticaly minimal correct precision
+-   `number` - decimal digits count
+-   `'auto'` - automatically calculates minimum correct precision
 
 ### PlotLines
 
@@ -31,4 +31,4 @@ See [Plot Lines plugin](../plugins/plot-lines.md#plot-lines).
 
 ### Position
 
-`axes.side: 'top' | 'right' | 'bottom' | 'left'` - position of axis. `'left'` by default.
+`axes.side: 'top' | 'right' | 'bottom' | 'left'` - position of axis, `'left'` by default

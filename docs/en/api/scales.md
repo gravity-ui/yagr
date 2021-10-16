@@ -1,11 +1,11 @@
 ## Scales
 
-Scales is a key-value object, where keys are scale names and values scale configs.
+Scales is a key-value object where keys are scale names and values are scale configs.
 
 ```js
 scales: {
     y: {
-        type: 'linear',
+        type: 'linear'
         min: 0,
     }
 }
@@ -24,45 +24,45 @@ scales: {
 
 `scale.normalize: boolean`
 
-If true, then normalize all scale's series data to given base (100% by default)
+If true, then normalize all series data in the scale to the given base (100% by default)
 
 `scale.normalizeBase: number`
 
-Base of normalization
+Normalization base
 
 ### Ranges
 
 #### Minimum and maximum
 
--   `scale.min: number` - ,inimum of scale
--   `scale.max: number` - maximum of scale
+-   `scale.min: number` - scale minimum
+-   `scale.max: number` - scale maximum
 
 #### Range
 
 `scale.range:`
 
--   `'nice'` - implementation of NiceScale with extra features to make charts nice for stacked areas
+-   `'nice'` - NiceScale implementation with extra features to make charts look nice for stacked areas
 -   `'offset'` - static offset from data min and max
 -   `(u: uPlot, min: number, max: number, ref: RefPoints | undefined, cfg: YagrConfig) => [min: number, max: number]` - custom function
 
 `scale.offset: number`
 
-Value of offset for `scale.range = 'offset'`.
+Offset value for `scale.range = 'offset'`.
 `scale.minRange: number`
 
-Minimal value of scale range between min and max. Use for stabilize nice-scale with different base of scales.
+The minimum value of the scale range between min and max. Use to stabilize NiceScale with different scale bases.
 
 ### Max ticks
 
 `scale.maxTicks: number`
 
-Count of max ticks for `scale.range = 'nice'`.
+Number of max ticks for `scale.range = 'nice'`.
 
 ### Stacking
 
 `scale.stacking: boolean`
 
-Should stack values on given scale. False by default. See [stacking](./series.md#stacking-group) for more info.
+This stacks values on a given scale. False by default. To define different stacks see [stacking groups](./series.md#stacking-group) for more info.
 
 ### Transformations
 
@@ -72,4 +72,4 @@ Should stack values on given scale. False by default. See [stacking](./series.md
 transform?: (v: number | null, series: DataSeries[], idx: number) => number;
 ```
 
-Funtion to transform all values on given scale.
+This function is used to transform all the values on a given scale.

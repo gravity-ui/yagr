@@ -1,10 +1,10 @@
 ## Cursor
 
-Yagr allows to setup chart's cursor behavior. You can configure crosshairs, markers size and count, and snapping behavior.
+Yagr lets you set up cursor behavior for charts. You can configure crosshairs, the number and size of markers, and snapping behavior.
 
 ## Configuration
 
-### Value snaping
+### Value snapping
 
 `cursor.snapToValues?: SnapToValue | false`
 
@@ -12,32 +12,29 @@ Yagr allows to setup chart's cursor behavior. You can configure crosshairs, mark
 type SnapToValue = 'left' | 'right' | 'closest';
 ```
 
-Snap to values allows to render markers only on existing points on timeline. If cursor points to value X value on which Y has null with `snapToValues` you can configure which real point to highligh with marker.
+Snapping to values lets you only render markers on existing points on a timeline. If the cursor points to value X, where Y is null with `snapToValues`, you can configure which real point to highlight with a marker.
 
--   `'left'` - finds nearest non-null value to the left
+-   `'left'` - find the nearest non-null value to the left
     ![Snap to left](../../assets/snap-left.png =600x100%)
 
--   `'right'` - finds nearest non-null value to the right
+-   `'right'` - find the nearest non-null value to the right
     ![Snap to right](../../assets/snap-right.png =600x100%)
 
--   `'closest'` - finds nearest non-null
+-   `'closest'` - find the nearest non-null value
 
--   `false` - doesn't snaping to non-null values
+-   `false` - don't snap to non-null values
     ![Without snapping](../../assets/snap-false.png =600x100%)
 
 ### Markers
 
--   `cursor.markersSize?: number`
+Cursror markses are elements whish shows Y-values of series on a given cursor X position.
 
-Radius of markers.
-
--   `cursor.maxMarkers?: number`
-
-Maximal count of markers. If count of lines > `maxMarkers`, then markers don't drawing.
+-   `cursor.markersSize?: number` - markers radius in `px`
+-   `cursor.maxMarkers?: number` - maximum number of markers. If the number of lines > `maxMarkers`, then markers aren't drawn on chart.
 
 ### Crosshairs
 
-You can set X and Y crosshairs in cursor options:
+You can set X and Y crosshairs in the cursor options:
 
 ```js
 cursor: {
