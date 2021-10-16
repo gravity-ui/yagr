@@ -1,13 +1,13 @@
 ## Markers
 
-Markers are points drawn on the plot drawn on each (x, y) coordinates of every line.
+Markers are circle points drawn on the (x, y) coordinates of every line.
 
 ## Configuration
 
--   `show?: boolean` - visibility of markers
+-   `show?: boolean` - markers visibility
 
--   `size?: number` - size of circle points (default: 4px)
+-   `size?: number` - the size of circle points (default: `4px`)
 
--   `strokeWidth?: number` - width of stroke of circle point (default: 1px)
+-   `strokeWidth?: number` - the stroke width of circle points (default: `1px`)
 
--   `strokeColor?: string` - stroke color of marker (default: `#ffffff`)
+-   `strokeColor?: string` - the marker stroke color (default: `#ffffff`)

@@ -1,6 +1,6 @@
 ## Settings
 
-Global chart settings goes here.
+Global chart settings go here.
 
 ## Configuration
 
@@ -8,19 +8,19 @@ Global chart settings goes here.
 
 `settings.zoom?: boolean`
 
-Is chart zooming enabled. `true` by default
+Whether chart zooming is enabled, `true` by default
 
 ### Localization
 
 `settings.locale?: 'ru' | 'en'`
 
-See [localization](#localization).
+See [more about customizing I18N](./i18n.md).
 
 ### Time units
 
 `settings.timeMultiplier?: number`
 
-Multiplier for timestamps to get UNIX timestamps.
+Timestamp multiplier to get UNIX timestamps
 Use:
 
 -   `0.001` - if timestamps are seconds
@@ -30,21 +30,21 @@ Use:
 
 `settings.theme?: 'light' | 'dark'`
 
-Yagr theme. `'light'` by default.
+Yagr theme, `'light'` by default
 
 ### Minimum selection width
 
 `settings.minSelectionWidth?: number;`
 
-Width in pixels of minimal allowed range selection.
+Width in pixels of the minimal permitted range selection.
 
 ### Adaptivity
 
 `settings.adaptive?: boolean`
 
-If true then charts will be responsive and take 100% of width and height of container. Also adaptive charts will autoresize if required. Responsiveness implemented with [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+If true, then charts will be responsive and occupy 100% of the container width and height. Adaptive charts will also autoresize if required. Responsiveness implemented with [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
 
-### Interpolation
+### interpolation: {
 
 `settings.interpolation?: InterpolationSetting`
 
@@ -52,7 +52,7 @@ If true then charts will be responsive and take 100% of width and height of cont
 type InterpolationSetting = 'linear' | 'left' | 'right' | 'smooth';
 ```
 
-Interpolation of line curves. Don't confuse it with [data alignment interpolation](#data-alignment)
+Interpolation of line curves Don't confuse it with [data alignment interpolation](./data-processing.md#data-interpolation)
 
 -   `linear` - linear interpolation
     ![Interpolation linear](../../assets/interpolation-linear.png =600x100%)
@@ -63,12 +63,12 @@ Interpolation of line curves. Don't confuse it with [data alignment interpolatio
 -   `right` - right interpolation (next point value)
     ![Interpolation right](../../assets/interpolation-right.png =600x100%)
 
--   `smooth` - smooth interpolation (Bezier's curves interpolation)
+-   `smooth` - smooth interpolation (Bezier curve interpolation)
     ![Interpolation smooth](../../assets/interpolation-smooth.png =600x100%)
 
-### Draw layers order
+### Draw layer order
 
 `settings.drawOrder`
 
-Draw layers order: `'plotLines' | 'axes' | 'series'`.
-By default: `['series', 'axes', 'plotLines']`, which means that axes will be over series, but under plotLines.
+Draw layer order: `'plotLines' | 'axes' | 'series'`.
+By default, `['series', 'axes', 'plotLines']`, which means that axes will be over series but under plotLines.
