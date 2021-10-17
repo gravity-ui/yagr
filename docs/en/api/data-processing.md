@@ -40,7 +40,7 @@ Yagr has a solution. If you're seeing data alignment artifacts, you can set up p
 ```ts
 timeline: [1, 2, 3],
 series: [{
-    name: 'Source',
+    name: 'Source 2',
     data: [1, 'x', 3],
 }],
 processing: {
