@@ -23,7 +23,7 @@ Most options are described in [uPlot axes config](See [axes config in uPlot](htt
 -   `number` - decimal digits count
 -   `'auto'` - automatically calculates minimum correct precision
 
-### PlotLines: [{
+### PlotLines
 
 `axes.plotlines: PlotLineConfig[];`
 
