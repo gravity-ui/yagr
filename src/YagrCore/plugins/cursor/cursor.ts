@@ -50,7 +50,7 @@ export default function CursorPlugin(
     const iValue = processing.interpolation?.value;
 
     const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || 'closest';
-    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues || 'closest' : false;
+    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues ?? 'closest' : false;
 
     let mem: Record<string, HTMLElement> = {};
 
