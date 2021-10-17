@@ -43,7 +43,7 @@ Series type adds extra features to [uPlot series](https://github.com/leeoniya/up
 
 `series.refPoints?: RefPoints` - calculated references points for Yagr plot If they're not provided, Yagr calculates them by itself. Useful in cases when you preload ad process data on the server side and can easily precalculate reference points for Yagr to optimize it somewhat.
 
-### tooltip: {
+### Tooltip
 
 -   `series.formatter?: (value: string | number | null, serie: Series) => string` - formatter for series point values (formatting in tooltip)
 

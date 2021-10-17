@@ -44,7 +44,7 @@ Width in pixels of the minimal permitted range selection.
 
 If true, then charts will be responsive and occupy 100% of the container width and height. Adaptive charts will also autoresize if required. Responsiveness implemented with [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
 
-### interpolation: {
+### Interpolation
 
 `settings.interpolation?: InterpolationSetting`
 
