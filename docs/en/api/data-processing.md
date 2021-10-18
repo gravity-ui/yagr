@@ -2,7 +2,7 @@
 
 ## Problem
 
-Sometimes you have different data sources on different time grid. And when you point them on a single timeline there is data alignment artifacts appearing.
+Sometimes you have different data sources on different time grids. And when you place them on a single timeline, data alignment artifacts appear. As example:
 
 ```
 Source 1: [
@@ -31,16 +31,16 @@ Produces:
 }
 ```
 
-In this example we marked with `x` all artifacts. By default uPlot can handle such input if we replace `x` with undefined and set `spanGaps = true` in series options. But there are problems with stacked areas and columns.
+In this example, we marked all the artifacts with an `x`. By default, uPlot can handle inputs like that if we replace the `x` with undefined and set `spanGaps = true` in the series options. But there are problems with stacked areas and columns and other transformations like normalization. As example: by definition stacks are stacked sum of all Y-values on the given X-point, but if some Y-value is missing it becomes undefined to correctly calculate the sum.
 
 ## Solution
 
-So Yagr has solution. If you have data alignment artifacts you can setup processing options:
+Yagr has a solution. If you're seeing data alignment artifacts, you can set up processing options:
 
 ```ts
 timeline: [1, 2, 3],
 series: [{
-    name: 'Source',
+    name: 'Source 2',
     data: [1, 'x', 3],
 }],
 processing: {
@@ -51,17 +51,17 @@ processing: {
 }
 ```
 
-Will produce chart where data `[1, 'x', 3]` will be rendered as `[1, 2, 3]` by linear interpolation type of initial value `'x'`.
+This will produce a chart where the data set `[1, 'x', 3]` will be rendered as `[1, 2, 3]` by linear interpolation of the initial value `'x'`.
 
 -   `yagr.config.processing`
 
-    for data transformations before options generation and rendering. If this section is empty, than Yagr just skips [processing stage](./lifecycle.md#lifecycle-stages)
+    for data transformations before generating options and rendering. If this section is empty, Yagr skips the [processing stage](./lifecycle.md#lifecycle-stages)
 
 ### Null values
 
 -   `nullValues: Record<string, string | null>`
 
-Map of string values which Yagr will replace with `null` in resulting series but will show given string value (or null) in tooltip. For instance it's usefull to show Infinity values of asymptotic growth:
+This is a map of string values Yagr will replace with `null` in the resulting series while show the given string value (or null) in a tooltip. For instance, showing Infinity values of asymptotic growth can be useful:
 
 ![Null values](../../assets/null-values.png =600x100%)
 
@@ -69,8 +69,8 @@ Config:
 
 ```
 module.exports = {
-    "timeline": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
-    "series": [{
+    timeline: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+    series: [{
         "data": [1, 100, 1000, 10000, '+inf', 10000, 1000, 100, 1],
         "color": "red"
     }],
@@ -88,9 +88,8 @@ Interpolation options define how to transform data alignment artifacts.
 
 ### Interpolation
 
--   `interpolation.value`- value in series `data` field which will been replaced with interpolated value.
-
--   `interpolation.type`- type of interpolation. Examples are given for dataset:
+-   `interpolation.value`- the value in series `data` field that will been replaced with an interpolated value.
+-   `interpolation.type`- the type of interpolation. Examples are given for dataset:
 
 ```js
 ['x', 2, 'x', 'x', 4, 'x'];
@@ -99,20 +98,20 @@ Interpolation options define how to transform data alignment artifacts.
 -   `linear` - use simple linear interpolation between two points.
     ![Linear](../../assets/proc-linear.png "proc-linear" =600x100%)
 
--   `left` - takes previous point's value if given point is not last one
+-   `left` - take the previous point's value if the given point is not the last one
     ![Left](../../assets/proc-left.png "proc-left" =600x100%)
 
--   `previous` - takes previous point's value
+-   `previous` - take the previous point's value
     ![Previous](../../assets/proc-previous.png "proc-previous" =600x100%)
 
--   `right` - takes next point's value if given point is not first on
-    ![Right](../../assets/proc-right.png "proc-right" =600x100%)
+-   `right` - take the next point's value if the given point is not the first one ![Right](../../assets/proc-right.png "proc-right" =600x100%)
 
--   `next` - takes next point's value
+-   `next` - take the next point's value
     ![Next](../../assets/proc-next.png "proc-next" =600x100%)
 
--   `closest` - takes closest point's value
+-   `closest` - take the closest point's value
     ![Closest](../../assets/proc-closest.png "proc-closest" =600x100%)
 
--   `<your value>` - replace value with yours
-    ![Given value](../../assets/proc-const.png "proc-const" =600x100%)
+-   `<your value>` - replace the value with your own ![Given value](../../assets/proc-const.png "proc-const" =600x100%)
+
+-   `interpolation.snapToValues?: SnapToValues | false` - option to define which values take for missing data. See [cursor value snapping](./cursor.md#value-snapping)

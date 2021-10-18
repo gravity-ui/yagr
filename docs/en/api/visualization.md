@@ -1,6 +1,6 @@
 # Visualization types
 
-Yagr support 4 timeseries vizualization types:
+Yagr supports four timeseries visualization types:
 
 ## Line
 
@@ -10,7 +10,7 @@ Yagr support 4 timeseries vizualization types:
 
 ## Area
 
-Areas are lines filled area under the line. If two areas overlaping with the lowest series index will be on background.
+Areas are filled-in spaces between lines. If two areas are overlapping with the lowest series, the index will be in the background.
 
 -   `'area'`
 
@@ -30,7 +30,7 @@ Areas are lines filled area under the line. If two areas overlaping with the low
 
 ## Configuration
 
-You can configure chart type for whole chart:
+You can configure a chart type for whole charts:
 
 ```js
 chart: {
@@ -50,4 +50,4 @@ series: [
 ]
 ```
 
-Keep in mind that Yagr draws first series from the last one to the first, so if you render non-transparent area at first, it can overlap other series. Be careful.
+Keep in mind that Yagr draws the first series from the last to the first, so if you render a non-transparent area first, it might overlap other series. Be careful.

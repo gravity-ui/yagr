@@ -1,7 +1,7 @@
 ## Tooltip
 
-Yagr has default legend tooltip. By default it has pretty simple renderer, but you can easy implement your own renderer.
-Most of tooltip options are typeof `PerScale`, which means that it could be `value` or `{scale: value}`. You can see example of multi-scale tooltip on picture:
+Yagr has a default legend tooltip. It has a simple renderer built in, though you can also easily implement your own.
+Most tooltip options are the `PerScale` type, which means that they could be `value` or `{scale: value}`. You can see an example of a multi-scale tooltip in this picture:
 
 ![Tooltip exanple](../../assets/tooltip-scales.png =600x100%)
 
@@ -46,14 +46,13 @@ Configuration for this example:
 ### General
 
 -   `tooltip.enabled: boolean` - enable tooltip
--   `tooltip.maxLines: PerScale<number> = 10;` - maximum count of lines per scale in tooltip
--   `tooltip.sum: PerScale<boolean> = false` - should show `Sum` row in tooltip
--   `tooltip.sort?: PerScale<SortFn>` - rows comparator function.
--   `tooltip.pinable: boolean` - is tooltip pinable.
--   `hideNoData?: PerScale<boolean>` - should hide rows if Y value is equal to `null`
--   `tooltip.precision?: PerScale<number>` - decimals count in numbers when formatting in tooltip.
-
--   `tooltip.value: PerScale<ValueFormatter>`- formatter for line values.
+-   `tooltip.maxLines: PerScale<number> = 10;` - maximum number of lines per scale in the tooltip
+-   `tooltip.sum: PerScale<boolean> = false` - show the `Sum` row in the tooltip
+-   `tooltip.sort?: PerScale<SortFn>` - row comparator
+-   `tooltip.pinable: boolean` - is tooltip pinable
+-   `hideNoData?: PerScale<boolean>` - hide rows if the Y value is equal to `null`
+-   `tooltip.precision?: PerScale<number>` - decimals count in numbers when formatting in the tooltip
+-   `tooltip.value: PerScale<ValueFormatter>`- formatter for line values
 
 ```ts
 type ValueFormatter = (value: string | number | null, precision?: number) => string;
@@ -65,26 +64,23 @@ type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
 ### Tracking
 
--   `tooltip.highlight: PerScale<boolean>` - should highlight **active** line in tooltip.
--   `tooltip.tracking`- tracking is a function which calculates **active** line index. Available next options:
+-   `tooltip.highlight: PerScale<boolean>` - highlight the **active** line in the tooltip
+-   `tooltip.tracking`- tracking is a function that calculates the **active** line index Next available options:
 
-1.  `'sticky'` - finds closest line index
-2.  `'area'` - finds overlaped by cursor area's index
-3.  `(section: TooltipSection, y: number) => number | null` - custom function which gives cursor Y value and list of Y values of lines. Should return active line index or null
+1. `'sticky'` - find the closest line index
+2. `'area'` - find the index overlapping the cursor area
+3. `(y: number, ranges: (number | null | string)[]) => number | null` - a custom function that gives the cursor Y value and a list of Y line values Return the active line index or null
 
 ### Render
 
--   `tooltip.render: (data: TooltipRenderOptions) => string` - tooltip renderer. See [TooltipRenderOptions](#custom-renderer)
-
--   `tooltip.showIndicies: PerScale<boolean>` - should show indicies in tooltip rows.
-
--   `tooltip.percent?: PerScale<boolean>` - **Not implemented** Should show percents in tooltip rows
-
--   `tooltip.boundClassName?: string` - CSS selector to find element in which tooltip will be rendered (visualy, not in DOM)
+-   `tooltip.render: (data: TooltipRenderOptions) => string` - tooltip renderer See [TooltipRenderOptions](#custom-renderer)
+-   `tooltip.showIndicies: PerScale<boolean>` - show indices in tooltip rows
+-   `tooltip.percent?: PerScale<boolean>` - **Not implemented** show percentages in tooltip rows
+-   `tooltip.boundClassName?: string` - an CSS selector that finds the element in which the tooltip will be rendered (visually, not in DOM)
 
 #### Custom renderer
 
-You can replace native tooltip render with your own renderer wich accepts `TooltipRenderOptions` type.
+You can replace the native tooltip renderer with a renderer of your own that accepts the `TooltipRenderOptions` type.
 
 ```ts
 type TooltipRow = {
