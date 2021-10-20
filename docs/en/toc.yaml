@@ -20,6 +20,8 @@ items:
                   href: ./api/settings.md
                 - name: Cursor
                   href: ./api/cursor.md
+                - name: Markers
+                  href: ./api/markers.md
                 - name: uPlot
                   href: ./api/uplot.md
                 - name: Data processing
