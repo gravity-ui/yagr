@@ -6,7 +6,7 @@ docs-viewer:
     project-name: yagr
     logo-title: Yagr
     favicon-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/yagr.svg
-    logo-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/docslogo.svg
-    logo-dark-src: https://raw.githubusercontent.com/yandex-cloud/yagr/master/docs/assets/docslogo-dark.svg
+    logo-src: https://storage.yandexcloud.net/docs-external/yagr/_images/docslogo.svg
+    logo-dark-src: https://storage.yandexcloud.net/docs-external/yagr/_images/docslogo-dark.svg
     github-url-prefix: https://github.com/yandex-cloud/yagr/tree/master/docs
     no-index: true
