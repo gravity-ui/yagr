@@ -248,7 +248,7 @@ const interpolateImpl = (
             break;
         }
         case 'left': {
-            result = iGroup[iGroup.length - 1] === timeline.length - 1 ? null : y1;
+            result = iGroup[iGroup.length - 1] === timeline.length - 1 || y2 === null ? null : y1;
             break;
         }
         case 'right': {
