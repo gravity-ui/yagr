@@ -127,7 +127,7 @@ describe('utils:preprocess', () => {
                         type: 'left',
                     },
                 }),
-            ).toEqual([[100, 100, null, 0]]);
+            ).toEqual([[100, null, null, 0]]);
 
             expect(
                 preprocess([[100, null, 'x', 0]], [1, 2, 3, 4], {
