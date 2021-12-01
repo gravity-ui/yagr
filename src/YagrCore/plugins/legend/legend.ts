@@ -317,7 +317,7 @@ export default class Legend {
 
     private createIconLineElement(serie: Series) {
         const iconLineElement = document.createElement('span');
-                    
+
         iconLineElement.classList.add('yagr-legend__icon', `yagr-legend__icon_${serie.type}`);
         iconLineElement.style.backgroundColor = serie.color;
 
@@ -341,9 +341,8 @@ export default class Legend {
             series.push(uplotOptions.series[i]);
         }
 
-        const content = series 
+        const content = series
             .map((serie, index) => {
-
                 let idx, content;
 
                 if (typeof serie === 'string') {
@@ -353,7 +352,7 @@ export default class Legend {
                     const icon = this.createIconLineElement(serie);
                     const name = this.createSerieNameElement(serie);
 
-                    idx = index;
+                    idx = index + 1;
                     content = `${icon.outerHTML}${name.outerHTML}`;
                 }
 
