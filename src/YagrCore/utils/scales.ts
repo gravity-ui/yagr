@@ -1,7 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
-import {DEFAULT_MAX_TICKS, DEFAULT_Y_AXIS_OFFSET, DEFAULT_SCALE_MIN_RANGE} from '../defaults';
 import {YagrConfig, Scale, RefPoints} from '../types';
+import {
+    DEFAULT_MAX_TICKS,
+    DEFAULT_Y_AXIS_OFFSET,
+    DEFAULT_SCALE_MIN_RANGE,
+    DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE,
+} from '../defaults';
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
@@ -59,7 +64,13 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
 
         /** Protect logarithmic scale from impossible min values */
         if (scale.type === 'logarithmic') {
-            min = Math.max(min, 1);
+            const isScaleMinDefined = typeof scale.min === 'number';
+
+            if (min <= 0) {
+                min = DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE;
+            } else if (!isScaleMinDefined) {
+                min = Math.min(min, DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE);
+            }
         }
 
         if (min >= max || max <= min) {
