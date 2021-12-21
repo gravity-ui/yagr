@@ -333,26 +333,31 @@ export default class Legend {
     }
 
     private renderItems(uplotOptions: Options) {
-        const title = getPrependingTitle(this.yagr.i18n, uplotOptions.series);
+        type SeriesRenderData = {
+            series: string | Series;
+            idx: number;
+        };
 
-        const series: (string | Series)[] = title ? [title] : [];
+        const title = getPrependingTitle(this.yagr.i18n, uplotOptions.series);
+        const series: SeriesRenderData[] = title ? [{series: title, idx: ALL_SERIES_IDX}] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
-            series.push(uplotOptions.series[i]);
+            series.push({
+                series: uplotOptions.series[i],
+                idx: i,
+            });
         }
 
         const content = series
-            .map((serie, index) => {
-                let idx, content;
+            .map(({series: serie, idx}) => {
+                let content;
 
                 if (typeof serie === 'string') {
-                    idx = ALL_SERIES_IDX;
                     content = serie;
                 } else {
                     const icon = this.createIconLineElement(serie);
                     const name = this.createSerieNameElement(serie);
 
-                    idx = index + 1;
                     content = `${icon.outerHTML}${name.outerHTML}`;
                 }
 
