@@ -1,5 +1,7 @@
 ### master
 
+### 1.3.8 (26-01-2022)
+
 #### Processing
 
 -   Fixed normalization in case of row sum equals zero
