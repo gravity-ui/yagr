@@ -1,20 +1,40 @@
 ### master
 
+#### Processing
+
+-   Fixed normalization in case of row sum equals zero
+
 ### 1.3.7 (21-12-2021)
+
+#### Scales
+
+-   Properly define logarithmic scale values
+
+#### Legend
+
+-   Fixed legend series toggle
 
 ### 1.3.6 (02-12-2021)
 
+#### Legend
+
+-   Fixed legend items' `seried-idx` attribute
+
 ### 1.3.5 (30-11-2021)
+
+#### Processing
+
+-   Fixed `left` interpolation
 
 ### 1.3.4 (13-10-2021)
 
 #### Tooltip
 
-- Properly render serie name by escaping html
+-   Properly render serie name by escaping html
 
 #### Legend
 
-- Fix a problem with quoted series names
+-   Fix a problem with quoted series names
 
 ### 1.3.3 (11-10-2021)
 
