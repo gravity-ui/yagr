@@ -645,7 +645,7 @@ class Yagr {
 
                 if (scaleConfig.normalize) {
                     const sum = getSumByIdx(series, this.options.series, idx, scale);
-                    value = (value / sum) * (scaleConfig.normalizeBase || 100);
+                    value = sum && (value / sum) * (scaleConfig.normalizeBase || 100);
 
                     serieOptions.normalizedData = serieOptions.normalizedData || [];
                     serieOptions.normalizedData[idx] = value;
