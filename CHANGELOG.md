@@ -1,5 +1,10 @@
 ### master
 
+#### Hooks
+
+-   Add new parameter `chart` into the `onSelect` hook
+-   use `timeMultiplier` to correctly evaluate `from` and `to` values
+
 ### 1.3.8 (26-01-2022)
 
 #### Processing
