@@ -98,7 +98,7 @@ type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C
 
 export interface YagrHooks extends Hooks.Arrays {
     load?: Handler<{chart: Yagr; meta: YagrMeta}>;
-    onSelect?: Handler<{from: number; to: number}>;
+    onSelect?: Handler<{from: number; to: number; chart: Yagr}>;
     error?: Handler<{type: YagrState['stage']; error: Error; yagr: Yagr}>;
     processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
     inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;

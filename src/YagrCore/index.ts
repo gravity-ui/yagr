@@ -522,10 +522,12 @@ class Yagr {
         options.hooks.setSelect.push((u: UPlot) => {
             const {left, width} = u.select;
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
+            const {timeMultiplier = 1} = config.settings;
 
             this.execHooks(config.hooks.onSelect, {
-                from: Math.ceil(_from * 1000),
-                to: Math.ceil(_to * 1000),
+                from: Math.ceil(_from / timeMultiplier),
+                to: Math.ceil(_to / timeMultiplier),
+                chart: this,
             });
 
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
