@@ -1,5 +1,7 @@
 ### master
 
+### 1.4.0 (11-02-2022)
+
 #### Hooks
 
 -   Add new parameter `chart` into the `onSelect` hook
