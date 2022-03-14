@@ -96,14 +96,22 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
 
 type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
 
+export type LoadHandlerArg = {chart: Yagr; meta: YagrMeta;};
+export type OnSelectHandlerArg = {from: number; to: number; chart: Yagr;};
+export type ErrorHandlerArg = {type: YagrState['stage']; error: Error; yagr: Yagr;};
+export type ProcessedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>;};
+export type InitedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'initTime'>};
+export type DisposeHandlerArg = Yagr;
+export type ResizeHandlerArg = ResizeObserverEntry[];
+
 export interface YagrHooks extends Hooks.Arrays {
-    load?: Handler<{chart: Yagr; meta: YagrMeta}>;
-    onSelect?: Handler<{from: number; to: number; chart: Yagr}>;
-    error?: Handler<{type: YagrState['stage']; error: Error; yagr: Yagr}>;
-    processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
-    inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
-    dispose?: Handler<Yagr>;
-    resize?: Handler<ResizeObserverEntry[]>;
+    load?: Handler<LoadHandlerArg>;
+    onSelect?: Handler<OnSelectHandlerArg>;
+    error?: Handler<ErrorHandlerArg>;
+    processed?: Handler<ProcessedHandlerArg>;
+    inited?: Handler<InitedHandlerArg>;
+    dispose?: Handler<DisposeHandlerArg>;
+    resize?: Handler<ResizeHandlerArg>;
 }
 
 export interface ProcessingInterpolation {
