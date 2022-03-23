@@ -152,7 +152,7 @@ class Yagr {
 
             this.utils = {
                 colors: colorParser,
-                i18n: i18n(settings.locale || 'ru'),
+                i18n: i18n(settings.locale || 'en'),
                 theme: new ThemedDefaults(colorParser),
             };
 
