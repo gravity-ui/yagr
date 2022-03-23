@@ -1,5 +1,5 @@
 import UPlot from 'uplot';
-import {theme} from '../defaults';
+import type ThemedDefaults from '../defaults';
 
 const DEFAULT_SHADE_COLOR = [0, 0, 0, 0.6];
 
@@ -64,9 +64,7 @@ export default class ColorParser {
     }
 }
 
-export const colorParser = new ColorParser();
-
-export const getSerieFocusColors = (color: string) => {
+export const getSerieFocusColors = (theme: ThemedDefaults, colorParser: ColorParser, color: string) => {
     const shift = theme.SHIFT;
     const mainColor = ColorParser.parseRgba(color) || DEFAULT_SHADE_COLOR;
     const modified = colorParser.shade(mainColor, shift);

@@ -74,6 +74,7 @@ export type TooltipPlugin = {
     show(): void;
     hide(): void;
     uplot: Plugin;
+    updateOptions: (o: Partial<TooltipOptions>) => void;
 };
 
 /*
@@ -485,12 +486,18 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         },
     };
 
+    function updateOptions(newOptions: Partial<TooltipOptions>) {
+        Object.assign(opts, newOptions);
+        tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
+    }
+
     return {
         state,
         pin,
         show,
         hide,
         uplot: uPlotPlugin,
+        updateOptions,
     };
 }
 

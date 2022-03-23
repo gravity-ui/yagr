@@ -1,7 +1,7 @@
 import UPlot, {Plugin} from 'uplot';
 
-import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../../defaults';
-import {MarkersOptions} from '../../types';
+import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
+import {YagrConfig} from '../../types';
 
 const renderCircle = (
     u: UPlot,
@@ -32,9 +32,9 @@ const renderCircle = (
 };
 
 export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: number) {
-    const {color, scale, spanGaps, _valuesCount} = u.series[i];
+    const {color, scale, spanGaps, count} = u.series[i];
 
-    if (spanGaps && _valuesCount > 1) {
+    if (spanGaps && count > 1) {
         return false;
     }
 
@@ -65,13 +65,17 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
 /*
  * This plugin configures points markers
  */
-export default function MarkersPlugin(opts: MarkersOptions): Plugin {
-    const {size = 4, strokeWidth = 2, strokeColor = '#ffffff'} = opts;
+export default function YagrMarkersPlugin(config: YagrConfig): Plugin {
+    const {size = DEFAULT_POINT_SIZE, strokeWidth = 2, strokeColor = '#ffffff', show} = config.markers;
+    const defaultDotsSize = config.chart.pointsSize || DEFAULT_POINT_SIZE;
 
     function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
-        const {scale, _focus, _color, _modifiedColor, color} = u.series[i];
+        const {scale, _focus, _color, _modifiedColor, color, type} = u.series[i];
 
         let j = i0;
+
+        // eslint-disable-next-line no-nested-ternary
+        const pointSize = type === 'dots' ? (show ? size : defaultDotsSize) : size;
 
         while (j <= i1) {
             const val = u.data[i][j];
@@ -80,7 +84,7 @@ export default function MarkersPlugin(opts: MarkersOptions): Plugin {
                     u,
                     u.data[0][j] as number,
                     val as number,
-                    size,
+                    pointSize,
                     strokeWidth,
                     (_focus || _focus === null ? _color : _modifiedColor) || color,
                     strokeColor,
@@ -95,6 +99,10 @@ export default function MarkersPlugin(opts: MarkersOptions): Plugin {
 
     return {
         opts: (_, opts) => {
+            if (!config.markers.show || opts.series.every((s) => s.type !== 'dots')) {
+                return;
+            }
+
             opts.series.forEach((s, i) => {
                 if (i > 0) {
                     s.points = s.points || {};
@@ -103,6 +111,17 @@ export default function MarkersPlugin(opts: MarkersOptions): Plugin {
             });
         },
 
-        hooks: {},
+        hooks: {
+            setSeries: (_, idx, series) => {
+                if (idx === 0) {
+                    return;
+                }
+
+                if (series.type === 'dots' || config.markers.show) {
+                    series.points = series.points || {};
+                    series.points.show = drawCircles;
+                }
+            },
+        },
     };
 }

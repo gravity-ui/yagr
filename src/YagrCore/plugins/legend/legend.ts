@@ -34,7 +34,7 @@ const hasOneVisibleLine = (series: Series[]) => {
     return series.some(({show, id}) => id !== DEFAULT_X_SERIE_NAME && show);
 };
 
-const getPrependingTitle = (i18n: Yagr['i18n'], series: Series[]) => {
+const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
     return series.length > 3 && i18n(hasOneVisibleLine(series) ? 'hide-all' : 'show-all');
 };
 
@@ -150,7 +150,7 @@ export default class Legend {
             const allSeriesItem = u.root.querySelector(`[data-serie-idx="${ALL_SERIES_IDX}"]`);
 
             if (allSeriesItem) {
-                const title = getPrependingTitle(this.yagr.i18n, u.series);
+                const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
                 allSeriesItem.innerHTML = title || '';
             }
         };
@@ -338,7 +338,7 @@ export default class Legend {
             idx: number;
         };
 
-        const title = getPrependingTitle(this.yagr.i18n, uplotOptions.series);
+        const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
         const series: SeriesRenderData[] = title ? [{series: title, idx: ALL_SERIES_IDX}] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {

@@ -82,6 +82,6 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "uplot": "1.6.15"
+    "uplot": "1.6.19"
   }
 }

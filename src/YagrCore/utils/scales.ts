@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import UPlot, {Range} from 'uplot';
-import {YagrConfig, Scale, RefPoints} from '../types';
+import {YagrConfig, Scale} from '../types';
 import {
     DEFAULT_MAX_TICKS,
     DEFAULT_Y_AXIS_OFFSET,
@@ -10,11 +10,11 @@ import {
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
-export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined, config: YagrConfig) => {
+export const getScaleRange = (scale: Scale, config: YagrConfig) => {
     const range = scale.range;
     if (typeof range === 'function') {
         return (u: UPlot, dataMin: number, dataMax: number) => {
-            return range(u, dataMin, dataMax, getRefs(), config);
+            return range(u, dataMin, dataMax, config);
         };
     }
 
@@ -42,10 +42,7 @@ export const getScaleRange = (scale: Scale, getRefs: () => RefPoints | undefined
             throw new Error(`Unknown scale range type ${scale.range}`);
     }
 
-    return (_: UPlot, dataMin: number, dataMax: number): Range.MinMax => {
-        const refs = getRefs() || {};
-        const dMin = dataMin === null ? refs.min || 0 : dataMin;
-        const dMax = dataMax === null ? refs.max || 100 : dataMax;
+    return (_: UPlot, dMin: number, dMax: number): Range.MinMax => {
         let {min, max} = rangeFn(dMin, dMax, scale, config);
 
         const minRange = scale.minRange || DEFAULT_SCALE_MIN_RANGE;

@@ -1,6 +1,6 @@
 import uPlot, {Padding} from 'uplot';
 import {YagrTheme} from './types';
-import {colorParser} from './utils/colors';
+import type ColorParser from './utils/colors';
 
 export const DEFAULT_X_SERIE_NAME = 'date';
 export const DEFAULT_X_SCALE = 'x';
@@ -11,6 +11,7 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 export const DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE = 0.001;
+export const DEFAULT_POINT_SIZE = 4;
 
 export const DEFAULT_SYNC_KEY = 'sync';
 export const DEFAULT_TITLE_FONT_SIZE = 14;
@@ -132,11 +133,13 @@ export const MIN_SELECTION_WIDTH = 15;
 const LIGHTEN_COLOR_SHIFT = 0.68;
 const DARKEN_COLOR_SHIFT = -0.6;
 
-class ThemedDefaults {
+export default class ThemedDefaults {
     theme?: YagrTheme;
+    colors: ColorParser;
 
-    constructor(theme: YagrTheme = 'light') {
+    constructor(colors: ColorParser, theme: YagrTheme = 'light') {
         this.setTheme(theme);
+        this.colors = colors;
     }
 
     setTheme(theme: YagrTheme) {
@@ -144,7 +147,11 @@ class ThemedDefaults {
     }
 
     get GRID() {
-        return {show: true, stroke: colorParser.parse('--yagr-grid'), width: 1};
+        return {
+            show: true,
+            stroke: () => this.colors.parse('--yagr-grid'),
+            width: 1,
+        };
     }
 
     get X_AXIS_TICKS() {
@@ -156,11 +163,11 @@ class ThemedDefaults {
     }
 
     get AXIS_STROKE() {
-        return colorParser.parse('--yagr-axis-stroke');
+        return this.colors.parse('--yagr-axis-stroke');
     }
 
     get BACKGROUND() {
-        return colorParser.parse('--yagr-background');
+        return this.colors.parse('--yagr-background');
     }
 
     get SHIFT() {
@@ -171,8 +178,6 @@ class ThemedDefaults {
         return this.theme === 'light' ? LIGHT_DEFAULT_LINE_COLOR : DARK_DEFAULT_LINE_COLOR;
     }
 }
-
-export const theme = new ThemedDefaults();
 
 export const TOOLTIP_Y_OFFSET = 24;
 export const TOOLTIP_X_OFFSET = 24;

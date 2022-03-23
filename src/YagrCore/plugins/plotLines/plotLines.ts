@@ -1,7 +1,7 @@
+import type Yagr from '../../';
 import UPlot, {DrawOrderKey} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../defaults';
-import {PlotLineConfig, YagrConfig} from '../../types';
-import {colorParser} from '../../utils/colors';
+import {PlotLineConfig} from '../../types';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
@@ -23,12 +23,12 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
  */
-export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConfig[] = []) {
+export default function plotLinesPlugin(yagr: Yagr, plotLines: PlotLineConfig[] = []) {
     const thresholds: Record<string, PlotLineConfig[]> = {};
 
-    const drawIndicies = (cfg.settings.drawOrder ? cfg.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join(
-        '',
-    );
+    const drawIndicies = (
+        yagr.config.settings.drawOrder ? yagr.config.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]
+    ).join('');
 
     const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
@@ -44,7 +44,7 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
             }
 
             ctx.save();
-            ctx.fillStyle = colorParser.parse(plotLineConfig.color);
+            ctx.fillStyle = yagr.utils.colors.parse(plotLineConfig.color);
 
             const {scale, value} = plotLineConfig;
 

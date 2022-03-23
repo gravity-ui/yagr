@@ -1,6 +1,6 @@
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
-
+import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
@@ -90,16 +90,19 @@ export const getTimeFormatter = (config: YagrConfig) => {
 };
 
 // eslint-disable-next-line complexity
-export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
+export function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
+    const theme = yagr.utils.theme;
+    const config = yagr.config;
+
     const axis: Axis = {
         show: typeof axisConfig.show === 'undefined' ? true : axisConfig.show,
         label: axisConfig.label || undefined,
         labelSize: axisConfig.labelSize || defaults.Y_AXIS_LABEL_SIZE,
         labelFont: axisConfig.labelFont || defaults.AXIS_LABEL_FONT,
         font: axisConfig.font || defaults.AXIS_VALUES_FONT,
-        stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
-        ticks: axisConfig.ticks ? {...defaults.theme.Y_AXIS_TICKS, ...axisConfig.ticks} : defaults.theme.Y_AXIS_TICKS,
-        grid: config.grid || axisConfig.grid || defaults.theme.GRID,
+        stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
+        ticks: axisConfig.ticks ? {...theme.Y_AXIS_TICKS, ...axisConfig.ticks} : theme.Y_AXIS_TICKS,
+        grid: config.grid || axisConfig.grid || theme.GRID,
     };
 
     if (axisConfig.scale === defaults.DEFAULT_X_SCALE) {
@@ -107,14 +110,13 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
             gap: axisConfig.gap ?? defaults.X_AXIS_TICK_GAP,
             size: axisConfig.size || defaults.X_AXIS_SIZE,
             values: axisConfig.values || getTimeFormatter(config),
-            ticks: axisConfig.ticks
-                ? {...defaults.theme.X_AXIS_TICKS, ...axisConfig.ticks}
-                : defaults.theme.X_AXIS_TICKS,
+            ticks: axisConfig.ticks ? {...theme.X_AXIS_TICKS, ...axisConfig.ticks} : theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
-            space: axisConfig.space || defaults.X_AXIS_SPACE,
-            incrs: axisConfig.incrs || defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1)),
+            space: axisConfig.space || (() => defaults.X_AXIS_SPACE),
+            incrs:
+                axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1))),
             side: 2,
-            stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
+            stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
         });
     }
 

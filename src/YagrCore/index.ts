@@ -19,12 +19,12 @@ import plotLinesPlugin from './plugins/plotLines/plotLines';
 import {
     YagrConfig,
     RawSerieData,
-    RefPoints,
     RedrawOptions,
     PlotLineConfig,
     YagrHooks,
     DataSeries,
     MinimalValidConfig,
+    YagrTheme,
 } from './types';
 
 import {debounce, genId, getSumByIdx, preprocess} from './utils/common';
@@ -32,16 +32,15 @@ import {getScaleRange} from './utils/scales';
 import {pathsRenderer} from './utils/paths';
 import {getAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
-import {colorParser, getSerieFocusColors} from './utils/colors';
+import ColorParser, {getSerieFocusColors} from './utils/colors';
 import {getSerie} from './utils/series';
 
-import {
+import ThemedDefaults, {
     DEFAULT_X_SCALE,
     DEFAULT_X_SERIE_NAME,
     MIN_SELECTION_WIDTH,
     DEFAULT_FOCUS_ALPHA,
     DEFAULT_CANVAS_PIXEL_RATIO,
-    theme,
     DEFAULT_Y_SCALE,
     DEFAULT_SYNC_KEY,
     DEFAULT_TITLE_FONT_SIZE,
@@ -75,6 +74,11 @@ export interface YagrState {
     stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
 }
 
+interface UpdateOptions {
+    incremental?: boolean;
+    splice?: boolean;
+}
+
 /*
  * Main core-module of Yagr.
  * Implements data processing and autoconfigurable wrapper
@@ -90,11 +94,14 @@ class Yagr {
     config: YagrConfig;
     resizeOb?: ResizeObserver;
     canvas: HTMLCanvasElement;
-    references?: RefPoints;
     plugins: YagrPlugins;
-    sync?: SyncPubSub;
-    i18n: ReturnType<typeof i18n>;
     state: YagrState;
+    utils: {
+        colors: ColorParser;
+        sync?: SyncPubSub;
+        theme: ThemedDefaults;
+        i18n: ReturnType<typeof i18n>;
+    };
 
     private _startTime: number;
     private _meta: Partial<YagrMeta> = {};
@@ -131,47 +138,45 @@ class Yagr {
             pConfig,
         );
 
-        const sync = config.cursor.sync;
-
-        config.chart.type = config.chart.type || 'line';
-
-        this.id = root.id || genId();
-        this.root = root;
-        this.root.classList.add('yagr');
-
-        colorParser.setContext(root);
-
-        this.plugins = {};
-        this.config = config;
-
-        if (sync) {
-            this.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
-        }
-
-        const settings = config.settings;
-
-        if (!settings.adaptive && config.chart.width && config.chart.height) {
-            root.style.width = config.chart.width + 'px';
-            root.style.height = config.chart.height + 'px';
-        }
-
         try {
-            theme.setTheme(settings.theme || 'light');
-            root.classList.remove('yagr_theme_dark');
-            root.classList.remove('yagr_theme_light');
-            root.classList.add('yagr_theme_' + theme.theme);
-            this.i18n = i18n(settings.locale || 'en');
+            const sync = config.cursor.sync;
+            const settings = config.settings;
+
+            config.chart.type = config.chart.type || 'line';
+
+            this.id = root.id || genId();
+            this.root = root;
+            this.root.classList.add('yagr');
+
+            const colorParser = new ColorParser();
+
+            this.utils = {
+                colors: colorParser,
+                i18n: i18n(settings.locale || 'ru'),
+                theme: new ThemedDefaults(colorParser),
+            };
+
+            colorParser.setContext(root);
+
+            this.plugins = {};
+            this.config = config;
+
+            if (sync) {
+                this.utils.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
+            }
+
+            if (!settings.adaptive && config.chart.width && config.chart.height) {
+                root.style.width = config.chart.width + 'px';
+                root.style.height = config.chart.height + 'px';
+            }
+
+            this.setTheme(settings.theme || 'light');
 
             const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};
             this.options = config.editUplotOptions ? config.editUplotOptions(options) : options;
         } catch (error) {
-            this.execHooks(config.hooks.error, {
-                type: 'config',
-                error,
-                chart: this,
-            });
-            throw error;
+            throw this.onError(error);
         }
 
         this.state.stage = 'processing';
@@ -180,12 +185,7 @@ class Yagr {
             const series = this.transformSeries();
             this.series = series;
         } catch (error) {
-            this.execHooks(config.hooks.error, {
-                type: 'processing',
-                error,
-                chart: this,
-            });
-            throw error;
+            throw this.onError(error);
         }
 
         this.plugins.legend = new LegendPlugin(this, config.legend);
@@ -196,12 +196,7 @@ class Yagr {
             this.uplot = new UPlot(this.options, this.series, this.initRender);
             this.canvas = root.querySelector('canvas') as HTMLCanvasElement;
         } catch (error) {
-            this.execHooks(config.hooks.error, {
-                type: 'uplot',
-                error,
-                chart: this,
-            });
-            throw error;
+            throw this.onError(error);
         }
 
         this.init();
@@ -217,6 +212,24 @@ class Yagr {
         });
 
         this.state.stage = 'render';
+    }
+
+    setLocale(locale: string | Record<string, string>) {
+        this.utils.i18n = i18n(locale);
+        this.plugins.legend?.redraw();
+    }
+
+    setTheme(themeValue: YagrTheme) {
+        this.utils.theme.setTheme(themeValue);
+        this.root.classList.remove('yagr_theme_dark');
+        this.root.classList.remove('yagr_theme_light');
+        this.root.classList.add('yagr_theme_' + themeValue);
+
+        if (!this.uplot) {
+            return;
+        }
+
+        this.redraw({axes: true, series: false});
     }
 
     redraw(options: RedrawOptions) {
@@ -260,11 +273,115 @@ class Yagr {
     }
 
     subscribe() {
-        this.sync?.sub(this.uplot);
+        this.utils.sync?.sub(this.uplot);
     }
 
     unsubscribe() {
-        this.sync?.unsub(this.uplot);
+        this.utils.sync?.unsub(this.uplot);
+    }
+
+    setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions) {
+        const updateFns: (() => void)[] = [];
+
+        if (options.incremental) {
+            this.config.timeline.push(...timeline);
+            series.forEach((serie) => {
+                const newSeriesPrep = getSerie(serie, this, this.config.series.length);
+                const newSeries = this.configureSeries(newSeriesPrep);
+
+                const matched = this.config.series.find(({id}) => id === newSeries.id);
+
+                if (matched) {
+                    const {data, ...rest} = serie;
+                    matched.data = matched.data.concat(data);
+
+                    // @TODO Check changes in series config
+                    Object.assign(matched, rest);
+                } else {
+                    updateFns.push(() => {
+                        this.uplot.addSeries(newSeries, this.config.series.length);
+                    });
+                    this.config.series.push(serie);
+                }
+            });
+
+            if (options.splice) {
+                const sliceLength = series[0].data.length;
+                this.config.series.forEach((s) => {
+                    s.data.splice(0, sliceLength);
+                });
+                this.config.timeline.splice(0, timeline.length);
+            }
+        } else {
+            // full redraw
+        }
+
+        const newData = this.transformSeries();
+        updateFns.push(() => {
+            this.uplot.setData(newData);
+        });
+
+        updateFns.forEach((fn) => fn());
+    }
+
+    private configureAxes(config: YagrConfig) {
+        const axes: UPlot.Axis[] = [];
+
+        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
+            axes.push(getAxis({...axisConfig, scale}, this));
+        });
+
+        if (!config.axes[DEFAULT_X_SCALE]) {
+            axes.push(getAxis({scale: DEFAULT_X_SCALE}, this));
+        }
+
+        if (!axes.find(({scale}) => scale !== DEFAULT_X_SCALE)) {
+            axes.push(getAxis({scale: DEFAULT_Y_SCALE}, this));
+        }
+
+        return axes;
+    }
+
+    private configureSeries(serie: Series): Series {
+        serie.points = serie.points || {};
+
+        const colorFn = getSerieFocusColors(this.utils.theme, this.utils.colors, serie.color);
+
+        serie._color = serie.color;
+        serie._modifiedColor = colorFn.defocusColor;
+
+        if (serie.type === 'area') {
+            serie.fill = colorFn;
+            serie.stroke = getSerieFocusColors(
+                this.utils.theme,
+                this.utils.colors,
+                serie.lineColor || 'rgba(0, 0, 0, 0.2)',
+            );
+            serie.width = serie.lineWidth;
+            serie.points.show = drawMarkersIfRequired;
+        }
+
+        if (serie.type === 'line') {
+            serie.stroke = colorFn;
+            serie.points.show = drawMarkersIfRequired;
+        }
+
+        if (serie.type === 'column') {
+            serie.stroke = colorFn;
+            serie.fill = colorFn;
+            serie.points.show = false;
+        }
+
+        if (serie.type === 'dots') {
+            serie.stroke = serie.color;
+            serie.fill = colorFn;
+            serie.width = 2;
+        }
+
+        serie.interpolation = serie.interpolation || this.config.settings.interpolation || 'linear';
+
+        serie.paths = pathsRenderer;
+        return serie;
     }
 
     /*
@@ -297,7 +414,9 @@ class Yagr {
                     name: '',
                     $c: config.timeline,
                     scale: DEFAULT_X_SCALE,
-                    _valuesCount: config.timeline.length,
+                    count: config.timeline.length,
+                    sum: 0,
+                    avg: 0,
                 },
             ],
             ms: settings.timeMultiplier || 1,
@@ -321,9 +440,9 @@ class Yagr {
             setScale: settings.zoom === undefined ? true : settings.zoom,
         };
 
-        if (this.sync) {
+        if (this.utils.sync) {
             options.cursor.sync = options.cursor.sync || {
-                key: this.sync.key,
+                key: this.utils.sync.key,
             };
         }
 
@@ -333,68 +452,20 @@ class Yagr {
             plugins.push(cPlugin.uplot);
         }
 
-        /** first serie is always X */
-        const seriesOptions = (config.series || []).map((rawSerie: RawSerieData, idx) =>
-            getSerie(rawSerie, config, idx),
-        );
-
-        /* First serie is always X serie */
+        const seriesOptions = (config.series || []).map((rawSerie: RawSerieData, idx) => getSerie(rawSerie, this, idx));
         const resultingSeriesOptions: Series[] = options.series;
 
         /**
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie = seriesOptions[i] || {};
-
-            serie.points = serie.points || {};
-
-            const colorFn = getSerieFocusColors(serie.color);
-
-            serie._color = serie.color;
-            serie._modifiedColor = colorFn.defocusColor;
-
-            if (serie.type === 'area') {
-                serie.fill = colorFn;
-                serie.stroke = getSerieFocusColors(serie.lineColor || 'rgba(0, 0, 0, 0.2)');
-                serie.width = serie.lineWidth;
-                serie.points.show = drawMarkersIfRequired;
-            }
-
-            if (serie.type === 'line') {
-                serie.stroke = colorFn;
-                serie.points.show = drawMarkersIfRequired;
-            }
-
-            if (serie.type === 'column') {
-                serie.stroke = colorFn;
-                serie.fill = colorFn;
-                serie.points.show = false;
-            }
-
-            if (serie.type === 'dots') {
-                serie.stroke = serie.color;
-                serie.fill = colorFn;
-                serie.width = 2;
-                plugins.push(
-                    markersPlugin({
-                        size: config.chart.pointsSize || 4,
-                        ...config.markers,
-                    }),
-                );
-            }
-
-            serie.interpolation = serie.interpolation || settings.interpolation || 'linear';
-
-            serie.paths = pathsRenderer;
+            const serie = this.configureSeries(seriesOptions[i] || {});
             resultingSeriesOptions.push(serie);
         }
 
         /** Setting up markers plugin after default points renderers to be settled */
-        if (config.markers.show) {
-            const markersPluginInstance = markersPlugin(config.markers);
-            plugins.push(markersPluginInstance);
-        }
+        const markersPluginInstance = markersPlugin(config);
+        plugins.push(markersPluginInstance);
 
         options.series = resultingSeriesOptions;
 
@@ -437,7 +508,7 @@ class Yagr {
 
             if (isLogScale) {
                 scale.distr = Scale.Distr.Logarithmic;
-                scale.range = getScaleRange(scaleConfig, () => this.references, config);
+                scale.range = getScaleRange(scaleConfig, config);
 
                 return;
             }
@@ -447,7 +518,7 @@ class Yagr {
                 return;
             }
 
-            scale.range = getScaleRange(scaleConfig, () => this.references, config);
+            scale.range = getScaleRange(scaleConfig, config);
         });
 
         if (!options.scales.x) {
@@ -460,17 +531,7 @@ class Yagr {
         options.axes = options.axes || [];
         const axes = options.axes;
 
-        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-            axes.push(getAxis({...axisConfig, scale}, config));
-        });
-
-        if (!config.axes[DEFAULT_X_SCALE]) {
-            axes.push(getAxis({scale: DEFAULT_X_SCALE}, config));
-        }
-
-        if (!axes.find(({scale}) => scale !== DEFAULT_X_SCALE)) {
-            axes.push(getAxis({scale: DEFAULT_Y_SCALE}, config));
-        }
+        axes.push(...this.configureAxes(config));
 
         const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
         plugins.push(plotLinesPluginInstance);
@@ -495,7 +556,6 @@ class Yagr {
         options.hooks.ready.push(() => {
             const initTime = performance.now() - this._startTime;
             this._meta.initTime = initTime;
-
             this.execHooks(config.hooks.inited, {
                 chart: this,
                 meta: {
@@ -508,7 +568,7 @@ class Yagr {
         options.hooks.drawClear.push((u: UPlot) => {
             const {ctx} = u;
             ctx.save();
-            ctx.fillStyle = theme.BACKGROUND;
+            ctx.fillStyle = this.utils.theme.BACKGROUND;
             ctx.fillRect(
                 DEFAULT_CANVAS_PIXEL_RATIO,
                 DEFAULT_CANVAS_PIXEL_RATIO,
@@ -594,13 +654,6 @@ class Yagr {
             const isStacking = scaleConfig.stacking;
             const sGroup = serieOptions.stackGroup || 0;
 
-            let shouldCalculateRefPoints = false;
-
-            if (!serieOptions.refPoints) {
-                shouldCalculateRefPoints = true;
-                serieOptions.refPoints = {};
-            }
-
             let empty = true;
 
             if (isStacking && !stacks[scale]) {
@@ -613,6 +666,8 @@ class Yagr {
             if (isStacking && !stacks[scale][sGroup]) {
                 stacks[scale][sGroup] = new Array(timeline.length).fill(0);
             }
+
+            serieOptions.count = 0;
 
             for (let idx = 0; idx < serie.length; idx++) {
                 let value = serie[idx];
@@ -665,58 +720,29 @@ class Yagr {
                     value = 1;
                 }
 
-                if (shouldCalculateRefPoints) {
-                    const cv = value || 0;
-                    serieOptions.refPoints.max =
-                        serieOptions.refPoints.max === undefined ? cv : Math.max(serieOptions.refPoints.max, cv);
-                    serieOptions.refPoints.min =
-                        serieOptions.refPoints.min === undefined ? cv : Math.min(serieOptions.refPoints.min, cv);
-                    serieOptions.refPoints.sum = (serieOptions.refPoints.sum || 0) + cv;
-                }
+                serieOptions.sum = (serieOptions.sum || 0) + (value || 0);
 
-                serieOptions._valuesCount += 1;
+                serieOptions.count += 1;
                 dataLine.push(value);
             }
 
-            if (shouldCalculateRefPoints) {
-                serieOptions.refPoints.avg = (serieOptions.refPoints.sum || 0) / serie.length;
-            }
+            serieOptions.avg = (serieOptions.sum || 0) / serieOptions.count;
 
             serieOptions.empty = empty;
             result.unshift(dataLine);
         }
 
-        this.calculateRefPoints();
-
         result.unshift(this.config.timeline);
         return result as UPlotData;
     }
 
-    private calculateRefPoints() {
-        let max,
-            min,
-            sum,
-            count = 0;
-
-        for (const {refPoints} of this.options.series) {
-            if (!refPoints) {
-                continue;
-            }
-            count += refPoints.count || 0;
-            max = max === undefined ? refPoints.max : Math.max(refPoints.max || -Infinity, max);
-            min = min === undefined ? refPoints.min : Math.min(refPoints.min || Infinity, min);
-            sum = sum === undefined ? refPoints.sum : sum + (refPoints.sum || 0);
-        }
-
-        const avg = sum && sum / count;
-
-        this.references = {
-            max,
-            min,
-            sum,
-            avg,
-            count,
-        };
+    private onError(error: unknown) {
+        this.execHooks(this.config.hooks.error, {
+            stage: this.state.stage,
+            error,
+            chart: this,
+        });
+        return error;
     }
 
     private initPlotLinesPlugin(config: YagrConfig) {
@@ -731,7 +757,7 @@ class Yagr {
             }
         });
 
-        const plInstance = plotLinesPlugin(config, plotLines);
+        const plInstance = plotLinesPlugin(this, plotLines);
         this.plugins.plotLines = plInstance;
         return plInstance.uplot;
     }

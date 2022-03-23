@@ -14,9 +14,6 @@ interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
 
     /** Does line have only null values */
     empty?: boolean;
-
-    /** Reference points of series */
-    refPoints?: RefPoints;
 }
 
 declare module 'uplot' {
@@ -24,11 +21,15 @@ declare module 'uplot' {
         id: string;
         color: string;
         name: string;
+        /** Real values count */
+        count: number;
+        /** Values sum */
+        sum: number;
+        /** Average value */
+        avg: number;
 
         /** Current focus state */
         _focus?: boolean | null;
-        /** Real values count */
-        _valuesCount: number;
         /** Is series data transformd */
         _transformed?: boolean;
         _color?: string;
@@ -170,14 +171,6 @@ export type ChartType = 'area' | 'line' | 'column' | 'dots';
 export type DataSeriesExtended = (number | string | null)[];
 export type DataSeries = (number | null)[];
 
-export type RefPoints = {
-    max?: number;
-    min?: number;
-    avg?: number;
-    sum?: number;
-    count?: number;
-};
-
 /**
  * Expected serie config and data format from Chart API
  */
@@ -223,9 +216,6 @@ export interface RawSerieData {
 
     /** Raw data */
     data: DataSeriesExtended;
-
-    /** Calculated references points for Yagr plot. If not provided, Yagr calculates them by itself. */
-    refPoints?: RefPoints;
 
     /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
     showInTooltip?: boolean;
@@ -305,15 +295,7 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?:
-        | ScaleRange
-        | ((
-              u: uPlot,
-              min: number,
-              max: number,
-              ref: RefPoints | undefined,
-              cfg: YagrConfig,
-          ) => [min: number, max: number]);
+    range?: ScaleRange | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
     /** default: 5 */
     maxTicks?: number;

@@ -369,3 +369,21 @@ export function debounce<T extends Array<unknown> = []>(func: (...args: T) => vo
         timer = setTimeout(() => func(...args), timeout);
     };
 }
+
+type Keyed<T extends {}> = {
+    [t in keyof T]: unknown;
+} & T;
+
+export const joinBy = <T extends {}>(a: Keyed<T>[], b: Keyed<T>[], key: keyof T): Keyed<T>[] => {
+    const result = a;
+    b.forEach((item) => {
+        const i = a.find((aI) => aI[key] === item[key]);
+
+        if (i) {
+            Object.assign(i, item);
+        } else {
+            result.push(item);
+        }
+    });
+    return result;
+};
