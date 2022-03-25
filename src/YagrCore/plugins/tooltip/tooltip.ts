@@ -11,7 +11,7 @@ import {DataSeries, ProcessingInterpolation} from '../../types';
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky} from '../../utils/common';
-import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection} from './types';
+import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection, TooltipHandler} from './types';
 
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
@@ -75,6 +75,8 @@ export type TooltipPlugin = {
     hide(): void;
     uplot: Plugin;
     updateOptions: (o: Partial<TooltipOptions>) => void;
+    on: (event: TooltipAction, handler: TooltipHandler) => void;
+    off: (event: TooltipAction, handler: TooltipHandler) => void;
 };
 
 /*
@@ -83,6 +85,16 @@ export type TooltipPlugin = {
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): TooltipPlugin {
     const pSettings = yagr.config.processing || {};
+    const handlers: Record<TooltipAction, TooltipHandler[]> = {
+        init: [],
+        mount: [],
+        show: [],
+        pin: [],
+        unpin: [],
+        hide: [],
+        render: [],
+        destroy: [],
+    };
 
     /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
     let renderTooltipCloses = () => {};
@@ -136,18 +148,17 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
     };
 
     const emit = (action: TooltipAction) => {
-        if (opts.onStateChange) {
-            opts.onStateChange(tOverlay, {
+        handlers[action].forEach((handler) => {
+            handler(tOverlay, {
                 state,
                 actions: {
                     pin,
                     show,
                     hide,
                 },
-                action,
                 yagr,
             });
-        }
+        });
     };
 
     emit('init');
@@ -491,6 +502,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
     }
 
+    function on(event: TooltipAction, handler: TooltipHandler) {
+        handlers[event].push(handler);
+    }
+
+    function off(event: TooltipAction, handler: TooltipHandler) {
+        handlers[event] = handlers[event].filter((h) => h !== handler);
+    }
+
     return {
         state,
         pin,
@@ -498,6 +517,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         hide,
         uplot: uPlotPlugin,
         updateOptions,
+        on,
+        off,
     };
 }
 

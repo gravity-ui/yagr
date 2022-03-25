@@ -1,4 +1,4 @@
-import UPlot, {Plugin} from 'uplot';
+import UPlot, {Plugin, Series} from 'uplot';
 
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
 import {YagrConfig} from '../../types';
@@ -97,30 +97,33 @@ export default function YagrMarkersPlugin(config: YagrConfig): Plugin {
         return undefined;
     }
 
+    const markSeries = (idx: number | null, s: Series) => {
+        if (idx === 0 || idx === null) {
+            return;
+        }
+
+        if (s.type === 'dots' || config.markers.show) {
+            s.points = s.points || {};
+            s.points.show = drawCircles;
+        }
+    };
+
     return {
         opts: (_, opts) => {
-            if (!config.markers.show || opts.series.every((s) => s.type !== 'dots')) {
+            if (!(config.markers.show || opts.series.some((s) => s.type === 'dots'))) {
                 return;
             }
 
-            opts.series.forEach((s, i) => {
-                if (i > 0) {
-                    s.points = s.points || {};
-                    s.points.show = drawCircles;
-                }
-            });
+            opts.series.forEach((s, i) => markSeries(i, s));
         },
 
         hooks: {
+            addSeries: (uplot, seriesIdx) => {
+                const series = uplot.series[seriesIdx];
+                markSeries(seriesIdx, series);
+            },
             setSeries: (_, idx, series) => {
-                if (idx === 0) {
-                    return;
-                }
-
-                if (series.type === 'dots' || config.markers.show) {
-                    series.points = series.points || {};
-                    series.points.show = drawCircles;
-                }
+                markSeries(idx, series);
             },
         },
     };

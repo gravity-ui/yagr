@@ -106,6 +106,7 @@ class Yagr {
     private _startTime: number;
     private _meta: Partial<YagrMeta> = {};
     private _cache: CachedProps;
+    private _isEmptyDataSet = false;
 
     constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
         this._startTime = performance.now();
@@ -324,6 +325,61 @@ class Yagr {
         updateFns.forEach((fn) => fn());
     }
 
+    private configureScales(scales: UPlot.Scales, config: YagrConfig) {
+        const scalesToMap = config.scales ? {...config.scales} : {};
+
+        if (!Object.keys(config.scales).length) {
+            scalesToMap.y = {};
+        }
+
+        Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
+            scales[scaleName] = scales[scaleName] || {};
+            const scale = scales[scaleName];
+
+            if (scaleName === DEFAULT_X_SCALE) {
+                return;
+            }
+
+            const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
+            const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
+
+            /** At first handle case when scale has setted min and max */
+            if (forceMax !== null && forceMin !== null) {
+                if (forceMax <= forceMin) {
+                    throw new Error('Invalid scale config. .max should be > .min');
+                }
+                scale.range = [forceMin, forceMax];
+            }
+
+            const isLogScale = scaleConfig.type === 'logarithmic';
+
+            if (isLogScale) {
+                scale.distr = Scale.Distr.Logarithmic;
+                scale.range = getScaleRange(scaleConfig, config);
+
+                return;
+            }
+
+            if (this._isEmptyDataSet) {
+                scale.range = [
+                    forceMin === null ? (isLogScale ? 1 : 0) : forceMin, // eslint-disable-line no-nested-ternary
+                    forceMax === null ? 100 : forceMax,
+                ];
+                return;
+            }
+
+            scale.range = getScaleRange(scaleConfig, config);
+        });
+
+        if (!scales.x) {
+            scales.x = {
+                time: true,
+            };
+        }
+
+        return scales;
+    }
+
     private configureAxes(config: YagrConfig) {
         const axes: UPlot.Axis[] = [];
 
@@ -423,7 +479,7 @@ class Yagr {
             hooks: config.hooks || {},
         };
 
-        const isEmptyDataSet =
+        this._isEmptyDataSet =
             config.timeline.length === 0 ||
             config.series.length === 0 ||
             config.series.every(({data}) => data.length === 0);
@@ -478,54 +534,7 @@ class Yagr {
 
         /** Setting up scales */
         options.scales = options.scales || {};
-        const scales = options.scales;
-
-        const scalesToMap = config.scales ? {...config.scales} : {};
-        if (!Object.keys(config.scales).length) {
-            scalesToMap.y = {};
-        }
-
-        Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
-            scales[scaleName] = scales[scaleName] || {};
-            const scale = scales[scaleName];
-
-            if (scaleName === DEFAULT_X_SCALE) {
-                return;
-            }
-
-            const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
-            const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
-
-            /** At first handle case when scale has setted min and max */
-            if (forceMax !== null && forceMin !== null) {
-                if (forceMax <= forceMin) {
-                    throw new Error('Invalid scale config. .max should be > .min');
-                }
-                scale.range = [forceMin, forceMax];
-            }
-
-            const isLogScale = scaleConfig.type === 'logarithmic';
-
-            if (isLogScale) {
-                scale.distr = Scale.Distr.Logarithmic;
-                scale.range = getScaleRange(scaleConfig, config);
-
-                return;
-            }
-
-            if (isEmptyDataSet) {
-                scale.range = [forceMin === null ? (isLogScale ? 1 : 0) : forceMin, forceMax === null ? 100 : forceMax];
-                return;
-            }
-
-            scale.range = getScaleRange(scaleConfig, config);
-        });
-
-        if (!options.scales.x) {
-            options.scales.x = {
-                time: true,
-            };
-        }
+        options.scales = this.configureScales(options.scales, config);
 
         /** Setting up minimal axes */
         options.axes = options.axes || [];
