@@ -19,12 +19,35 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
     '021': 'drawSeries',
 };
 
+export interface PlotLinesPlugin {
+    postInit: (y: Yagr) => void;
+    setThreshold: (key: string, threshold: PlotLineConfig[]) => void;
+    addPlotlines: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
+    clear: (scale?: string) => void;
+    uplot: {
+        hooks:
+            | {
+                  drawSeries: (u: UPlot, sIdx: number) => void;
+              }
+            | {
+                  drawClear: (u: UPlot) => void;
+              }
+            | {
+                  drawAxes: (u: UPlot) => void;
+              }
+            | {
+                  draw: (u: UPlot) => void;
+              };
+    };
+}
+
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
  */
-export default function plotLinesPlugin(yagr: Yagr, plotLines: PlotLineConfig[] = []) {
+export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): PlotLinesPlugin {
     const thresholds: Record<string, PlotLineConfig[]> = {};
+    let plotLines = [...plotLinesCfg];
 
     const drawIndicies = (
         yagr.config.settings.drawOrder ? yagr.config.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]
@@ -98,6 +121,17 @@ export default function plotLinesPlugin(yagr: Yagr, plotLines: PlotLineConfig[] 
             : renderPlotLines;
 
     return {
+        clear: (scale?: string) => {
+            plotLines = scale
+                ? plotLines.filter((p) => {
+                      return p.scale !== scale;
+                  })
+                : [];
+        },
+        postInit: (y: Yagr) => {
+            y.uplot.hooks[hook] ||= [];
+            y.uplot.hooks[hook]?.push(handler as any);
+        },
         setThreshold: (key: string, threshold: PlotLineConfig[]) => {
             thresholds[key] = threshold;
         },
@@ -110,7 +144,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLines: PlotLineConfig[] 
             hooks: {
                 // @TODO Add feature to draw plot lines over series
                 [hook]: handler,
-            },
+            } as PlotLinesPlugin['uplot']['hooks'],
         },
     };
 }

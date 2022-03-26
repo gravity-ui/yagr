@@ -1,12 +1,14 @@
 /* eslint-disable no-nested-ternary */
-import UPlot, {Range} from 'uplot';
+import UPlot, {Range, Scale as UScale} from 'uplot';
 import {YagrConfig, Scale} from '../types';
 import {
     DEFAULT_MAX_TICKS,
     DEFAULT_Y_AXIS_OFFSET,
     DEFAULT_SCALE_MIN_RANGE,
     DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE,
+    DEFAULT_X_SCALE,
 } from '../defaults';
+import type Yagr from '../index';
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
@@ -117,7 +119,7 @@ export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) 
 
     const difference = dMax - dMin;
     const range = niceNum(difference, false);
-    const incr = niceNum(range / ((scaleConfig.maxTicks || DEFAULT_MAX_TICKS) - 1), true);
+    const incr = niceNum(range / (DEFAULT_MAX_TICKS - 1), true);
     let max = Math.ceil(dMax / incr) * incr;
     max = isNaN(max) ? 100 : max;
     let min = (startFromZero ? Math.min(0, dMin) : Math.floor(dMin / incr) * incr) || 0;
@@ -155,4 +157,59 @@ function niceNum(delta: number, round: boolean) {
         : 10;
 
     return niceFrac * 10 ** exp;
+}
+
+export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrConfig) {
+    const scalesToMap = config.scales ? {...config.scales} : {};
+
+    if (!Object.keys(config.scales).length) {
+        scalesToMap.y = {};
+    }
+
+    Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
+        scales[scaleName] = scales[scaleName] || {};
+        const scale = scales[scaleName];
+
+        if (scaleName === DEFAULT_X_SCALE) {
+            return;
+        }
+
+        const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
+        const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
+
+        /** At first handle case when scale has setted min and max */
+        if (forceMax !== null && forceMin !== null) {
+            if (forceMax <= forceMin) {
+                throw new Error('Invalid scale config. .max should be > .min');
+            }
+            scale.range = [forceMin, forceMax];
+        }
+
+        const isLogScale = scaleConfig.type === 'logarithmic';
+
+        if (isLogScale) {
+            scale.distr = UScale.Distr.Logarithmic;
+            scale.range = getScaleRange(scaleConfig, config);
+
+            return;
+        }
+
+        if (yagr.isEmpty) {
+            scale.range = [
+                forceMin === null ? (isLogScale ? 1 : 0) : forceMin, // eslint-disable-line no-nested-ternary
+                forceMax === null ? 100 : forceMax,
+            ];
+            return;
+        }
+
+        scale.range = getScaleRange(scaleConfig, config);
+    });
+
+    if (!scales.x) {
+        scales.x = {
+            time: true,
+        };
+    }
+
+    return scales;
 }

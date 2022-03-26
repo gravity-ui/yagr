@@ -247,6 +247,9 @@ export interface AxisOptions extends Omit<UAxis, 'side'> {
 
     /** Values decimal precision (default: auto) */
     precision?: number | 'auto';
+
+    /** default: 5 */
+    maxTicks?: number;
 }
 
 export interface PlotLineConfig {
@@ -297,8 +300,6 @@ export interface Scale {
     /** view type (default: nice) */
     range?: ScaleRange | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
-    /** default: 5 */
-    maxTicks?: number;
 }
 
 export type ScaleType = 'linear' | 'logarithmic';

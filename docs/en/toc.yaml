@@ -2,10 +2,10 @@ title: Yagr
 items:
     - name: About
       href: index.md
+    - name: Quick Start
+      href: quickstart.md
     - name: Documentation
       items:
-          - name: Quick Start
-            href: quickstart.md
           - name: API
             items:
                 - name: Visualization types

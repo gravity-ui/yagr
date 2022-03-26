@@ -7,14 +7,13 @@ import UPlot, {
     Series,
     DrawOrderKey,
     SyncPubSub,
-    Scale,
 } from 'uplot';
 
 import LegendPlugin from './plugins/legend/legend';
 import tooltipPlugin, {TooltipPlugin} from './plugins/tooltip/tooltip';
-import markersPlugin, {drawMarkersIfRequired} from './plugins/markers';
+import markersPlugin from './plugins/markers';
 import cursorPlugin from './plugins/cursor/cursor';
-import plotLinesPlugin from './plugins/plotLines/plotLines';
+import plotLinesPlugin, {PlotLinesPlugin} from './plugins/plotLines/plotLines';
 
 import {
     YagrConfig,
@@ -28,12 +27,10 @@ import {
 } from './types';
 
 import {debounce, genId, getSumByIdx, preprocess} from './utils/common';
-import {getScaleRange} from './utils/scales';
-import {pathsRenderer} from './utils/paths';
-import {getAxis} from './utils/axes';
+import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
-import ColorParser, {getSerieFocusColors} from './utils/colors';
-import {getSerie} from './utils/series';
+import ColorParser from './utils/colors';
+import {configureSeries, getSerie} from './utils/series';
 
 import ThemedDefaults, {
     DEFAULT_X_SCALE,
@@ -46,6 +43,7 @@ import ThemedDefaults, {
     DEFAULT_TITLE_FONT_SIZE,
 } from './defaults';
 import i18n from './locale';
+import {configureScales} from './utils/scales';
 
 export interface YagrEvent {
     chart: Yagr;
@@ -65,7 +63,7 @@ type CachedProps = {
 
 interface YagrPlugins {
     tooltip?: TooltipPlugin;
-    plotLines?: ReturnType<typeof plotLinesPlugin>;
+    plotLines?: PlotLinesPlugin;
     cursor?: ReturnType<typeof cursorPlugin>;
     legend?: LegendPlugin;
 }
@@ -102,6 +100,10 @@ class Yagr {
         theme: ThemedDefaults;
         i18n: ReturnType<typeof i18n>;
     };
+
+    get isEmpty() {
+        return this._isEmptyDataSet;
+    }
 
     private _startTime: number;
     private _meta: Partial<YagrMeta> = {};
@@ -233,7 +235,7 @@ class Yagr {
         this.redraw({axes: true, series: false});
     }
 
-    redraw(options: RedrawOptions) {
+    redraw(options: RedrawOptions = {}) {
         const uPlotRedrawOptions = [options.series || true, options.axes || true];
         this.uplot.redraw(...uPlotRedrawOptions);
     }
@@ -281,6 +283,28 @@ class Yagr {
         this.utils.sync?.unsub(this.uplot);
     }
 
+    setAxes(axes: YagrConfig['axes']) {
+        const {x, ...rest} = axes;
+
+        if (x) {
+            const xAxis = this.uplot.axes.find(({scale}) => scale === DEFAULT_X_SCALE);
+
+            if (xAxis) {
+                updateAxis(this, xAxis, {scale: DEFAULT_X_SCALE, ...x});
+            }
+        }
+
+        Object.entries(rest).forEach(([scaleName, scaleConfig]) => {
+            const axis = this.uplot.axes.find(({scale}) => scale === scaleName);
+
+            if (axis) {
+                updateAxis(this, axis, {scale: scaleName, ...scaleConfig});
+            }
+        });
+
+        this.redraw(getRedrawOptionsForAxesUpdate(axes));
+    }
+
     setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions) {
         const updateFns: (() => void)[] = [];
 
@@ -288,7 +312,7 @@ class Yagr {
             this.config.timeline.push(...timeline);
             series.forEach((serie) => {
                 const newSeriesPrep = getSerie(serie, this, this.config.series.length);
-                const newSeries = this.configureSeries(newSeriesPrep);
+                const newSeries = configureSeries(this, newSeriesPrep);
 
                 const matched = this.config.series.find(({id}) => id === newSeries.id);
 
@@ -314,7 +338,19 @@ class Yagr {
                 this.config.timeline.splice(0, timeline.length);
             }
         } else {
-            // full redraw
+            // @TODO wrap into stages lifecycle
+            this.config.series = series;
+            this.config.timeline = timeline;
+            const uplotOptions = this.createUplotOptions();
+            this._cache = {height: uplotOptions.height, width: uplotOptions.width};
+            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
+
+            const newSeries = this.transformSeries();
+            this.series = newSeries;
+            this.dispose();
+            this.uplot = new UPlot(this.options, this.series, this.initRender);
+            this.init();
+            return;
         }
 
         const newData = this.transformSeries();
@@ -323,121 +359,6 @@ class Yagr {
         });
 
         updateFns.forEach((fn) => fn());
-    }
-
-    private configureScales(scales: UPlot.Scales, config: YagrConfig) {
-        const scalesToMap = config.scales ? {...config.scales} : {};
-
-        if (!Object.keys(config.scales).length) {
-            scalesToMap.y = {};
-        }
-
-        Object.entries(scalesToMap).forEach(([scaleName, scaleConfig]) => {
-            scales[scaleName] = scales[scaleName] || {};
-            const scale = scales[scaleName];
-
-            if (scaleName === DEFAULT_X_SCALE) {
-                return;
-            }
-
-            const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
-            const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
-
-            /** At first handle case when scale has setted min and max */
-            if (forceMax !== null && forceMin !== null) {
-                if (forceMax <= forceMin) {
-                    throw new Error('Invalid scale config. .max should be > .min');
-                }
-                scale.range = [forceMin, forceMax];
-            }
-
-            const isLogScale = scaleConfig.type === 'logarithmic';
-
-            if (isLogScale) {
-                scale.distr = Scale.Distr.Logarithmic;
-                scale.range = getScaleRange(scaleConfig, config);
-
-                return;
-            }
-
-            if (this._isEmptyDataSet) {
-                scale.range = [
-                    forceMin === null ? (isLogScale ? 1 : 0) : forceMin, // eslint-disable-line no-nested-ternary
-                    forceMax === null ? 100 : forceMax,
-                ];
-                return;
-            }
-
-            scale.range = getScaleRange(scaleConfig, config);
-        });
-
-        if (!scales.x) {
-            scales.x = {
-                time: true,
-            };
-        }
-
-        return scales;
-    }
-
-    private configureAxes(config: YagrConfig) {
-        const axes: UPlot.Axis[] = [];
-
-        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-            axes.push(getAxis({...axisConfig, scale}, this));
-        });
-
-        if (!config.axes[DEFAULT_X_SCALE]) {
-            axes.push(getAxis({scale: DEFAULT_X_SCALE}, this));
-        }
-
-        if (!axes.find(({scale}) => scale !== DEFAULT_X_SCALE)) {
-            axes.push(getAxis({scale: DEFAULT_Y_SCALE}, this));
-        }
-
-        return axes;
-    }
-
-    private configureSeries(serie: Series): Series {
-        serie.points = serie.points || {};
-
-        const colorFn = getSerieFocusColors(this.utils.theme, this.utils.colors, serie.color);
-
-        serie._color = serie.color;
-        serie._modifiedColor = colorFn.defocusColor;
-
-        if (serie.type === 'area') {
-            serie.fill = colorFn;
-            serie.stroke = getSerieFocusColors(
-                this.utils.theme,
-                this.utils.colors,
-                serie.lineColor || 'rgba(0, 0, 0, 0.2)',
-            );
-            serie.width = serie.lineWidth;
-            serie.points.show = drawMarkersIfRequired;
-        }
-
-        if (serie.type === 'line') {
-            serie.stroke = colorFn;
-            serie.points.show = drawMarkersIfRequired;
-        }
-
-        if (serie.type === 'column') {
-            serie.stroke = colorFn;
-            serie.fill = colorFn;
-            serie.points.show = false;
-        }
-
-        if (serie.type === 'dots') {
-            serie.stroke = serie.color;
-            serie.fill = colorFn;
-            serie.width = 2;
-        }
-
-        serie.interpolation = serie.interpolation || this.config.settings.interpolation || 'linear';
-
-        serie.paths = pathsRenderer;
-        return serie;
     }
 
     /*
@@ -515,7 +436,7 @@ class Yagr {
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie = this.configureSeries(seriesOptions[i] || {});
+            const serie = configureSeries(this, seriesOptions[i] || {});
             resultingSeriesOptions.push(serie);
         }
 
@@ -534,16 +455,17 @@ class Yagr {
 
         /** Setting up scales */
         options.scales = options.scales || {};
-        options.scales = this.configureScales(options.scales, config);
+        options.scales = configureScales(this, options.scales, config);
 
         /** Setting up minimal axes */
         options.axes = options.axes || [];
         const axes = options.axes;
 
-        axes.push(...this.configureAxes(config));
+        axes.push(...configureAxes(this, config));
 
         const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
-        plugins.push(plotLinesPluginInstance);
+        this.plugins.plotLines = plotLinesPluginInstance;
+        plugins.push(plotLinesPluginInstance.uplot);
 
         /** Setting up hooks */
         options.hooks = config.hooks || {};
@@ -766,18 +688,7 @@ class Yagr {
             }
         });
 
-        const plInstance = plotLinesPlugin(this, plotLines);
-        this.plugins.plotLines = plInstance;
-        return plInstance.uplot;
-    }
-
-    private setOptionsWithUpdate(updateFn: (d: UPlotOptions, s?: UPlotData) => void) {
-        updateFn(this.options, this.series);
-        this.uplot.setSize({
-            width: this.options.width,
-            height: this.options.height,
-        });
-        this.uplot.redraw();
+        return plotLinesPlugin(this, plotLines);
     }
 
     /*
@@ -799,14 +710,14 @@ class Yagr {
             }
         }
 
-        this.setOptionsWithUpdate((options) => {
-            options.height = this.clientHeight;
-            options.width = this.root.clientWidth;
-            this._cache.width = this.options.width;
-            this._cache.height = this.options.height;
-            this.plugins?.legend?.redraw();
+        this._cache.width = this.options.width = this.root.clientWidth;
+        this._cache.height = this.options.height = this.clientHeight;
+        this.plugins?.legend?.redraw();
+        this.uplot.setSize({
+            width: this.options.width,
+            height: this.options.height,
         });
-
+        this.uplot.redraw();
         this.execHooks<YagrHooks['resize']>(this.config.hooks.resize, args);
     };
 
