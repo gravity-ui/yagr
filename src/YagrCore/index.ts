@@ -158,7 +158,7 @@ class Yagr {
 
             this.utils = {
                 colors: colorParser,
-                i18n: i18n(config.chart.appereance.locale || 'en'),
+                i18n: i18n(config.chart.appereance?.locale || 'en'),
                 theme: new ThemedDefaults(colorParser),
             };
 
@@ -418,10 +418,10 @@ class Yagr {
         options.cursor = options.cursor || {};
         options.cursor.points = options.cursor.points || {};
         options.cursor.drag = options.cursor.drag || {
-            dist: chart.select.minWidth || MIN_SELECTION_WIDTH,
+            dist: chart.select?.minWidth || MIN_SELECTION_WIDTH,
             x: true,
             y: false,
-            setScale: chart.select.zoom ?? true,
+            setScale: chart.select?.zoom ?? true,
         };
 
         if (this.utils.sync) {
@@ -531,15 +531,15 @@ class Yagr {
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
         });
 
-        options.drawOrder = chart.appereance.drawOrder
-            ? (chart.appereance.drawOrder.filter(
+        options.drawOrder = chart.appereance?.drawOrder
+            ? (chart.appereance?.drawOrder.filter(
                   (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Axes,
               ) as DrawOrderKey[])
             : [DrawOrderKey.Series, DrawOrderKey.Axes];
 
         /** Disabling uPlot legend. */
         options.legend = {show: false};
-        options.padding = config.chart.size.padding || getPaddingByAxes(options);
+        options.padding = config.chart.size?.padding || getPaddingByAxes(options);
 
         this.options = options;
 
@@ -729,7 +729,7 @@ class Yagr {
     };
 
     private init = () => {
-        if (this.config.chart.size.adaptive) {
+        if (this.config.chart.size?.adaptive) {
             this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.chart.size.resizeDebounceMs || 100));
             this.resizeOb.observe(this.root);
         }

@@ -14,3 +14,6 @@ global.window = {
 };
 global.matchMedia = m;
 HTMLCanvasElement.prototype.getContext = () => {};
+global.ResizeObserver = class ResizeObserver {
+    observe() {}
+};

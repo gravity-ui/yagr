@@ -10,12 +10,12 @@ import {drawMarkersIfRequired} from '../plugins/markers';
 import {pathsRenderer} from './paths';
 
 export function getSerie(rawSerie: RawSerieData, yagr: Yagr, serieIdx: number): Series {
-    const type = rawSerie.type || yagr.config.chart.series.type || 'line';
+    const type = rawSerie.type || yagr.config.chart.series?.type || 'line';
 
     const common: Series = {
         ...rawSerie,
         type,
-        name: rawSerie.name || 'Serie ' + (serieIdx + 1),
+        name: rawSerie.name || `${yagr.utils.i18n('series')} ${serieIdx + 1}`,
         color: rawSerie.color ? yagr.utils.colors.parse(rawSerie.color) : yagr.utils.theme.DEFAULT_LINE_COLOR,
         id: (rawSerie.id === undefined ? rawSerie.name : String(rawSerie.id)) || genId(),
         $c: rawSerie.data,
@@ -97,8 +97,9 @@ export function configureSeries(yagr: Yagr, serie: Series): Series {
     }
 
     let commonI = 'linear' as InterpolationType;
-    if ('interpolation' in yagr.config.chart.series) {
-        commonI = yagr.config.chart.series.interpolation || commonI;
+    const seriesOptions = yagr.config.chart.series;
+    if (seriesOptions && 'interpolation' in seriesOptions) {
+        commonI = seriesOptions.interpolation || commonI;
     }
     serie.interpolation = serie.interpolation || commonI;
 

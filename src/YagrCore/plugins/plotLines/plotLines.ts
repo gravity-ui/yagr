@@ -49,7 +49,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
     const thresholds: Record<string, PlotLineConfig[]> = {};
     let plotLines = [...plotLinesCfg];
 
-    const {drawOrder} = yagr.config.chart.appereance;
+    const drawOrder = yagr.config.chart.appereance?.drawOrder;
 
     const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 

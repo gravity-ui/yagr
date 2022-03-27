@@ -27,7 +27,7 @@ describe('options', () => {
             });
 
             it('should transform settings.timeMultiplier (passed)', () => {
-                const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, settings: {timeMultiplier: 1e-3}});
+                const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {timeMultiplier: 1e-3}});
                 expect(y.options.ms).toBe(1e-3);
             });
         });

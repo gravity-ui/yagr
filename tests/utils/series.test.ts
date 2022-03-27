@@ -2,8 +2,8 @@ import Yagr from '../../src/YagrCore';
 import {getSerie} from '../../src/YagrCore/utils/series';
 import {
     DEFAULT_Y_SCALE,
-    SERIE_AREA_BORDER_COLOR,
-    SERIE_AREA_BORDER_WIDTH,
+    // SERIE_AREA_BORDER_COLOR,
+    // SERIE_AREA_BORDER_WIDTH,
     SERIE_LINE_WIDTH,
 } from '../../src/YagrCore/defaults';
 
@@ -45,9 +45,6 @@ describe('series options', () => {
     });
 
     it('should setup uPlot fields', () => {
-        expect(getSerie(empty, y, 1)).toHaveProperty('show', true);
         expect(getSerie(empty, y, 1)).toHaveProperty('width', SERIE_LINE_WIDTH);
-        expect(getSerie(empty, y, 1)).toHaveProperty('lineColor', SERIE_AREA_BORDER_COLOR);
-        expect(getSerie(empty, y, 1)).toHaveProperty('lineWidth', SERIE_AREA_BORDER_WIDTH);
     });
 });

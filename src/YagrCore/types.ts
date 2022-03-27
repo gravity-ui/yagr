@@ -139,9 +139,9 @@ export interface ProcessingSettings {
  */
 export interface YagrChartOptions {
     /** Common series options, could be overriden by series.<option> field */
-    series: SeriesOptions;
+    series?: SeriesOptions;
 
-    size: {
+    size?: {
         /** width (by default: 100% of root) */
         width?: number;
 
@@ -158,7 +158,7 @@ export interface YagrChartOptions {
         resizeDebounceMs?: number;
     };
 
-    select: {
+    select?: {
         /** Minial width to catch selection */
         minWidth?: number; // 15px
 
@@ -166,7 +166,7 @@ export interface YagrChartOptions {
         zoom?: boolean;
     };
 
-    appereance: {
+    appereance?: {
         /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
         drawOrder?: DrawKey[];
 
@@ -284,13 +284,10 @@ export interface ExtendedSeriesOptions {
     /** Scale of series */
     scale?: string;
 
-    /** Visibility of line */
-    visible?: boolean;
-
     /** Raw data */
     data: DataSeriesExtended;
 }
-export type RawSerieData = ExtendedSeriesOptions & SeriesOptions;
+export type RawSerieData = ExtendedSeriesOptions & Omit<SeriesOptions, 'type'> & {type?: ChartType};
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 

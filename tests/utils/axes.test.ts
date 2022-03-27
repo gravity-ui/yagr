@@ -3,12 +3,12 @@ import {getTimeFormatter} from '../../src/YagrCore/utils/axes';
 
 describe.skip('axes:getTimeFormatter', () => {
     const formatter = getTimeFormatter({
-        settings: {
+        chart: {
             timeMultiplier: 1e-3,
         },
     } as YagrConfig);
     const formatterMs = getTimeFormatter({
-        settings: {
+        chart: {
             timeMultiplier: 1,
         },
     } as YagrConfig);

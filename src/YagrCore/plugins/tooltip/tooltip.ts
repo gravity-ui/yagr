@@ -125,7 +125,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
 
     const opts: TooltipOptions = {
         ...DEFAULT_TOOLTIP_OPTIONS,
-        tracking: yagr.config.chart.series.type === 'area' ? 'area' : 'sticky',
+        tracking: yagr.config.chart.series?.type === 'area' ? 'area' : 'sticky',
         value: defaultTooltipValueFormatter,
         ...options,
     };
