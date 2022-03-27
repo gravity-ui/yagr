@@ -5,22 +5,26 @@ import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
 import {CursorOptions} from './plugins/cursor/cursor';
 
-interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
-    /** Will appear after processing series */
-    $c: DataSeriesExtended;
-
-    /** Will appear after processing series if serie values normalized */
-    normalizedData?: DataSeries;
-
-    /** Does line have only null values */
-    empty?: boolean;
-}
-
+type AllSeriesOptions = ExtendedSeriesOptions &
+    CommonSeriesOptions &
+    Omit<DotsSeriesOptions, 'type'> &
+    Omit<LineSeriesOptions, 'type'> &
+    Omit<AreaSeriesOptions, 'type'> &
+    Omit<ColumnSeriesOptions, 'type'>;
 declare module 'uplot' {
-    interface Series extends ProcessedSeriesData {
+    interface Series extends AllSeriesOptions {
         id: string;
         color: string;
         name: string;
+
+        /** Will appear after processing series */
+        $c: DataSeriesExtended;
+
+        /** Will appear after processing series if serie values normalized */
+        normalizedData?: DataSeries;
+
+        /** Does line have only null values */
+        empty?: boolean;
         /** Real values count */
         count: number;
         /** Values sum */
@@ -64,9 +68,6 @@ export interface YagrConfig {
 
     /** Tooltip config. Detemines tooltip's behavior */
     tooltip: Partial<TooltipOptions>;
-
-    /** Chart settings */
-    settings: YagrChartSettings;
 
     /** Grid options (applies to all axes, can be overrided by axis.grid). */
     grid: UAxis.Grid;
@@ -137,20 +138,47 @@ export interface ProcessingSettings {
  * Main chart visualization config
  */
 export interface YagrChartOptions {
-    /** Chart visualization type */
-    type: ChartType;
+    /** Common series options, could be overriden by series.<option> field */
+    series: SeriesOptions;
 
-    /** width (by default: 100% of root) */
-    width?: number;
+    size: {
+        /** width (by default: 100% of root) */
+        width?: number;
 
-    /** height (by default: 100% of root) */
-    height?: number;
+        /** height (by default: 100% of root) */
+        height?: number;
 
-    /** padding in css px [top, right, bottom, left] (by default: utils.chart.getPaddingByAxes) */
-    padding?: [number, number, number, number];
+        /** padding in css px [top, right, bottom, left] (by default: utils.chart.getPaddingByAxes) */
+        padding?: [number, number, number, number];
 
-    /** point size (default: 4px) */
-    pointsSize?: number;
+        /** Should chart redraw on container resize (default: true) */
+        adaptive?: boolean;
+
+        /** Debounce timer for ResizeObserver to trigger: (default 100 ms) */
+        resizeDebounceMs?: number;
+    };
+
+    select: {
+        /** Minial width to catch selection */
+        minWidth?: number; // 15px
+
+        /** Enable native uPlot zoom (default: true) */
+        zoom?: boolean;
+    };
+
+    appereance: {
+        /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
+        drawOrder?: DrawKey[];
+
+        /** Theme (default: 'light') */
+        theme?: YagrTheme;
+
+        /** Locale */
+        locale?: SupportedLocales | Record<string, string>;
+    };
+
+    /** 1 for milliseconds, 1e-3 for seconds (default: 1) */
+    timeMultiplier?: 1 | 1e-3;
 }
 
 /** Options how to redraw chart */
@@ -171,54 +199,21 @@ export type ChartType = 'area' | 'line' | 'column' | 'dots';
 export type DataSeriesExtended = (number | string | null)[];
 export type DataSeries = (number | null)[];
 
-/**
- * Expected serie config and data format from Chart API
- */
-export interface RawSerieData {
-    /** Name of serie. Renders in tooltip */
-    name?: string;
+export interface CommonSeriesOptions {
+    /** Visualisation type */
+    type?: ChartType;
 
     /** Color of serie */
     color?: string;
 
-    /** Unique ID */
-    id?: string;
-
-    /** Width of line (line type charts) */
-    width?: number;
-
-    /** Color of line (area type charts) */
-    lineColor?: string;
-
-    /** Color of line over area (area type charts) */
-    lineWidth?: number;
-
     /** Should join paths over null-points */
     spanGaps?: boolean;
 
-    /** Scale of series */
-    scale?: string;
-
-    /** Visualisation type */
-    type?: ChartType;
-
-    /** Interpolation type */
-    interpolation?: InterpolationSetting;
-
     /** Cursor options for single serie */
-    cursorOptions?: CursorOptions;
-
-    /** Visibility of line */
-    visible?: boolean;
+    cursorOptions?: Pick<CursorOptions, 'markersSize' | 'snapToValues'>;
 
     /** Formatter for serie value */
     formatter?: (value: string | number | null, serie: Series) => string;
-
-    /** Raw data */
-    data: DataSeriesExtended;
-
-    /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
-    showInTooltip?: boolean;
 
     /** Line precision */
     precision?: number;
@@ -226,15 +221,76 @@ export interface RawSerieData {
     /** Snap dataIdx value (default: closest) */
     snapToValues?: SnapToValue | false;
 
+    /** Stacking groups */
+    stackGroup?: number;
+
     /** Title of serie */
     title?: string | ((sIdx: number) => string);
 
     /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 
-    /** Stacking groups */
-    stackGroup?: number;
+    /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
+    showInTooltip?: boolean;
 }
+
+export interface LineSeriesOptions extends CommonSeriesOptions {
+    type: 'line';
+
+    /** Width of line (line type charts) */
+    width?: number;
+
+    /** Interpolation type */
+    interpolation?: InterpolationType;
+}
+
+export interface AreaSeriesOptions extends CommonSeriesOptions {
+    type: 'area';
+
+    /** Color of line (area type charts) */
+    lineColor?: string;
+
+    /** Color of line over area (area type charts) */
+    lineWidth?: number;
+
+    /** Interpolation type (default: linear) */
+    interpolation?: InterpolationType;
+}
+
+export interface ColumnSeriesOptions extends CommonSeriesOptions {
+    type: 'column';
+}
+
+export interface DotsSeriesOptions extends CommonSeriesOptions {
+    type: 'dots';
+
+    /** point size (default: 4px) */
+    pointsSize?: number;
+}
+
+export type SeriesOptions = DotsSeriesOptions | LineSeriesOptions | AreaSeriesOptions | ColumnSeriesOptions;
+
+/**
+ * Expected serie config and data format from Chart API
+ */
+
+export interface ExtendedSeriesOptions {
+    /** Name of serie. Renders in tooltip */
+    name?: string;
+
+    /** Unique ID */
+    id?: string;
+
+    /** Scale of series */
+    scale?: string;
+
+    /** Visibility of line */
+    visible?: boolean;
+
+    /** Raw data */
+    data: DataSeriesExtended;
+}
+export type RawSerieData = ExtendedSeriesOptions & SeriesOptions;
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 
@@ -267,7 +323,7 @@ export interface PlotLineConfig {
 }
 
 /** Setting for line interpolation type */
-export type InterpolationSetting = 'linear' | 'left' | 'right' | 'smooth';
+export type InterpolationType = 'linear' | 'left' | 'right' | 'smooth';
 
 /** Setting for scale range type */
 export type ScaleRange = 'nice' | 'offset' | 'auto';
@@ -306,35 +362,6 @@ export type ScaleType = 'linear' | 'logarithmic';
 export type YagrTheme = 'light' | 'dark';
 export type SupportedLocales = 'en' | 'ru';
 export type DrawKey = 'plotLines' | DrawOrderKey.Axes | DrawOrderKey.Series;
-
-export interface YagrChartSettings {
-    /** Should chart redraw on container resize (default: true) */
-    adaptive?: boolean;
-
-    /** Interpolation options (default: linear) */
-    interpolation?: InterpolationSetting;
-
-    /** Minial width to catch selection */
-    minSelectionWidth?: number; // 15px
-
-    /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
-    drawOrder?: DrawKey[];
-
-    /** Theme (default: 'light') */
-    theme?: YagrTheme;
-
-    /** 1 for milliseconds, 1e-3 for seconds (default: 1) */
-    timeMultiplier?: 1 | 1e-3;
-
-    /** Enable native uPlot zoom (default: true) */
-    zoom?: boolean;
-
-    /** Locale */
-    locale?: SupportedLocales | Record<string, string>;
-
-    /** Debounce timer for ResizeObserver to trigger: (default 100 ms) */
-    resizeDebounceMs?: number;
-}
 
 /**
  * Options for chart grid

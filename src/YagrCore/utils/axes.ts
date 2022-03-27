@@ -70,7 +70,7 @@ const minuteFormatter = uPlot.fmtDate('{mm}:{ss}');
 const secondFormatter = uPlot.fmtDate('{mm}:{ss}.{fff}');
 
 export const getTimeFormatter = (config: YagrConfig) => {
-    const msm = config.settings.timeMultiplier || 1;
+    const msm = config.chart.timeMultiplier || 1;
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];
         const rangeMs = range / msm;
@@ -133,8 +133,7 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
             ticks: axisConfig.ticks ? {...theme.X_AXIS_TICKS, ...axisConfig.ticks} : theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || (() => defaults.X_AXIS_SPACE),
-            incrs:
-                axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1))),
+            incrs: axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.chart.timeMultiplier || 1))),
             side: 2,
             stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
         });
@@ -179,6 +178,7 @@ export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
     upd.ticks = {...uAxis.ticks, ...upd.ticks};
     upd.grid = {...uAxis.grid, ...upd.grid};
     upd.border = {...uAxis.border, ...upd.border};
+    upd.splits = upd.splits || uAxis.splits;
     Object.assign(uAxis, upd);
 
     const plotLines = yagr.plugins.plotLines as PlotLinesPlugin;

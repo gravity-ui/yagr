@@ -1,4 +1,3 @@
-import uPlot from 'uplot';
 import Yagr from '../../index';
 import {TooltipState} from './tooltip';
 
@@ -61,7 +60,7 @@ export interface TooltipOptions {
      */
     tracking: PerScale<TrackingOptions>;
     /** Predicate to show/hide tooltip on setCursor */
-    show?: (y: Yagr, u: uPlot) => boolean;
+    show?: (y: Yagr) => boolean;
     /** Limit for lines in tooltip */
     maxLines: PerScale<number>;
     /** Should highlight focused line in tooltip */

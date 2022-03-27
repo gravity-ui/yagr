@@ -3,31 +3,61 @@ import {Series} from 'uplot';
 import * as defaults from '../defaults';
 import type Yagr from '../../';
 
-import {RawSerieData} from '../types';
+import {InterpolationType, RawSerieData} from '../types';
 import {genId} from './common';
 import {getSerieFocusColors} from './colors';
 import {drawMarkersIfRequired} from '../plugins/markers';
 import {pathsRenderer} from './paths';
 
 export function getSerie(rawSerie: RawSerieData, yagr: Yagr, serieIdx: number): Series {
-    return {
+    const type = rawSerie.type || yagr.config.chart.series.type || 'line';
+
+    const common: Series = {
         ...rawSerie,
+        type,
         name: rawSerie.name || 'Serie ' + (serieIdx + 1),
         color: rawSerie.color ? yagr.utils.colors.parse(rawSerie.color) : yagr.utils.theme.DEFAULT_LINE_COLOR,
         id: (rawSerie.id === undefined ? rawSerie.name : String(rawSerie.id)) || genId(),
-        show: rawSerie.visible ?? true,
         $c: rawSerie.data,
-        width: rawSerie.width || defaults.SERIE_LINE_WIDTH,
-        lineColor: yagr.utils.colors.parse(rawSerie.lineColor || defaults.SERIE_AREA_BORDER_COLOR),
-        lineWidth: rawSerie.lineWidth || defaults.SERIE_AREA_BORDER_WIDTH,
         scale: rawSerie.scale || defaults.DEFAULT_Y_SCALE,
-        type: rawSerie.type || yagr.config.chart.type || 'line',
-
-        stackGroup: rawSerie.stackGroup ?? 0,
         count: 0,
         sum: 0,
         avg: 0,
     };
+
+    let series: Series;
+
+    switch (common.type) {
+        case 'area': {
+            series = {
+                ...common,
+                lineColor: yagr.utils.colors.parse(common.lineColor || defaults.SERIE_AREA_BORDER_COLOR),
+                lineWidth: common.lineWidth || defaults.SERIE_AREA_BORDER_WIDTH,
+            };
+            break;
+        }
+        case 'column': {
+            series = common;
+            break;
+        }
+        case 'dots': {
+            series = {
+                ...common,
+                pointsSize: common.pointsSize || defaults.DEFAULT_POINT_SIZE,
+            };
+            break;
+        }
+        case 'line':
+        default: {
+            series = {
+                ...common,
+                width: common.width || defaults.SERIE_LINE_WIDTH,
+            };
+            break;
+        }
+    }
+
+    return series;
 }
 
 export function configureSeries(yagr: Yagr, serie: Series): Series {
@@ -66,7 +96,11 @@ export function configureSeries(yagr: Yagr, serie: Series): Series {
         serie.width = 2;
     }
 
-    serie.interpolation = serie.interpolation || yagr.config.settings.interpolation || 'linear';
+    let commonI = 'linear' as InterpolationType;
+    if ('interpolation' in yagr.config.chart.series) {
+        commonI = yagr.config.chart.series.interpolation || commonI;
+    }
+    serie.interpolation = serie.interpolation || commonI;
 
     serie.paths = pathsRenderer;
     return serie;

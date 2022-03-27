@@ -49,9 +49,9 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
     const thresholds: Record<string, PlotLineConfig[]> = {};
     let plotLines = [...plotLinesCfg];
 
-    const drawIndicies = (
-        yagr.config.settings.drawOrder ? yagr.config.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]
-    ).join('');
+    const {drawOrder} = yagr.config.chart.appereance;
+
+    const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 
     const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 

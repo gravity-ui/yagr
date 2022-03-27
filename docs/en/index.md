@@ -8,7 +8,7 @@ Why not use uPlot directly? uPlot is a flexible library that comes with an amazi
 
 ## Why not Yagr
 
-If you aren't looking for Yagr features but instead need something specific that isn't in Yagr, use uPlot directly or check the issues (#@TODO). Otherwise, I recommend using and trying to expand Yagr, but also feel free to ask questions and bring up ideas on our [Issues Page](https://github.com/yandex-cloud/yagr/issues).
+If you aren't looking for Yagr features but instead need something specific that isn't in Yagr, use uPlot directly or check the [issues](https://github.com/yandex-cloud/yagr/issues). Otherwise, I recommend using and trying to expand Yagr, but also feel free to ask questions and bring up ideas on our [Issues Page](https://github.com/yandex-cloud/yagr/issues).
 
 ## Features
 

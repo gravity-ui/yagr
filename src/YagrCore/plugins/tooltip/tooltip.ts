@@ -77,6 +77,7 @@ export type TooltipPlugin = {
     updateOptions: (o: Partial<TooltipOptions>) => void;
     on: (event: TooltipAction, handler: TooltipHandler) => void;
     off: (event: TooltipAction, handler: TooltipHandler) => void;
+    display: (props: {left: number; top: number; idx: number}) => void;
 };
 
 /*
@@ -124,7 +125,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
 
     const opts: TooltipOptions = {
         ...DEFAULT_TOOLTIP_OPTIONS,
-        tracking: yagr.config.chart.type === 'area' ? 'area' : 'sticky',
+        tracking: yagr.config.chart.series.type === 'area' ? 'area' : 'sticky',
         value: defaultTooltipValueFormatter,
         ...options,
     };
@@ -235,6 +236,10 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         yagr.plugins.cursor?.pin(pinState);
 
         if (pinState) {
+            if (!state.visible) {
+                show();
+            }
+
             tOverlay.classList.add('yagr-tooltip_pinned');
             if (list) {
                 list.style.height = list?.clientHeight + 'px';
@@ -277,6 +282,187 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
     const interpolation = pSettings.interpolation;
     const stripValue = interpolation ? interpolation.value : undefined;
 
+    function calcTooltip(props: {left: number; top: number; idx: number}) {
+        const u = yagr.uplot;
+        const {left, top, idx} = props;
+
+        if (opts.show && opts.show(yagr) === false) {
+            hide();
+            return;
+        }
+
+        if ((left < 0 || top < 0) && !state.pinned) {
+            hide();
+        }
+
+        const {data} = u;
+
+        if (data === null || idx === null || idx === undefined || top === undefined) {
+            return;
+        }
+
+        const x = data[0][idx];
+
+        const sum: Record<string, number> = {};
+        const sections: Record<string, TooltipSection> = {};
+
+        const rowsBySections: Record<string, number[]> = {};
+
+        let i = 1;
+        while (i < u.series.length) {
+            const serie = u.series[i];
+
+            if (!serie.show) {
+                i += 1;
+                continue;
+            }
+
+            const scale = serie.scale || DEFAULT_Y_SCALE;
+
+            rowsBySections[scale] = rowsBySections[scale] || [];
+            rowsBySections[scale].push(i);
+            i += 1;
+        }
+
+        const rowEntries = Object.entries(rowsBySections);
+
+        rowEntries.forEach(([scale, serieIndicies]) => {
+            sections[scale] = sections[scale] || {
+                rows: [],
+            };
+            const section = sections[scale];
+            const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
+
+            const valueRender = getOptionValue<ValueFormatter>(opts.value, scale);
+
+            for (const seriesIdx of serieIndicies) {
+                const seriesData = u.data[seriesIdx] as DataSeries;
+                const serie = u.series[seriesIdx];
+
+                let value = findValue(yagr.config.cursor, seriesData, serie, idx, interpolation);
+                let dValue = value;
+
+                if (typeof value === 'string') {
+                    dValue = value;
+                    value = null;
+                }
+
+                if (getOptionValue(opts.sum, scale)) {
+                    sum[scale] = sum[scale] || 0;
+                    sum[scale] += value || 0;
+                }
+
+                const realY = seriesData[idx];
+                const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
+
+                if ((value === null && opts.hideNoData) || serie.showInTooltip === false) {
+                    continue;
+                }
+
+                const seriesPrecision = serie.precision ?? getOptionValue(opts.precision, scale);
+
+                const displayValue = serie.formatter
+                    ? serie.formatter(dValue, serie)
+                    : valueRender(dValue, seriesPrecision);
+
+                const rowData: TooltipRow = {
+                    name: serie.name,
+                    originalValue: value,
+                    value: displayValue,
+                    y: yValue,
+                    displayY: realY,
+                    color: serie.color,
+                    seriesIdx,
+                    rowIdx: section.rows.length ? section.rows[section.rows.length - 1].rowIdx + 1 : 0,
+                };
+
+                if (serie.normalizedData) {
+                    rowData.transformed = serie.normalizedData[idx];
+                }
+
+                if (serie._transformed) {
+                    rowData.transformed = seriesData[idx];
+                }
+
+                section.rows.push(rowData);
+            }
+
+            if (getOptionValue(opts.highlight, scale) && section.rows.length) {
+                const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
+                let activeIndex: number | null = 0;
+                if (tracking === 'area') {
+                    activeIndex = findInRange(
+                        section,
+                        cursorValue,
+                        getOptionValue<boolean | undefined>(opts.stickToRanges, scale),
+                    );
+                } else if (tracking === 'sticky') {
+                    activeIndex = findSticky(section, cursorValue);
+                } else if (typeof tracking === 'function') {
+                    activeIndex = tracking(section, cursorValue);
+                }
+
+                if (activeIndex !== null) {
+                    section.rows[activeIndex].active = true;
+                }
+            }
+
+            const sort = getOptionValue(opts.sort, scale);
+            if (sort) {
+                section.rows.sort(sort);
+            }
+        });
+
+        const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
+
+        if (hasOneRow) {
+            onMouseEnter();
+        } else {
+            onMouseLeave();
+            return;
+        }
+
+        const bbox = over.getBoundingClientRect();
+
+        bLeft = bbox.left;
+        bTop = bbox.top;
+
+        const anchor = {
+            left: left + bLeft,
+            top: bTop + top - (opts.yOffset || 0),
+        };
+
+        renderTooltipCloses = () => {
+            tOverlay.innerHTML = opts.render({
+                scales: Object.entries(sections).map(([scale, sec]) => {
+                    return {
+                        scale,
+                        rows: sec.rows,
+                        sum: sum[scale],
+                    };
+                }),
+                options: opts,
+                x,
+                pinned: state.pinned,
+                yagr,
+            });
+
+            placement(tOverlay, anchor, 'right', {
+                bound,
+                xOffset: opts.xOffset,
+                yOffset: opts.yOffset,
+            });
+
+            emit('render');
+        };
+
+        if (state.pinned) {
+            return;
+        }
+
+        renderTooltipCloses();
+    }
+
     const uPlotPlugin: Plugin = {
         hooks: {
             init: (u) => {
@@ -304,183 +490,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
             },
 
             setCursor: (u) => {
-                const {left, top, idx} = u.cursor as {left: number; top: number; idx: number};
-
-                if (opts.show && opts.show(yagr, u) === false) {
-                    hide();
-                    return;
-                }
-
-                if ((left < 0 || top < 0) && !state.pinned) {
-                    hide();
-                }
-
-                const {data} = u;
-
-                if (data === null || idx === null || idx === undefined || top === undefined) {
-                    return;
-                }
-
-                const x = data[0][idx];
-
-                const sum: Record<string, number> = {};
-                const sections: Record<string, TooltipSection> = {};
-
-                const rowsBySections: Record<string, number[]> = {};
-
-                let i = 1;
-                while (i < u.series.length) {
-                    const serie = u.series[i];
-
-                    if (!serie.show) {
-                        i += 1;
-                        continue;
-                    }
-
-                    const scale = serie.scale || DEFAULT_Y_SCALE;
-
-                    rowsBySections[scale] = rowsBySections[scale] || [];
-                    rowsBySections[scale].push(i);
-                    i += 1;
-                }
-
-                const rowEntries = Object.entries(rowsBySections);
-
-                rowEntries.forEach(([scale, serieIndicies]) => {
-                    sections[scale] = sections[scale] || {
-                        rows: [],
-                    };
-                    const section = sections[scale];
-                    const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
-
-                    const valueRender = getOptionValue<ValueFormatter>(opts.value, scale);
-
-                    for (const seriesIdx of serieIndicies) {
-                        const seriesData = u.data[seriesIdx] as DataSeries;
-                        const serie = u.series[seriesIdx];
-
-                        let value = findValue(yagr.config.cursor, seriesData, serie, idx, interpolation);
-                        let dValue = value;
-
-                        if (typeof value === 'string') {
-                            dValue = value;
-                            value = null;
-                        }
-
-                        if (getOptionValue(opts.sum, scale)) {
-                            sum[scale] = sum[scale] || 0;
-                            sum[scale] += value || 0;
-                        }
-
-                        const realY = seriesData[idx];
-                        const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
-
-                        if ((value === null && opts.hideNoData) || serie.showInTooltip === false) {
-                            continue;
-                        }
-
-                        const seriesPrecision = serie.precision ?? getOptionValue(opts.precision, scale);
-
-                        const displayValue = serie.formatter
-                            ? serie.formatter(dValue, serie)
-                            : valueRender(dValue, seriesPrecision);
-
-                        const rowData: TooltipRow = {
-                            name: serie.name,
-                            originalValue: value,
-                            value: displayValue,
-                            y: yValue,
-                            displayY: realY,
-                            color: serie.color,
-                            seriesIdx,
-                            rowIdx: section.rows.length ? section.rows[section.rows.length - 1].rowIdx + 1 : 0,
-                        };
-
-                        if (serie.normalizedData) {
-                            rowData.transformed = serie.normalizedData[idx];
-                        }
-
-                        if (serie._transformed) {
-                            rowData.transformed = seriesData[idx];
-                        }
-
-                        section.rows.push(rowData);
-                    }
-
-                    if (getOptionValue(opts.highlight, scale) && section.rows.length) {
-                        const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
-                        let activeIndex: number | null = 0;
-                        if (tracking === 'area') {
-                            activeIndex = findInRange(
-                                section,
-                                cursorValue,
-                                getOptionValue<boolean | undefined>(opts.stickToRanges, scale),
-                            );
-                        } else if (tracking === 'sticky') {
-                            activeIndex = findSticky(section, cursorValue);
-                        } else if (typeof tracking === 'function') {
-                            activeIndex = tracking(section, cursorValue);
-                        }
-
-                        if (activeIndex !== null) {
-                            section.rows[activeIndex].active = true;
-                        }
-                    }
-
-                    const sort = getOptionValue(opts.sort, scale);
-                    if (sort) {
-                        section.rows.sort(sort);
-                    }
-                });
-
-                const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
-
-                if (hasOneRow) {
-                    onMouseEnter();
-                } else {
-                    onMouseLeave();
-                    return;
-                }
-
-                const bbox = over.getBoundingClientRect();
-
-                bLeft = bbox.left;
-                bTop = bbox.top;
-
-                const anchor = {
-                    left: left + bLeft,
-                    top: bTop + top - (opts.yOffset || 0),
-                };
-
-                renderTooltipCloses = () => {
-                    tOverlay.innerHTML = opts.render({
-                        scales: Object.entries(sections).map(([scale, sec]) => {
-                            return {
-                                scale,
-                                rows: sec.rows,
-                                sum: sum[scale],
-                            };
-                        }),
-                        options: opts,
-                        x,
-                        pinned: state.pinned,
-                        yagr,
-                    });
-
-                    placement(tOverlay, anchor, 'right', {
-                        bound,
-                        xOffset: opts.xOffset,
-                        yOffset: opts.yOffset,
-                    });
-
-                    emit('render');
-                };
-
-                if (state.pinned) {
-                    return;
-                }
-
-                renderTooltipCloses();
+                calcTooltip(u.cursor as Parameters<typeof calcTooltip>[0]);
             },
             destroy: () => {
                 /** Free overlay listeners */
@@ -516,6 +526,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         show,
         hide,
         uplot: uPlotPlugin,
+        display: calcTooltip,
         updateOptions,
         on,
         off,

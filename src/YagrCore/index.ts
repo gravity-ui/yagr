@@ -142,20 +142,23 @@ class Yagr {
         );
 
         try {
-            const sync = config.cursor.sync;
-            const settings = config.settings;
-
-            config.chart.type = config.chart.type || 'line';
-
             this.id = root.id || genId();
             this.root = root;
             this.root.classList.add('yagr');
 
             const colorParser = new ColorParser();
+            const sync = config.cursor.sync;
+
+            const chart = config.chart;
+
+            chart.series ||= {type: 'line'};
+            chart.size ||= {adaptive: true};
+            chart.appereance ||= {locale: 'en'};
+            chart.select ||= {};
 
             this.utils = {
                 colors: colorParser,
-                i18n: i18n(settings.locale || 'en'),
+                i18n: i18n(config.chart.appereance.locale || 'en'),
                 theme: new ThemedDefaults(colorParser),
             };
 
@@ -168,12 +171,12 @@ class Yagr {
                 this.utils.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
             }
 
-            if (!settings.adaptive && config.chart.width && config.chart.height) {
-                root.style.width = config.chart.width + 'px';
-                root.style.height = config.chart.height + 'px';
+            if (!chart.size.adaptive && chart.size.width && chart.size.height) {
+                root.style.width = chart.size.width + 'px';
+                root.style.height = chart.size.height + 'px';
             }
 
-            this.setTheme(settings.theme || 'light');
+            this.setTheme(chart.appereance.theme || 'light');
 
             const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};
@@ -338,27 +341,35 @@ class Yagr {
                 this.config.timeline.splice(0, timeline.length);
             }
         } else {
-            // @TODO wrap into stages lifecycle
-            this.config.series = series;
-            this.config.timeline = timeline;
-            const uplotOptions = this.createUplotOptions();
-            this._cache = {height: uplotOptions.height, width: uplotOptions.width};
-            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
+            this.inStage('config', () => {
+                this.config.series = series;
+                this.config.timeline = timeline;
 
-            const newSeries = this.transformSeries();
-            this.series = newSeries;
-            this.dispose();
-            this.uplot = new UPlot(this.options, this.series, this.initRender);
-            this.init();
-            return;
+                const uplotOptions = this.createUplotOptions();
+                this._cache = {height: uplotOptions.height, width: uplotOptions.width};
+                this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
+            })
+                .inStage('processing', () => {
+                    const newSeries = this.transformSeries();
+                    this.series = newSeries;
+                    this.dispose();
+                })
+                .inStage('uplot', () => {
+                    this.uplot = new UPlot(this.options, this.series, this.initRender);
+                    this.init();
+                    this.state.stage = 'listen';
+                });
         }
 
         const newData = this.transformSeries();
+
         updateFns.push(() => {
             this.uplot.setData(newData);
         });
 
-        updateFns.forEach((fn) => fn());
+        this.uplot.batch(() => {
+            updateFns.forEach((fn) => fn());
+        });
     }
 
     /*
@@ -369,7 +380,7 @@ class Yagr {
         const {config} = this;
         const plugins: Plugin[] = [];
 
-        const settings = config.settings || {};
+        const chart = config.chart;
 
         /** Setting up TooltipPugin */
         if (config.tooltip && config.tooltip.enabled !== false) {
@@ -387,16 +398,12 @@ class Yagr {
             series: [
                 {
                     id: DEFAULT_X_SERIE_NAME,
-                    color: '',
-                    name: '',
                     $c: config.timeline,
                     scale: DEFAULT_X_SCALE,
                     count: config.timeline.length,
-                    sum: 0,
-                    avg: 0,
-                },
+                } as Series,
             ],
-            ms: settings.timeMultiplier || 1,
+            ms: chart.timeMultiplier || 1,
             hooks: config.hooks || {},
         };
 
@@ -411,10 +418,10 @@ class Yagr {
         options.cursor = options.cursor || {};
         options.cursor.points = options.cursor.points || {};
         options.cursor.drag = options.cursor.drag || {
-            dist: config.settings.minSelectionWidth || MIN_SELECTION_WIDTH,
+            dist: chart.select.minWidth || MIN_SELECTION_WIDTH,
             x: true,
             y: false,
-            setScale: settings.zoom === undefined ? true : settings.zoom,
+            setScale: chart.select.zoom ?? true,
         };
 
         if (this.utils.sync) {
@@ -513,7 +520,7 @@ class Yagr {
         options.hooks.setSelect.push((u: UPlot) => {
             const {left, width} = u.select;
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
-            const {timeMultiplier = 1} = config.settings;
+            const {timeMultiplier = 1} = chart;
 
             this.execHooks(config.hooks.onSelect, {
                 from: Math.ceil(_from / timeMultiplier),
@@ -524,15 +531,15 @@ class Yagr {
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
         });
 
-        options.drawOrder = settings.drawOrder
-            ? (settings.drawOrder.filter(
+        options.drawOrder = chart.appereance.drawOrder
+            ? (chart.appereance.drawOrder.filter(
                   (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Axes,
               ) as DrawOrderKey[])
             : [DrawOrderKey.Series, DrawOrderKey.Axes];
 
         /** Disabling uPlot legend. */
         options.legend = {show: false};
-        options.padding = config.chart.padding || getPaddingByAxes(options);
+        options.padding = config.chart.size.padding || getPaddingByAxes(options);
 
         this.options = options;
 
@@ -722,8 +729,8 @@ class Yagr {
     };
 
     private init = () => {
-        if (this.config.settings.adaptive) {
-            this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.settings.resizeDebounceMs || 100));
+        if (this.config.chart.size.adaptive) {
+            this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.chart.size.resizeDebounceMs || 100));
             this.resizeOb.observe(this.root);
         }
 
@@ -743,6 +750,16 @@ class Yagr {
             });
         }
     };
+
+    private inStage(stage: YagrState['stage'], fn: () => void) {
+        this.state.stage === stage;
+        try {
+            fn();
+        } catch (error) {
+            this.onError(error);
+        }
+        return this;
+    }
 
     private trackMouse() {
         const mouseOver = () => {
