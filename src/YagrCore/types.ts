@@ -12,7 +12,7 @@ type AllSeriesOptions = ExtendedSeriesOptions &
     Omit<AreaSeriesOptions, 'type'> &
     Omit<ColumnSeriesOptions, 'type'>;
 declare module 'uplot' {
-    interface Series extends AllSeriesOptions {
+    interface Series extends Omit<AllSeriesOptions, 'data'> {
         id: string;
         color: string;
         name: string;
