@@ -1,3 +1,4 @@
+import type Yagr from '../../index';
 import UPlot, {Plugin, Series} from 'uplot';
 
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
@@ -65,13 +66,13 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
 /*
  * This plugin configures points markers
  */
-export default function YagrMarkersPlugin(config: YagrConfig): Plugin {
+export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugin {
     const {size = DEFAULT_POINT_SIZE, strokeWidth = 2, strokeColor = '#ffffff', show} = config.markers;
 
     const defaultDotsSize = (config.chart.series as DotsSeriesOptions).pointsSize || DEFAULT_POINT_SIZE;
 
     function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
-        const {scale, _focus, _color, _modifiedColor, color, type} = u.series[i];
+        const {scale, _focus, color, getFocusedColor, type} = u.series[i];
 
         let j = i0;
 
@@ -87,7 +88,7 @@ export default function YagrMarkersPlugin(config: YagrConfig): Plugin {
                     val as number,
                     pointSize,
                     strokeWidth,
-                    (_focus || _focus === null ? _color : _modifiedColor) || color,
+                    (_focus || _focus === null ? color : getFocusedColor(yagr, i)) || color,
                     strokeColor,
                     scale || DEFAULT_Y_SCALE,
                 );

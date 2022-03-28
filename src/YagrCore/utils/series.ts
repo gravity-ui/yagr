@@ -5,7 +5,7 @@ import type Yagr from '../../';
 
 import {InterpolationType, RawSerieData} from '../types';
 import {genId} from './common';
-import {getSerieFocusColors} from './colors';
+import {getFocusedColor, getSerieFocusColors} from './colors';
 import {drawMarkersIfRequired} from '../plugins/markers';
 import {pathsRenderer} from './paths';
 
@@ -24,21 +24,19 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         count: 0,
         sum: 0,
         avg: 0,
+        getFocusedColor,
     };
 
     serie.points = serie.points || {};
 
-    const colorFn = getSerieFocusColors(yagr.utils.theme, yagr.utils.colors, serie.color);
-
-    serie._color = serie.color;
-    serie._modifiedColor = colorFn.defocusColor;
+    const colorFn = getSerieFocusColors(yagr, 'color');
 
     if (serie.type === 'area') {
         serie.lineColor = yagr.utils.colors.parse(serie.lineColor || defaults.SERIE_AREA_BORDER_COLOR);
         serie.lineWidth = serie.lineWidth || defaults.SERIE_AREA_BORDER_WIDTH;
 
         serie.fill = colorFn;
-        serie.stroke = getSerieFocusColors(yagr.utils.theme, yagr.utils.colors, serie.lineColor);
+        serie.stroke = getSerieFocusColors(yagr, 'lineColor');
         serie.width = serie.lineWidth;
         serie.points.show = drawMarkersIfRequired;
     }
@@ -72,3 +70,5 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
 
     return serie;
 }
+
+export const UPDATE_KEYS: (keyof Series)[] = ['width', 'pointsSize', 'color', 'lineColor', 'lineWidth'];

@@ -32,12 +32,13 @@ declare module 'uplot' {
         /** Average value */
         avg: number;
 
+        /** Get focus color */
+        getFocusedColor: (y: Yagr, idx: number) => string;
+
         /** Current focus state */
         _focus?: boolean | null;
         /** Is series data transformd */
         _transformed?: boolean;
-        _color?: string;
-        _modifiedColor?: string;
     }
 }
 
@@ -286,6 +287,9 @@ export interface ExtendedSeriesOptions {
 
     /** Raw data */
     data: DataSeriesExtended;
+
+    /** Is line focused */
+    focus?: boolean;
 }
 export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> = ExtendedSeriesOptions & T;
 

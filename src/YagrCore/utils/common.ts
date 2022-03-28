@@ -370,20 +370,10 @@ export function debounce<T extends Array<unknown> = []>(func: (...args: T) => vo
     };
 }
 
-type Keyed<T extends {}> = {
-    [t in keyof T]: unknown;
-} & T;
-
-export const joinBy = <T extends {}>(a: Keyed<T>[], b: Keyed<T>[], key: keyof T): Keyed<T>[] => {
-    const result = a;
-    b.forEach((item) => {
-        const i = a.find((aI) => aI[key] === item[key]);
-
-        if (i) {
-            Object.assign(i, item);
-        } else {
-            result.push(item);
+export const assignKeys = <T>(keys: (keyof T)[], f: T, t: T) => {
+    keys.forEach((key) => {
+        if (t[key] !== undefined) {
+            f[key] = t[key];
         }
     });
-    return result;
 };

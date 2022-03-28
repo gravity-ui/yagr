@@ -1,5 +1,5 @@
-import UPlot from 'uplot';
-import type ThemedDefaults from '../defaults';
+import UPlot, {Series} from 'uplot';
+import type Yagr from '../index';
 
 const DEFAULT_SHADE_COLOR = [0, 0, 0, 0.6];
 
@@ -64,16 +64,16 @@ export default class ColorParser {
     }
 }
 
-export const getSerieFocusColors = (theme: ThemedDefaults, colorParser: ColorParser, color: string) => {
-    const shift = theme.SHIFT;
-    const mainColor = ColorParser.parseRgba(color) || DEFAULT_SHADE_COLOR;
-    const modified = colorParser.shade(mainColor, shift);
+export const getFocusedColor = (y: Yagr, seriesIdx: number) => {
+    const shift = y.utils.theme.SHIFT;
+    const s = y.uplot.series[seriesIdx];
+    const mainColor = ColorParser.parseRgba(s.color) || DEFAULT_SHADE_COLOR;
+    return y.utils.colors.shade(mainColor, shift);
+};
 
-    const colorFn = (u: UPlot, idx: number) => {
-        return u.series[idx]._focus === false ? modified : color;
+export const getSerieFocusColors = (y: Yagr, field: keyof Series) => {
+    return (u: UPlot, idx: number) => {
+        const s = u.series[idx];
+        return s._focus === false ? s.getFocusedColor(y, idx) : (s[field] as string);
     };
-
-    colorFn.defocusColor = modified;
-
-    return colorFn;
 };
