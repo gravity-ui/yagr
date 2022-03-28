@@ -287,7 +287,7 @@ export interface ExtendedSeriesOptions {
     /** Raw data */
     data: DataSeriesExtended;
 }
-export type RawSerieData = ExtendedSeriesOptions & Omit<SeriesOptions, 'type'> & {type?: ChartType};
+export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> = ExtendedSeriesOptions & T;
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 

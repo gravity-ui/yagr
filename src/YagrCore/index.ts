@@ -30,7 +30,7 @@ import {debounce, genId, getSumByIdx, preprocess} from './utils/common';
 import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
 import ColorParser from './utils/colors';
-import {configureSeries, getSerie} from './utils/series';
+import {configureSeries} from './utils/series';
 
 import ThemedDefaults, {
     DEFAULT_X_SCALE,
@@ -314,8 +314,7 @@ class Yagr {
         if (options.incremental) {
             this.config.timeline.push(...timeline);
             series.forEach((serie) => {
-                const newSeriesPrep = getSerie(serie, this, this.config.series.length);
-                const newSeries = configureSeries(this, newSeriesPrep);
+                const newSeries = configureSeries(this, serie, this.config.series.length);
 
                 const matched = this.config.series.find(({id}) => id === newSeries.id);
 
@@ -436,14 +435,14 @@ class Yagr {
             plugins.push(cPlugin.uplot);
         }
 
-        const seriesOptions = (config.series || []).map((rawSerie: RawSerieData, idx) => getSerie(rawSerie, this, idx));
+        const seriesOptions = config.series || [];
         const resultingSeriesOptions: Series[] = options.series;
 
         /**
          * Prepare series options
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
-            const serie = configureSeries(this, seriesOptions[i] || {});
+            const serie = configureSeries(this, seriesOptions[i] || {}, i);
             resultingSeriesOptions.push(serie);
         }
 
