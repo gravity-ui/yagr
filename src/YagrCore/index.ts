@@ -26,7 +26,7 @@ import {
     YagrTheme,
 } from './types';
 
-import {assignKeys, debounce, genId, getSumByIdx, preprocess} from './utils/common';
+import {assignKeys, changedKey, debounce, genId, getSumByIdx, preprocess} from './utils/common';
 import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
 import ColorParser from './utils/colors';
@@ -205,11 +205,17 @@ class Yagr {
             });
     }
 
+    /*
+     * Set's locale of chart and redraws all locale-dependent elements. 
+     */
     setLocale(locale: string | Record<string, string>) {
         this.utils.i18n = i18n(locale);
         this.plugins.legend?.redraw();
     }
 
+    /*
+     *  Set's theme of chart and redraws all theme-dependent elements.
+     */
     setTheme(themeValue: YagrTheme) {
         this.utils.theme.setTheme(themeValue);
         this.root.classList.remove('yagr_theme_dark');
@@ -223,6 +229,9 @@ class Yagr {
         this.redraw({axes: true, series: false});
     }
 
+    /*
+     * Fully redraws Yagr instance
+     */
     redraw(options: RedrawOptions = {}) {
         const uPlotRedrawOptions = [options.series || true, options.axes || true];
         this.uplot.redraw(...uPlotRedrawOptions);
@@ -314,6 +323,8 @@ class Yagr {
         const updateFns: (() => void)[] = [];
 
         if (options.incremental) {
+            let shouldUpdateCursror = false;
+
             this.config.timeline.push(...timeline);
             series.forEach((serie) => {
                 let matched = this.config.series.find(({id}) => id === serie.id || updateId);
@@ -333,16 +344,20 @@ class Yagr {
                     const opts = this.options.series[seriesIdx];
                     const uOpts = this.uplot.series[seriesIdx];
 
-                    if (newSeries.show ?? uOpts.show !== newSeries.show) {
+                    if (changedKey('show', uOpts, newSeries)) {
                         updateFns.push(() => {
                             this.uplot.setSeries(seriesIdx, {show: newSeries.show});
                         });
                     }
 
-                    if (newSeries.focus ?? uOpts.focus !== newSeries.focus) {
+                    if (changedKey('focus', uOpts, newSeries)) {
                         updateFns.push(() => {
                             this.uplot.setSeries(seriesIdx, {focus: newSeries.focus});
                         });
+                    }
+
+                    if (changedKey('color', uOpts, newSeries)) {
+                        shouldUpdateCursror = true;
                     }
 
                     assignKeys(UPDATE_KEYS, opts, newSeries);
@@ -359,6 +374,12 @@ class Yagr {
                     this.config.series.push(serie);
                 }
             });
+
+            if (shouldUpdateCursror) {
+                updateFns.push(() => {
+                    this.plugins.cursor?.updatePoints();
+                });
+            }
 
             if (options.splice) {
                 const sliceLength = series[0].data.length;
@@ -460,7 +481,7 @@ class Yagr {
         }
 
         if (config.cursor) {
-            const cPlugin = cursorPlugin(config.cursor, this);
+            const cPlugin = cursorPlugin(this, config.cursor);
             this.plugins.cursor = cPlugin;
             plugins.push(cPlugin.uplot);
         }
