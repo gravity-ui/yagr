@@ -90,14 +90,14 @@ export const getTimeFormatter = (config: YagrConfig) => {
     };
 };
 
-function getSplits(maxTicks: number) {
+function getSplits(splitsCount: number) {
     return (_: uPlot, __: number, scaleMin: number, scaleMax: number) => {
-        if (maxTicks <= 2) {
+        if (splitsCount <= 2) {
             return [scaleMin, scaleMax];
         }
 
         const dist = Math.abs(scaleMax - scaleMin);
-        const step = dist / (maxTicks - 1);
+        const step = dist / (splitsCount - 1);
         let i = step;
         const splits = [];
         while (scaleMin + i < scaleMax) {
@@ -114,7 +114,7 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
     const config = yagr.config;
 
     const axis: Axis = {
-        splits: axisConfig.maxTicks ? getSplits(axisConfig.maxTicks) : axisConfig.splits,
+        splits: axisConfig.splitsCount ? getSplits(axisConfig.splitsCount) : axisConfig.splits,
         show: typeof axisConfig.show === 'undefined' ? true : axisConfig.show,
         label: axisConfig.label || undefined,
         labelSize: axisConfig.labelSize || defaults.Y_AXIS_LABEL_SIZE,
