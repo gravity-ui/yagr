@@ -97,16 +97,22 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
     series: RawSerieData[];
 };
 
-type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
+type ArrayElement<ArrayType extends readonly unknown[] | undefined> = 
+  ArrayType extends undefined ? never : ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+type AsNonUndefined<T> = T extends undefined ? never : T;
 
+export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined ? never : Parameters<AsNonUndefined<ArrayElement<T>>>
+
+export type HookHandler<Data> = ((a: Data & {chart: Yagr}) => void)[];
 export interface YagrHooks extends Hooks.Arrays {
-    load?: Handler<{chart: Yagr; meta: YagrMeta}>;
-    onSelect?: Handler<{from: number; to: number; chart: Yagr}>;
-    error?: Handler<{type: YagrState['stage']; error: Error; yagr: Yagr}>;
-    processed?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'processTime'>}>;
-    inited?: Handler<{chart: Yagr; meta: Pick<YagrMeta, 'initTime'>}>;
-    dispose?: Handler<Yagr>;
-    resize?: Handler<ResizeObserverEntry[]>;
+    load?: HookHandler<{meta: YagrMeta}>;
+    onSelect?: HookHandler<{from: number; to: number}>;
+    error?: HookHandler<{error: Error; stage: YagrState['stage']}>;
+    processed?: HookHandler<{meta: Pick<YagrMeta, 'processTime'>}>;
+    inited?: HookHandler<{meta: Pick<YagrMeta, 'initTime'>}>;
+    dispose?: HookHandler<{}>;
+    resize?: HookHandler<{entries: ResizeObserverEntry[]}>;
+    stage?: HookHandler<{stage: YagrState['stage']}>;
 }
 
 export interface ProcessingInterpolation {

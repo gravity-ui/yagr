@@ -24,6 +24,7 @@ import {
     DataSeries,
     MinimalValidConfig,
     YagrTheme,
+    HookParams,
 } from './types';
 
 import {assignKeys, changedKey, debounce, genId, getSumByIdx, preprocess} from './utils/common';
@@ -141,15 +142,17 @@ class Yagr {
             pConfig,
         );
 
+        this.config = config;
+
         this.inStage('config', () => {
             this.id = root.id || genId();
             this.root = root;
             this.root.classList.add('yagr');
 
             const colorParser = new ColorParser();
-            const sync = config.cursor.sync;
+            const sync = this.config.cursor.sync;
 
-            const chart = config.chart;
+            const chart = this.config.chart;
 
             chart.series ||= {type: 'line'};
             chart.size ||= {adaptive: true};
@@ -163,7 +166,6 @@ class Yagr {
             };
 
             colorParser.setContext(root);
-            this.config = config;
 
             if (sync) {
                 this.utils.sync = UPlot.sync(typeof sync === 'string' ? sync : DEFAULT_SYNC_KEY);
@@ -200,13 +202,12 @@ class Yagr {
                         processTime,
                     },
                 });
-
-                this.state.stage = 'render';
-            });
+            })
+            .inStage('render');
     }
 
     /*
-     * Set's locale of chart and redraws all locale-dependent elements. 
+     * Set's locale of chart and redraws all locale-dependent elements.
      */
     setLocale(locale: string | Record<string, string>) {
         this.utils.i18n = i18n(locale);
@@ -265,7 +266,7 @@ class Yagr {
         this.resizeOb && this.resizeOb.unobserve(this.root);
         this.unsubscribe();
         this.uplot.destroy();
-        this.execHooks(this.config.hooks.dispose, this);
+        this.execHooks(this.config.hooks.dispose, {chart: this});
     };
 
     toDataUrl() {
@@ -364,11 +365,8 @@ class Yagr {
                     assignKeys(UPDATE_KEYS, uOpts, newSeries);
                 } else {
                     updateFns.push(() => {
-                        const newSeries = configureSeries(
-                            this,
-                            serie,
-                            serie.id ? this._y2uIdx[serie.id] : this.config.series.length,
-                        );
+                        const newSeries = configureSeries(this, serie, this.config.series.length);
+                        this._y2uIdx[newSeries.id] = this.uplot.series.length;
                         this.uplot.addSeries(newSeries, this.config.series.length);
                     });
                     this.config.series.push(serie);
@@ -405,8 +403,8 @@ class Yagr {
                 .inStage('uplot', () => {
                     this.uplot = new UPlot(this.options, this.series, this.initRender);
                     this.init();
-                    this.state.stage = 'listen';
-                });
+                })
+                .inStage('listen');
         }
 
         if (timeline.length) {
@@ -533,11 +531,12 @@ class Yagr {
                 return;
             }
             this.state.stage = 'listen';
+            this.execHooks(this.config.hooks.stage, {chart: this, stage: this.state.stage});
             const renderTime = performance.now() - this._startTime;
             this._meta.renderTime = renderTime;
             this.execHooks(config.hooks.load, {
                 chart: this,
-                meta: this._meta,
+                meta: this._meta as YagrMeta,
             });
         });
 
@@ -724,7 +723,7 @@ class Yagr {
         return result as UPlotData;
     }
 
-    private onError(error: unknown) {
+    private onError(error: Error) {
         this.execHooks(this.config.hooks.error, {
             stage: this.state.stage,
             error,
@@ -754,6 +753,7 @@ class Yagr {
      */
     private onResize = (args: ResizeObserverEntry[]) => {
         const [resize] = args;
+
         if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
             return;
         }
@@ -775,7 +775,7 @@ class Yagr {
             height: this.options.height,
         });
         this.uplot.redraw();
-        this.execHooks<YagrHooks['resize']>(this.config.hooks.resize, args);
+        this.execHooks(this.config.hooks.resize, {entries: args, chart: this});
     };
 
     private init = () => {
@@ -793,20 +793,26 @@ class Yagr {
         this.config.hooks.dispose.push(this.trackMouse());
     };
 
-    private execHooks = <T>(hooks: T | undefined, ...args: unknown[]) => {
+    private execHooks = <T extends YagrHooks[keyof YagrHooks]>(hooks: T, ...args: HookParams<T>) => {
         if (Array.isArray(hooks)) {
             hooks.forEach((hook) => {
+                if (!hook) {
+                    return;
+                }
+
+                // @ts-ignore
                 typeof hook === 'function' && hook(...args);
             });
         }
     };
 
-    private inStage(stage: YagrState['stage'], fn: () => void) {
+    private inStage(stage: YagrState['stage'], fn?: () => void) {
         this.state.stage === stage;
+        this.execHooks(this.config.hooks.stage, {chart: this, stage});
         try {
-            fn();
+            fn && fn();
         } catch (error) {
-            this.onError(error);
+            this.onError(error as Error);
         }
         return this;
     }

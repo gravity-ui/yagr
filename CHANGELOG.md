@@ -1,5 +1,24 @@
 ### master
 
+### New features
+
+### Yagr methods
+
+-   Added `yagr.setSeries` method which updates/sets series and redraws them
+-   Added `yagr.setAxes` method which updates/adds axes and redraws them if required
+-   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements
+-   Added `yagr.setTheme` method which changes theme and redraws chart
+
+### Config
+
+-   Removed `settings` fields
+-   Refactored `chart` field, now it includes all settings from `settings` field, and diverged fields by domains
+
+### Hooks
+
+-   Add `stage` hook which fires when `yagr.state.stage` changes
+-   All hooks' types redesigned to support hook arguments completeions
+
 ### 1.4.0 (11-02-2022)
 
 #### Hooks
