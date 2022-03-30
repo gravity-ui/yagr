@@ -97,11 +97,16 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
     series: RawSerieData[];
 };
 
-type ArrayElement<ArrayType extends readonly unknown[] | undefined> = 
-  ArrayType extends undefined ? never : ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+type ArrayElement<ArrayType extends readonly unknown[] | undefined> = ArrayType extends undefined
+    ? never
+    : ArrayType extends readonly (infer ElementType)[]
+    ? ElementType
+    : never;
 type AsNonUndefined<T> = T extends undefined ? never : T;
 
-export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined ? never : Parameters<AsNonUndefined<ArrayElement<T>>>
+export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined
+    ? never
+    : Parameters<AsNonUndefined<ArrayElement<T>>>;
 
 export type HookHandler<Data> = ((a: Data & {chart: Yagr}) => void)[];
 export interface YagrHooks extends Hooks.Arrays {
@@ -312,7 +317,7 @@ export interface AxisOptions extends Omit<UAxis, 'side'> {
     precision?: number | 'auto';
 
     /** default: 5 */
-    maxTicks?: number;
+    splitsCount?: number;
 }
 
 export interface PlotLineConfig {
