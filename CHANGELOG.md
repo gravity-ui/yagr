@@ -1,57 +1,69 @@
 ### master
 
-### Breaking changes
+#### Documentation
 
-#### Yagr instances
+-   Updated documentation to meet new major version
+
+#### Breaking changes
+
+##### Yagr instances
 
 -   Make charts adaptive by default
 -   All utility helpers (such as `theme`, `i18n`, `colorParser`) moved into `yagr.utils`
 -   Removed `refPoints` and simplified scale min/max calculations
 
-#### Config
+##### ColorParser
+
+-   `ColorParser` now is not a singleton and moved into `yagr.utils.colors`
+
+##### ThemeDefaults
+
+-   `ThemeDefaults` now is not a singleton and moved into `yagr.utils.theme`
+
+##### Config
 
 -   Removed `settings` fields
 -   Refactored `chart` field, now it includes all settings from `settings` field, and diverged fields by domains
 
-#### Hooks
+##### Hooks
 
 -   All extended `yagr.hooks` now passing consistent `{chart: Yagr}` argument to handlers
 
-#### Scales
+##### Scales
 
 -   Removed `maxTicks` field. It was never worked
 
-#### Typings
+##### Typings
 
 -   Splited different series options by `type`, which allows to enable more comprehensible completions in TypeScript
 -   Renamed: `InterpolationSetting` -> `InterpolationType`
 
-### New features
+#### New features
 
 -   Themes now not shared between Yagr instances, they now can be different per instance
 
-#### Yagr methods
+##### Yagr methods
 
 -   Added `yagr.setSeries` method which updates/sets series and redraws them
 -   Added `yagr.setAxes` method which updates/adds axes and redraws them if required
 -   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements
 -   Added `yagr.setTheme` method which changes theme and redraws chart
 
-#### Axes
+##### Axes
 
 -   Added `splitsCount` which helps to render axes with given number of splits.
 
-#### Hooks
+##### Hooks
 
 -   Add `stage` hook which fires when `yagr.state.stage` changes
 -   All hooks' types redesigned to support hook arguments completeions
 
-#### Tooltip
+##### Tooltip
 
 -   Tooltip now support `.on('<action>', <handler>)` which allows to subsribe on tooltip action emitting insted of single `onStateChange` callback. Also `.off` method is available.
 -   Added `yagr.plugins.tooltip.display()` method which allows to display tooltip in given place with given X-axis index programmaticaly
 
-#### Cursor
+##### Cursor
 
 -   Add `updatePoints` method which redraws cursor points in case of series options was changed
 

@@ -1,14 +1,14 @@
 const LOCALIZATIONS: Record<string, Record<string, string>> = {
     ru: {
-        'hide-all': 'Скрыть все линии',
-        'show-all': 'Показать все линии',
+        'hide-all': 'Скрыть все',
+        'show-all': 'Показать все',
         sum: 'Сумма',
         scale: 'Шкала',
         series: 'Линия',
     },
     en: {
-        'hide-all': 'Hide lines',
-        'show-all': 'Show lines',
+        'hide-all': 'Hide all',
+        'show-all': 'Show all',
         sum: 'Total',
         scale: 'Scale',
         series: 'Series',

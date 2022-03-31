@@ -25,9 +25,10 @@ import {
     MinimalValidConfig,
     YagrTheme,
     HookParams,
+    DataRefs,
 } from './types';
 
-import {assignKeys, changedKey, debounce, genId, getSumByIdx, preprocess} from './utils/common';
+import {assignKeys, changedKey, debounce, genId, getRefsPlugin, getSumByIdx, preprocess} from './utils/common';
 import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
 import ColorParser from './utils/colors';
@@ -95,6 +96,7 @@ class Yagr {
     canvas!: HTMLCanvasElement;
     plugins: YagrPlugins = {};
     state!: YagrState;
+    dataRefs?: Record<string, DataRefs>;
     utils!: {
         colors: ColorParser;
         sync?: SyncPubSub;
@@ -262,12 +264,12 @@ class Yagr {
         this.uplot.setSeries(serieIdx, {focus});
     }
 
-    dispose = () => {
+    dispose() {
         this.resizeOb && this.resizeOb.unobserve(this.root);
         this.unsubscribe();
         this.uplot.destroy();
         this.execHooks(this.config.hooks.dispose, {chart: this});
-    };
+    }
 
     toDataUrl() {
         return this.canvas.toDataURL('img/png');
@@ -426,7 +428,7 @@ class Yagr {
      */
     private createUplotOptions() {
         const {config} = this;
-        const plugins: Plugin[] = [];
+        const plugins: Plugin[] = [getRefsPlugin(this)];
 
         const chart = config.chart;
 

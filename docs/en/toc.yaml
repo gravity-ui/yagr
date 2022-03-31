@@ -6,7 +6,9 @@ items:
       href: quickstart.md
     - name: Documentation
       items:
-          - name: API
+          - name: Methods
+            href: ./api/methods.md
+          - name: Config
             items:
                 - name: Visualization types
                   href: ./api/visualization.md

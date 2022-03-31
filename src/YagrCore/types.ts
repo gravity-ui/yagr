@@ -407,3 +407,5 @@ export interface MarkersOptions {
 }
 
 export type SnapToValue = 'left' | 'right' | 'closest';
+
+export type DataRefs = {min: number; max: number; sum: number; avg: number; count: number};
