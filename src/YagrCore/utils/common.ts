@@ -176,7 +176,7 @@ export function findDataIdx(
     let corL = idx,
         corR = idx;
 
-    const direction = series.snapToValues === undefined ? defaultSnapTo : series.snapToValues;
+    const direction = series.snapToValues ?? defaultSnapTo;
 
     if (direction === false) {
         return idx;
