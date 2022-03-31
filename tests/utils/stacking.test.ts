@@ -10,7 +10,7 @@ describe('scales: stacking', () => {
             series: [{data: [1, 3, 3]}, {data: [3, 1, 3]}],
         });
 
-        expect(y.uplot.data[2]).toEqual([25, 75, 50]);
-        expect(y.uplot.data[1]).toEqual([75, 25, 50]);
+        expect(y.uplot.data[2]).toEqual([1, 3, 3]);
+        expect(y.uplot.data[1]).toEqual([4, 4, 6]);
     });
 });

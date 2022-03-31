@@ -696,7 +696,7 @@ class Yagr {
                 }
 
                 if (scaleConfig.stacking) {
-                    if (!serieOptions.show) {
+                    if (serieOptions.show === false) {
                         value = 0;
                     }
 
