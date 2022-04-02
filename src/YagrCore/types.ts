@@ -193,18 +193,6 @@ export interface YagrChartOptions {
     timeMultiplier?: 1 | 1e-3;
 }
 
-/** Options how to redraw chart */
-export interface RedrawOptions {
-    /** Should redraw series paths */
-    series?: boolean;
-
-    /** Should redraw axes */
-    axes?: boolean;
-
-    /** Should redraw plotLines */
-    plotLines?: boolean;
-}
-
 export type ChartType = 'area' | 'line' | 'column' | 'dots';
 
 /** Data values of lines */
@@ -214,6 +202,9 @@ export type DataSeries = (number | null)[];
 export interface CommonSeriesOptions {
     /** Visualisation type */
     type?: ChartType;
+
+    /** Is series visible */
+    show?: boolean;
 
     /** Color of serie */
     color?: string;

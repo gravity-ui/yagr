@@ -39,9 +39,13 @@ Series type adds extra features to [uPlot series](https://github.com/leeoniya/up
 -   `series.interpolation?: InterpolationSetting` - series line interpolation type
 -   `series.cursorOptions?: CursorOptions` - series cursor options
 
-### Reference points
+### Data references
 
-`series.refPoints?: RefPoints` - calculated references points for Yagr plot If they're not provided, Yagr calculates them by itself. Useful in cases when you preload ad process data on the server side and can easily precalculate reference points for Yagr to optimize it somewhat.
+-   `series.max?: number` - comes from uPlot
+-   `series.min?: number` - comes from uPlot
+-   `series.avg?: number` - calculates before uPlot data will be set
+-   `series.sum?: number` - calculates before uPlot data will be set
+-   `series.count?: number` - calculates before uPlot data will be set
 
 ### Tooltip
 
@@ -53,8 +57,29 @@ Series type adds extra features to [uPlot series](https://github.com/leeoniya/up
 
 ### Cursor snapToValues override
 
-`snapToValues?: SnapToValue | false` - snap dataIdx value (default: `closest`) Used to override `cursor.snapToValues`.
+`series.snapToValues?: SnapToValue | false` - snap dataIdx value (default: `closest`) Used to override `cursor.snapToValues`.
 
 ### Stacking group
 
 `series.stackGroup?: number` - stack series group Used to combine series in different stacks. Keep in mind that stacks are just the sum of all real values, and stacks will be calculated wrong if there are data alignment artifacts on a given X-point on some lines. To avoid that, there are special data interpolation options in Yagr (see [data alignment](./data-processing.md) for more information). `null` values in stacks will be interpreted as zeros.
+
+### Interpolation
+
+Interpolation of line curves. Don't confuse it with [data alignment interpolation](./data-processing.md#data-interpolation)
+`series.interpolation?: InterpolationSetting`
+
+```ts
+type InterpolationType = 'linear' | 'left' | 'right' | 'smooth';
+```
+
+-   `linear` - linear interpolation
+    ![Interpolation linear](../../assets/interpolation-linear.png =600x100%)
+
+-   `left` - left interpolation (previous point value)
+    ![Interpolation left](../../assets/interpolation-left.png =600x100%)
+
+-   `right` - right interpolation (next point value)
+    ![Interpolation right](../../assets/interpolation-right.png =600x100%)
+
+-   `smooth` - smooth interpolation (Bezier curve interpolation)
+    ![Interpolation smooth](../../assets/interpolation-smooth.png =600x100%)

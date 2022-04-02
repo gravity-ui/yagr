@@ -18,17 +18,21 @@ Most options are described in uPlot axes config. See [axes config in uPlot](http
 
 ### Precision
 
-`axes.precision` - sets up axis label precision
+`axis.precision` - sets up axis label precision
 
 -   `number` - decimal digits count
 -   `'auto'` - automatically calculates minimum correct precision
 
 ### PlotLines
 
-`axes.plotlines: PlotLineConfig[];`
+`axis.plotlines: PlotLineConfig[];`
 
 See [Plot Lines plugin](../plugins/plot-lines.md#plot-lines).
 
 ### Position
 
-`axes.side: 'top' | 'right' | 'bottom' | 'left'` - position of axis, `'left'` by default
+`axis.side: 'top' | 'right' | 'bottom' | 'left'` - position of axis, `'left'` by default
+
+### Splits and ticks
+
+`axis.splitsCount: number` - count of splits on axis.

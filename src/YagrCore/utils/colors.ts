@@ -48,12 +48,11 @@ export default class ColorParser {
         return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`;
     }
 
-    toRgba(color: string, fallback: number[]) {
-        return ColorParser.parseRgba(this.parse(color)) || fallback;
+    toRgba(color: string, fallbackRgba: number[]) {
+        return ColorParser.parseRgba(this.parse(color)) || fallbackRgba;
     }
 
-    shade(color: number[], value: number) {
-        const [r, g, b, a] = color;
+    shade([r, g, b, a]: number[], value: number) {
         const direction = value < 0;
         const tOffset = direction ? 0 : 255 * value;
         const transition = direction ? 1 + value : 1 - value;

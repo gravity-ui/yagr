@@ -2,7 +2,7 @@
     --yagr-font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
 
     &_theme_light {
-        --yagr-title: #333333;
+        --yagr-title-color: #333333;
 
         --yagr-legend-item: rgba(0, 0, 0, 0.5);
         --yagr-legend-item-hover: #000000;
@@ -14,7 +14,7 @@
     }
 
     &_theme_dark {
-        --yagr-title: rgba(255, 255, 255, 0.35);
+        --yagr-title-color: rgba(255, 255, 255, 0.35);
 
         --yagr-legend-item: rgba(255, 255, 255, 0.5);
         --yagr-legend-item-hover: #a09fa3;
@@ -38,7 +38,7 @@
     }
 
     .u-title {
-        color: var(--yagr-title);
+        color: var(--yagr-title-color);
         font-size: 14px;
         font-weight: bold;
         line-height: 14px;

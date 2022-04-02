@@ -25,7 +25,7 @@ interface LegendState {
     pageSize: number;
 }
 
-const ALL_SERIES_IDX = -1;
+const ALL_SERIES_IDX = 'null';
 const TOTAL_LEGEND_VERTICAL_PADDING = 20;
 const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
@@ -113,41 +113,34 @@ export default class Legend {
             return () => {};
         }
 
-        const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-idx]');
+        const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-id]');
         const unsubsribe: (() => void)[] = [];
 
         const onSerieClick = (serieNode: HTMLElement) => () => {
-            const serieIdx = Number(serieNode.getAttribute('data-serie-idx'));
-            const seriesToToggle: [number, Series, boolean][] = [];
+            const serieId = serieNode.getAttribute('data-serie-id');
+            const seriesToToggle: [Series, boolean][] = [];
 
-            if (serieIdx === ALL_SERIES_IDX) {
+            if (serieId === ALL_SERIES_IDX) {
                 const nextToggleState = !hasOneVisibleLine(u.series);
 
                 for (let idx = 1; idx < u.series.length; idx++) {
-                    seriesToToggle.push([idx, u.series[idx], nextToggleState]);
+                    seriesToToggle.push([u.series[idx], nextToggleState]);
                 }
             } else {
-                let idx = 0;
-                const serie = u.series.find(() => {
-                    const r = idx === serieIdx;
-                    if (!r) {
-                        idx += 1;
-                    }
-                    return r;
-                });
+                const serie = u.series.find(({id}) => id === serieId);
                 if (!serie) {
                     return;
                 }
-                seriesToToggle.push([idx, serie, !serie.show]);
+                seriesToToggle.push([serie, !serie.show]);
             }
 
-            seriesToToggle.forEach(([idx, serie, nextState]) => {
-                const node = u.root.querySelector(`[data-serie-idx="${idx}"]`);
-                yagr.toggleSerieVisibility(idx, serie, nextState);
+            seriesToToggle.forEach(([serie, nextState]) => {
+                const node = u.root.querySelector(`[data-serie-id="${serie.id}"]`);
+                yagr.setVisible(serie.id, nextState);
                 node?.classList[serie.show ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
 
-            const allSeriesItem = u.root.querySelector(`[data-serie-idx="${ALL_SERIES_IDX}"]`);
+            const allSeriesItem = u.root.querySelector(`[data-serie-id="${ALL_SERIES_IDX}"]`);
 
             if (allSeriesItem) {
                 const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
@@ -156,20 +149,20 @@ export default class Legend {
         };
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
-            const serieIdx = Number(serieNode.getAttribute('data-serie-idx'));
-            const targetSerie = this.yagr.options.series.find((_, idx) => idx === serieIdx);
+            const serieId = serieNode.getAttribute('data-serie-id');
+            const targetSerie = this.yagr.uplot.series.find(({id}) => id === serieId);
 
-            if (serieIdx === ALL_SERIES_IDX) {
+            if (serieId === ALL_SERIES_IDX) {
                 return;
             }
 
             if (targetSerie) {
-                yagr.focus(targetSerie.id, true);
+                yagr.setFocus(targetSerie.id, true);
             }
         };
 
         const onSerieMouseLeave = () => {
-            yagr.focus(null, true);
+            yagr.setFocus(null, true);
         };
 
         series.forEach((serieNode) => {
@@ -333,39 +326,34 @@ export default class Legend {
     }
 
     private renderItems(uplotOptions: Options) {
-        type SeriesRenderData = {
-            series: string | Series;
-            idx: number;
-        };
-
         const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
-        const series: SeriesRenderData[] = title ? [{series: title, idx: ALL_SERIES_IDX}] : [];
+        const series: (Series | string)[] = title ? [title] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
-            series.push({
-                series: uplotOptions.series[i],
-                idx: i,
-            });
+            series.push(uplotOptions.series[i]);
         }
 
         const content = series
-            .map(({series: serie, idx}) => {
+            .map((serie) => {
                 let content;
+                let sId;
 
                 if (typeof serie === 'string') {
                     content = serie;
+                    sId = serie;
                 } else {
+                    sId = serie.id;
                     const icon = this.createIconLineElement(serie);
                     const name = this.createSerieNameElement(serie);
 
                     content = `${icon.outerHTML}${name.outerHTML}`;
                 }
 
-                const visible = typeof serie === 'string' ? true : serie.show;
+                const visible = typeof serie === 'string' ? true : serie.show !== false;
 
                 return `<div class="yagr-legend__item ${
                     visible ? '' : 'yagr-legend__item_hidden'
-                }" data-serie-idx="${idx}">${content}</div>`;
+                }" data-serie-id="${sId}">${content}</div>`;
             })
             .join('');
 

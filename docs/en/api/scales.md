@@ -43,7 +43,7 @@ Normalization base
 
 -   `'nice'` - NiceScale implementation with extra features to make charts look nice for stacked areas
 -   `'offset'` - static offset from data min and max
--   `(u: uPlot, min: number, max: number, ref: RefPoints | undefined, cfg: YagrConfig) => [min: number, max: number]` - custom function
+-   `(u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]` - custom function
 
 `scale.offset: number`
 
@@ -51,12 +51,6 @@ Offset value for `scale.range = 'offset'`.
 `scale.minRange: number`
 
 The minimum value of the scale range between min and max. Use to stabilize NiceScale with different scale bases.
-
-### Max ticks
-
-`scale.maxTicks: number`
-
-Number of max ticks for `scale.range = 'nice'`.
 
 ### Stacking
 

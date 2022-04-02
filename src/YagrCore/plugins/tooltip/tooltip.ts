@@ -192,7 +192,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
 
         const serie = serieIdx ? yagr.uplot.series[Number(serieIdx)] : null;
 
-        yagr.focus(serie ? serie.id : null, true);
+        yagr.setFocus(serie ? serie.id : null, true);
     };
 
     const onMouseDown = (event: MouseEvent) => {

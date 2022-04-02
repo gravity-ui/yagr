@@ -18,7 +18,6 @@ import plotLinesPlugin, {PlotLinesPlugin} from './plugins/plotLines/plotLines';
 import {
     YagrConfig,
     RawSerieData,
-    RedrawOptions,
     PlotLineConfig,
     YagrHooks,
     DataSeries,
@@ -229,39 +228,63 @@ class Yagr {
             return;
         }
 
-        this.redraw({axes: true, series: false});
+        this.redraw(false, true);
     }
 
     /*
-     * Fully redraws Yagr instance
+     * Redraws Yagr instance by given options.
      */
-    redraw(options: RedrawOptions = {}) {
-        const uPlotRedrawOptions = [options.series || true, options.axes || true];
-        this.uplot.redraw(...uPlotRedrawOptions);
+    redraw(series = true, axes = true) {
+        this.uplot.redraw(series, axes);
     }
 
-    toggleSerieVisibility(idx: number, serie: Series, value?: boolean) {
-        this.uplot.setSeries(idx, {
-            show: typeof value === 'undefined' ? !serie.show : value,
-        });
+    getById(id: string) {
+        return this.uplot.series[this._y2uIdx[id]];
+    }
+
+    setVisible(lineId: string | null, show: boolean) {
+        const seriesIdx = lineId === null ? null : this._y2uIdx[lineId];
+
+        if (seriesIdx === null) {
+            /**
+             * @TODO Fix after bug in uPlot will be fixed
+             */
+            this.uplot.batch(() => {
+                this.uplot.series.forEach((_, i) => {
+                    i && this.uplot.setSeries(i, {show});
+                });
+            });
+        } else {
+            this.uplot.setSeries(seriesIdx, {
+                show,
+            });
+        }
+
         this.options.series = this.uplot.series;
-        const scaleName = serie.scale || DEFAULT_Y_SCALE;
-        const scale = this.config.scales[scaleName];
-        if (scale && scale.stacking) {
+
+        let shouldRebuildStacks = false;
+
+        if (seriesIdx) {
+            const series = this.uplot.series[seriesIdx];
+            const scaleName = series.scale || DEFAULT_Y_SCALE;
+            const scale = this.config.scales[scaleName];
+            shouldRebuildStacks = Boolean(scale && scale.stacking);
+        } else {
+            shouldRebuildStacks = this.options.series.reduce((acc, {scale}) => {
+                return Boolean((scale && this.config.scales[scale]?.stacking) || acc);
+            }, false as boolean);
+        }
+
+        if (shouldRebuildStacks) {
             this.uplot.setData(this.transformSeries());
             this.uplot.redraw();
         }
     }
 
-    focus(lineId: string | null, focus: boolean) {
-        const serieIdx =
-            (lineId &&
-                this.uplot.series.findIndex((serie) => {
-                    return serie.id === lineId;
-                })) ||
-            null;
-        this.plugins.cursor?.focus(serieIdx, focus);
-        this.uplot.setSeries(serieIdx, {focus});
+    setFocus(lineId: string | null, focus: boolean) {
+        const seriesIdx = lineId === null ? null : this._y2uIdx[lineId];
+        this.plugins.cursor?.focus(seriesIdx, focus);
+        this.uplot.setSeries(seriesIdx, {focus});
     }
 
     dispose() {
@@ -302,7 +325,7 @@ class Yagr {
             }
         });
 
-        this.redraw(getRedrawOptionsForAxesUpdate(axes));
+        this.redraw(...getRedrawOptionsForAxesUpdate(axes));
     }
 
     setSeries(seriesIdx: number, series: RawSerieData): void;
@@ -495,7 +518,7 @@ class Yagr {
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
             const serie = configureSeries(this, seriesOptions[i] || {}, i);
             const uIdx = resultingSeriesOptions.push(serie);
-            this._y2uIdx[seriesOptions[i].id || i] = uIdx - 1;
+            this._y2uIdx[serie.id || i] = uIdx - 1;
         }
 
         /** Setting up markers plugin after default points renderers to be settled */

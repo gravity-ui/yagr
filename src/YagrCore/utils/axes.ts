@@ -1,7 +1,7 @@
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
 import type Yagr from '../../';
-import {YagrConfig, AxisOptions, RedrawOptions} from '../types';
+import {YagrConfig, AxisOptions} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
 import {PlotLinesPlugin} from '../plugins/plotLines/plotLines';
@@ -154,19 +154,13 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
     return axis;
 }
 
-export function getRedrawOptionsForAxesUpdate(axes: YagrConfig['axes']): RedrawOptions {
-    const options: RedrawOptions = {
-        axes: true,
-    };
+export function getRedrawOptionsForAxesUpdate(axes: YagrConfig['axes']) {
+    const options: [series: boolean, axes: boolean] = [false, true];
 
     Object.values(axes).forEach((s) => {
         const uOpts: (keyof AxisOptions)[] = ['align', 'side', 'size', 'label', 'labelFont', 'labelGap', 'labelSize'];
         if (uOpts.some((t) => s[t] !== undefined)) {
-            options.series = true;
-        }
-
-        if (s.plotLines) {
-            options.plotLines = true;
+            options[1] = true;
         }
     });
 
