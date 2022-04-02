@@ -248,6 +248,7 @@ class Yagr {
         if (seriesIdx === null) {
             /**
              * @TODO Fix after bug in uPlot will be fixed
+             * @see https://github.com/leeoniya/uPlot/issues/680
              */
             this.uplot.batch(() => {
                 this.uplot.series.forEach((_, i) => {
@@ -328,32 +329,54 @@ class Yagr {
         this.redraw(...getRedrawOptionsForAxesUpdate(axes));
     }
 
-    setSeries(seriesIdx: number, series: RawSerieData): void;
-    setSeries(series: RawSerieData[]): void;
-    setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions): void;
+    /** Incremental false */
+    setSeries(seriesId: string, series: Partial<RawSerieData>): void;
+    setSeries(seriesIdx: number, series: Partial<RawSerieData>): void;
+    setSeries(series: Partial<RawSerieData>[]): void;
+    /** Incremental depends on setting */
+    setSeries(timeline: number[], series: Partial<RawSerieData>[], options: UpdateOptions): void;
     setSeries(
-        timelineOrSeriesOrId: RawSerieData[] | number[] | number | number,
-        maybeSeries?: RawSerieData[] | RawSerieData,
+        timelineOrSeriesOrId: Partial<RawSerieData>[] | number[] | number | string,
+        maybeSeries?: Partial<RawSerieData>[] | Partial<RawSerieData>,
         options: UpdateOptions = {
             incremental: true,
             splice: false,
         },
     ) {
-        // eslint-disable-next-line no-nested-ternary
-        const [timeline, series, updateId] = ['number', 'string'].includes(typeof timelineOrSeriesOrId)
-            ? [[], [maybeSeries] as RawSerieData[], timelineOrSeriesOrId as number | string]
-            : typeof (timelineOrSeriesOrId as Array<number | RawSerieData>)[0] === 'number'
-            ? [timelineOrSeriesOrId as number[], maybeSeries as RawSerieData[], null]
-            : [[], timelineOrSeriesOrId as RawSerieData[], null];
+        let timeline: number[] = [],
+            series: RawSerieData[] = [],
+            updateId: null | string | number = null,
+            useIncremental = false,
+            useFullyRedraw;
+
+        if (['number', 'string'].includes(typeof timelineOrSeriesOrId)) {
+            useIncremental = false;
+            useFullyRedraw = false;
+            series = [maybeSeries] as RawSerieData[];
+            updateId = timelineOrSeriesOrId as number | string;
+        } else if (typeof (timelineOrSeriesOrId as Array<number | RawSerieData>)[0] === 'number') {
+            timeline = timelineOrSeriesOrId as number[];
+            series = maybeSeries as RawSerieData[];
+            useIncremental = Boolean(options.incremental);
+            useFullyRedraw = !options.incremental;
+        } else {
+            series = timelineOrSeriesOrId as RawSerieData[];
+            useFullyRedraw = true;
+        }
 
         const updateFns: (() => void)[] = [];
 
-        if (options.incremental) {
+        if (useFullyRedraw === false) {
             let shouldUpdateCursror = false;
+            const updateSeriesData: RawSerieData[] = [];
 
-            this.config.timeline.push(...timeline);
+            useIncremental && this.config.timeline.push(...timeline);
             series.forEach((serie) => {
-                let matched = this.config.series.find(({id}) => id === serie.id || updateId);
+                let matched =
+                    typeof updateId === 'number'
+                        ? this.config.series[0]
+                        : this.config.series.find(({id}) => id === serie.id || updateId);
+
                 let id: number | string | undefined = matched?.id;
 
                 if (typeof updateId === 'number' && this._y2uIdx[updateId]) {
@@ -361,9 +384,15 @@ class Yagr {
                     id = updateId;
                 }
 
-                if (matched && id !== null && id !== undefined) {
+                if (matched && id) {
                     const {data, ...rest} = serie;
-                    matched.data = matched.data.concat(data);
+
+                    if (useIncremental) {
+                        matched.data = data ? matched.data.concat(data) : matched.data;
+                    } else {
+                        matched.data = data || matched.data;
+                        updateSeriesData.push(matched);
+                    }
 
                     const seriesIdx = this._y2uIdx[id];
                     const newSeries = configureSeries(this, Object.assign(matched, rest), seriesIdx);
@@ -395,6 +424,13 @@ class Yagr {
                         this.uplot.addSeries(newSeries, this.config.series.length);
                     });
                     this.config.series.push(serie);
+                }
+
+                if (updateSeriesData.length) {
+                    updateFns.push(() => {
+                        this.series = this.transformSeries();
+                        this.uplot.setData(this.series, true);
+                    });
                 }
             });
 

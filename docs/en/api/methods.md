@@ -30,3 +30,10 @@
 -   `setSeries` - see [setSerie](#setseries)
 
 ### setSeries
+
+This method updates/add series to chart. Can update incrementally, and with splicing data, or can fully updates series. Set series support different signatures:
+
+-   `setSeries(seriesId: string, series: RawSerieData): void`
+-   `setSeries(seriesIdx: number, series: RawSerieData): void`
+-   `setSeries(series: RawSerieData[]): void`
+-   `setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions): void`
