@@ -238,7 +238,7 @@ class Yagr {
         this.uplot.redraw(series, axes);
     }
 
-    getById(id: string) {
+    getSeriesById(id: string) {
         return this.uplot.series[this._y2uIdx[id]];
     }
 

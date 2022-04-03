@@ -2,54 +2,53 @@
 
 #### Documentation
 
--   Updated documentation to meet new major version
+-   Updated documentation to meet new major version.
 
 #### Breaking changes
 
 ##### Yagr instances
 
--   Make charts adaptive by default
--   All utility helpers (such as `theme`, `i18n`, `colorParser`) moved into `yagr.utils`
--   Removed `refPoints` and simplified scale min/max calculations
--   Renamed `toggleSerieVisibility` to `setVisible`, and changed signature to `setVisible(lineId: string | null, show: boolean): void`
--   Changed `setFocus` signature to `setFocus(lineId: string | null, focus: boolean): void`
+-   Make charts adaptive by default.
+-   All utility helpers (such as `theme`, `i18n`, `colorParser`) moved into `yagr.utils`.
+-   Removed `refPoints` and simplified scale min/max calculations.
+-   Renamed `toggleSerieVisibility` to `setVisible`, and changed signature to `setVisible(lineId: string | null, show: boolean): void`.
+-   Changed `setFocus` signature to `setFocus(lineId: string | null, focus: boolean): void`.
 
 ##### ColorParser
 
--   `ColorParser` now is not a singleton and moved into `yagr.utils.colors`
+-   `ColorParser` now is not a singleton and moved into `yagr.utils.colors`.
 
 ##### ThemeDefaults
 
--   `ThemeDefaults` now is not a singleton and moved into `yagr.utils.theme`
+-   `ThemeDefaults` now is not a singleton and moved into `yagr.utils.theme`.
 
 ##### Config
 
--   Removed `settings` fields
--   Refactored `chart` field, now it includes all settings from `settings` field, and diverged fields by domains
+-   Removed `settings` fields.
+-   Refactored `chart` field, now it includes all settings from `settings` field, and diverged fields by domains.
 
 ##### Hooks
 
--   All extended `yagr.hooks` now passing consistent `{chart: Yagr}` argument to handlers
+-   All extended `yagr.hooks` now passing consistent `{chart: Yagr}` argument to handlers.
 
 ##### Scales
 
--   Removed `maxTicks` field. It was never worked
+-   Removed `maxTicks` field. It was never worked.
 
 ##### Typings
 
--   Splited different series options by `type`, which allows to enable more comprehensible completions in TypeScript
--   Renamed: `InterpolationSetting` -> `InterpolationType`
+-   Splited different series options by `type`, which allows to enable more comprehensible completions in TypeScript.
+-   Renamed: `InterpolationSetting` -> `InterpolationType`.
 
 #### New features
 
--   Themes now not shared between Yagr instances, they now can be different per instance
-
 ##### Yagr methods
 
--   Added `yagr.setSeries` method which updates/sets series and redraws them
--   Added `yagr.setAxes` method which updates/adds axes and redraws them if required
--   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements
--   Added `yagr.setTheme` method which changes theme and redraws chart
+-   Added `yagr.setSeries` method which updates/sets series and redraws them.
+-   Added `yagr.setAxes` method which updates/adds axes and redraws them if required.
+-   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements.
+-   Added `yagr.setTheme` method which changes theme and redraws chart.
+-   Added `getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
 
 ##### Axes
 
@@ -57,17 +56,22 @@
 
 ##### Hooks
 
--   Add `stage` hook which fires when `yagr.state.stage` changes
--   All hooks' types redesigned to support hook arguments completeions
+-   Add `stage` hook which fires when `yagr.state.stage` changes.
+-   All hooks' types redesigned to support hook arguments completeions.
+
+##### Theme
+
+-   Themes now not shared between Yagr instances, they now can be different per instance.
+-   Added theme customization docs.
 
 ##### Tooltip
 
 -   Tooltip now support `.on('<action>', <handler>)` which allows to subsribe on tooltip action emitting insted of single `onStateChange` callback. Also `.off` method is available.
--   Added `yagr.plugins.tooltip.display()` method which allows to display tooltip in given place with given X-axis index programmaticaly
+-   Added `yagr.plugins.tooltip.display()` method which allows to display tooltip in given place with given X-axis index programmaticaly.
 
 ##### Cursor
 
--   Add `updatePoints` method which redraws cursor points in case of series options was changed
+-   Add `updatePoints` method which redraws cursor points in case of series options was changed.
 
 ### 1.4.0 (11-02-2022)
 
