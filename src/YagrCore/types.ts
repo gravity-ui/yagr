@@ -103,12 +103,22 @@ type ArrayElement<ArrayType extends readonly unknown[] | undefined> = ArrayType 
     ? ElementType
     : never;
 type AsNonUndefined<T> = T extends undefined ? never : T;
+type CommonHookHandlerArg<T> = T & {chart: Yagr};
 
 export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined
     ? never
     : Parameters<AsNonUndefined<ArrayElement<T>>>;
 
-export type HookHandler<Data> = ((a: Data & {chart: Yagr}) => void)[];
+export type HookHandler<Data> = ((a: CommonHookHandlerArg<Data>) => void)[];
+
+export type LoadHandlerArg = CommonHookHandlerArg<{meta: YagrMeta}>;
+export type OnSelectHandlerArg = CommonHookHandlerArg<{from: number; to: number}>;
+export type ErrorHandlerArg = CommonHookHandlerArg<{type: YagrState['stage']; error: Error}>;
+export type ProcessedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'processTime'>}>;
+export type InitedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'initTime'>}>;
+export type DisposeHandlerArg = CommonHookHandlerArg<{}>;
+export type ResizeHandlerArg = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}>;
+
 export interface YagrHooks extends Hooks.Arrays {
     load?: HookHandler<{meta: YagrMeta}>;
     onSelect?: HookHandler<{from: number; to: number}>;

@@ -73,6 +73,10 @@
 
 -   Add `updatePoints` method which redraws cursor points in case of series options was changed.
 
+### 1.4.1 (15-03-2022)
+
+-   Exporting hooks's signature typings
+
 ### 1.4.0 (11-02-2022)
 
 #### Hooks
