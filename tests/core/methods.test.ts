@@ -64,9 +64,6 @@ describe('yagr methods', () => {
         });
     });
 
-    // -   `setSeries(series: RawSerieData[]): void`
-    // -   `setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions): void`
-
     describe('setSeries', () => {
         const DEFAULT_CONFIG: MinimalValidConfig = {
             timeline: [1, 2],
@@ -89,7 +86,7 @@ describe('yagr methods', () => {
                 expect(exec(y.uplot.series[1].stroke, y.uplot, 1)).toEqual('red');
             });
 
-            it('should set color', () => {
+            it('should set focus', () => {
                 const y = new Yagr(window.document.body, DEFAULT_CONFIG);
 
                 y.setSeries('1', {focus: true});
@@ -113,11 +110,47 @@ describe('yagr methods', () => {
                 expect(exec(y.uplot.series[1].stroke, y.uplot, 1)).toEqual('red');
             });
 
-            it('should set color', () => {
+            it('should set focus', () => {
                 const y = new Yagr(window.document.body, DEFAULT_CONFIG);
 
                 y.setSeries(0, {focus: true});
                 expect(y.uplot.series[1]._focus).toEqual(true);
+            });
+        });
+
+        describe('signature: setSeries(series: RawSerieData[])', () => {
+            it('should set data', () => {
+                const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+
+                y.setSeries([{id: '10', data: [1, 2]}]);
+                expect(y.uplot.data[1]).toEqual([1, 2]);
+                expect(y.uplot.series[1].id).toEqual('10');
+            });
+        });
+
+        describe('signature: setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions): void', () => {
+            it('should set data', () => {
+                const y = new Yagr(window.document.body, {
+                    timeline: [1, 2],
+                    series: [
+                        {data: [1, 2], id: '1'},
+                        {data: [1, 2], id: '2'},
+                    ],
+                });
+
+                y.setSeries(
+                    [3, 4],
+                    [
+                        {id: '1', data: [10, 20]},
+                        {id: '2', data: [30, 40]},
+                    ],
+                    {
+                        incremental: true,
+                    },
+                );
+                expect(y.uplot.data[0]).toEqual([1, 2, 3, 4]);
+                expect(y.uplot.data[1]).toEqual([1, 2, 30, 40]);
+                expect(y.uplot.data[2]).toEqual([1, 2, 10, 20]);
             });
         });
     });

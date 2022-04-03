@@ -11,6 +11,8 @@
 -   Make charts adaptive by default
 -   All utility helpers (such as `theme`, `i18n`, `colorParser`) moved into `yagr.utils`
 -   Removed `refPoints` and simplified scale min/max calculations
+-   Renamed `toggleSerieVisibility` to `setVisible`, and changed signature to `setVisible(lineId: string | null, show: boolean): void`
+-   Changed `setFocus` signature to `setFocus(lineId: string | null, focus: boolean): void`
 
 ##### ColorParser
 
