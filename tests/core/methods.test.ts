@@ -129,28 +129,84 @@ describe('yagr methods', () => {
         });
 
         describe('signature: setSeries(timeline: number[], series: RawSerieData[], options: UpdateOptions): void', () => {
-            it('should set data', () => {
-                const y = new Yagr(window.document.body, {
-                    timeline: [1, 2],
-                    series: [
-                        {data: [1, 2], id: '1'},
-                        {data: [1, 2], id: '2'},
-                    ],
-                });
+            describe('incremental', () => {
+                describe('splice = false', () => {
+                    it('should set data', () => {
+                        const y = new Yagr(window.document.body, {
+                            timeline: [1, 2],
+                            series: [
+                                {data: [1, 2], id: '1'},
+                                {data: [1, 2], id: '2'},
+                            ],
+                        });
 
-                y.setSeries(
-                    [3, 4],
-                    [
-                        {id: '1', data: [10, 20]},
-                        {id: '2', data: [30, 40]},
-                    ],
-                    {
-                        incremental: true,
-                    },
-                );
-                expect(y.uplot.data[0]).toEqual([1, 2, 3, 4]);
-                expect(y.uplot.data[1]).toEqual([1, 2, 30, 40]);
-                expect(y.uplot.data[2]).toEqual([1, 2, 10, 20]);
+                        y.setSeries(
+                            [3, 4],
+                            [
+                                {id: '1', data: [10, 20]},
+                                {id: '2', data: [30, 40]},
+                            ],
+                            {
+                                incremental: true,
+                            },
+                        );
+                        expect(y.uplot.data[0]).toEqual([1, 2, 3, 4]);
+                        expect(y.uplot.data[1]).toEqual([1, 2, 30, 40]);
+                        expect(y.uplot.data[2]).toEqual([1, 2, 10, 20]);
+                    });
+                });
+                describe('splice = true', () => {
+                    it('should set data', () => {
+                        const y = new Yagr(window.document.body, {
+                            timeline: [1, 2, 3],
+                            series: [
+                                {data: [1, 2, 3], id: '1'},
+                                {data: [1, 2, 3], id: '2'},
+                            ],
+                        });
+
+                        y.setSeries(
+                            [4, 5],
+                            [
+                                {id: '1', data: [10, 20]},
+                                {id: '2', data: [30, 40]},
+                            ],
+                            {
+                                incremental: true,
+                                splice: true,
+                            },
+                        );
+                        expect(y.uplot.data[0]).toEqual([3, 4, 5]);
+                        expect(y.uplot.data[1]).toEqual([3, 30, 40]);
+                        expect(y.uplot.data[2]).toEqual([3, 10, 20]);
+                    });
+                });
+            });
+
+            describe('non incremental', () => {
+                it('should set data', () => {
+                    const y = new Yagr(window.document.body, {
+                        timeline: [1, 2],
+                        series: [
+                            {data: [1, 2], id: '1'},
+                            {data: [1, 2], id: '2'},
+                        ],
+                    });
+
+                    y.setSeries(
+                        [3, 4],
+                        [
+                            {id: '1', data: [10, 20]},
+                            {id: '2', data: [30, 40]},
+                        ],
+                        {
+                            incremental: false,
+                        },
+                    );
+                    expect(y.uplot.data[0]).toEqual([3, 4]);
+                    expect(y.uplot.data[1]).toEqual([30, 40]);
+                    expect(y.uplot.data[2]).toEqual([10, 20]);
+                });
             });
         });
     });
