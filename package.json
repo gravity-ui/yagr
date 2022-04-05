@@ -28,7 +28,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "test": "jest --coverage",
+    "test": "TZ=UTC jest --coverage",
     "lint": "eslint src tests --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc -p tsconfig.json",
     "prebuild": "rimraf dist",

@@ -1,9 +1,12 @@
+import {Axis} from 'uplot';
 import {MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
 
 const exec = (fn: any, ...args: any[]) => {
-    return (fn as any)(...args);
+    return typeof fn === 'function' ? (fn as any)(...args) : fn;
 };
+
+const axis = (y: Yagr, name: string): Axis => y.uplot.axes.find(({scale}) => scale === name) as Axis;
 
 describe('yagr methods', () => {
     describe('setFocus', () => {
@@ -30,7 +33,36 @@ describe('yagr methods', () => {
         });
     });
 
-    describe('setVisibility', () => {
+    describe('setAxes', () => {
+        const DEFAULT_CONFIG: MinimalValidConfig = {
+            timeline: [1, 2],
+            series: [{data: [1, 2]}],
+        };
+
+        it('should set label on a axis', () => {
+            const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+            expect(axis(y, 'y').label).toBe(undefined);
+            y.setAxes({y: {label: 'test'}});
+            expect(axis(y, 'y').label).toBe('test');
+        });
+
+        it('should set grid item on a axis', () => {
+            const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+            expect(exec(axis(y, 'y').grid?.stroke)).toBe(y.utils.theme.GRID.stroke());
+            y.setAxes({y: {grid: {stroke: 'red'}}});
+            expect(exec(axis(y, 'y').grid?.stroke)).toBe('red');
+        });
+
+        it('should set splitsCount', () => {
+            const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+            y.setAxes({y: {splitsCount: 2}});
+            expect(exec(axis(y, 'y').splits, y.uplot, 1, 1, 2).length).toBe(2);
+            y.setAxes({y: {splitsCount: 5}});
+            expect(exec(axis(y, 'y').splits, y.uplot, 1, 1, 2).length).toBe(5);
+        });
+    });
+
+    describe('setVisible', () => {
         const DEFAULT_CONFIG: MinimalValidConfig = {
             timeline: [1, 2],
             series: [
