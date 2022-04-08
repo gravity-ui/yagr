@@ -38,7 +38,6 @@
             series: [{data: [1, 2, 3], color: 'red'}],
             cursor: {sync: 'a'},
             tooltip: {show: showTooltip},
-            settings: {adaptive: true},
         });
 
         const y2 = new Yagr(chart2, {
@@ -47,7 +46,6 @@
             series: [{data: [3, 2, 1], color: 'green'}],
             cursor: {sync: 'a'},
             tooltip: {show: showTooltip},
-            settings: {adaptive: true},
         });
 
         y1.subscribe();
@@ -58,7 +56,6 @@
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3], color: 'red'}],
             cursor: {sync: 'b'},
-            settings: {adaptive: true},
         });
 
         const y4 = new Yagr(chart4, {
@@ -66,7 +63,6 @@
             timeline: [1, 2, 3],
             series: [{data: [3, 2, 1], color: 'green'}],
             cursor: {sync: 'b'},
-            settings: {adaptive: true},
         });
 
         y4.subscribe();

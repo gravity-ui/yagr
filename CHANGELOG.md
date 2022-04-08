@@ -40,6 +40,11 @@
 -   Splited different series options by `type`, which allows to enable more comprehensible completions in TypeScript.
 -   Renamed: `InterpolationSetting` -> `InterpolationType`.
 
+##### PlotLines
+
+-   Removed `setThreshold` (looks like duplicate for `addPlotLines`)
+-   Renamed `addPlotLines` to `add`
+
 #### New features
 
 ##### Yagr methods
@@ -48,7 +53,8 @@
 -   Added `yagr.setAxes` method which updates/adds axes and redraws them if required.
 -   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements.
 -   Added `yagr.setTheme` method which changes theme and redraws chart.
--   Added `getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
+-   Added `yagr,getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
+-   Added `yagr.batch` which allows to run multiple changes in single redraw
 
 ##### Axes
 
@@ -72,6 +78,10 @@
 ##### Cursor
 
 -   Add `updatePoints` method which redraws cursor points in case of series options was changed.
+
+##### PlotLines
+
+-   Add `yagr.plugins.plotLines.get` method which returns current plotlines
 
 ### 1.4.1 (15-03-2022)
 

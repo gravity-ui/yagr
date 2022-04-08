@@ -21,9 +21,9 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
 
 export interface PlotLinesPlugin {
     postInit: (y: Yagr) => void;
-    setThreshold: (key: string, threshold: PlotLineConfig[]) => void;
-    addPlotlines: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
+    add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
     clear: (scale?: string) => void;
+    get: () => PlotLineConfig[];
     uplot: {
         hooks:
             | {
@@ -46,7 +46,6 @@ export interface PlotLinesPlugin {
  * Axis should be binded to scale.
  */
 export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): PlotLinesPlugin {
-    const thresholds: Record<string, PlotLineConfig[]> = {};
     let plotLines = [...plotLinesCfg];
 
     const drawOrder = yagr.config.chart.appereance?.drawOrder;
@@ -59,9 +58,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
         const {ctx} = u;
         const {height, top, width, left} = u.bbox;
 
-        const thresholdsValues = Object.values(thresholds);
-
-        for (const plotLineConfig of plotLines.concat(...thresholdsValues)) {
+        for (const plotLineConfig of plotLines) {
             if (!plotLineConfig.scale) {
                 continue;
             }
@@ -121,6 +118,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             : renderPlotLines;
 
     return {
+        get: () => plotLines,
         clear: (scale?: string) => {
             plotLines = scale
                 ? plotLines.filter((p) => {
@@ -132,10 +130,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             y.uplot.hooks[hook] ||= [];
             y.uplot.hooks[hook]?.push(handler as any);
         },
-        setThreshold: (key: string, threshold: PlotLineConfig[]) => {
-            thresholds[key] = threshold;
-        },
-        addPlotlines: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
+        add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
             for (const p of additionalPlotLines) {
                 plotLines.push(scale ? {scale, ...p} : p);
             }

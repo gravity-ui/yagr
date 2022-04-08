@@ -133,7 +133,7 @@ export default function CursorPlugin(
         },
         updatePoints: () => {
             (yagr.root.querySelectorAll('.yagr-point') as NodeListOf<HTMLElement>).forEach((pt) => {
-                const idx = Number(pt.dataset['data-idx']);
+                const idx = Number(pt.dataset['idx']);
                 if (isNaN(idx)) {
                     return;
                 }

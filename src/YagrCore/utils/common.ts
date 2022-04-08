@@ -387,10 +387,6 @@ export const assignKeys = <T>(keys: (keyof T)[], f: T, t: T) => {
     });
 };
 
-export const changedKey = <T>(key: keyof T, f: T, t: T) => {
-    return t[key] ?? f[key] !== t[key];
-};
-
 export const getRefsPlugin = (y: Yagr): Plugin => {
     return {
         hooks: {

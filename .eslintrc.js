@@ -121,14 +121,7 @@ module.exports = {
             'no-undef': OFF,
             'no-dupe-class-members': OFF,
 
-            'valid-jsdoc': [WARNING, {
-                // type annotations are redundant when in TS files
-                requireReturnType: false,
-                requireParamType: false,
-                // same as for JS
-                requireParamDescription: false,
-                requireReturnDescription: false,
-            }],
+            'valid-jsdoc': OFF,
 
             // TypeScript-specific extension rules
             'no-array-constructor': OFF,

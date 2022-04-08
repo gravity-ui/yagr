@@ -16,8 +16,7 @@ export default class ColorParser {
 
     private context?: HTMLElement;
 
-    parse(color: string) {
-        color = color || '000';
+    parse(color = '000') {
         const isVar = color.startsWith('var(--');
         let res = color,
             pure = true,
