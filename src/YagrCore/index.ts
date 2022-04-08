@@ -137,7 +137,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
                     show: false,
                 },
                 tooltip: {
-                    enabled: true,
+                    show: true,
                 },
                 grid: null,
                 markers: {},
@@ -390,7 +390,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         const chart = config.chart;
 
         /** Setting up TooltipPugin */
-        if (config.tooltip && config.tooltip.enabled !== false) {
+        if (config.tooltip && config.tooltip.show !== false) {
             const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
             plugins.push(tooltipPluginInstance.uplot);
             this.plugins.tooltip = tooltipPluginInstance;

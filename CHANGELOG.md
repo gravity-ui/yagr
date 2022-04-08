@@ -42,14 +42,14 @@
 
 ##### PlotLines
 
--   Removed `setThreshold` (looks like duplicate for `addPlotLines`)
--   Renamed `addPlotLines` to `add`
+-   Removed `setThreshold` (looks like duplicate for `addPlotLines`).
+-   Renamed `addPlotLines` to `add`.
 
 #### New features
 
 ##### Config
 
--   Added custom Yagr plugins support
+-   Added custom Yagr plugins support.
 
 ##### Yagr methods
 
@@ -58,7 +58,7 @@
 -   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements.
 -   Added `yagr.setTheme` method which changes theme and redraws chart.
 -   Added `yagr,getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
--   Added `yagr.batch` which allows to run multiple changes in single redraw
+-   Added `yagr.batch` which allows to run multiple changes in single redraw.
 
 ##### Axes
 
@@ -76,6 +76,7 @@
 
 ##### Tooltip
 
+-   Combined `tooltip.enabled` with `tooltip.show` (removed `enabled`).
 -   Tooltip now support `.on('<action>', <handler>)` which allows to subsribe on tooltip action emitting insted of single `onStateChange` callback. Also `.off` method is available.
 -   Added `yagr.plugins.tooltip.display()` method which allows to display tooltip in given place with given X-axis index programmaticaly.
 

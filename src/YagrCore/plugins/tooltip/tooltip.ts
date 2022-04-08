@@ -288,7 +288,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         const u = yagr.uplot;
         const {left, top, idx} = props;
 
-        if (opts.show && opts.show(yagr) === false) {
+        if (opts.show && typeof opts.show === 'function' && opts.show(yagr) === false) {
             hide();
             return;
         }

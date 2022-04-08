@@ -30,7 +30,7 @@
             series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
             scales: {y: {min: 0, max: 6}},
             tooltip: {
-                enabled: false
+                show: false
             },
             editUplotOptions: (opts) => {
                 opts.plugins.push({
