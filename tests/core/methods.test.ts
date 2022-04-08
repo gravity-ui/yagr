@@ -24,6 +24,7 @@ describe('yagr methods', () => {
 
         it('should set focus on a serie', () => {
             const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+
             y.setFocus('1', true);
             expect(y.getSeriesById('1')._focus).toBe(true);
             expect(y.getSeriesById('2')._focus).toBe(false);

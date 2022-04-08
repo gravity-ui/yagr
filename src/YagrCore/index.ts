@@ -24,10 +24,9 @@ import {
     MinimalValidConfig,
     YagrTheme,
     HookParams,
-    DataRefs,
 } from './types';
 
-import {assignKeys, debounce, genId, getRefsPlugin, getSumByIdx, preprocess} from './utils/common';
+import {assignKeys, debounce, genId, getSumByIdx, preprocess} from './utils/common';
 import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
 import ColorParser from './utils/colors';
@@ -62,12 +61,6 @@ type CachedProps = {
     height: number;
 };
 
-interface YagrPlugins {
-    tooltip?: TooltipPlugin;
-    plotLines?: PlotLinesPlugin;
-    cursor?: ReturnType<typeof cursorPlugin>;
-    legend?: LegendPlugin;
-}
 export interface YagrState {
     isMouseOver: boolean;
     stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
@@ -85,7 +78,7 @@ export interface UpdateOptions {
  * for uPlot chart.
  * Entrypoint of every Yagr chart.
  */
-class Yagr {
+class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     id!: string;
     options!: UPlotOptions;
     uplot!: UPlot;
@@ -94,9 +87,15 @@ class Yagr {
     config!: YagrConfig;
     resizeOb?: ResizeObserver;
     canvas!: HTMLCanvasElement;
-    plugins: YagrPlugins = {};
+    plugins!: {
+        tooltip?: ReturnType<TooltipPlugin>;
+        plotLines?: ReturnType<PlotLinesPlugin>;
+        cursor?: ReturnType<typeof cursorPlugin>;
+        legend?: LegendPlugin;
+    } & (TConfig['plugins'] extends YagrConfig['plugins']
+        ? {[key in keyof TConfig['plugins']]: ReturnType<TConfig['plugins'][key]>}
+        : {});
     state!: YagrState;
-    dataRefs?: Record<string, DataRefs>;
     utils!: {
         colors: ColorParser;
         sync?: SyncPubSub;
@@ -115,7 +114,7 @@ class Yagr {
     private _y2uIdx: Record<string, number> = {};
     private _batch: {fns: Function[]; recalc?: boolean} = {fns: []};
 
-    constructor(root: HTMLElement, pConfig: MinimalValidConfig) {
+    constructor(root: HTMLElement, pConfig: TConfig) {
         this._startTime = performance.now();
         this.state = {
             isMouseOver: false,
@@ -133,6 +132,7 @@ class Yagr {
                 settings: {},
                 chart: {},
                 cursor: {},
+                plugins: {},
                 legend: {
                     show: false,
                 },
@@ -377,7 +377,15 @@ class Yagr {
      */
     private createUplotOptions() {
         const {config} = this;
-        const plugins: Plugin[] = [getRefsPlugin(this)];
+        const plugins: Plugin[] = [];
+
+        // @ts-ignore
+        this.plugins = {};
+        Object.entries(config.plugins).forEach(([name, plugin]) => {
+            const pluginInstance = plugin(this);
+            plugins.push(pluginInstance.uplot);
+            Object.assign(this.plugins, {[name]: pluginInstance});
+        });
 
         const chart = config.chart;
 

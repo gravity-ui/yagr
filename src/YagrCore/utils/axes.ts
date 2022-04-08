@@ -175,7 +175,7 @@ export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
     upd.splits = upd.splits || uAxis.splits;
     Object.assign(uAxis, upd);
 
-    const plotLines = yagr.plugins.plotLines as PlotLinesPlugin;
+    const plotLines = yagr.plugins.plotLines as ReturnType<PlotLinesPlugin>;
 
     if (axisConfig.plotLines?.length) {
         plotLines.add(axisConfig.plotLines, axisConfig.scale);

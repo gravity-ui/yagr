@@ -1,17 +1,8 @@
 /* eslint-disable no-nested-ternary */
 
-import uPlot, {Plugin, Series} from 'uplot';
-import {
-    DataSeriesExtended,
-    DataSeries,
-    SnapToValue,
-    ProcessingSettings,
-    ProcessingInterpolation,
-    DataRefs,
-} from '../types';
+import {Series} from 'uplot';
+import {DataSeriesExtended, DataSeries, SnapToValue, ProcessingSettings, ProcessingInterpolation} from '../types';
 import {TooltipSection} from '../plugins/tooltip/types';
-import {DEFAULT_X_SCALE} from '../defaults';
-import type Yagr from '../index';
 
 /**
  * Finds index of point in ranges of Y-Axis values.
@@ -385,42 +376,4 @@ export const assignKeys = <T>(keys: (keyof T)[], f: T, t: T) => {
             f[key] = t[key];
         }
     });
-};
-
-export const getRefsPlugin = (y: Yagr): Plugin => {
-    return {
-        hooks: {
-            ready: (u: uPlot) => {
-                const refs = Object.keys(u.scales).reduce(
-                    (acc, key) =>
-                        key === DEFAULT_X_SCALE
-                            ? acc
-                            : {
-                                  ...acc,
-                                  [key]: {
-                                      min: Infinity,
-                                      max: -Infinity,
-                                      sum: 0,
-                                      avg: 0,
-                                      count: 0,
-                                  },
-                              },
-                    {} as Record<string, DataRefs>,
-                );
-                (u.series as Required<Series>[]).forEach(({scale, min, max, sum, count}) => {
-                    if (scale === DEFAULT_X_SCALE) {
-                        return;
-                    }
-                    refs[scale].min = Math.min(refs[scale].min, min);
-                    refs[scale].max = Math.max(refs[scale].max, max);
-                    refs[scale].sum += sum;
-                    refs[scale].count += count;
-                });
-                Object.keys(refs).forEach((key) => {
-                    refs[key].avg = refs[key].sum / refs[key].count;
-                });
-                y.dataRefs = refs;
-            },
-        },
-    };
 };

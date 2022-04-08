@@ -1,7 +1,7 @@
 import type Yagr from '../../';
 import UPlot, {DrawOrderKey} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../defaults';
-import {PlotLineConfig} from '../../types';
+import {PlotLineConfig, YagrPlugin} from '../../types';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
@@ -19,33 +19,21 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
     '021': 'drawSeries',
 };
 
-export interface PlotLinesPlugin {
-    postInit: (y: Yagr) => void;
-    add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
-    clear: (scale?: string) => void;
-    get: () => PlotLineConfig[];
-    uplot: {
-        hooks:
-            | {
-                  drawSeries: (u: UPlot, sIdx: number) => void;
-              }
-            | {
-                  drawClear: (u: UPlot) => void;
-              }
-            | {
-                  drawAxes: (u: UPlot) => void;
-              }
-            | {
-                  draw: (u: UPlot) => void;
-              };
-    };
-}
+export type PlotLinesPlugin = YagrPlugin<
+    {
+        postInit: (y: Yagr) => void;
+        add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
+        clear: (scale?: string) => void;
+        get: () => PlotLineConfig[];
+    },
+    [PlotLineConfig[]]
+>;
 
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
  */
-export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): PlotLinesPlugin {
+export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): ReturnType<PlotLinesPlugin> {
     let plotLines = [...plotLinesCfg];
 
     const drawOrder = yagr.config.chart.appereance?.drawOrder;
@@ -139,7 +127,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             hooks: {
                 // @TODO Add feature to draw plot lines over series
                 [hook]: handler,
-            } as PlotLinesPlugin['uplot']['hooks'],
+            },
         },
     };
 }

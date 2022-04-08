@@ -1,4 +1,4 @@
-import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options, Plugin} from 'uplot';
 
 import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -90,6 +90,9 @@ export interface YagrConfig {
 
     /** uPlot options transform method */
     editUplotOptions?: (opts: Options) => Options;
+
+    /** Additional Yagr plugins */
+    plugins: Record<string, YagrPlugin>;
 }
 
 export type MinimalValidConfig = Partial<YagrConfig> & {
@@ -409,4 +412,9 @@ export interface MarkersOptions {
 
 export type SnapToValue = 'left' | 'right' | 'closest';
 
-export type DataRefs = {min: number; max: number; sum: number; avg: number; count: number};
+export type YagrPlugin<T extends {} = {}, U extends Array<unknown> = []> = (
+    y: Yagr,
+    ...args: U
+) => {
+    uplot: Plugin;
+} & T;
