@@ -47,6 +47,10 @@
 
 #### New features
 
+##### Config
+
+-   Added custom Yagr plugins support
+
 ##### Yagr methods
 
 -   Added `yagr.setSeries` method which updates/sets series and redraws them.
