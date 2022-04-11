@@ -4,7 +4,7 @@ describe('cursor plugin', () => {
     describe('rendering', () => {
         const y = new Yagr(window.document.body, {
             timeline: [1, 2, 3],
-            series: [{data: [1, 2, 3], color: 'rgb(255, 0, 0)'}],
+            series: [{id: '0', data: [1, 2, 3], color: 'rgb(255, 0, 0)'}],
         });
 
         it('should render cursror points', () => {
@@ -16,10 +16,12 @@ describe('cursor plugin', () => {
             expect(pt.style.background).toBe('rgb(255, 0, 0)');
         });
 
-        it('should change color when setSeries triggered', () => {
-            y.setSeries(0, {color: 'rgb(0, 255, 0)'});
-            const pt = y.root.querySelector('.yagr-point') as HTMLElement;
-            expect(pt.style.background).toBe('rgb(0, 255, 0)');
+        it('should change color when setSeries triggered', async () => {
+            y.setSeries(0, {color: 'rgb(0, 128, 0)'});
+            setTimeout(() => {
+                const pt = y.root.querySelector('.yagr-point') as HTMLElement;
+                expect(pt.style.background).toBe('rgb(0, 128, 0)');
+            }, 15);
         });
     });
 });
