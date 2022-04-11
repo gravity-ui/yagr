@@ -10,6 +10,10 @@ const axis = (y: Yagr, name: string): Axis => y.uplot.axes.find(({scale}) => sca
 
 describe('yagr methods', () => {
     describe('setFocus', () => {
+        afterAll(() => {
+            window.document.body.innerHTML = '';
+        });
+
         const DEFAULT_CONFIG: MinimalValidConfig = {
             timeline: [1, 2],
             series: [
@@ -20,6 +24,7 @@ describe('yagr methods', () => {
 
         it('should set focus on a serie', () => {
             const y = new Yagr(window.document.body, DEFAULT_CONFIG);
+
             y.setFocus('1', true);
             expect(y.getSeriesById('1')._focus).toBe(true);
             expect(y.getSeriesById('2')._focus).toBe(false);
@@ -34,6 +39,10 @@ describe('yagr methods', () => {
     });
 
     describe('setAxes', () => {
+        afterAll(() => {
+            window.document.body.innerHTML = '';
+        });
+
         const DEFAULT_CONFIG: MinimalValidConfig = {
             timeline: [1, 2],
             series: [{data: [1, 2]}],
@@ -60,9 +69,26 @@ describe('yagr methods', () => {
             y.setAxes({y: {splitsCount: 5}});
             expect(exec(axis(y, 'y').splits, y.uplot, 1, 1, 2).length).toBe(5);
         });
+
+        it('should clear plot lines', () => {
+            const y = new Yagr(window.document.body, {
+                axes: {
+                    x: {plotLines: [{value: 1, color: 'red'}]},
+                },
+                ...DEFAULT_CONFIG,
+            });
+            y.setAxes({x: {plotLines: []}});
+            expect(y.plugins.plotLines?.get().length).toBe(0);
+            y.setAxes({x: {plotLines: [{value: 1, color: 'red'}]}});
+            expect(y.plugins.plotLines?.get().length).toBe(1);
+        });
     });
 
     describe('setVisible', () => {
+        afterAll(() => {
+            window.document.body.innerHTML = '';
+        });
+
         const DEFAULT_CONFIG: MinimalValidConfig = {
             timeline: [1, 2],
             series: [
@@ -103,11 +129,16 @@ describe('yagr methods', () => {
         };
 
         describe('signature: (seriesId: string, series: RawSerieData) => void', () => {
+            afterAll(() => {
+                window.document.body.innerHTML = '';
+            });
+
             it('should set data', () => {
                 const y = new Yagr(window.document.body, DEFAULT_CONFIG);
 
                 y.setSeries('1', {data: [3, 4]});
                 expect(y.uplot.data[1]).toEqual([3, 4]);
+                expect(y.uplot.series[1].$c).toEqual([3, 4]);
             });
 
             it('should set color', () => {
@@ -132,6 +163,7 @@ describe('yagr methods', () => {
 
                 y.setSeries(0, {data: [3, 4]});
                 expect(y.uplot.data[1]).toEqual([3, 4]);
+                expect(y.uplot.series[1].$c).toEqual([3, 4]);
             });
 
             it('should set color', () => {

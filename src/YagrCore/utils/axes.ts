@@ -175,10 +175,10 @@ export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
     upd.splits = upd.splits || uAxis.splits;
     Object.assign(uAxis, upd);
 
-    const plotLines = yagr.plugins.plotLines as PlotLinesPlugin;
+    const plotLines = yagr.plugins.plotLines as ReturnType<PlotLinesPlugin>;
 
     if (axisConfig.plotLines?.length) {
-        plotLines.addPlotlines(axisConfig.plotLines, axisConfig.scale);
+        plotLines.add(axisConfig.plotLines, axisConfig.scale);
     } else {
         plotLines.clear(axisConfig.scale);
     }

@@ -40,12 +40,16 @@ items:
                   href: ./api/lifecycle.md
           - name: Plugins
             items:
+                - name: Create plugin
+                  href: ./plugins/create.md
                 - name: Plot Lines
                   href: ./plugins/plot-lines.md
                 - name: Tooltip
                   href: ./plugins/tooltip.md
                 - name: Legend
                   href: ./plugins/legend.md
+                - name: DataRefs
+                  href: ./plugins/datarefs.md
 
     # Temporary disabled until realize how to insert examples into YFM
     # - name: Examples

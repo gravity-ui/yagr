@@ -29,7 +29,19 @@
 -   `setAxes(axes: YagrConfig['axes']): void` - sets new axes config and rerender chart's axes (and series if required)
 -   `setSeries` - see [setSerie](#setseries)
 
-### setSeries
+#### batch
+
+`yagr.batch` allows to run multiple yagr updates with single redraw and data recalculation
+
+```js
+yagr.batch(() => {
+    yagr.setTheme('dark');
+    yagr.setSeries('1', {color: 'green'});
+    yagr.setAxes({y: {splitsCount: 5}});
+});
+```
+
+#### setSeries
 
 This method updates/add series to chart. Can update incrementally, and with splicing data, or can fully updates series. Set series support different signatures:
 

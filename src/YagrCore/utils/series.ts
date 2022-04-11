@@ -1,7 +1,7 @@
 import {Series} from 'uplot';
 
 import * as defaults from '../defaults';
-import type Yagr from '../../';
+import type Yagr from '..';
 
 import {InterpolationType, RawSerieData} from '../types';
 import {genId} from './common';
@@ -16,6 +16,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     const serie: Series = {
         ...rawSeries,
         type,
+        show: rawSeries.show ?? true,
         name: rawSeries.name || `${yagr.utils.i18n('series')} ${idx + 1}`,
         color: rawSeries.color ? yagr.utils.colors.parse(rawSeries.color) : yagr.utils.theme.DEFAULT_LINE_COLOR,
         id: (rawSeries.id === undefined ? rawSeries.name : String(rawSeries.id)) || genId(),
@@ -71,4 +72,4 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     return serie;
 }
 
-export const UPDATE_KEYS: (keyof Series)[] = ['width', 'pointsSize', 'color', 'lineColor', 'lineWidth'];
+export const UPDATE_KEYS: (keyof Series)[] = ['width', 'pointsSize', 'color', 'lineColor', 'lineWidth', '$c'];

@@ -6,7 +6,7 @@ import {CursorOptions} from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
-import {DataSeries, ProcessingInterpolation} from '../../types';
+import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
@@ -68,23 +68,25 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     yOffset: TOOLTIP_Y_OFFSET,
 };
 
-export type TooltipPlugin = {
-    state: TooltipState;
-    pin(pinState: boolean, position?: {x: number; y: number}): void;
-    show(): void;
-    hide(): void;
-    uplot: Plugin;
-    updateOptions: (o: Partial<TooltipOptions>) => void;
-    on: (event: TooltipAction, handler: TooltipHandler) => void;
-    off: (event: TooltipAction, handler: TooltipHandler) => void;
-    display: (props: {left: number; top: number; idx: number}) => void;
-};
+export type TooltipPlugin = YagrPlugin<
+    {
+        state: TooltipState;
+        pin(pinState: boolean, position?: {x: number; y: number}): void;
+        show(): void;
+        hide(): void;
+        updateOptions: (o: Partial<TooltipOptions>) => void;
+        on: (event: TooltipAction, handler: TooltipHandler) => void;
+        off: (event: TooltipAction, handler: TooltipHandler) => void;
+        display: (props: {left: number; top: number; idx: number}) => void;
+    },
+    [Partial<TooltipOptions>]
+>;
 
 /*
  * Tooltip plugin constructor.
  * Every charts has it's own tooltip plugin instance
  */
-function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): TooltipPlugin {
+function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
     const pSettings = yagr.config.processing || {};
     const handlers: Record<TooltipAction, TooltipHandler[]> = {
         init: [],
@@ -286,7 +288,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): T
         const u = yagr.uplot;
         const {left, top, idx} = props;
 
-        if (opts.show && opts.show(yagr) === false) {
+        if (opts.show && typeof opts.show === 'function' && opts.show(yagr) === false) {
             hide();
             return;
         }

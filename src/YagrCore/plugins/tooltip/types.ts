@@ -53,14 +53,13 @@ export type TooltipHandler = (
 ) => void;
 
 export interface TooltipOptions {
-    enabled?: boolean;
+    /** Predicate to show/hide tooltip on setCursor */
+    show?: boolean | ((y: Yagr) => boolean);
     /** Tracking policy:
      *  - 'area'    : track by area
      *  - 'sticky'  : finds closest dataline
      */
     tracking: PerScale<TrackingOptions>;
-    /** Predicate to show/hide tooltip on setCursor */
-    show?: (y: Yagr) => boolean;
     /** Limit for lines in tooltip */
     maxLines: PerScale<number>;
     /** Should highlight focused line in tooltip */

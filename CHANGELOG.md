@@ -40,7 +40,16 @@
 -   Splited different series options by `type`, which allows to enable more comprehensible completions in TypeScript.
 -   Renamed: `InterpolationSetting` -> `InterpolationType`.
 
+##### PlotLines
+
+-   Removed `setThreshold` (looks like duplicate for `addPlotLines`).
+-   Renamed `addPlotLines` to `add`.
+
 #### New features
+
+##### Config
+
+-   Added custom Yagr plugins support.
 
 ##### Yagr methods
 
@@ -48,7 +57,8 @@
 -   Added `yagr.setAxes` method which updates/adds axes and redraws them if required.
 -   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements.
 -   Added `yagr.setTheme` method which changes theme and redraws chart.
--   Added `getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
+-   Added `yagr,getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
+-   Added `yagr.batch` which allows to run multiple changes in single redraw.
 
 ##### Axes
 
@@ -66,12 +76,17 @@
 
 ##### Tooltip
 
+-   Combined `tooltip.enabled` with `tooltip.show` (removed `enabled`).
 -   Tooltip now support `.on('<action>', <handler>)` which allows to subsribe on tooltip action emitting insted of single `onStateChange` callback. Also `.off` method is available.
 -   Added `yagr.plugins.tooltip.display()` method which allows to display tooltip in given place with given X-axis index programmaticaly.
 
 ##### Cursor
 
 -   Add `updatePoints` method which redraws cursor points in case of series options was changed.
+
+##### PlotLines
+
+-   Add `yagr.plugins.plotLines.get` method which returns current plotlines
 
 ### 1.4.1 (15-03-2022)
 
