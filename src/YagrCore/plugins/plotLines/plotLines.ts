@@ -21,7 +21,6 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
 
 export type PlotLinesPlugin = YagrPlugin<
     {
-        postInit: (y: Yagr) => void;
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
         clear: (scale?: string) => void;
         get: () => PlotLineConfig[];
@@ -113,10 +112,6 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                       return p.scale !== scale;
                   })
                 : [];
-        },
-        postInit: (y: Yagr) => {
-            y.uplot.hooks[hook] ||= [];
-            y.uplot.hooks[hook]?.push(handler as any);
         },
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
             for (const p of additionalPlotLines) {
