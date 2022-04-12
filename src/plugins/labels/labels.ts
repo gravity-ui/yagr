@@ -1,10 +1,10 @@
 /* eslint-disable complexity, @typescript-eslint/no-loop-func, no-nested-ternary */
 
-import type {YagrPlugin, AxisOptions} from '../types';
+import type {YagrPlugin, AxisOptions} from '../../types';
 import type uPlot from 'uplot';
-import type Yagr from '../index';
+import type Yagr from '../../index';
 
-import {html, px} from '../YagrCore/utils/common';
+import {html, px} from '../../YagrCore/utils/common';
 
 import './styles.scss';
 

@@ -84,8 +84,10 @@ const main = [
 ];
 
 const plugins = [
-    iife(true, './src/plugins/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.min.css'),
-    iife(false, './src/plugins/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.css'),
+    iife(true, './src/plugins/labels/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.min.css'),
+    iife(false, './src/plugins/labels/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.css'),
+    iife(true, './src/plugins/weekends/weekends.ts', 'YagrWeekends', 'plugins/yagr.weekends'),
+    iife(false, './src/plugins/weekends/weekends.ts', 'YagrWeekends', 'plugins/yagr.weekends'),
 ];
 
 export default process.argv.pop() === '--plugins' ? plugins : main;

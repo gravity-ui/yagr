@@ -8,13 +8,13 @@
         <style>
             .container {
                 margin-bottom: 26px;
-                height: 400px;
-                width: 100%;
+                height: 350px;
+                width: 90%;
             }
             .grid {
-                height: 400px;
+                height: 350px;
                 display: flex;
-                width: 100%;
+                width: 90%;
                 flex-direction: row;
                 justify-content: space-between;
             }
@@ -24,10 +24,12 @@
         <div class="grid">
             <div id="chart1" class="container"></div>
         </div>
+        <div class="grid">
+            <div id="chart2" class="container"></div>
+        </div>
    
     <script>
         const y1 = new Yagr(chart1, {
-            title: {text: 'Range bands'},
             timeline: new Array(20).fill().map((_, i) => i * 1000),
             series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
             axes: {
@@ -38,7 +40,22 @@
                 axes: {
                     y: {
                         fontSize: 22,
-                        // label: (x, y) => `X: ${x}, Y: ${y}`,
+                    }
+                }
+            })]
+        });
+
+        const y2 = new Yagr(chart2, {
+            timeline: new Array(20).fill().map((_, i) => i * 1000),
+            series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+            axes: {
+                y: {precision: 0}
+            },
+            scales: {y: {min: 0, max: 6}},
+            plugins: [YagrLabels({
+                cursor: {
+                    y: {
+                        fontSize: 22,
                     }
                 }
             })]

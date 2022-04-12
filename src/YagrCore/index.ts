@@ -381,6 +381,11 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
         // @ts-ignore
         this.plugins = {};
+
+        const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
+        this.plugins.plotLines = plotLinesPluginInstance;
+        plugins.push(plotLinesPluginInstance.uplot);
+
         Object.entries(config.plugins).forEach(([name, plugin]) => {
             const pluginInstance = plugin(this);
             plugins.push(pluginInstance.uplot);
@@ -477,10 +482,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         const axes = options.axes;
 
         axes.push(...configureAxes(this, config));
-
-        const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
-        this.plugins.plotLines = plotLinesPluginInstance;
-        plugins.push(plotLinesPluginInstance.uplot);
 
         /** Setting up hooks */
         options.hooks = config.hooks || {};
