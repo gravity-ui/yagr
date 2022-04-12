@@ -25,6 +25,8 @@ export interface TooltipState {
     visible: boolean;
     /** Is tooltip mounted */
     mounted: boolean;
+    /** Current focused series */
+    focusedSeries: null | string;
 }
 
 export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
@@ -148,6 +150,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         pinned: false,
         visible: false,
         clickStartedX: null,
+        focusedSeries: null,
     };
 
     const emit = (action: TooltipAction) => {
@@ -194,7 +197,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
         const serie = serieIdx ? yagr.uplot.series[Number(serieIdx)] : null;
 
-        yagr.setFocus(serie ? serie.id : null, true);
+        if (serieIdx && serie) {
+            state.focusedSeries = serieIdx;
+            yagr.setFocus(serie.id, true);
+        } else if (state.focusedSeries) {
+            state.focusedSeries = null;
+            yagr.setFocus(null, true);
+        }
     };
 
     const onMouseDown = (event: MouseEvent) => {
