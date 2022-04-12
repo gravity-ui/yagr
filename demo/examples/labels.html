@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Yagr</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <script src="../../dist/plugins/yagr.labels.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <link rel="stylesheet" href="../../dist/plugins/yagr.labels.min.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 400px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+            <div id="chart1" class="container"></div>
+        </div>
+   
+    <script>
+        const y1 = new Yagr(chart1, {
+            title: {text: 'Range bands'},
+            timeline: new Array(20).fill().map((_, i) => i * 1000),
+            series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+            axes: {
+                y: {precision: 0}
+            },
+            scales: {y: {min: 0, max: 6}},
+            plugins: [YagrLabels({
+                axes: {
+                    y: {
+                        fontSize: 22,
+                        // label: (x, y) => `X: ${x}, Y: ${y}`,
+                    }
+                }
+            })]
+        });
+    </script>
+    </body>
+</html>
