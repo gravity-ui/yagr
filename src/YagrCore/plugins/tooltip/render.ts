@@ -34,7 +34,7 @@ export function renderTooltip(data: TooltipRenderOptions) {
                     : `${data.yagr.utils.i18n('scale')}: ${x.scale}`
                 : '';
         return `
-<div class="__section">
+<div class="__section" data-scale=${x.scale}>
     ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
     ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
     <div class="__section_body">${renderItems(x.rows, data.options)}</div>

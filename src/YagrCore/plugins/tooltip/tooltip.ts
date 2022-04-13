@@ -141,7 +141,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
     const tOverlay = document.createElement('div');
 
-    tOverlay.id = `${yagr.id}.tooltip`;
+    tOverlay.id = `${yagr.id}_tooltip`;
     tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
     tOverlay.style.display = 'none';
 

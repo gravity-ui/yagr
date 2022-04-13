@@ -3,38 +3,87 @@ import Yagr from '../../src/YagrCore';
 
 describe('tooltip', () => {
     describe('options', () => {
-        const yagr = new Yagr(window.document.body, {
-            timeline: [1, 2, 3, 4],
-            series: [{data: [1, 2, 3, 4]}],
-        });
+        let yagr: Yagr;
+        const el = window.document.createElement('div');
 
-        afterAll(() => {
+        afterEach(async () => {
             yagr.uplot.setCursor({left: -10, top: -10});
+            yagr.dispose();
+            el.remove();
         });
 
         it('should render tooltip', () => {
-            expect(yagr.root.querySelector('.yagr-tooltip')).toBeTruthy();
+            yagr = new Yagr(el, {
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+            });
+
+            expect(window.document.querySelector(`#${yagr.id}_tooltip`)).toBeTruthy();
         });
 
-        it('should render tooltip sum', () => {
+        it('should render tooltip sum', async () => {
+            yagr = new Yagr(el, {
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+            });
+
             yagr.uplot.setCursor({left: 10, top: 10});
             expect(yagr.root.querySelector('.__section_sum')).toBeFalsy();
             yagr.plugins.tooltip?.updateOptions({
                 sum: true,
             });
-            yagr.uplot.setCursor({left: 10, top: 10});
-            expect(yagr.root.querySelector('.__section_sum')).toBeTruthy();
+            yagr.uplot.setCursor({left: 15, top: 15});
+            yagr.plugins.tooltip?.on('show', () => {
+                expect(yagr.root.querySelector('.__section_sum')).toBeTruthy();
+            });
+        });
+    });
+
+    describe('perScale', () => {
+        const el = window.document.createElement('div');
+        window.document.body.appendChild(el);
+        const y = new Yagr(el, {
+            timeline: [1, 2, 3, 4],
+            series: [
+                {data: [1, 2, 3, 4], scale: 'y'},
+                {data: [1, 2, 3, 4], scale: 'r'},
+            ],
+            tooltip: {
+                title: {
+                    y: 'X Title',
+                    r: 'R Title',
+                },
+                sum: {
+                    y: true,
+                    r: false,
+                },
+            },
+        });
+
+        y.plugins.tooltip?.display({left: 0, top: 0, idx: 0});
+
+        const tElem = window.document.querySelector(`#${y.id}_tooltip`) as HTMLElement;
+
+        it('should separate tooltip sections by scales', () => {
+            expect(tElem.querySelectorAll('.yagr-tooltip .__section').length).toBe(2);
+        });
+
+        it('should render data-scale attr', () => {
+            expect(tElem.querySelectorAll('[data-scale]').length).toBe(2);
+        });
+
+        it('should render tooltip sum', () => {
+            expect(tElem.querySelectorAll('.__section_sum').length).toBe(1);
         });
     });
 
     describe('on/off', () => {
-        const yagr = new Yagr(window.document.body, {
+        const el = window.document.createElement('div');
+        window.document.body.appendChild(el);
+
+        const yagr = new Yagr(el, {
             timeline: [1, 2, 3, 4],
             series: [{data: [1, 2, 3, 4]}],
-        });
-
-        afterAll(() => {
-            yagr.uplot.setCursor({left: -10, top: -10});
         });
 
         const handler = jest.fn();
