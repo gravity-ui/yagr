@@ -26,7 +26,7 @@ import {
     HookParams,
 } from './types';
 
-import {assignKeys, debounce, genId, getSumByIdx, preprocess} from './utils/common';
+import {assignKeys, debounce, genId, getSumByIdx, preprocess, px} from './utils/common';
 import {configureAxes, getRedrawOptionsForAxesUpdate, updateAxis} from './utils/axes';
 import {getPaddingByAxes} from './utils/chart';
 import ColorParser from './utils/colors';
@@ -175,8 +175,8 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             }
 
             if (!chart.size.adaptive && chart.size.width && chart.size.height) {
-                root.style.width = chart.size.width + 'px';
-                root.style.height = chart.size.height + 'px';
+                root.style.width = px(chart.size.width);
+                root.style.height = px(chart.size.height);
             }
 
             this.setTheme(chart.appereance.theme || 'light');

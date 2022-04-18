@@ -1,6 +1,12 @@
 import type {YagrPlugin} from '../../types';
 import type Yagr from '../../index';
 
+declare module '../../types' {
+    interface PlotLineConfig {
+        name?: string;
+    }
+}
+
 export interface WeekendsPluginOptions {
     color?: string;
     predicate?: (timestamp: number) => boolean;
@@ -12,7 +18,7 @@ export interface WeekendsPluginOptions {
 export default function WeekendsPlugin({
     color = 'rgb(250, 255, 0, 0.38)',
     predicate,
-}: WeekendsPluginOptions): YagrPlugin {
+}: WeekendsPluginOptions = {}): YagrPlugin {
     return (yagr: Yagr) => {
         const weekends: [start: number, end: number][] = [];
 
@@ -44,6 +50,7 @@ export default function WeekendsPlugin({
                 scale: 'x',
                 value: val,
                 color,
+                name: 'Weekend',
             })),
         );
 
