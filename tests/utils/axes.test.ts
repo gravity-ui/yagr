@@ -1,17 +1,21 @@
 import {YagrConfig} from '../../src/YagrCore/types';
 import {getTimeFormatter} from '../../src/YagrCore/utils/axes';
 
-describe.skip('axes:getTimeFormatter', () => {
+describe('axes:getTimeFormatter', () => {
     const formatter = getTimeFormatter({
-        settings: {
+        chart: {
             timeMultiplier: 1e-3,
         },
     } as YagrConfig);
     const formatterMs = getTimeFormatter({
-        settings: {
+        chart: {
             timeMultiplier: 1,
         },
     } as YagrConfig);
+
+    it('should always be UTC', () => {
+        expect(new Date().getTimezoneOffset()).toBe(0);
+    });
 
     describe('timeMultiplier: 1e-3', () => {
         it('< second', () => {
@@ -23,7 +27,7 @@ describe.skip('axes:getTimeFormatter', () => {
         });
 
         it('< day', () => {
-            expect(formatter(null, [1, 71])).toEqual(['03:00:01', '03:01:11']);
+            expect(formatter(null, [1, 71])).toEqual(['00:00:01', '00:01:11']);
         });
 
         it('> days', () => {
@@ -41,7 +45,7 @@ describe.skip('axes:getTimeFormatter', () => {
         });
 
         it('< day', () => {
-            expect(formatterMs(null, [1000, 71000])).toEqual(['03:00:01', '03:01:11']);
+            expect(formatterMs(null, [1000, 71000])).toEqual(['00:00:01', '00:01:11']);
         });
 
         it('> days', () => {

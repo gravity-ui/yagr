@@ -1,38 +1,44 @@
-import uPlot, {Axis as UAxis, Hooks, DrawOrderKey, Series, Options} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, Series, Options, Plugin} from 'uplot';
 
 import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
 import {CursorOptions} from './plugins/cursor/cursor';
 
-interface ProcessedSeriesData extends Omit<RawSerieData, 'data'> {
-    /** Will appear after processing series */
-    $c: DataSeriesExtended;
-
-    /** Will appear after processing series if serie values normalized */
-    normalizedData?: DataSeries;
-
-    /** Does line have only null values */
-    empty?: boolean;
-
-    /** Reference points of series */
-    refPoints?: RefPoints;
-}
-
+type AllSeriesOptions = ExtendedSeriesOptions &
+    CommonSeriesOptions &
+    Omit<DotsSeriesOptions, 'type'> &
+    Omit<LineSeriesOptions, 'type'> &
+    Omit<AreaSeriesOptions, 'type'> &
+    Omit<ColumnSeriesOptions, 'type'>;
 declare module 'uplot' {
-    interface Series extends ProcessedSeriesData {
+    interface Series extends Omit<AllSeriesOptions, 'data'> {
         id: string;
         color: string;
         name: string;
 
+        /** Will appear after processing series */
+        $c: DataSeriesExtended;
+
+        /** Will appear after processing series if serie values normalized */
+        normalizedData?: DataSeries;
+
+        /** Does line have only null values */
+        empty?: boolean;
+        /** Real values count */
+        count: number;
+        /** Values sum */
+        sum: number;
+        /** Average value */
+        avg: number;
+
+        /** Get focus color */
+        getFocusedColor: (y: Yagr, idx: number) => string;
+
         /** Current focus state */
         _focus?: boolean | null;
-        /** Real values count */
-        _valuesCount: number;
         /** Is series data transformd */
         _transformed?: boolean;
-        _color?: string;
-        _modifiedColor?: string;
     }
 }
 
@@ -64,9 +70,6 @@ export interface YagrConfig {
     /** Tooltip config. Detemines tooltip's behavior */
     tooltip: Partial<TooltipOptions>;
 
-    /** Chart settings */
-    settings: YagrChartSettings;
-
     /** Grid options (applies to all axes, can be overrided by axis.grid). */
     grid: UAxis.Grid;
 
@@ -87,6 +90,9 @@ export interface YagrConfig {
 
     /** uPlot options transform method */
     editUplotOptions?: (opts: Options) => Options;
+
+    /** Additional Yagr plugins */
+    plugins: Record<string, YagrPlugin>;
 }
 
 export type MinimalValidConfig = Partial<YagrConfig> & {
@@ -94,24 +100,37 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
     series: RawSerieData[];
 };
 
-type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
+type ArrayElement<ArrayType extends readonly unknown[] | undefined> = ArrayType extends undefined
+    ? never
+    : ArrayType extends readonly (infer ElementType)[]
+    ? ElementType
+    : never;
+type AsNonUndefined<T> = T extends undefined ? never : T;
+type CommonHookHandlerArg<T> = T & {chart: Yagr};
 
-export type LoadHandlerArg = {chart: Yagr; meta: YagrMeta;};
-export type OnSelectHandlerArg = {from: number; to: number; chart: Yagr;};
-export type ErrorHandlerArg = {type: YagrState['stage']; error: Error; yagr: Yagr;};
-export type ProcessedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>;};
-export type InitedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'initTime'>};
-export type DisposeHandlerArg = Yagr;
-export type ResizeHandlerArg = ResizeObserverEntry[];
+export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined
+    ? never
+    : Parameters<AsNonUndefined<ArrayElement<T>>>;
+
+export type HookHandler<Data> = ((a: CommonHookHandlerArg<Data>) => void)[];
+
+export type LoadHandlerArg = CommonHookHandlerArg<{meta: YagrMeta}>;
+export type OnSelectHandlerArg = CommonHookHandlerArg<{from: number; to: number}>;
+export type ErrorHandlerArg = CommonHookHandlerArg<{type: YagrState['stage']; error: Error}>;
+export type ProcessedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'processTime'>}>;
+export type InitedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'initTime'>}>;
+export type DisposeHandlerArg = CommonHookHandlerArg<{}>;
+export type ResizeHandlerArg = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}>;
 
 export interface YagrHooks extends Hooks.Arrays {
-    load?: Handler<LoadHandlerArg>;
-    onSelect?: Handler<OnSelectHandlerArg>;
-    error?: Handler<ErrorHandlerArg>;
-    processed?: Handler<ProcessedHandlerArg>;
-    inited?: Handler<InitedHandlerArg>;
-    dispose?: Handler<DisposeHandlerArg>;
-    resize?: Handler<ResizeHandlerArg>;
+    load?: HookHandler<{meta: YagrMeta}>;
+    onSelect?: HookHandler<{from: number; to: number}>;
+    error?: HookHandler<{error: Error; stage: YagrState['stage']}>;
+    processed?: HookHandler<{meta: Pick<YagrMeta, 'processTime'>}>;
+    inited?: HookHandler<{meta: Pick<YagrMeta, 'initTime'>}>;
+    dispose?: HookHandler<{}>;
+    resize?: HookHandler<{entries: ResizeObserverEntry[]}>;
+    stage?: HookHandler<{stage: YagrState['stage']}>;
 }
 
 export interface ProcessingInterpolation {
@@ -144,32 +163,47 @@ export interface ProcessingSettings {
  * Main chart visualization config
  */
 export interface YagrChartOptions {
-    /** Chart visualization type */
-    type: ChartType;
+    /** Common series options, could be overriden by series.<option> field */
+    series?: SeriesOptions;
 
-    /** width (by default: 100% of root) */
-    width?: number;
+    size?: {
+        /** width (by default: 100% of root) */
+        width?: number;
 
-    /** height (by default: 100% of root) */
-    height?: number;
+        /** height (by default: 100% of root) */
+        height?: number;
 
-    /** padding in css px [top, right, bottom, left] (by default: utils.chart.getPaddingByAxes) */
-    padding?: [number, number, number, number];
+        /** padding in css px [top, right, bottom, left] (by default: utils.chart.getPaddingByAxes) */
+        padding?: [number, number, number, number];
 
-    /** point size (default: 4px) */
-    pointsSize?: number;
-}
+        /** Should chart redraw on container resize (default: true) */
+        adaptive?: boolean;
 
-/** Options how to redraw chart */
-export interface RedrawOptions {
-    /** Should redraw series paths */
-    series?: boolean;
+        /** Debounce timer for ResizeObserver to trigger: (default 100 ms) */
+        resizeDebounceMs?: number;
+    };
 
-    /** Should redraw axes */
-    axes?: boolean;
+    select?: {
+        /** Minial width to catch selection */
+        minWidth?: number; // 15px
 
-    /** Should redraw plotLines */
-    plotLines?: boolean;
+        /** Enable native uPlot zoom (default: true) */
+        zoom?: boolean;
+    };
+
+    appereance?: {
+        /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
+        drawOrder?: DrawKey[];
+
+        /** Theme (default: 'light') */
+        theme?: YagrTheme;
+
+        /** Locale */
+        locale?: SupportedLocales | Record<string, string>;
+    };
+
+    /** 1 for milliseconds, 1e-3 for seconds (default: 1) */
+    timeMultiplier?: 1 | 1e-3;
 }
 
 export type ChartType = 'area' | 'line' | 'column' | 'dots';
@@ -178,65 +212,24 @@ export type ChartType = 'area' | 'line' | 'column' | 'dots';
 export type DataSeriesExtended = (number | string | null)[];
 export type DataSeries = (number | null)[];
 
-export type RefPoints = {
-    max?: number;
-    min?: number;
-    avg?: number;
-    sum?: number;
-    count?: number;
-};
+export interface CommonSeriesOptions {
+    /** Visualisation type */
+    type?: ChartType;
 
-/**
- * Expected serie config and data format from Chart API
- */
-export interface RawSerieData {
-    /** Name of serie. Renders in tooltip */
-    name?: string;
+    /** Is series visible */
+    show?: boolean;
 
     /** Color of serie */
     color?: string;
 
-    /** Unique ID */
-    id?: string;
-
-    /** Width of line (line type charts) */
-    width?: number;
-
-    /** Color of line (area type charts) */
-    lineColor?: string;
-
-    /** Color of line over area (area type charts) */
-    lineWidth?: number;
-
     /** Should join paths over null-points */
     spanGaps?: boolean;
 
-    /** Scale of series */
-    scale?: string;
-
-    /** Visualisation type */
-    type?: ChartType;
-
-    /** Interpolation type */
-    interpolation?: InterpolationSetting;
-
     /** Cursor options for single serie */
-    cursorOptions?: CursorOptions;
-
-    /** Visibility of line */
-    visible?: boolean;
+    cursorOptions?: Pick<CursorOptions, 'markersSize' | 'snapToValues'>;
 
     /** Formatter for serie value */
     formatter?: (value: string | number | null, serie: Series) => string;
-
-    /** Raw data */
-    data: DataSeriesExtended;
-
-    /** Calculated references points for Yagr plot. If not provided, Yagr calculates them by itself. */
-    refPoints?: RefPoints;
-
-    /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
-    showInTooltip?: boolean;
 
     /** Line precision */
     precision?: number;
@@ -244,15 +237,76 @@ export interface RawSerieData {
     /** Snap dataIdx value (default: closest) */
     snapToValues?: SnapToValue | false;
 
+    /** Stacking groups */
+    stackGroup?: number;
+
     /** Title of serie */
     title?: string | ((sIdx: number) => string);
 
     /** Series data transformation */
     transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null;
 
-    /** Stacking groups */
-    stackGroup?: number;
+    /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
+    showInTooltip?: boolean;
 }
+
+export interface LineSeriesOptions extends CommonSeriesOptions {
+    type: 'line';
+
+    /** Width of line (line type charts) */
+    width?: number;
+
+    /** Interpolation type */
+    interpolation?: InterpolationType;
+}
+
+export interface AreaSeriesOptions extends CommonSeriesOptions {
+    type: 'area';
+
+    /** Color of line (area type charts) */
+    lineColor?: string;
+
+    /** Color of line over area (area type charts) */
+    lineWidth?: number;
+
+    /** Interpolation type (default: linear) */
+    interpolation?: InterpolationType;
+}
+
+export interface ColumnSeriesOptions extends CommonSeriesOptions {
+    type: 'column';
+}
+
+export interface DotsSeriesOptions extends CommonSeriesOptions {
+    type: 'dots';
+
+    /** point size (default: 4px) */
+    pointsSize?: number;
+}
+
+export type SeriesOptions = DotsSeriesOptions | LineSeriesOptions | AreaSeriesOptions | ColumnSeriesOptions;
+
+/**
+ * Expected serie config and data format from Chart API
+ */
+
+export interface ExtendedSeriesOptions {
+    /** Name of serie. Renders in tooltip */
+    name?: string;
+
+    /** Unique ID */
+    id?: string;
+
+    /** Scale of series */
+    scale?: string;
+
+    /** Raw data */
+    data: DataSeriesExtended;
+
+    /** Is line focused */
+    focus?: boolean;
+}
+export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> = ExtendedSeriesOptions & T;
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 
@@ -265,6 +319,9 @@ export interface AxisOptions extends Omit<UAxis, 'side'> {
 
     /** Values decimal precision (default: auto) */
     precision?: number | 'auto';
+
+    /** default: 5 */
+    splitsCount?: number;
 }
 
 export interface PlotLineConfig {
@@ -282,7 +339,7 @@ export interface PlotLineConfig {
 }
 
 /** Setting for line interpolation type */
-export type InterpolationSetting = 'linear' | 'left' | 'right' | 'smooth';
+export type InterpolationType = 'linear' | 'left' | 'right' | 'smooth';
 
 /** Setting for scale range type */
 export type ScaleRange = 'nice' | 'offset' | 'auto';
@@ -313,53 +370,14 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?:
-        | ScaleRange
-        | ((
-              u: uPlot,
-              min: number,
-              max: number,
-              ref: RefPoints | undefined,
-              cfg: YagrConfig,
-          ) => [min: number, max: number]);
+    range?: ScaleRange | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
-    /** default: 5 */
-    maxTicks?: number;
 }
 
 export type ScaleType = 'linear' | 'logarithmic';
 export type YagrTheme = 'light' | 'dark';
 export type SupportedLocales = 'en' | 'ru';
-export type DrawKey = 'plotLines' | DrawOrderKey.Axes | DrawOrderKey.Series;
-
-export interface YagrChartSettings {
-    /** Should chart redraw on container resize (default: true) */
-    adaptive?: boolean;
-
-    /** Interpolation options (default: linear) */
-    interpolation?: InterpolationSetting;
-
-    /** Minial width to catch selection */
-    minSelectionWidth?: number; // 15px
-
-    /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
-    drawOrder?: DrawKey[];
-
-    /** Theme (default: 'light') */
-    theme?: YagrTheme;
-
-    /** 1 for milliseconds, 1e-3 for seconds (default: 1) */
-    timeMultiplier?: 1 | 1e-3;
-
-    /** Enable native uPlot zoom (default: true) */
-    zoom?: boolean;
-
-    /** Locale */
-    locale?: SupportedLocales | Record<string, string>;
-
-    /** Debounce timer for ResizeObserver to trigger: (default 100 ms) */
-    resizeDebounceMs?: number;
-}
+export type DrawKey = 'plotLines' | 'axes' | 'series';
 
 /**
  * Options for chart grid
@@ -393,3 +411,10 @@ export interface MarkersOptions {
 }
 
 export type SnapToValue = 'left' | 'right' | 'closest';
+
+export type YagrPlugin<T extends {} = {}, U extends Array<unknown> = []> = (
+    y: Yagr,
+    ...args: U
+) => {
+    uplot: Plugin;
+} & T;

@@ -1,9 +1,10 @@
 import uPlot, {Axis} from 'uplot';
 import * as defaults from '../defaults';
-
+import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
+import {PlotLinesPlugin} from '../plugins/plotLines/plotLines';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
     right: Axis.Side.Right,
@@ -28,7 +29,7 @@ export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align
 
 export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue = '') => {
     return (n: number | null) => {
-        if (n === null) {
+        if (n === null || n === undefined) {
             return nullValue;
         }
 
@@ -69,7 +70,7 @@ const minuteFormatter = uPlot.fmtDate('{mm}:{ss}');
 const secondFormatter = uPlot.fmtDate('{mm}:{ss}.{fff}');
 
 export const getTimeFormatter = (config: YagrConfig) => {
-    const msm = config.settings.timeMultiplier || 1;
+    const msm = config.chart.timeMultiplier || 1;
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];
         const rangeMs = range / msm;
@@ -89,32 +90,52 @@ export const getTimeFormatter = (config: YagrConfig) => {
     };
 };
 
+function getSplits(splitsCount: number) {
+    return (_: uPlot, __: number, scaleMin: number, scaleMax: number) => {
+        if (splitsCount <= 2) {
+            return [scaleMin, scaleMax];
+        }
+
+        const dist = Math.abs(scaleMax - scaleMin);
+        const step = dist / (splitsCount - 1);
+        let i = step;
+        const splits = [];
+        while (scaleMin + i < scaleMax) {
+            splits.push(scaleMin + i);
+            i += step;
+        }
+        return [scaleMin, ...splits, scaleMax];
+    };
+}
+
 // eslint-disable-next-line complexity
-export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
+function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
+    const theme = yagr.utils.theme;
+    const config = yagr.config;
+
     const axis: Axis = {
+        splits: axisConfig.splitsCount ? getSplits(axisConfig.splitsCount) : axisConfig.splits,
         show: typeof axisConfig.show === 'undefined' ? true : axisConfig.show,
         label: axisConfig.label || undefined,
         labelSize: axisConfig.labelSize || defaults.Y_AXIS_LABEL_SIZE,
         labelFont: axisConfig.labelFont || defaults.AXIS_LABEL_FONT,
         font: axisConfig.font || defaults.AXIS_VALUES_FONT,
-        stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
-        ticks: axisConfig.ticks ? {...defaults.theme.Y_AXIS_TICKS, ...axisConfig.ticks} : defaults.theme.Y_AXIS_TICKS,
-        grid: config.grid || axisConfig.grid || defaults.theme.GRID,
+        stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
+        ticks: axisConfig.ticks ? {...theme.Y_AXIS_TICKS, ...axisConfig.ticks} : theme.Y_AXIS_TICKS,
+        grid: config.grid || axisConfig.grid || theme.GRID,
     };
 
     if (axisConfig.scale === defaults.DEFAULT_X_SCALE) {
         return Object.assign(axis, {
             gap: axisConfig.gap ?? defaults.X_AXIS_TICK_GAP,
-            size: axisConfig.size || defaults.X_AXIS_SIZE,
+            size: axisConfig.size || (() => defaults.X_AXIS_SIZE),
             values: axisConfig.values || getTimeFormatter(config),
-            ticks: axisConfig.ticks
-                ? {...defaults.theme.X_AXIS_TICKS, ...axisConfig.ticks}
-                : defaults.theme.X_AXIS_TICKS,
+            ticks: axisConfig.ticks ? {...theme.X_AXIS_TICKS, ...axisConfig.ticks} : theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
-            space: axisConfig.space || defaults.X_AXIS_SPACE,
-            incrs: axisConfig.incrs || defaults.X_AXIS_INCRS.map((i) => i * (config.settings.timeMultiplier || 1)),
+            space: axisConfig.space || (() => defaults.X_AXIS_SPACE),
+            incrs: axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.chart.timeMultiplier || 1))),
             side: 2,
-            stroke: axisConfig.stroke || defaults.theme.AXIS_STROKE,
+            stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
         });
     }
 
@@ -131,4 +152,55 @@ export function getAxis(axisConfig: AxisOptions, config: YagrConfig): Axis {
     }
 
     return axis;
+}
+
+export function getRedrawOptionsForAxesUpdate(axes: YagrConfig['axes']) {
+    const options: [series: boolean, axes: boolean] = [false, true];
+
+    Object.values(axes).forEach((s) => {
+        const uOpts: (keyof AxisOptions)[] = ['align', 'side', 'size', 'label', 'labelFont', 'labelGap', 'labelSize'];
+        if (uOpts.some((t) => s[t] !== undefined)) {
+            options[1] = true;
+        }
+    });
+
+    return options;
+}
+
+export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
+    const upd = getAxis(axisConfig, yagr);
+    upd.ticks = {...uAxis.ticks, ...upd.ticks};
+    upd.grid = {...uAxis.grid, ...upd.grid};
+    upd.border = {...uAxis.border, ...upd.border};
+    upd.splits = upd.splits || uAxis.splits;
+    Object.assign(uAxis, upd);
+
+    const plotLines = yagr.plugins.plotLines as ReturnType<PlotLinesPlugin>;
+
+    if (axisConfig.plotLines?.length) {
+        plotLines.add(axisConfig.plotLines, axisConfig.scale);
+    } else {
+        plotLines.clear(axisConfig.scale);
+    }
+}
+
+export function configureAxes(yagr: Yagr, config: YagrConfig) {
+    const axes: Axis[] = [];
+
+    Object.entries(config.axes).forEach(([scale, axisConfig]) => {
+        axes.push(getAxis({...axisConfig, scale}, yagr));
+    });
+
+    const x = defaults.DEFAULT_X_SCALE;
+    const y = defaults.DEFAULT_Y_SCALE;
+
+    if (!config.axes[x]) {
+        axes.push(getAxis({scale: x}, yagr));
+    }
+
+    if (!axes.find(({scale}) => scale !== x)) {
+        axes.push(getAxis({scale: y}, yagr));
+    }
+
+    return axes;
 }

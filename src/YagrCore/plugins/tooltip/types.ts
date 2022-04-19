@@ -1,6 +1,5 @@
-import uPlot from 'uplot';
 import Yagr from '../../index';
-import {TooltipState, TooltipAction} from './tooltip';
+import {TooltipState} from './tooltip';
 
 export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
@@ -39,15 +38,28 @@ export type TitleRenderer = string | ((data: TooltipRenderOptions) => string);
 export type ValueFormatter = (value: string | number | null, precision?: number) => string;
 export type PerScale<T> = T | {[scale: string]: T};
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
+
+export type TooltipHandler = (
+    elem: HTMLElement,
+    data: {
+        state: TooltipState;
+        actions: {
+            pin: (state: boolean) => void;
+            show: () => void;
+            hide: () => void;
+        };
+        yagr: Yagr;
+    },
+) => void;
+
 export interface TooltipOptions {
-    enabled?: boolean;
+    /** Predicate to show/hide tooltip on setCursor */
+    show?: boolean | ((y: Yagr) => boolean);
     /** Tracking policy:
      *  - 'area'    : track by area
      *  - 'sticky'  : finds closest dataline
      */
     tracking: PerScale<TrackingOptions>;
-    /** Predicate to show/hide tooltip on setCursor */
-    show?: (y: Yagr, u: uPlot) => boolean;
     /** Limit for lines in tooltip */
     maxLines: PerScale<number>;
     /** Should highlight focused line in tooltip */
@@ -72,20 +84,6 @@ export interface TooltipOptions {
     boundClassName?: string;
     /** Value precision (default: 2) */
     precision?: PerScale<number>;
-    /** Calls when tooltip changes state */
-    onStateChange?: (
-        elem: HTMLElement,
-        api: {
-            action: TooltipAction;
-            state: TooltipState;
-            actions: {
-                pin: (state: boolean) => void;
-                show: () => void;
-                hide: () => void;
-            };
-            yagr: Yagr;
-        },
-    ) => void;
     /** Tooltip element className appendix */
     className?: string;
 

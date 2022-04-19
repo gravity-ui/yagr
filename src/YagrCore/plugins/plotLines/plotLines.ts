@@ -1,7 +1,7 @@
+import type Yagr from '../../';
 import UPlot, {DrawOrderKey} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../defaults';
-import {PlotLineConfig, YagrConfig} from '../../types';
-import {colorParser} from '../../utils/colors';
+import {PlotLineConfig, YagrPlugin} from '../../types';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
@@ -19,16 +19,25 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
     '021': 'drawSeries',
 };
 
+export type PlotLinesPlugin = YagrPlugin<
+    {
+        add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
+        clear: (scale?: string) => void;
+        get: () => PlotLineConfig[];
+    },
+    [PlotLineConfig[]]
+>;
+
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
  * Axis should be binded to scale.
  */
-export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConfig[] = []) {
-    const thresholds: Record<string, PlotLineConfig[]> = {};
+export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): ReturnType<PlotLinesPlugin> {
+    let plotLines = [...plotLinesCfg];
 
-    const drawIndicies = (cfg.settings.drawOrder ? cfg.settings.drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join(
-        '',
-    );
+    const drawOrder = yagr.config.chart.appereance?.drawOrder;
+
+    const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 
     const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
@@ -36,15 +45,13 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
         const {ctx} = u;
         const {height, top, width, left} = u.bbox;
 
-        const thresholdsValues = Object.values(thresholds);
-
-        for (const plotLineConfig of plotLines.concat(...thresholdsValues)) {
+        for (const plotLineConfig of plotLines) {
             if (!plotLineConfig.scale) {
                 continue;
             }
 
             ctx.save();
-            ctx.fillStyle = colorParser.parse(plotLineConfig.color);
+            ctx.fillStyle = yagr.utils.colors.parse(plotLineConfig.color);
 
             const {scale, value} = plotLineConfig;
 
@@ -98,10 +105,15 @@ export default function plotLinesPlugin(cfg: YagrConfig, plotLines: PlotLineConf
             : renderPlotLines;
 
     return {
-        setThreshold: (key: string, threshold: PlotLineConfig[]) => {
-            thresholds[key] = threshold;
+        get: () => plotLines,
+        clear: (scale?: string) => {
+            plotLines = scale
+                ? plotLines.filter((p) => {
+                      return p.scale !== scale;
+                  })
+                : [];
         },
-        addPlotlines: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
+        add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
             for (const p of additionalPlotLines) {
                 plotLines.push(scale ? {scale, ...p} : p);
             }

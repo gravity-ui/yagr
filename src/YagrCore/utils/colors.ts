@@ -1,5 +1,5 @@
-import UPlot from 'uplot';
-import {theme} from '../defaults';
+import UPlot, {Series} from 'uplot';
+import type Yagr from '../index';
 
 const DEFAULT_SHADE_COLOR = [0, 0, 0, 0.6];
 
@@ -16,8 +16,7 @@ export default class ColorParser {
 
     private context?: HTMLElement;
 
-    parse(color: string) {
-        color = color || '000';
+    parse(color = '000') {
         const isVar = color.startsWith('var(--');
         let res = color,
             pure = true,
@@ -48,12 +47,11 @@ export default class ColorParser {
         return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`;
     }
 
-    toRgba(color: string, fallback: number[]) {
-        return ColorParser.parseRgba(this.parse(color)) || fallback;
+    toRgba(color: string, fallbackRgba: number[]) {
+        return ColorParser.parseRgba(this.parse(color)) || fallbackRgba;
     }
 
-    shade(color: number[], value: number) {
-        const [r, g, b, a] = color;
+    shade([r, g, b, a]: number[], value: number) {
         const direction = value < 0;
         const tOffset = direction ? 0 : 255 * value;
         const transition = direction ? 1 + value : 1 - value;
@@ -64,18 +62,16 @@ export default class ColorParser {
     }
 }
 
-export const colorParser = new ColorParser();
+export const getFocusedColor = (y: Yagr, seriesIdx: number) => {
+    const shift = y.utils.theme.SHIFT;
+    const s = y.uplot.series[seriesIdx];
+    const mainColor = ColorParser.parseRgba(s.color) || DEFAULT_SHADE_COLOR;
+    return y.utils.colors.shade(mainColor, shift);
+};
 
-export const getSerieFocusColors = (color: string) => {
-    const shift = theme.SHIFT;
-    const mainColor = ColorParser.parseRgba(color) || DEFAULT_SHADE_COLOR;
-    const modified = colorParser.shade(mainColor, shift);
-
-    const colorFn = (u: UPlot, idx: number) => {
-        return u.series[idx]._focus === false ? modified : color;
+export const getSerieFocusColors = (y: Yagr, field: keyof Series) => {
+    return (u: UPlot, idx: number) => {
+        const s = u.series[idx];
+        return s._focus === false ? s.getFocusedColor(y, idx) : (s[field] as string);
     };
-
-    colorFn.defocusColor = modified;
-
-    return colorFn;
 };

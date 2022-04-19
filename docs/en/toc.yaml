@@ -2,22 +2,24 @@ title: Yagr
 items:
     - name: About
       href: index.md
+    - name: Quick Start
+      href: quickstart.md
     - name: Documentation
       items:
-          - name: Quick Start
-            href: quickstart.md
-          - name: API
+          - name: Methods
+            href: ./api/methods.md
+          - name: Config
             items:
                 - name: Visualization types
                   href: ./api/visualization.md
                 - name: Series options
                   href: ./api/series.md
+                - name: Settings
+                  href: ./api/settings.md
                 - name: Scales
                   href: ./api/scales.md
                 - name: Axes
                   href: ./api/axes.md
-                - name: Settings
-                  href: ./api/settings.md
                 - name: Cursor
                   href: ./api/cursor.md
                 - name: Markers
@@ -28,6 +30,8 @@ items:
                   href: ./api/data-processing.md
                 - name: CSS
                   href: ./api/css.md
+                - name: Theme
+                  href: ./api/theme.md
                 - name: React
                   href: ./api/react.md
                 - name: Localization
@@ -36,12 +40,16 @@ items:
                   href: ./api/lifecycle.md
           - name: Plugins
             items:
+                - name: Create plugin
+                  href: ./plugins/create.md
                 - name: Plot Lines
                   href: ./plugins/plot-lines.md
                 - name: Tooltip
                   href: ./plugins/tooltip.md
                 - name: Legend
                   href: ./plugins/legend.md
+                - name: DataRefs
+                  href: ./plugins/datarefs.md
 
     # Temporary disabled until realize how to insert examples into YFM
     # - name: Examples

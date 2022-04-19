@@ -1,5 +1,5 @@
 import {SnapToValue} from '../../types';
-import UPlot, {Plugin} from 'uplot';
+import UPlot, {Plugin, Series} from 'uplot';
 
 import {CURSOR_STYLE, DEFAULT_X_SCALE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
 import CP from '../../utils/colors';
@@ -33,16 +33,26 @@ export interface CursorOptions {
 
 const MAX_CURSORS = 50;
 
+function paintCursorPoint(series: Series, pt: HTMLElement, span?: HTMLElement) {
+    span ||= pt.querySelector('span') as HTMLElement;
+    pt.style.background = `${series.color}`;
+    span.style.background = series.color || SERIE_COLOR;
+    const colorRgba = CP.parseRgba(series.color) || [256, 256, 256, 0];
+    pt.style.boxShadow = `0px 0px 0px 1px rgba(${colorRgba[0]}, ${colorRgba[1]}, ${colorRgba[2]}, 0.5)`;
+}
+
 /*
- *
+ * Cursor plugin responsible for drawing cursor points and crosshairs,
+ * and for syncing cursors.
  */
 export default function CursorPlugin(
-    opts: CursorOptions,
     yagr: Yagr,
+    opts: CursorOptions,
 ): {
     pin: (v: boolean) => void;
     focus: (i: number | null, f: boolean) => void;
     uplot: Plugin;
+    updatePoints: () => void;
 } {
     const config = yagr.config;
     const processing = config.processing || {};
@@ -95,17 +105,7 @@ export default function CursorPlugin(
         pt.classList.add('yagr-point');
         pt.setAttribute('data-idx', String(seriesIndex));
 
-        const size = (serie.cursorOptions ? serie.cursorOptions.markersSize : opts?.markersSize) || MARKER_DIAMETER;
-        const margin = (size - 2) / -2 - 1;
-
-        pt.style.width = `${size}px`;
-        pt.style.height = `${size}px`;
-        pt.style.background = `solid 1px ${serie.color}`;
-        pt.style.marginLeft = `${margin}px`;
-        pt.style.marginTop = `${margin}px`;
-        span.style.background = serie.color || SERIE_COLOR;
-        const colorRgba = CP.parseRgba(serie.color) || [256, 256, 256, 0];
-        pt.style.boxShadow = `0px 0px 0px 1px rgba(${colorRgba[0]}, ${colorRgba[1]}, ${colorRgba[2]}, 0.5)`;
+        paintCursorPoint(serie, pt, span);
 
         return pt;
     }
@@ -131,6 +131,18 @@ export default function CursorPlugin(
                 over.querySelector('.yagr-points-holder')?.remove();
             }
         },
+        updatePoints: () => {
+            (yagr.root.querySelectorAll('.yagr-point') as NodeListOf<HTMLElement>).forEach((pt) => {
+                const idx = Number(pt.dataset['idx']);
+                if (isNaN(idx)) {
+                    return;
+                }
+
+                const series = yagr.uplot.series[idx];
+
+                paintCursorPoint(series, pt);
+            });
+        },
         focus: (serieIdx: number | null, focus: boolean) => {
             Object.entries(mem).forEach(([idx, item]) => {
                 if (serieIdx === null) {
@@ -149,6 +161,13 @@ export default function CursorPlugin(
                 const totalLines = uplotOptions.series.length - 1;
                 uplotOptions.cursor.points = {
                     show: totalLines - emptyLines <= MAX_CURSORS ? cursorPoint : false,
+                    size: (u: uPlot, seriesIdx: number) => {
+                        const serie = u.series[seriesIdx];
+                        return (
+                            (serie.cursorOptions ? serie.cursorOptions.markersSize : opts?.markersSize) ||
+                            MARKER_DIAMETER
+                        );
+                    },
                 };
 
                 uplotOptions.cursor.dataIdx = snapOnValues;

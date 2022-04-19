@@ -8,16 +8,16 @@ const DEFAULT_CONFIG = {
 describe('i18n', () => {
     it('should set EN locale as default', () => {
         const y = new Yagr(window.document.body, DEFAULT_CONFIG);
-        expect(y.i18n('sum')).toBe('Total');
+        expect(y.utils.i18n('sum')).toBe('Total');
     });
 
     it('should set RU locale from settings.locale', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, settings: {locale: 'ru'}});
-        expect(y.i18n('sum')).toBe('Сумма');
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {locale: 'ru'}}});
+        expect(y.utils.i18n('sum')).toBe('Сумма');
     });
 
     it('should accept custom locale', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, settings: {locale: {sum: 'Գումարը'}}});
-        expect(y.i18n('sum')).toBe('Գումարը');
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {locale: {sum: 'Գումարը'}}}});
+        expect(y.utils.i18n('sum')).toBe('Գումարը');
     });
 });

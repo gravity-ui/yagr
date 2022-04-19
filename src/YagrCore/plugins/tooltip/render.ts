@@ -31,10 +31,10 @@ export function renderTooltip(data: TooltipRenderOptions) {
             data.scales.length > 1
                 ? data.options.scales
                     ? `${getOptionValue(data.options.scales, x.scale) || ''}`
-                    : `${data.yagr.i18n('scale')}: ${x.scale}`
+                    : `${data.yagr.utils.i18n('scale')}: ${x.scale}`
                 : '';
         return `
-<div class="__section">
+<div class="__section" data-scale=${x.scale}>
     ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
     ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
     <div class="__section_body">${renderItems(x.rows, data.options)}</div>
@@ -42,7 +42,7 @@ export function renderTooltip(data: TooltipRenderOptions) {
         getOptionValue(data.options.sum, x.scale)
             ? `
         <div class="__section_sum">
-            ${data.yagr.i18n('sum')}: ${x.sum}
+            ${data.yagr.utils.i18n('sum')}: ${x.sum}
         </div>
     `
             : ''

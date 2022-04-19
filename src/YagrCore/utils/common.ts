@@ -71,7 +71,7 @@ export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[
         const serie = series[i];
         const opts = seriesOptions[seriesOptions.length - i - 1];
         i += 1;
-        if (opts.scale !== scale || !opts.show) {
+        if (opts.scale !== scale || opts.show === false) {
             continue;
         }
         const value = serie[idx];
@@ -176,7 +176,7 @@ export function findDataIdx(
     let corL = idx,
         corR = idx;
 
-    const direction = series.snapToValues === undefined ? defaultSnapTo : series.snapToValues;
+    const direction = series.snapToValues ?? defaultSnapTo;
 
     if (direction === false) {
         return idx;
@@ -268,7 +268,7 @@ const interpolateImpl = (
     return result;
 };
 
-export const genId = () => Math.random().toString(34).slice(2);
+export const genId = () => Math.random().toString(36).substr(2, 9).replace(/^\d+/, '');
 
 /**
  * Processing data series to:
@@ -369,3 +369,11 @@ export function debounce<T extends Array<unknown> = []>(func: (...args: T) => vo
         timer = setTimeout(() => func(...args), timeout);
     };
 }
+
+export const assignKeys = <T>(keys: (keyof T)[], f: T, t: T) => {
+    keys.forEach((key) => {
+        if (t[key] !== undefined) {
+            f[key] = t[key];
+        }
+    });
+};

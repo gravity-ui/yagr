@@ -34,7 +34,9 @@ You can configure a chart type for whole charts:
 
 ```js
 chart: {
-    type: 'line';
+    series: {
+        type: 'line',
+    }
 }
 ```
 
@@ -42,7 +44,9 @@ or per series
 
 ```js
 chart: {
-    type: 'line'
+    series: {
+        type: 'line',
+    }
 },
 series: [
     {data: [2, 4, 1], color: 'green'},             // will render line (by default in chart.type)
