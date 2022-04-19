@@ -1,5 +1,7 @@
 ### master
 
+### 2.0.0 (19-04-2022)
+
 #### Documentation
 
 -   Updated documentation to meet new major version.
