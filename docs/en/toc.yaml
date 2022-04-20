@@ -61,6 +61,10 @@ items:
             href: ./examples/multiscales.md
           - name: Plot Lines
             href: ./examples/plotlines.md
+          - name: Set data
+            href: ./examples/setdata.md
+          - name: Realtime updates
+            href: ./examples/realtime.md
 
     - name: Contibuting
       href: contribution.md
