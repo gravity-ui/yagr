@@ -267,7 +267,7 @@
                 }
             },
             plugins: {
-                weekends: YagrWeekends({}),
+                weekends: YagrWeekends(),
                 labels: YagrLabels({
                     series: {
                         cursor: {
@@ -283,8 +283,8 @@
             series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
             axes: {
                 x: {plotLines: [
-                    {color: 'rgba(255, 200, 10, 0.3)', value: [2000, 5000], name: 'Woah'},
-                    {color: 'rgba(100, 200, 103, 0.3)', value: [10000, 15000], name: 'Wheee'}]}
+                    {color: 'rgba(255, 200, 10, 0.3)', value: [2000, 5000], label: 'Woah'},
+                    {color: 'rgba(100, 200, 103, 0.3)', value: [10000, 15000], label: 'Wheee'}]}
             },
             scales: {y: {min: 0, max: 6}},
             plugins: [YagrLabels({
@@ -302,7 +302,7 @@
             scales: {y: {min: 0, max: 6}},
             tooltip: {
                 render: (data) => {
-                    const appendidx = `<div>${y9.plugins.labels.getAxisLabels().map(({scale, title}) => {
+                    const appendidx = `<div>${y9.plugins.labels.getAxisPoints().map(({scale, title}) => {
                         return `<div>Scale = <b>${scale}</b>, title = ${title}</div>`
                     }).join('<br>')}</div>`;
                     return `${data.defaultRender(data)}<br>${appendidx}`;
@@ -346,7 +346,9 @@
             }),
             tooltip: {
                 render: (data) => {
-                    const appendidx = `<div>${y10.plugins.labels.getTextLabels().map((x) => `<div style="background-color:${x.band.color}">${x.label}</div>`).join('<br>')}</div>`;
+                    const appendidx = `<div>${y10.plugins.labels.getTextLabels().map((x) => {
+                        return `<div style="background-color:${x.band.color}">${x.label}</div>`
+                    }).join('<br>')}</div>`;
                     return `${data.defaultRender(data)}<br>${appendidx}`;
                 }
             },
@@ -357,7 +359,7 @@
                 x: {plotLines: timeline.map((_, i) => {
                     return i % 77 === 0 ? {
                         color: 'rgba(255, 10, 10, 0.3)',
-                        name: 'Release (' + r++ + ')',
+                        label: 'Release (' + r++ + ')',
                         value: [timeline[i], timeline[i + 10]]
                     } : null
                 }).filter(Boolean)}

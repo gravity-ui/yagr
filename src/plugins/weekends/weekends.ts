@@ -50,7 +50,7 @@ export default function WeekendsPlugin({
                 scale: 'x',
                 value: val,
                 color,
-                name: 'Weekend',
+                label: 'Weekend',
             })),
         );
 
