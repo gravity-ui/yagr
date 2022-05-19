@@ -12,7 +12,7 @@ import UPlot, {
 
 import LegendPlugin from './plugins/legend/legend';
 import tooltipPlugin, {TooltipPlugin} from './plugins/tooltip/tooltip';
-import markersPlugin, {drawMarkersIfRequired, getPointsPointsDrawer} from './plugins/markers';
+import markersPlugin, {drawMarkersIfRequired, getPointsDrawer} from './plugins/markers';
 import cursorPlugin from './plugins/cursor/cursor';
 import plotLinesPlugin from './plugins/plotLines/plotLines';
 
@@ -376,7 +376,7 @@ class Yagr {
                 serie.stroke = serie.color;
                 serie.fill = colorFn;
                 serie.width = 2;
-                serie.points.show = getPointsPointsDrawer({
+                serie.points.show = getPointsDrawer({
                     size: config.chart.pointsSize || 4,
                     ...config.markers,
                 });

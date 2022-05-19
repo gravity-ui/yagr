@@ -96,10 +96,10 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
 
 type Handler<A, B = unknown, C = unknown, D = unknown> = Array<(a: A, b: B, c: C, d: D) => void>;
 
-export type LoadHandlerArg = {chart: Yagr; meta: YagrMeta;};
-export type OnSelectHandlerArg = {from: number; to: number; chart: Yagr;};
-export type ErrorHandlerArg = {type: YagrState['stage']; error: Error; yagr: Yagr;};
-export type ProcessedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>;};
+export type LoadHandlerArg = {chart: Yagr; meta: YagrMeta};
+export type OnSelectHandlerArg = {from: number; to: number; chart: Yagr};
+export type ErrorHandlerArg = {type: YagrState['stage']; error: Error; yagr: Yagr};
+export type ProcessedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'processTime'>};
 export type InitedHandlerArg = {chart: Yagr; meta: Pick<YagrMeta, 'initTime'>};
 export type DisposeHandlerArg = Yagr;
 export type ResizeHandlerArg = ResizeObserverEntry[];
