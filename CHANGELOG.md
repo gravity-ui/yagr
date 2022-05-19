@@ -1,5 +1,9 @@
 ### master
 
+#### Markers
+
+-   Fixed drawing points in case of there are dots and other series types on chart
+
 ### 1.4.0 (11-02-2022)
 
 #### Hooks
