@@ -62,7 +62,7 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
     return undefined;
 }
 
-export function getPointsPointsDrawer(opts: MarkersOptions) {
+export function getPointsDrawer(opts: MarkersOptions) {
     const {size = 4, strokeWidth = 2, strokeColor = '#ffffff'} = opts;
 
     return function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
@@ -94,7 +94,7 @@ export function getPointsPointsDrawer(opts: MarkersOptions) {
  * This plugin configures points markers
  */
 export default function MarkersPlugin(opts: MarkersOptions): Plugin {
-    const drawCircles = getPointsPointsDrawer(opts);
+    const drawCircles = getPointsDrawer(opts);
 
     return {
         opts: (_, opts) => {
