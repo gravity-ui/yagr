@@ -1,6 +1,6 @@
 {
   "name": "yagr",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "High level wrapper for uPlot",
   "keywords": [
     "canvas",
