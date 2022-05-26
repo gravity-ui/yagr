@@ -1,5 +1,7 @@
 ### master
 
+### 1.4.2 (26-05-2022)
+
 #### Markers
 
 -   Fixed drawing points in case of there are dots and other series types on chart
