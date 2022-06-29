@@ -2,6 +2,8 @@
 
 #### PlotLines
 
+-   Added posibility to render dashed lines
+
 ### 2.0.0 (19-04-2022)
 
 #### Documentation
