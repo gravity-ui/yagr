@@ -97,6 +97,7 @@ export interface TooltipOptions {
     title?: PerScale<TitleRenderer>;
     /** Titles of scales of scale sections */
     scales?: PerScale<string>;
+    elem?: HTMLElement;
 }
 
 export type TooltipRow = {

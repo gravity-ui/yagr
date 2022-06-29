@@ -39,24 +39,17 @@
             const [s, u] = React.useState({});
 
             React.useEffect(() => {
+                if (!yagr) {
+                    return;
+                }
+
                 yagr.chart.plugins.tooltip.on('render', (el, data) => {
                     u(data)
                 })
             }, [yagr]);
 
-            const style = React.useMemo(() => {
-                if (!s.render) {
-                    return {}
-                }
-
-                return {
-                    ...s.render.placement.anchor
-                };
-            }, [s]);
-
-
             return (
-                <div className="tooltip" style={style}>{
+                <div id="tooltip" className="tooltip" style={{}}>{
                     s.render && s.render.data.scales[0].rows.map((r) => {
                         return <span>{r.name}{' '}{r.value}</span>
                     })
@@ -66,8 +59,8 @@
 
         const App = () => {
             const yagr = React.useRef();
+            const tooltip = React.useRef();
             const [r, s] = React.useState(false);
-
 
             /** nevermind */
             React.useEffect(() => {
@@ -78,9 +71,10 @@
 
             return (
                 <div className="chart">
-                    {r && <Tooltip yagr={yagr.current} />}
+                    <Tooltip yagr={yagr.current} />
                     <YagrChartComponent ref={yagr} config={{
                         tooltip: {
+                            elem: document.querySelector('#tooltip'),
                             render: false
                         },
                         chart: {

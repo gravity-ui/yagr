@@ -139,7 +139,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     let bTop: number;
     let bound: HTMLElement;
 
-    const tOverlay = document.createElement('div');
+    const tOverlay = opts.elem ?? document.createElement('div');
 
     tOverlay.id = `${yagr.id}_tooltip`;
     tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
@@ -467,9 +467,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
             if (opts.render) {
                 tOverlay.innerHTML = opts.render(renderData);
-
-                placement(tOverlay, anchor, 'right', placementData);
             }
+
+            placement(tOverlay, anchor, 'right', placementData);
 
             emit('render', {
                 render: {
