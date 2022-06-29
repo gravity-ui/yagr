@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Yagr, {YagrMeta} from './YagrCore';
-import {MinimalValidConfig} from './YagrCore/types';
+import Yagr, { YagrMeta } from './YagrCore';
+import { MinimalValidConfig } from './YagrCore/types';
 
 export interface YagrChartProps {
     /** Chart ID */
@@ -44,8 +44,7 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
     }
 
     render() {
-        const {id, className} = this.props;
-
+        const { id, className } = this.props;
         return <div id={id} onClick={this.onClick} className={`yagr ${className || ''}`} ref={this.charRef} />;
     }
 
@@ -63,14 +62,14 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
         if (!this.charRef.current) {
             return;
         }
-        const {onChartLoad, config, onSelect} = this.props;
+        const { onChartLoad, config, onSelect } = this.props;
 
         config.hooks = config.hooks || {};
         const hooks = config.hooks;
 
         if (onChartLoad) {
             const load = hooks.load || [];
-            load.push(({chart, meta}) => {
+            load.push(({ chart, meta }) => {
                 onChartLoad(chart, meta);
             });
             hooks.load = load;
@@ -78,7 +77,7 @@ export default class YagrChartComponent extends React.Component<YagrChartProps, 
 
         if (onSelect) {
             const selection = hooks.onSelect || [];
-            selection.push(({from, to}) => onSelect(from, to));
+            selection.push(({ from, to }) => onSelect(from, to));
             hooks.onSelect = selection;
         }
 

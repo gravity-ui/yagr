@@ -6,7 +6,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import scss from 'rollup-plugin-scss';
-import {terser} from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
 
 const libraryName = 'yagr';
 
@@ -52,8 +52,8 @@ const iife = (min) => ({
 export default [{
     input: `src/index.ts`,
     output: [
-        {file: './dist/yagr.umd.js', name: libraryName, format: 'umd', sourcemap: true},
-        {file: './dist/yagr.es5.js', format: 'es', sourcemap: true},
+        { file: './dist/yagr.umd.js', name: libraryName, format: 'umd', sourcemap: true },
+        { file: './dist/yagr.es5.js', format: 'es', sourcemap: true },
     ],
     external: [],
     watch: {
@@ -75,4 +75,28 @@ export default [{
         resolve(),
         sourceMaps(),
     ],
-}, iife(true), iife(false)];
+}, iife(true), iife(false), {
+    input: './src/react-demo.tsx',
+    output: {
+        name: 'YagrComponent',
+        format: 'iife',
+        file: './dist/yagr.react.js',
+        esModule: false,
+    },
+    context: 'this',
+    plugins: [
+        json(),
+        typescript({
+            typescript: require('typescript'),
+            tsconfig: './tsconfig.publish.json',
+            useTsconfigDeclarationDir: true,
+            objectHashIgnoreUnknownHack: true,
+        }),
+        scss({
+            output: true,
+            bundle: 'yagr.css',
+        }),
+        commonjs(),
+        resolve(),
+    ]
+}];

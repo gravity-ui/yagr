@@ -1,5 +1,5 @@
 import Yagr from '../../index';
-import {TooltipState} from './tooltip';
+import { TooltipState } from './tooltip';
 
 export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
@@ -36,10 +36,10 @@ export interface TooltipRenderOptions {
 
 export type TitleRenderer = string | ((data: TooltipRenderOptions) => string);
 export type ValueFormatter = (value: string | number | null, precision?: number) => string;
-export type PerScale<T> = T | {[scale: string]: T};
+export type PerScale<T> = T | { [scale: string]: T };
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
-export type TooltipHandler = (
+export type TooltipHandler<T = {}> = (
     elem: HTMLElement,
     data: {
         state: TooltipState;
@@ -49,7 +49,7 @@ export type TooltipHandler = (
             hide: () => void;
         };
         yagr: Yagr;
-    },
+    } & T,
 ) => void;
 
 export interface TooltipOptions {
@@ -69,7 +69,7 @@ export interface TooltipOptions {
     /** Sorter */
     sort?: PerScale<SortFn>;
     /** Custom tooltip renderer */
-    render: (data: TooltipRenderOptions) => string;
+    render: false | ((data: TooltipRenderOptions) => string);
     /** Is tooltip pinable */
     pinable: boolean;
     /** Value formatter */

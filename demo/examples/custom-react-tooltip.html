@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <title>Yagr</title>
+    <script src="../../dist/yagr.iife.js"></script>
+    <script>
+        window.process = { env: { NODE_ENV: 'development' } };
+    </script>
+    <script src="../../dist/yagr.react.js"></script>
+    <link rel="stylesheet" href="../../dist/index.css" />
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script type="text/javascript" src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+        .chart {
+            position: relative;
+
+        }
+
+        .tooltip {
+            position: absolute;
+            border: solid 2px red;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Custom React tooltip</h1>
+
+    <div id="chart1"></div>
+
+    <script type="text/babel">
+        const YagrChartComponent = YagrComponent(React);
+        const root = ReactDOM.createRoot(chart1);
+
+        const Tooltip = ({ yagr }) => {
+            const [s, u] = React.useState({});
+
+            React.useEffect(() => {
+                yagr.chart.plugins.tooltip.on('render', (el, data) => {
+                    u(data)
+                })
+            }, [yagr]);
+
+            const style = React.useMemo(() => {
+                if (!s.render) {
+                    return {}
+                }
+
+                return {
+                    ...s.render.placement.anchor
+                };
+            }, [s]);
+
+
+            return (
+                <div className="tooltip" style={style}>{
+                    s.render && s.render.data.scales[0].rows.map((r) => {
+                        return <span>{r.name}{' '}{r.value}</span>
+                    })
+                }</div>
+            )
+        }
+
+        const App = () => {
+            const yagr = React.useRef();
+            const [r, s] = React.useState(false);
+
+
+            /** nevermind */
+            React.useEffect(() => {
+                if (yagr.current) {
+                    s(true);
+                }
+            });
+
+            return (
+                <div className="chart">
+                    {r && <Tooltip yagr={yagr.current} />}
+                    <YagrChartComponent ref={yagr} config={{
+                        tooltip: {
+                            render: false
+                        },
+                        chart: {
+                            size: {
+                                width: 800,
+                                height: 400,
+                            }
+                        },
+                        timeline: [1, 2, 3, 4, 5],
+                        series: [{ data: [1, 2, 3, 4, 3, 5], color: 'red' }]
+                    }} />
+                </div>
+            );
+        }
+
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

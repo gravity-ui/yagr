@@ -1,20 +1,20 @@
 /* eslint-disable complexity, no-nested-ternary */
 
-import {Plugin, Series} from 'uplot';
+import { Plugin, Series } from 'uplot';
 
-import {CursorOptions} from '../cursor/cursor';
+import { CursorOptions } from '../cursor/cursor';
 import placement from './placement';
 
 import Yagr from '../../index';
-import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
+import { DataSeries, ProcessingInterpolation, YagrPlugin } from '../../types';
 
-import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
+import { TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE } from '../../defaults';
 
-import {findInRange, findDataIdx, findSticky} from '../../utils/common';
-import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection, TooltipHandler} from './types';
+import { findInRange, findDataIdx, findSticky } from '../../utils/common';
+import { TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection, TooltipHandler } from './types';
 
-import {renderTooltip} from './render';
-import {getOptionValue} from './utils';
+import { renderTooltip } from './render';
+import { getOptionValue } from './utils';
 
 export interface TooltipState {
     /** Is tooltip pinned */
@@ -73,13 +73,13 @@ const DEFAULT_TOOLTIP_OPTIONS = {
 export type TooltipPlugin = YagrPlugin<
     {
         state: TooltipState;
-        pin(pinState: boolean, position?: {x: number; y: number}): void;
+        pin(pinState: boolean, position?: { x: number; y: number }): void;
         show(): void;
         hide(): void;
         updateOptions: (o: Partial<TooltipOptions>) => void;
         on: (event: TooltipAction, handler: TooltipHandler) => void;
         off: (event: TooltipAction, handler: TooltipHandler) => void;
-        display: (props: {left: number; top: number; idx: number}) => void;
+        display: (props: { left: number; top: number; idx: number }) => void;
     },
     [Partial<TooltipOptions>]
 >;
@@ -102,7 +102,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     };
 
     /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
-    let renderTooltipCloses = () => {};
+    let renderTooltipCloses = () => { };
 
     const defaultTooltipValueFormatter = (n: string | number | null, precision?: number) => {
         if (typeof n === 'string') {
@@ -119,8 +119,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 typeof precision === 'number'
                     ? precision
                     : typeof options.precision === 'number'
-                    ? options.precision
-                    : 2,
+                        ? options.precision
+                        : 2,
             );
         }
 
@@ -153,7 +153,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         focusedSeries: null,
     };
 
-    const emit = (action: TooltipAction) => {
+    const emit = <T>(action: TooltipAction, data?: T) => {
         handlers[action].forEach((handler) => {
             handler(tOverlay, {
                 state,
@@ -163,12 +163,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                     hide,
                 },
                 yagr,
+                ...data,
             });
         });
     };
 
     emit('init');
-    document.body.appendChild(tOverlay);
+    opts.render && document.body.appendChild(tOverlay);
     state.mounted = true;
     emit('mount');
 
@@ -224,7 +225,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         }
     };
 
-    function pin(pinState: boolean, position?: {x: number; y: number}) {
+    function pin(pinState: boolean, position?: { x: number; y: number }) {
         if (position) {
             placement(
                 tOverlay,
@@ -293,9 +294,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     const interpolation = pSettings.interpolation;
     const stripValue = interpolation ? interpolation.value : undefined;
 
-    function calcTooltip(props: {left: number; top: number; idx: number}) {
+    function calcTooltip(props: { left: number; top: number; idx: number }) {
         const u = yagr.uplot;
-        const {left, top, idx} = props;
+        const { left, top, idx } = props;
 
         if (opts.show && typeof opts.show === 'function' && opts.show(yagr) === false) {
             hide();
@@ -306,7 +307,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
             hide();
         }
 
-        const {data} = u;
+        const { data } = u;
 
         if (data === null || idx === null || idx === undefined || top === undefined) {
             return;
@@ -424,7 +425,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
             }
         });
 
-        const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
+        const hasOneRow = Object.values(sections).some(({ rows }) => rows.length > 0);
 
         if (hasOneRow) {
             onMouseEnter();
@@ -444,7 +445,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         };
 
         renderTooltipCloses = () => {
-            tOverlay.innerHTML = opts.render({
+            const renderData = {
                 scales: Object.entries(sections).map(([scale, sec]) => {
                     return {
                         scale,
@@ -456,15 +457,26 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 x,
                 pinned: state.pinned,
                 yagr,
-            });
+            };
 
-            placement(tOverlay, anchor, 'right', {
+            const placementData = {
                 bound,
                 xOffset: opts.xOffset,
                 yOffset: opts.yOffset,
-            });
+            };
 
-            emit('render');
+            if (opts.render) {
+                tOverlay.innerHTML = opts.render(renderData);
+
+                placement(tOverlay, anchor, 'right', placementData);
+            }
+
+            emit('render', {
+                render: {
+                    data: renderData,
+                    placement: { placementData, anchor },
+                }
+            });
         };
 
         if (state.pinned) {
