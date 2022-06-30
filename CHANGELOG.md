@@ -1,6 +1,8 @@
 ### master
 
-### 2.0.1 (26-05-2022)
+#### PlotLines
+
+-   Added posibility to render dashed lines
 
 ### 2.0.0 (19-04-2022)
 
