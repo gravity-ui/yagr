@@ -7,6 +7,7 @@ import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import scss from 'rollup-plugin-scss';
 import {terser} from 'rollup-plugin-terser';
+import del from 'rollup-plugin-delete';
 
 const libraryName = 'yagr';
 
@@ -28,51 +29,57 @@ const iife = (min) => ({
             useTsconfigDeclarationDir: true,
             objectHashIgnoreUnknownHack: true,
         }),
-        scss({
-            output: true,
-            bundle: 'yagr.css',
-        }),
         commonjs(),
         resolve(),
-        min && terser({
-            compress: {
-                inline: 0,
-                passes: 2,
-                keep_fnames: false,
-                keep_fargs: false,
-                pure_getters: true,
-            },
-            output: {
-                comments: /^!/,
-            }
-        }),
-    ].filter(Boolean)
+        min &&
+            terser({
+                compress: {
+                    inline: 0,
+                    passes: 2,
+                    keep_fnames: false,
+                    keep_fargs: false,
+                    pure_getters: true,
+                },
+                output: {
+                    comments: /^!/,
+                },
+            }),
+    ].filter(Boolean),
 });
 
-export default [{
-    input: `src/index.ts`,
-    output: [
-        {file: './dist/yagr.umd.js', name: libraryName, format: 'umd', sourcemap: true},
-        {file: './dist/yagr.es5.js', format: 'es', sourcemap: true},
-    ],
-    external: [],
-    watch: {
-        include: 'src/**',
+export default [
+    {
+        input: `src/index.ts`,
+        output: [
+            {file: './dist/yagr.umd.js', name: libraryName, format: 'umd', sourcemap: true},
+            {file: './dist/yagr.es5.js', format: 'es', sourcemap: true},
+        ],
+        external: [],
+        watch: {
+            include: 'src/**',
+        },
+        plugins: [
+            json(),
+            typescript({
+                useTsconfigDeclarationDir: true,
+                tsconfig: './tsconfig.publish.json',
+            }),
+            commonjs(),
+            resolve(),
+            sourceMaps(),
+        ],
     },
-    plugins: [
-        json(),
-        typescript({
-            useTsconfigDeclarationDir: true,
-            tsconfig: './tsconfig.publish.json'
-        }),
-        scss({
-            output: (styles) => {
-                fs.writeFileSync('dist/index.css', styles);
-            },
-            bundle: 'index.css',
-        }),
-        commonjs(),
-        resolve(),
-        sourceMaps(),
-    ],
-}, iife(true), iife(false)];
+    {
+        input: 'src/Yagr.scss',
+        plugins: [
+            scss({
+                output: (css) => {
+                    fs.writeFileSync('dist/index.css', css);
+                },
+            }),
+            del({targets: 'dist/**/*.scss'}),
+        ],
+    },
+    iife(true),
+    iife(false),
+];
