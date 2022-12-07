@@ -34,6 +34,7 @@ const iife = (min, input, name, fileName, cssFileName = '') => ({
                 output: (styles) => {
                     fs.writeFileSync('dist/' + cssFileName, styles);
                 },
+                outputStyle: min ? 'compressed' : 'expanded',
             }),
         min &&
             terser({
@@ -49,6 +50,19 @@ const iife = (min, input, name, fileName, cssFileName = '') => ({
                 },
             }),
     ].filter(Boolean),
+});
+
+const css = (min) => ({
+    input: 'src/Yagr.scss',
+    plugins: [
+        scss({
+            output: (css) => {
+                fs.writeFileSync('dist/index.css', css);
+            },
+            outputStyle: min ? 'compressed' : 'expanded',
+        }),
+        del({targets: 'dist/**/*.scss'}),
+    ],
 });
 
 const main = [
@@ -73,17 +87,8 @@ const main = [
             sourceMaps(),
         ],
     },
-    {
-        input: 'src/Yagr.scss',
-        plugins: [
-            scss({
-                output: (css) => {
-                    fs.writeFileSync('dist/index.css', css);
-                },
-            }),
-            del({targets: 'dist/**/*.scss'}),
-        ],
-    },
+    css(true),
+    css(false),
     iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
     iife(false, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
 ];
