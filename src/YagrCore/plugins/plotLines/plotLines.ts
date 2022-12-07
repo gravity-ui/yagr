@@ -1,7 +1,7 @@
 import type Yagr from '../../';
 import UPlot, {DrawOrderKey} from 'uplot';
-import {DEFAULT_X_SCALE} from '../../defaults';
-import {PlotLineConfig, YagrPlugin} from '../../types';
+import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
+import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
@@ -78,6 +78,9 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                 }
             } else {
                 const from = u.valToPos(value, scale, true);
+                const pConf = plotLineConfig as PLineConfig;
+
+                ctx.beginPath();
                 if (scale === DEFAULT_X_SCALE) {
                     /** Workaround to ensure that plot line will not be drawn over axes */
                     const last = u.data[0][u.data[0].length - 1] as number;
@@ -86,10 +89,18 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                         continue;
                     }
 
-                    ctx.fillRect(from, top, plotLineConfig.width || 1, height);
+                    ctx.moveTo(from, top);
+                    ctx.lineTo(from, height);
                 } else {
-                    ctx.fillRect(left, from, width, plotLineConfig.width || 1);
+                    ctx.moveTo(left, from);
+                    ctx.lineTo(width, from);
                 }
+
+                ctx.lineWidth = pConf.width || DEFAULT_CANVAS_PIXEL_RATIO;
+                ctx.strokeStyle = pConf.color || '#000';
+                pConf.dash && ctx.setLineDash(pConf.dash);
+                ctx.closePath();
+                ctx.stroke();
             }
             ctx.restore();
         }

@@ -1,5 +1,11 @@
 ### master
 
+#### PlotLines
+
+-   Added posibility to render dashed lines
+
+### 2.0.0 (19-04-2022)
+
 #### Documentation
 
 -   Updated documentation to meet new major version.
@@ -87,6 +93,17 @@
 ##### PlotLines
 
 -   Add `yagr.plugins.plotLines.get` method which returns current plotlines
+
+#### Fixes
+
+#### Yagr
+
+-   Fixed Yagr ID generation to avoid IDs starting with numbers
+
+#### Tooltip
+
+-   Fixed tooltip's HTML ID generation
+-   Removed redundant `draw` hook calling on `setFocus(null)` via tooltip
 
 ### 1.4.1 (15-03-2022)
 

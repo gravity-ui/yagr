@@ -1,12 +1,6 @@
 import type {YagrPlugin} from '../../types';
 import type Yagr from '../../index';
 
-declare module '../../types' {
-    interface PlotLineConfig {
-        name?: string;
-    }
-}
-
 export interface WeekendsPluginOptions {
     color?: string;
     predicate?: (timestamp: number) => boolean;

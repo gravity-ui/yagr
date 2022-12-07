@@ -268,7 +268,7 @@ const interpolateImpl = (
     return result;
 };
 
-export const genId = () => Math.random().toString(34).slice(2);
+export const genId = () => Math.random().toString(36).substr(2, 9).replace(/^\d+/, '');
 
 /**
  * Processing data series to:

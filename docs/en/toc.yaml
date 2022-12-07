@@ -51,15 +51,20 @@ items:
                 - name: DataRefs
                   href: ./plugins/datarefs.md
 
-    # Temporary disabled until realize how to insert examples into YFM
-    # - name: Examples
-    #   items:
-    #       - name: Shared crosshairs
-    #         href: ./examples/crosshairs.md
-    #       - name: Multiscales
-    #         href: ./examples/multiscales.md
-    #       - name: Plot Lines
-    #         href: ./examples/plotlines.md
+    - name: Examples
+      items:
+          - name: Scale transforms
+            href: ./examples/scale-transformations.md
+          - name: Shared crosshairs
+            href: ./examples/crosshairs.md
+          - name: Multiscales
+            href: ./examples/multiscales.md
+          - name: Plot Lines
+            href: ./examples/plotlines.md
+          - name: Set data
+            href: ./examples/setdata.md
+          - name: Realtime updates
+            href: ./examples/realtime.md
 
     - name: Contibuting
       href: contribution.md

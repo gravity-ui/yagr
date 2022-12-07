@@ -10,7 +10,11 @@ import {html, px} from '../../YagrCore/utils/common';
 import './styles.scss';
 
 declare module '../../types' {
-    interface PlotLineConfig {
+    interface PBandConfig {
+        label?: string;
+    }
+
+    interface PLineConfig {
         label?: string;
     }
 }

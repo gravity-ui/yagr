@@ -328,19 +328,29 @@ export interface AxisOptions extends Omit<UAxis, 'side'> {
     splitsCount?: number;
 }
 
-export interface PlotLineConfig {
+interface CommonPlotLineConfig {
     /** Scale of plotLineConfig */
     scale?: string;
 
-    /** Value of plotLine or [from, to] on given scale */
-    value: number | [number, number];
-
     /** Color of line */
     color: string;
+}
+
+export interface PBandConfig extends CommonPlotLineConfig {
+    value: [from: number, to: number];
+}
+
+export interface PLineConfig extends CommonPlotLineConfig {
+    value: number;
 
     /** Line width in px/devicePixelRatio */
     width?: number;
+
+    /** Line stroke dash style*/
+    dash?: [number, number];
 }
+
+export type PlotLineConfig = PBandConfig | PLineConfig;
 
 /** Setting for line interpolation type */
 export type InterpolationType = 'linear' | 'left' | 'right' | 'smooth';

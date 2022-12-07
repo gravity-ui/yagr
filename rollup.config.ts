@@ -7,8 +7,9 @@ import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import scss from 'rollup-plugin-scss';
 import {terser} from 'rollup-plugin-terser';
+import del from 'rollup-plugin-delete';
 
-const iife = (min, input, name, fileName, cssFileName = null) => ({
+const iife = (min, input, name, fileName, cssFileName = '') => ({
     input: input,
     output: {
         name,
@@ -26,15 +27,14 @@ const iife = (min, input, name, fileName, cssFileName = null) => ({
             useTsconfigDeclarationDir: true,
             objectHashIgnoreUnknownHack: true,
         }),
+        commonjs(),
+        resolve(),
         cssFileName &&
             scss({
                 output: (styles) => {
                     fs.writeFileSync('dist/' + cssFileName, styles);
                 },
-                bundle: cssFileName,
             }),
-        commonjs(),
-        resolve(),
         min &&
             terser({
                 compress: {
@@ -68,15 +68,20 @@ const main = [
                 useTsconfigDeclarationDir: true,
                 tsconfig: './tsconfig.publish.json',
             }),
-            scss({
-                output: (styles) => {
-                    fs.writeFileSync('dist/index.css', styles);
-                },
-                bundle: 'index.css',
-            }),
             commonjs(),
             resolve(),
             sourceMaps(),
+        ],
+    },
+    {
+        input: 'src/Yagr.scss',
+        plugins: [
+            scss({
+                output: (css) => {
+                    fs.writeFileSync('dist/index.css', css);
+                },
+            }),
+            del({targets: 'dist/**/*.scss'}),
         ],
     },
     iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
