@@ -1,5 +1,7 @@
 ### master
 
+### 2.1.0 (08-12-2022)
+
 #### Column Series
 
 -   Added pass column render options to `series`
