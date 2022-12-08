@@ -1,5 +1,9 @@
 ### master
 
+#### Column Series
+
+-   Added pass column render options to `series`
+
 #### PlotLines
 
 -   Added posibility to render dashed lines

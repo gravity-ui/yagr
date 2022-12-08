@@ -275,6 +275,9 @@ export interface AreaSeriesOptions extends CommonSeriesOptions {
 
 export interface ColumnSeriesOptions extends CommonSeriesOptions {
     type: 'column';
+
+    /** Bars rendering options */
+    renderOptions?: Series.BarsPathBuilderOpts;
 }
 
 export interface DotsSeriesOptions extends CommonSeriesOptions {

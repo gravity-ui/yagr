@@ -13,7 +13,12 @@ export function pathsRenderer(u: UPlot, seriesIdx: number, idx0: number, idx1: n
 
     switch (type) {
         case 'column': {
-            drawer = UPlot.paths.bars && UPlot.paths.bars({size: [defaults.BARS_DRAW_FACTOR, defaults.BARS_DRAW_MAX]});
+            drawer =
+                UPlot.paths.bars &&
+                UPlot.paths.bars({
+                    size: [defaults.BARS_DRAW_FACTOR, defaults.BARS_DRAW_MAX],
+                    ...(u.series[seriesIdx].renderOptions || {}),
+                });
             break;
         }
         case 'dots': {
