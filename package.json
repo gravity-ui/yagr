@@ -34,7 +34,8 @@
     "build": "rm -rf dist && npm run build:tsc && rollup -c rollup.config.ts",
     "start": "rollup -c rollup.config.ts -w",
     "precommit": "lint-staged",
-    "docs": "yfm -i ./docs -o ./dist/docs --allowHTML"
+    "docs": "yfm -i ./docs -o ./dist/docs --allowHTML",
+    "prepublishOnly": "npm run build"
   },
   "husky": {
     "hooks": {
