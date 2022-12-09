@@ -69,7 +69,7 @@
 -   Added `yagr.setAxes` method which updates/adds axes and redraws them if required.
 -   Added `yagr.setLocale` method which changes locale and redraws all i18n-including elements.
 -   Added `yagr.setTheme` method which changes theme and redraws chart.
--   Added `yagr,getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
+-   Added `yagr.getSeriesById` which returns uPlot's `Series` type by Yagr's series ID.
 -   Added `yagr.batch` which allows to run multiple changes in single redraw.
 
 ##### Axes
