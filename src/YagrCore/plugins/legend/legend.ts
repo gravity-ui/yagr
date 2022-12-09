@@ -38,6 +38,10 @@ const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
     return series.length > 3 && i18n(hasOneVisibleLine(series) ? 'hide-all' : 'show-all');
 };
 
+const getPrependingTitleId = (series: Series[]) => {
+    return series.length > 3 && ALL_SERIES_IDX;
+};
+
 export default class Legend {
     yagr: Yagr;
     uplot?: UPlot;
@@ -327,6 +331,7 @@ export default class Legend {
 
     private renderItems(uplotOptions: Options) {
         const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
+        const titleId = getPrependingTitleId(uplotOptions.series);
         const series: (Series | string)[] = title ? [title] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
@@ -340,7 +345,7 @@ export default class Legend {
 
                 if (typeof serie === 'string') {
                     content = serie;
-                    sId = serie;
+                    sId = titleId;
                 } else {
                     sId = serie.id;
                     const icon = this.createIconLineElement(serie);
