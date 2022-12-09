@@ -25,7 +25,7 @@ interface LegendState {
     pageSize: number;
 }
 
-const ALL_SERIES_IDX = 'null';
+const ALL_SERIES_IDX = 'null' as const;
 const TOTAL_LEGEND_VERTICAL_PADDING = 20;
 const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
@@ -38,8 +38,8 @@ const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
     return series.length > 3 && i18n(hasOneVisibleLine(series) ? 'hide-all' : 'show-all');
 };
 
-const getPrependingTitleId = (series: Series[]) => {
-    return series.length > 3 && ALL_SERIES_IDX;
+const getPrependingTitleId = (series: Series[]): typeof ALL_SERIES_IDX | undefined => {
+    return series.length > 3 && ALL_SERIES_IDX || undefined;
 };
 
 export default class Legend {
@@ -332,7 +332,7 @@ export default class Legend {
     private renderItems(uplotOptions: Options) {
         const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
         const titleId = getPrependingTitleId(uplotOptions.series);
-        const series: (Series | string)[] = title ? [title] : [];
+        const series: (Series | typeof ALL_SERIES_IDX)[] = titleId ? [titleId] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
             series.push(uplotOptions.series[i]);
@@ -343,8 +343,8 @@ export default class Legend {
                 let content;
                 let sId;
 
-                if (typeof serie === 'string') {
-                    content = serie;
+                if (serie === ALL_SERIES_IDX) {
+                    content = title;
                     sId = titleId;
                 } else {
                     sId = serie.id;
