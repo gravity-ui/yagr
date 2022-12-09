@@ -1,5 +1,37 @@
 ### master
 
+## [1.4.0](https://github.com/gravity-ui/yagr/compare/v1.3.2...v1.4.0) (2022-12-09)
+
+
+### Features
+
+* added batch ([ea43043](https://github.com/gravity-ui/yagr/commit/ea4304359bcd7c15f570f5a4f10930abf6f1f5d7))
+* adding separated plugins ([ea67c4d](https://github.com/gravity-ui/yagr/commit/ea67c4d76c07c241e002a09987f5a32db791a21b))
+* change hrefs for logos ([42a98a2](https://github.com/gravity-ui/yagr/commit/42a98a2fc1ec02a359563b387ca8770b5d8a529e))
+* move yagr to gravity-ui organization ([24b3c27](https://github.com/gravity-ui/yagr/commit/24b3c27ac9902bab824b2897150e246c7c3541bf))
+* test release flow ([#34](https://github.com/gravity-ui/yagr/issues/34)) ([97baa13](https://github.com/gravity-ui/yagr/commit/97baa1336df66982b83250b0e1d9a578db1ddc8f))
+
+
+### Bug Fixes
+
+* added .npmrc file ([5ee5c1c](https://github.com/gravity-ui/yagr/commit/5ee5c1c4673c6faef0fca724123048fa993368b5))
+* fixed cursor plugins tests ([4b6042e](https://github.com/gravity-ui/yagr/commit/4b6042e95c9ca27138c0990ea061f77e31703e87))
+* fixed left interpolation in case of iGroup border is null ([598cae2](https://github.com/gravity-ui/yagr/commit/598cae21555bf9ade592a557ec6428cbfb63cdff))
+* fixed link to demo ([9359561](https://github.com/gravity-ui/yagr/commit/93595616cfb9394b424667c3d472dcfc85026a39))
+* fixed redundant draw hook calls from tooltip setFocus on check ([f9a75fd](https://github.com/gravity-ui/yagr/commit/f9a75fdf431a3595a17e6af39c24755760f235b8))
+* fixed Series override ([4d23c66](https://github.com/gravity-ui/yagr/commit/4d23c6660758ca49360d391ec0aefa991234fe3d))
+* fixed setSeries + added tests ([5a680cd](https://github.com/gravity-ui/yagr/commit/5a680cdc10d65db8a54734290b8a793023557844))
+* fixed stacking ([ccfbea5](https://github.com/gravity-ui/yagr/commit/ccfbea5295f4862ec442d542a65874608d4a0fb7))
+* fixed tooltip ids and added tests ([04543a3](https://github.com/gravity-ui/yagr/commit/04543a38ce27df44826f3acd1167fc1b8a0794b9))
+* fixed types ([100b43b](https://github.com/gravity-ui/yagr/commit/100b43b2b55655c5a2ac685c6a16f8004d87957d))
+* fixed types and tests ([9ffac14](https://github.com/gravity-ui/yagr/commit/9ffac147148c02e238eda107769f531d211ffbc3))
+* index.md ([525440b](https://github.com/gravity-ui/yagr/commit/525440ba4f27b44754011ac739a1d2c8977e9593))
+* **legend:** fix a problem with quotes in legend names ([56c73d1](https://github.com/gravity-ui/yagr/commit/56c73d1c448c49e19d1a17683b20914379ce74a0))
+* **legend:** fixed legend render and series toggle ([0c2a37d](https://github.com/gravity-ui/yagr/commit/0c2a37d2dbcf5eb641b537c591b8afa58576ae4b))
+* normalization in case of row sum=0 ([4913781](https://github.com/gravity-ui/yagr/commit/4913781ebe95ee6adcdfc9cf38fa082c1c1b43ec))
+* **tooltip:** fix pin behavior on resize, add tooltip to yagr.plugins ([84e8255](https://github.com/gravity-ui/yagr/commit/84e82557b97d466651a1298607ff4ec41370b8e0))
+* try fix release flow ([516b329](https://github.com/gravity-ui/yagr/commit/516b32976c4b352bd361515905f444997932555e))
+
 ### 2.1.0 (08-12-2022)
 
 #### Column Series
