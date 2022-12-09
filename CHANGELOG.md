@@ -1,5 +1,18 @@
 ### master
 
+## [2.2.0](https://github.com/gravity-ui/yagr/compare/v2.1.1...v2.2.0) (2022-12-09)
+
+
+### Features
+
+* move yagr to gravity-ui organization ([24b3c27](https://github.com/gravity-ui/yagr/commit/24b3c27ac9902bab824b2897150e246c7c3541bf))
+* test release flow ([#34](https://github.com/gravity-ui/yagr/issues/34)) ([97baa13](https://github.com/gravity-ui/yagr/commit/97baa1336df66982b83250b0e1d9a578db1ddc8f))
+
+
+### Bug Fixes
+
+* try fix release flow ([516b329](https://github.com/gravity-ui/yagr/commit/516b32976c4b352bd361515905f444997932555e))
+
 ### 2.1.0 (08-12-2022)
 
 #### Column Series
