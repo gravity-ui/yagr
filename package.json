@@ -1,5 +1,5 @@
 {
-  "name": "yagr",
+  "name": "@gravity-ui/yagr",
   "version": "2.1.0",
   "description": "High level wrapper for uPlot",
   "keywords": [
@@ -19,10 +19,7 @@
     "Trdat Mkrtchian <zeffirsky@yandex-team.ru>",
     "Artem Luchin <kloof@yandex-team.ru>"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yandex-cloud/yagr"
-  },
+  "repository": "git@github.com:gravity-ui/yagr.git",
   "license": "MIT",
   "engines": {
     "node": ">=16.0.0"
