@@ -1,5 +1,12 @@
 ### master
 
+## [2.2.1](https://github.com/gravity-ui/yagr/compare/v2.2.0...v2.2.1) (2022-12-09)
+
+
+### Bug Fixes
+
+* build dist with new release flow ([8da1b5d](https://github.com/gravity-ui/yagr/commit/8da1b5d0710d7ea3378fc6a5a6374a3b7a1d0ae2))
+
 ## [2.2.0](https://github.com/gravity-ui/yagr/compare/v2.1.1...v2.2.0) (2022-12-09)
 
 
