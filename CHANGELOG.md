@@ -1,5 +1,12 @@
 ### master
 
+## [2.2.2](https://github.com/gravity-ui/yagr/compare/v2.2.1...v2.2.2) (2022-12-12)
+
+
+### Bug Fixes
+
+* legend show and hide all button ([da98045](https://github.com/gravity-ui/yagr/commit/da98045ee8f98ab3b3633deff0425c89ab1c6699))
+
 ## [2.2.1](https://github.com/gravity-ui/yagr/compare/v2.2.0...v2.2.1) (2022-12-09)
 
 
