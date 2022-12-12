@@ -68,7 +68,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     }
 
     if (seriesOptions && 'renderOptions' in seriesOptions) {
-        serie.renderOptions = seriesOptions?.renderOptions;
+        serie.renderOptions = seriesOptions?.renderOptions || serie.renderOptions;
     }
 
     serie.interpolation = serie.interpolation || commonI;
