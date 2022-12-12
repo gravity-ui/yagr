@@ -31,7 +31,6 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     serie.points = serie.points || {};
 
     const colorFn = getSerieFocusColors(yagr, 'color');
-    const seriesOptions = yagr.config.chart.series;
 
     if (serie.type === 'area') {
         serie.lineColor = yagr.utils.colors.parse(serie.lineColor || defaults.SERIE_AREA_BORDER_COLOR);
@@ -63,6 +62,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     }
 
     let commonI = 'linear' as InterpolationType;
+    const seriesOptions = yagr.config.chart.series;
     if (seriesOptions && 'interpolation' in seriesOptions) {
         commonI = seriesOptions.interpolation || commonI;
     }
