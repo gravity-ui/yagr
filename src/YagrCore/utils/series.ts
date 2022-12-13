@@ -66,6 +66,11 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     if (seriesOptions && 'interpolation' in seriesOptions) {
         commonI = seriesOptions.interpolation || commonI;
     }
+
+    if (seriesOptions && 'renderOptions' in seriesOptions && seriesOptions.renderOptions) {
+        serie.renderOptions = serie.renderOptions || seriesOptions.renderOptions;
+    }
+
     serie.interpolation = serie.interpolation || commonI;
     serie.paths = pathsRenderer;
 
