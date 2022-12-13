@@ -1,5 +1,12 @@
 ### master
 
+## [2.2.3](https://github.com/gravity-ui/yagr/compare/v2.2.2...v2.2.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* columns render options ([#48](https://github.com/gravity-ui/yagr/issues/48)) ([034d652](https://github.com/gravity-ui/yagr/commit/034d65279595b8971a6fb7c03a3e5c9619127123))
+
 ## [2.2.2](https://github.com/gravity-ui/yagr/compare/v2.2.1...v2.2.2) (2022-12-12)
 
 
