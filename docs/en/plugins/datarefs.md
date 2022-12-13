@@ -5,7 +5,7 @@ Data refs plugin calculates references points per scales (`avg`, `min`, `max`, `
 ### Usage
 
 ```js
-import DataRefsPlugin from 'yagr/dist/YagrCore/plugins/datarefs/datarefs';
+import DataRefsPlugin from '@gravity-ui/yagr/dist/YagrCore/plugins/datarefs/datarefs';
 
 const yagr = new Yagr(document.body, {
     timline: [1, 2, 3],
