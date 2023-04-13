@@ -1,5 +1,12 @@
 ### master
 
+## [2.2.4](https://github.com/gravity-ui/yagr/compare/v2.2.3...v2.2.4) (2023-04-13)
+
+
+### Bug Fixes
+
+* change background color in case of dark-hc theme ([#53](https://github.com/gravity-ui/yagr/issues/53)) ([a647216](https://github.com/gravity-ui/yagr/commit/a647216f0c527b6bfdb9a0cfc630bd07acea3302))
+
 ## [2.2.3](https://github.com/gravity-ui/yagr/compare/v2.2.2...v2.2.3) (2022-12-13)
 
 
