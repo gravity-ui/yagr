@@ -171,11 +171,11 @@ export default class ThemedDefaults {
     }
 
     get SHIFT() {
-        return this.theme === 'light' ? LIGHTEN_COLOR_SHIFT : DARKEN_COLOR_SHIFT;
+        return this.theme?.startsWith('light') ? LIGHTEN_COLOR_SHIFT : DARKEN_COLOR_SHIFT;
     }
 
     get DEFAULT_LINE_COLOR() {
-        return this.theme === 'light' ? LIGHT_DEFAULT_LINE_COLOR : DARK_DEFAULT_LINE_COLOR;
+        return this.theme?.startsWith('light') ? LIGHT_DEFAULT_LINE_COLOR : DARK_DEFAULT_LINE_COLOR;
     }
 }
 

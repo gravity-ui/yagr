@@ -1,7 +1,8 @@
 .yagr {
     --yagr-font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
 
-    &_theme_light {
+    &_theme_light,
+    &_theme_light-hc {
         --yagr-title-color: #333333;
 
         --yagr-legend-item: rgba(0, 0, 0, 0.5);
@@ -13,7 +14,8 @@
         --yagr-axis-stroke: rgba(0, 0, 0, 0.5);
     }
 
-    &_theme_dark {
+    &_theme_dark,
+    &_theme_dark-hc {
         --yagr-title-color: rgba(255, 255, 255, 0.35);
 
         --yagr-legend-item: rgba(255, 255, 255, 0.5);
@@ -23,6 +25,10 @@
         --yagr-background: #2d2c33;
         --yagr-grid: rgba(255, 255, 255, 0.23);
         --yagr-axis-stroke: rgba(255, 255, 255, 0.5);
+    }
+
+    &_theme_dark-hc {
+        --yagr-background: rgba(34, 35, 38, 1);
     }
 }
 
