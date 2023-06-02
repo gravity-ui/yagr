@@ -37,6 +37,8 @@
     height: 100%;
     font-family: var(--yagr-font-family);
     background-color: var(--yagr-background);
+    // To have properly resize logic in case of using `chart.size.adaptive` property
+    overflow: hidden;
 
     .uplot {
         width: 100%;
