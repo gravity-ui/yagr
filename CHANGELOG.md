@@ -1,5 +1,12 @@
 ### master
 
+## [2.2.5](https://github.com/gravity-ui/yagr/compare/v2.2.4...v2.2.5) (2023-06-02)
+
+
+### Bug Fixes
+
+* **YagrCore:** fix resize handling ([#57](https://github.com/gravity-ui/yagr/issues/57)) ([3ae9b43](https://github.com/gravity-ui/yagr/commit/3ae9b436324fd1ec7a9585f48a82d436a7fb468c))
+
 ## [2.2.4](https://github.com/gravity-ui/yagr/compare/v2.2.3...v2.2.4) (2023-04-13)
 
 
