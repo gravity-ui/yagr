@@ -279,6 +279,9 @@ export interface AreaSeriesOptions extends CommonSeriesOptions {
 
 export interface ColumnSeriesOptions extends CommonSeriesOptions {
     type: 'column';
+
+    /** Bars rendering options */
+    renderOptions?: Series.BarsPathBuilderOpts;
 }
 
 export interface DotsSeriesOptions extends CommonSeriesOptions {
@@ -389,7 +392,7 @@ export interface Scale {
 }
 
 export type ScaleType = 'linear' | 'logarithmic';
-export type YagrTheme = 'light' | 'dark';
+export type YagrTheme = 'light' | 'dark' | 'light-hc' | 'dark-hc';
 export type SupportedLocales = 'en' | 'ru';
 export type DrawKey = 'plotLines' | 'axes' | 'series';
 

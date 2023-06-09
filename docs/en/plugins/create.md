@@ -5,7 +5,7 @@ Yagr allows you to create your own plugins. All plugins should match to type `Ya
 ### Example
 
 ```ts
-import Yagr from 'yagr';
+import Yagr from '@gravity-ui/yagr';
 
 function MyAwesomePlugin(yagr: Yagr) {
     let drawCount = 0;

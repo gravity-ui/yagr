@@ -1,6 +1,6 @@
 {
-  "name": "yagr",
-  "version": "2.0.1",
+  "name": "@gravity-ui/yagr",
+  "version": "2.2.5",
   "description": "High level wrapper for uPlot",
   "keywords": [
     "canvas",
@@ -19,10 +19,7 @@
     "Trdat Mkrtchian <zeffirsky@yandex-team.ru>",
     "Artem Luchin <kloof@yandex-team.ru>"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yandex-cloud/yagr"
-  },
+  "repository": "git@github.com:gravity-ui/yagr.git",
   "license": "MIT",
   "engines": {
     "node": ">=16.0.0"
@@ -39,7 +36,8 @@
     "build": "npm run build:main && npm run build:plugins",
     "start": "rollup -c rollup.config.ts -w",
     "precommit": "lint-staged",
-    "docs": "yfm -i ./docs -o ./dist/docs --allowHTML"
+    "docs": "yfm -i ./docs -o ./dist/docs --allowHTML",
+    "prepublishOnly": "npm run build"
   },
   "husky": {
     "hooks": {

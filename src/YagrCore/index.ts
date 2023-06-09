@@ -224,8 +224,9 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
      */
     setTheme(themeValue: YagrTheme) {
         this.utils.theme.setTheme(themeValue);
-        this.root.classList.remove('yagr_theme_dark');
-        this.root.classList.remove('yagr_theme_light');
+        const availableThemes: YagrTheme[] = ['light', 'light-hc', 'dark', 'dark-hc'];
+        const classesToRemove = availableThemes.map((theme) => `yagr_theme_${theme}`);
+        this.root.classList.remove(...classesToRemove);
         this.root.classList.add('yagr_theme_' + themeValue);
 
         if (!this.uplot) {

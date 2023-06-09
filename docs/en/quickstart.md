@@ -3,23 +3,23 @@
 ## Install
 
 ```
-npm install yagr
+npm install @gravity-ui/yagr
 ```
 
 ## Integration
 
 By default, Yagr exposes the ES2017 module for TypeScript, though you can import other modules:
 
--   `yagr/dist/yagr.es5.js` - ES5 module
--   `yagr/dist/yagr.umd.js` - UMD module
--   `yagr/dist/yagr.iife.js` - IIFE module
+-   `@gravity-ui/yagr/dist/yagr.es5.js` - ES5 module
+-   `@gravity-ui/yagr/dist/yagr.umd.js` - UMD module
+-   `@gravity-ui/yagr/dist/yagr.iife.js` - IIFE module
 
 ## Run
 
 Let's see the config for a minimum valid chart:
 
 ```ts
-import Yagr from 'yagr';
+import Yagr from '@gravity-ui/yagr';
 
 const config = {
     timeline: [0, 1000, 2000],
