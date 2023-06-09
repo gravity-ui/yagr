@@ -9,14 +9,12 @@ import scss from 'rollup-plugin-scss';
 import {terser} from 'rollup-plugin-terser';
 import del from 'rollup-plugin-delete';
 
-const libraryName = 'yagr';
-
-const iife = (min) => ({
-    input: './src/YagrCore/index.ts',
+const iife = (min, input, name, fileName, cssFileName = '') => ({
+    input: input,
     output: {
-        name: 'Yagr',
+        name,
         format: 'iife',
-        file: min ? './dist/yagr.iife.min.js' : './dist/yagr.iife.js',
+        file: min ? `./dist/${fileName}.min.js` : `./dist/${fileName}.js`,
         esModule: false,
         exports: 'default',
     },
@@ -31,6 +29,13 @@ const iife = (min) => ({
         }),
         commonjs(),
         resolve(),
+        cssFileName &&
+            scss({
+                output: (styles) => {
+                    fs.writeFileSync('dist/' + cssFileName, styles);
+                },
+                outputStyle: min ? 'compressed' : 'expanded',
+            }),
         min &&
             terser({
                 compress: {
@@ -47,11 +52,24 @@ const iife = (min) => ({
     ].filter(Boolean),
 });
 
-export default [
+const css = (min) => ({
+    input: 'src/Yagr.scss',
+    plugins: [
+        scss({
+            output: (css) => {
+                fs.writeFileSync('dist/index.css', css);
+            },
+            outputStyle: min ? 'compressed' : 'expanded',
+        }),
+        del({targets: 'dist/**/*.scss'}),
+    ],
+});
+
+const main = [
     {
         input: `src/index.ts`,
         output: [
-            {file: './dist/yagr.umd.js', name: libraryName, format: 'umd', sourcemap: true},
+            {file: './dist/yagr.umd.js', name: 'yagr', format: 'umd', sourcemap: true},
             {file: './dist/yagr.es5.js', format: 'es', sourcemap: true},
         ],
         external: [],
@@ -69,17 +87,17 @@ export default [
             sourceMaps(),
         ],
     },
-    {
-        input: 'src/Yagr.scss',
-        plugins: [
-            scss({
-                output: (css) => {
-                    fs.writeFileSync('dist/index.css', css);
-                },
-            }),
-            del({targets: 'dist/**/*.scss'}),
-        ],
-    },
-    iife(true),
-    iife(false),
+    css(true),
+    css(false),
+    iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
+    iife(false, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
 ];
+
+const plugins = [
+    iife(true, './src/plugins/labels/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.min.css'),
+    iife(false, './src/plugins/labels/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.css'),
+    iife(true, './src/plugins/weekends/weekends.ts', 'YagrWeekends', 'plugins/yagr.weekends'),
+    iife(false, './src/plugins/weekends/weekends.ts', 'YagrWeekends', 'plugins/yagr.weekends'),
+];
+
+export default process.argv.pop() === '--plugins' ? plugins : main;
