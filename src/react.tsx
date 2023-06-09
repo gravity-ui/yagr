@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Yagr, {YagrMeta} from './YagrCore';
+import Yagr, { YagrMeta } from './YagrCore';
 import {MinimalValidConfig} from './YagrCore/types';
 
 export interface YagrChartProps {
