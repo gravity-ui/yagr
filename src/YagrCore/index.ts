@@ -7,7 +7,7 @@ import plotLinesPlugin, {PlotLinesPlugin} from './plugins/plotLines/plotLines';
 
 import {YagrConfig, PlotLineConfig, YagrHooks, MinimalValidConfig, HookParams} from './types';
 
-import {debounce, genId} from './utils/common';
+import {debounce, genId, px} from './utils/common';
 import ColorParser from './utils/colors';
 
 import ThemedDefaults, {DEFAULT_SYNC_KEY, DEFAULT_TITLE_FONT_SIZE} from './defaults';
@@ -164,8 +164,8 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             }
 
             if (!chart.size.adaptive && chart.size.width && chart.size.height) {
-                root.style.width = chart.size.width + 'px';
-                root.style.height = chart.size.height + 'px';
+                root.style.width = px(chart.size.width);
+                root.style.height = px(chart.size.height);
             }
 
             this.setTheme(chart.appereance.theme || 'light');
