@@ -405,3 +405,7 @@ export const html = (
     }
     return el;
 };
+
+export function containsOnly(obj: Record<string, unknown>, keys: string[]) {
+    return Object.keys(obj).every((key) => keys.includes(key));
+}

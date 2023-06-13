@@ -7,7 +7,7 @@ import i18n from '../locale';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../defaults';
 import {UPDATE_KEYS, configureSeries} from '../utils/series';
 import {getRedrawOptionsForAxesUpdate, updateAxis} from '../utils/axes';
-import {assignKeys} from '../utils/common';
+import {assignKeys, containsOnly} from '../utils/common';
 
 interface UpdateOptions {
     incremental?: boolean;
@@ -23,7 +23,7 @@ interface UpdateOptions {
 export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
     protected _batch!: {fns: Function[]; recalc?: boolean};
 
-    init() {
+    initMixin() {
         this._batch = {fns: []};
     }
 
@@ -85,11 +85,33 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
         this.redraw(...getRedrawOptionsForAxesUpdate(axes));
     }
 
-    /** Incremental false */
+    /**
+     * @public
+     * @param seriesId string
+     * @param series Partial<RawSerieData>
+     * @description Sets new series by series id and redraws series.
+     */
     setSeries(this: Yagr<T>, seriesId: string, series: Partial<RawSerieData>): void;
+    /**
+     * @public
+     * @param seriesIdx number
+     * @param series Partial<RawSerieData>
+     * @description Sets new series by series index and redraws series.
+     */
     setSeries(this: Yagr<T>, seriesIdx: number, series: Partial<RawSerieData>): void;
+    /**
+     * @public
+     * @param series Partial<RawSerieData>
+     * @description Sets new series dataset (matching to current timeline) and redraws.
+     */
     setSeries(this: Yagr<T>, series: Partial<RawSerieData>[]): void;
-    /** Incremental depends on setting */
+    /**
+     * @public
+     * @param timeline number[]
+     * @param series Partial<RawSerieData>
+     * @param options UpdateOptions
+     * @description Sets new series dataset with different timeline and redraws.
+     */
     setSeries(this: Yagr<T>, timeline: number[], series: Partial<RawSerieData>[], options: UpdateOptions): void;
     setSeries(
         this: Yagr<T>,
@@ -120,26 +142,13 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
         });
     }
 
-    protected wrapBatch(this: Yagr<T>, batchFn: (() => [Function | Function[], boolean]) | (() => Function)) {
-        const res = batchFn();
-        const [fnsOrFn, shouldRecalc] = Array.isArray(res) ? res : [res, false];
-        const fns = Array.isArray(fnsOrFn) ? fnsOrFn : [fnsOrFn];
-
-        if (this.state.inBatch) {
-            this._batch.fns.push(...fns);
-            this._batch.recalc = shouldRecalc;
-        } else {
-            this.uplot.batch(() => {
-                fns.forEach((fn) => fn());
-                if (shouldRecalc) {
-                    this.series = this.transformSeries();
-                    this.uplot.setData(this.series, true);
-                }
-            });
-        }
-    }
-
-    public setVisible(this: Yagr<T>, lineId: string | null, show: boolean) {
+    /**
+     * @public
+     * @param lineId string | null
+     * @param show boolean
+     * @description Sets visibility of line with given id. If id is null, sets visibility of all lines.
+     */
+    setVisible(this: Yagr<T>, lineId: string | null, show: boolean) {
         const seriesIdx = lineId === null ? null : this.state.y2uIdx[lineId];
         const fns: Function[] = [];
 
@@ -179,6 +188,105 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
         return this.wrapBatch(() => [fns, shouldRebuildStacks]);
     }
 
+    /**
+     * @public
+     * @param scales Record<string, Partial<ScaleConfi>>
+     * @description Sets new scales config and redraws.
+     */
+    setScales(this: Yagr<T>, scales: Record<string, Partial<YagrConfig['scales'][string]>>) {
+        this.config.scales = scales;
+
+        const hasChangedStacking = Object.entries(scales).some(([scaleName, scaleConfig]) => {
+            const scale = this.config.scales[scaleName];
+
+            if (scale) {
+                const {stacking} = scale;
+                const {stacking: newStacking} = scaleConfig;
+
+                if (stacking !== newStacking) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        const isChangingOnlyMinMax = Object.values(scales).every((scaleConfig) =>
+            containsOnly(scaleConfig, ['min', 'max']),
+        );
+
+        const isChanginXAxis = Object.keys(scales).includes(DEFAULT_X_SCALE);
+
+        const fns: Function[] = [];
+
+        /**
+         * In case if we change only min/max on data-scales, then we can just use uplot.setScale,
+         * otherwise we need to rebuild all series and stacks in order to apply new scales;
+         */
+        if (isChangingOnlyMinMax && !isChanginXAxis) {
+            Object.entries(scales).forEach(([scaleName, scaleConfig]) => {
+                fns.push(() => {
+                    this.uplot.setScale(scaleName, {
+                        min: scaleConfig.min!,
+                        max: scaleConfig.max!,
+                    });
+                });
+            });
+
+            return this.wrapBatch(() => {
+                return [fns, hasChangedStacking];
+            });
+        }
+
+        this.updateFully(() => {
+            this.config.scales = scales;
+        });
+    }
+
+    /**
+     * @public
+     * @param fn function
+     * @description Applies changes in yagr and in uplot batch session
+     */
+    batch(this: Yagr<T>, fn: () => void) {
+        this.state.inBatch = true;
+        fn();
+        this.uplot.batch(() => {
+            this._batch.fns.forEach((f) => f());
+            if (this._batch.recalc) {
+                this.series = this.transformSeries();
+                this.uplot.setData(this.series, true);
+            }
+        });
+        this._batch = {fns: [], recalc: false};
+        this.state.inBatch = false;
+    }
+
+    protected wrapBatch(
+        this: Yagr<T>,
+        batchFn: (() => [Function | Function[], boolean] | undefined) | (() => Function | undefined),
+    ) {
+        const res = batchFn();
+        if (!res) {
+            return;
+        }
+        const [fnsOrFn, shouldRecalc] = Array.isArray(res) ? res : [res, false];
+        const fns = Array.isArray(fnsOrFn) ? fnsOrFn : [fnsOrFn];
+
+        if (this.state.inBatch) {
+            this._batch.fns.push(...fns);
+            this._batch.recalc = shouldRecalc;
+        } else {
+            this.uplot.batch(() => {
+                fns.forEach((fn) => fn());
+                if (shouldRecalc) {
+                    this.series = this.transformSeries();
+                    this.uplot.setData(this.series, true);
+                }
+            });
+        }
+    }
+
     protected _setSeries(
         this: Yagr<T>,
         timelineOrSeriesOrId: Partial<RawSerieData>[] | number[] | number | string,
@@ -187,7 +295,7 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
             incremental: true,
             splice: false,
         },
-    ): [Function[], boolean] {
+    ): [Function[], boolean] | undefined {
         let timeline: number[] = [],
             series: RawSerieData[] = [],
             updateId: null | string | number = null,
@@ -290,24 +398,11 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
                 this.config.timeline.splice(0, timeline.length);
             }
         } else {
-            this.inStage('config', () => {
+            this.updateFully(() => {
                 this.config.series = series;
                 this.config.timeline = timeline;
-
-                const uplotOptions = this.createUplotOptions();
-                this._cache = {height: uplotOptions.height, width: uplotOptions.width};
-                this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
-            })
-                .inStage('processing', () => {
-                    const newSeries = this.transformSeries();
-                    this.series = newSeries;
-                    this.dispose();
-                })
-                .inStage('uplot', () => {
-                    this.uplot = new uPlot(this.options, this.series, this.initRender);
-                    this.init();
-                })
-                .inStage('listen');
+            });
+            return;
         }
 
         if (timeline.length) {
@@ -319,5 +414,24 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
         }
 
         return [updateFns, shouldRecalcData];
+    }
+
+    protected updateFully(this: Yagr<T>, changeConfigFn: () => void) {
+        this.inStage('config', () => {
+            changeConfigFn();
+            const uplotOptions = this.createUplotOptions();
+            this._cache = {height: uplotOptions.height, width: uplotOptions.width};
+            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
+        })
+            .inStage('processing', () => {
+                const newSeries = this.transformSeries();
+                this.series = newSeries;
+                this.dispose();
+            })
+            .inStage('uplot', () => {
+                this.uplot = new uPlot(this.options, this.series, this.initRender);
+                this.init();
+            })
+            .inStage('listen');
     }
 }

@@ -6,11 +6,13 @@ export interface WeekendsPluginOptions {
     predicate?: (timestamp: number) => boolean;
 }
 
+const DEFAULT_WEEKEND_COLOR = 'rgb(250, 255, 0, 0.38)';
+
 /**
  * This plugin highlights weekend ranges using native PlotLines plugin
  */
 export default function WeekendsPlugin({
-    color = 'rgb(250, 255, 0, 0.38)',
+    color = DEFAULT_WEEKEND_COLOR,
     predicate,
 }: WeekendsPluginOptions = {}): YagrPlugin {
     return (yagr: Yagr) => {

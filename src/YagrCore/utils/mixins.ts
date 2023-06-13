@@ -1,4 +1,9 @@
-export function applyMixins(derivedCtor: any, constructors: any[]) {
+import Yagr from '..';
+
+type YagrConstructor = new (...args: any[]) => Yagr;
+type YMixin = new () => unknown;
+
+export function applyMixins(derivedCtor: YagrConstructor, constructors: YMixin[]) {
     const inits: (() => void)[] = [];
 
     constructors.forEach((baseCtor) => {
@@ -10,13 +15,12 @@ export function applyMixins(derivedCtor: any, constructors: any[]) {
             );
 
             if (baseCtor.prototype.init) {
-                inits.push(baseCtor.prototype.init);
+                inits.push(baseCtor.prototype.initMixin);
             }
         });
     });
-    debugger;
+
     derivedCtor.prototype.initMixins = function () {
-        debugger;
         inits.forEach((init) => init.call(this));
     };
 }

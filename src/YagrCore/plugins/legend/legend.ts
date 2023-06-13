@@ -40,7 +40,7 @@ const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
 };
 
 const getPrependingTitleId = (series: Series[]): typeof ALL_SERIES_IDX | undefined => {
-    return series.length > 3 && ALL_SERIES_IDX || undefined;
+    return (series.length > 3 && ALL_SERIES_IDX) || undefined;
 };
 
 export default class Legend {
@@ -103,8 +103,6 @@ export default class Legend {
 
         /** Removing native uPlot legend */
         u.root.querySelector('.u-legend')?.remove();
-        /** Reimplementing appedning u.root to root */
-        this.yagr.root.appendChild(u.root);
 
         if (this.options.show) {
             this.prepareLegend();

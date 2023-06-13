@@ -13,9 +13,10 @@ import ColorParser from './utils/colors';
 import ThemedDefaults, {DEFAULT_SYNC_KEY, DEFAULT_TITLE_FONT_SIZE} from './defaults';
 import i18n from './locale';
 
-import {CreateUplotOptionsMixin} from './uplot-wrappers/create-options';
-import {TransformSeriesMixin} from './uplot-wrappers/transform-series';
-import {DynamicUpdatesMixin} from './uplot-wrappers/dynamic-updates';
+import {CreateUplotOptionsMixin} from './mixins/create-options';
+import {TransformSeriesMixin} from './mixins/transform-series';
+import {DynamicUpdatesMixin} from './mixins/dynamic-updates';
+
 import {applyMixins} from './utils/mixins';
 
 export interface YagrEvent {
@@ -62,9 +63,11 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         plotLines?: ReturnType<PlotLinesPlugin>;
         cursor?: ReturnType<typeof cursorPlugin>;
         legend?: LegendPlugin;
-    } & (TConfig['plugins'] extends YagrConfig['plugins']
-        ? {[key in keyof TConfig['plugins']]: ReturnType<TConfig['plugins'][key]>}
-        : {});
+    } & Partial<
+        TConfig['plugins'] extends YagrConfig['plugins']
+            ? {[key in keyof TConfig['plugins']]: ReturnType<TConfig['plugins'][key]>}
+            : {}
+    >;
     state!: YagrState;
     utils!: {
         colors: ColorParser;
@@ -93,7 +96,10 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     public setSeries!: DynamicUpdatesMixin<TConfig>['setSeries'];
     public setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
     public setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
+    public setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
+    public batch!: DynamicUpdatesMixin<TConfig>['batch'];
     protected wrapBatch!: DynamicUpdatesMixin<TConfig>['wrapBatch'];
+    protected updateFully!: DynamicUpdatesMixin<TConfig>['updateFully'];
     protected _setSeries!: DynamicUpdatesMixin<TConfig>['_setSeries'];
     protected _batch!: DynamicUpdatesMixin<TConfig>['_batch'];
 
@@ -231,20 +237,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.utils.sync?.unsub(this.uplot);
     }
 
-    batch(fn: () => void) {
-        this.state.inBatch = true;
-        fn();
-        this.uplot.batch(() => {
-            this._batch.fns.forEach((f) => f());
-            if (this._batch.recalc) {
-                this.series = this.transformSeries();
-                this.uplot.setData(this.series, true);
-            }
-        });
-        this._batch = {fns: [], recalc: false};
-        this.state.inBatch = false;
-    }
-
     private onError(error: Error) {
         this.execHooks(this.config.hooks.error, {
             stage: this.state.stage,
@@ -334,6 +326,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         try {
             fn && fn();
         } catch (error) {
+            console.error(error);
             this.onError(error as Error);
         }
         return this;
@@ -356,6 +349,9 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 
     protected initRender = (u: uPlot, done: Function) => {
+        /** Reimplementing appedning u.root to root */
+        this.root.appendChild(u.root);
+
         /** Init legend if required */
         this.plugins.legend?.init(u);
 
