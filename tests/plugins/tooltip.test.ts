@@ -3,17 +3,15 @@ import Yagr from '../../src/YagrCore';
 
 describe('tooltip', () => {
     describe('options', () => {
-        let yagr: Yagr;
-        const el = window.document.createElement('div');
-
-        afterEach(async () => {
-            yagr.uplot.setCursor({left: -10, top: -10});
-            yagr.dispose();
-            el.remove();
+        beforeEach(() => {
+            window.document.body.innerHTML = '';
         });
 
         it('should render tooltip', () => {
-            yagr = new Yagr(el, {
+            const el = window.document.createElement('div');
+            window.document.body.appendChild(el);
+
+            const yagr = new Yagr(el, {
                 timeline: [1, 2, 3, 4],
                 series: [{data: [1, 2, 3, 4]}],
             });
@@ -22,19 +20,26 @@ describe('tooltip', () => {
         });
 
         it('should render tooltip sum', async () => {
-            yagr = new Yagr(el, {
+            const el = window.document.createElement('div');
+            window.document.body.appendChild(el);
+
+            const yagr = new Yagr(el, {
                 timeline: [1, 2, 3, 4],
                 series: [{data: [1, 2, 3, 4]}],
             });
 
             yagr.uplot.setCursor({left: 10, top: 10});
-            expect(yagr.root.querySelector('.__section_sum')).toBeFalsy();
+
+            await expect(window.document.querySelector(`.__section_sum`)).toBeFalsy();
+
+            yagr.uplot.setCursor({left: -10, top: -10});
             yagr.plugins.tooltip?.updateOptions({
                 sum: true,
             });
+
             yagr.uplot.setCursor({left: 15, top: 15});
             yagr.plugins.tooltip?.on('show', () => {
-                expect(yagr.root.querySelector('.__section_sum')).toBeTruthy();
+                expect(window.document.querySelector(`.__section_sum`)).not.toBeNull();
             });
         });
     });

@@ -147,6 +147,10 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             this.root = root;
             this.root.classList.add('yagr');
 
+            if (!this.root.id) {
+                this.root.id = this.id;
+            }
+
             const colorParser = new ColorParser();
             const sync = this.config.cursor.sync;
 

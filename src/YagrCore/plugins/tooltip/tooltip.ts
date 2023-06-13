@@ -168,7 +168,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     };
 
     emit('init');
-    document.body.appendChild(tOverlay);
+    bound = opts.boundClassName ? document.querySelector(opts.boundClassName) || document.body : document.body;
+    bound.appendChild(tOverlay);
     state.mounted = true;
     emit('mount');
 
@@ -495,10 +496,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
                 bLeft = bbox.left;
                 bTop = bbox.top;
-
-                bound = opts.boundClassName
-                    ? document.querySelector(opts.boundClassName) || document.body
-                    : document.body;
             },
 
             setCursor: (u) => {
