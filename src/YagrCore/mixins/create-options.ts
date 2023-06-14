@@ -21,7 +21,7 @@ import {getPaddingByAxes} from '../utils/chart';
 export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
     /**
      * @internal
-     * @param this Yagr instance
+     * @param reOpt If in reOpt cycle (e.g. batch update), then won't reinit hooks.
      * @description Creates uPlot options from Yagr config, sets up plugins. Non idempotent.
      * @returns uPlot options
      */
