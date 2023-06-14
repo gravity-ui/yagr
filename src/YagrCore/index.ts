@@ -18,6 +18,7 @@ import {TransformSeriesMixin} from './mixins/transform-series';
 import {DynamicUpdatesMixin} from './mixins/dynamic-updates';
 
 import {applyMixins} from './utils/mixins';
+import {BatchMixin} from './mixins/batch-updates';
 
 export interface YagrEvent {
     chart: Yagr;
@@ -97,11 +98,11 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     public setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
     public setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
     public setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
-    public batch!: DynamicUpdatesMixin<TConfig>['batch'];
-    protected wrapBatch!: DynamicUpdatesMixin<TConfig>['wrapBatch'];
-    protected updateFully!: DynamicUpdatesMixin<TConfig>['updateFully'];
-    protected _setSeries!: DynamicUpdatesMixin<TConfig>['_setSeries'];
-    protected _batch!: DynamicUpdatesMixin<TConfig>['_batch'];
+
+    /** Batch update methods */
+    public batch!: BatchMixin<TConfig>['batch'];
+    protected fullUpdate!: BatchMixin<TConfig>['fullUpdate'];
+    protected _batch!: BatchMixin<TConfig>['_batch'];
 
     protected _cache!: CachedProps;
 
@@ -186,8 +187,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             this.plugins.legend = new LegendPlugin(this, config.legend);
         })
             .inStage('processing', () => {
-                const series = this.transformSeries();
-                this.series = series;
+                this.transformSeries();
             })
             .inStage('uplot', () => {
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
@@ -197,13 +197,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
                 const processTime = performance.now() - this._startTime;
                 this._meta.processTime = processTime;
-
-                this.execHooks(config.hooks.processed, {
-                    chart: this,
-                    meta: {
-                        processTime,
-                    },
-                });
             })
             .inStage('render');
     }
@@ -376,6 +369,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 }
 
-applyMixins(Yagr, [CreateUplotOptionsMixin, TransformSeriesMixin, DynamicUpdatesMixin]);
+applyMixins(Yagr, [CreateUplotOptionsMixin, TransformSeriesMixin, DynamicUpdatesMixin, BatchMixin]);
 
 export default Yagr;

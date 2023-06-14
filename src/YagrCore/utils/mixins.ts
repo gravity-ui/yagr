@@ -13,11 +13,11 @@ export function applyMixins(derivedCtor: YagrConstructor, constructors: YMixin[]
                 name,
                 Object.getOwnPropertyDescriptor(baseCtor.prototype, name) || Object.create(null),
             );
-
-            if (baseCtor.prototype.init) {
-                inits.push(baseCtor.prototype.initMixin);
-            }
         });
+
+        if (baseCtor.prototype.initMixin) {
+            inits.push(baseCtor.prototype.initMixin);
+        }
     });
 
     derivedCtor.prototype.initMixins = function () {

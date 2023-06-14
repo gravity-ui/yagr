@@ -18,14 +18,14 @@ import {configureScales} from '../utils/scales';
 import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
 
-/**
- * @internal
- * @param this Yagr instance
- * @description Creates uPlot options from Yagr config, sets up plugins. Non idempotent.
- * @returns uPlot options
- */
 export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
-    protected createUplotOptions(this: Yagr<T>) {
+    /**
+     * @internal
+     * @param this Yagr instance
+     * @description Creates uPlot options from Yagr config, sets up plugins. Non idempotent.
+     * @returns uPlot options
+     */
+    protected createUplotOptions(this: Yagr<T>, reOpt = false) {
         const {config} = this;
         const plugins: Plugin[] = [];
 
@@ -135,60 +135,59 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         /** Setting up hooks */
         options.hooks = config.hooks || {};
         options.hooks.draw = options.hooks.draw || [];
-        options.hooks.draw.push(() => {
-            if (this.state.stage === 'listen') {
-                return;
-            }
-            this.state.stage = 'listen';
-            this.execHooks(this.config.hooks.stage, {chart: this, stage: this.state.stage});
-            const renderTime = performance.now() - this._startTime;
-            this._meta.renderTime = renderTime;
-            this.execHooks(config.hooks.load, {
-                chart: this,
-                meta: this._meta as YagrMeta,
-            });
-        });
-
         options.hooks.ready = options.hooks.ready || [];
-        options.hooks.ready.push(() => {
-            const initTime = performance.now() - this._startTime;
-            this._meta.initTime = initTime;
-            this.execHooks(config.hooks.inited, {
-                chart: this,
-                meta: {
-                    initTime,
-                },
-            });
-        });
-
         options.hooks.drawClear = options.hooks.drawClear || [];
-        options.hooks.drawClear.push((u: uPlot) => {
-            const {ctx} = u;
-            ctx.save();
-            ctx.fillStyle = this.utils.theme.BACKGROUND;
-            ctx.fillRect(
-                DEFAULT_CANVAS_PIXEL_RATIO,
-                DEFAULT_CANVAS_PIXEL_RATIO,
-                u.width * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
-                u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
-            );
-            ctx.restore();
-        });
-
         options.hooks.setSelect = options.hooks.setSelect || [];
-        options.hooks.setSelect.push((u: uPlot) => {
-            const {left, width} = u.select;
-            const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
-            const {timeMultiplier = 1} = chart;
 
-            this.execHooks(config.hooks.onSelect, {
-                from: Math.ceil(_from / timeMultiplier),
-                to: Math.ceil(_to / timeMultiplier),
-                chart: this,
+        if (!reOpt) {
+            options.hooks.draw.push(() => {
+                if (this.state.stage === 'listen') {
+                    return;
+                }
+                this.state.stage = 'listen';
+                this.execHooks(this.config.hooks.stage, {chart: this, stage: this.state.stage});
+                const renderTime = performance.now() - this._startTime;
+                this._meta.renderTime = renderTime;
+                this.execHooks(config.hooks.load, {
+                    chart: this,
+                    meta: this._meta as YagrMeta,
+                });
             });
+            options.hooks.ready.push(() => {
+                const initTime = performance.now() - this._startTime;
+                this._meta.initTime = initTime;
+                this.execHooks(config.hooks.inited, {
+                    chart: this,
+                    meta: {
+                        initTime,
+                    },
+                });
+            });
+            options.hooks.drawClear.push((u: uPlot) => {
+                const {ctx} = u;
+                ctx.save();
+                ctx.fillStyle = this.utils.theme.BACKGROUND;
+                ctx.fillRect(
+                    DEFAULT_CANVAS_PIXEL_RATIO,
+                    DEFAULT_CANVAS_PIXEL_RATIO,
+                    u.width * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
+                    u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
+                );
+                ctx.restore();
+            });
+            options.hooks.setSelect.push((u: uPlot) => {
+                const {left, width} = u.select;
+                const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
+                const {timeMultiplier = 1} = chart;
 
-            u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
-        });
+                this.execHooks(config.hooks.onSelect, {
+                    from: Math.ceil(_from / timeMultiplier),
+                    to: Math.ceil(_to / timeMultiplier),
+                    chart: this,
+                });
+                u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
+            });
+        }
 
         options.drawOrder = chart.appereance?.drawOrder
             ? (chart.appereance?.drawOrder.filter(

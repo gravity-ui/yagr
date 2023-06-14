@@ -7,7 +7,7 @@ function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) 
         .map(({value, name = 'unnamed', color, active, transformed, seriesIdx}, i) => {
             const val = `
 <span class="yagr-tooltip__val">${value}</span>
-    ${typeof transformed === 'number' ? `<span class="yagr_tooltip__tf">${transformed.toFixed(2)}</span>` : ''}
+    ${typeof transformed === 'number' ? `<span class="yagr-tooltip__tf">${transformed.toFixed(2)}</span>` : ''}
 `;
             return `
 <div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">

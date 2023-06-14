@@ -316,7 +316,7 @@ export default class Legend {
     private createIconLineElement(serie: Series) {
         const iconLineElement = html('span', {
             class: `yagr-legend__icon yagr-legend__icon_${serie.type}`,
-            style: {backgroundColor: serie.color},
+            style: {'background-color': serie.color},
         });
 
         return iconLineElement;

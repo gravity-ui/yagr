@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <title>Yagr:: Hooks</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 450px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+            <div class="container">
+                <div id="chart1"></div>
+                <button id="redraw">Redraw</button>
+                <button id="reinit">Reinit</button>
+                <button id="resize">Resize</button>
+                <button id="dispose">Dispose</button>
+            </div>
+            <div class="container">
+                <pre id="hooktrace"></pre>
+            </div>
+        </div>
+
+        <script>
+            let tstart = Date.now();
+            const yagr = new Yagr(chart1, {
+                title: {text: 'Change series'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                legend: {
+                    show: true,
+                },
+                scales: {
+                    y: {
+                        normalize: true,
+                    },
+                },
+                hooks: {
+                    onSelect: [
+                        ({from, to}) => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - onSelect. from=${from}, to=${to} \n`;
+                        },
+                    ],
+                    processed: [
+                        ({meta}) => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - processed. time=${meta.processTime}ms. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    inited: [
+                        () => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - inited. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    dispose: [
+                        () => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - dispose. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    resize: [
+                        () => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - resize. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    stage: [
+                        ({stage}) => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - stage=${stage}. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    ready: [
+                        () => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - ready. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                    load: [
+                        () => {
+                            const tpassed = Date.now() - tstart;
+                            hooktrace.innerHTML += ` - load. Passed: ${tpassed}ms\n`;
+                        },
+                    ],
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                ],
+            });
+
+            window.redraw.onclick = () => {
+                tstart = Date.now();
+                yagr.batch(() => {
+                    yagr.setSeries(0, {data: new Array(20).fill().map((_, i) => Math.random() * 10)});
+                });
+            };
+
+            let resized = false;
+
+            window.resize.onclick = () => {
+                tstart = Date.now();
+                if (!resized) {
+                    chart1.style.width = '300px';
+                    chart1.style.height = '300px';
+                } else {
+                    chart1.style.width = '100%';
+                    chart1.style.height = '100%';
+                }
+                resized = !resized;
+            };
+
+            window.reinit.onclick = () => {
+                tstart = Date.now();
+                yagr.batch(() => {
+                    yagr.setConfig({
+                        timeline: new Array(20).fill().map((_, i) => i * 1000),
+                        chart: {
+                            series: {
+                                type: 'area',
+                            },
+                        },
+                        scales: {
+                            y: {
+                                stacking: true,
+                                min: -2,
+                                max: 15,
+                            },
+                        },
+                        series: [
+                            {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                            {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                        ],
+                    });
+                });
+            };
+
+            window.dispose.onclick = () => {
+                yagr.dispose();
+            };
+        </script>
+    </body>
+</html>

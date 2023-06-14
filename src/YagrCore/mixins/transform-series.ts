@@ -1,20 +1,20 @@
-import {AlignedData} from 'uplot';
-
+import type {AlignedData} from 'uplot';
 import type {DataSeries, MinimalValidConfig} from '../types';
-import Yagr from '..';
+import type Yagr from '..';
 
 import {DEFAULT_Y_SCALE} from '../defaults';
 import {getSumByIdx, preprocess} from '../utils/common';
 
-/**
- * @internal
- * @param this Yagr instance
- * @description Transforms series data according to config
- * @returns uPlot series data
- */
 export class TransformSeriesMixin<T extends MinimalValidConfig> {
-    // eslint-disable-next-line complexity
+    /**
+     * @internal
+     * @param this Yagr instance
+     * @description Transforms series data according to config
+     * @returns uPlot series data
+     */
     protected transformSeries(this: Yagr<T>) {
+        const processingStartTime = performance.now();
+
         const result = [];
         const config = this.config;
         const timeline = config.timeline;
@@ -130,6 +130,16 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
         }
 
         result.unshift(this.config.timeline);
-        return result as AlignedData;
+
+        this.series = result as AlignedData;
+
+        this.execHooks(config.hooks.processed, {
+            chart: this,
+            meta: {
+                processTime: performance.now() - processingStartTime,
+            },
+        });
+
+        return this.series;
     }
 }
