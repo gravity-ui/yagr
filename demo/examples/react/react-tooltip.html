@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Yagr:: Dynamic Updates</title>
+        <script>
+            process = {
+                env: {},
+            };
+        </script>
+        <link rel="stylesheet" href="../../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 450px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .custom-tooltip {
+                position: absolute;
+                background: #eee;
+                border-radius: 4px;
+                padding: 10px;
+                pointer-events: none;
+                z-index: 2000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+            <div class="container">
+                <div id="chart"></div>
+            </div>
+        </div>
+
+        <script src="./react-tooltip.example.umd.js"></script>
+    </body>
+</html>

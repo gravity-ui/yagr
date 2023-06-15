@@ -187,4 +187,10 @@ export default function (
     elem.style[secondary.after] = 'auto';
 
     elem.dataset.side = side;
+
+    return {
+        side,
+        anchorRect,
+        boundRect,
+    };
 }

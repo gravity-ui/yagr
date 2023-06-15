@@ -4,7 +4,12 @@ import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import babel from '@rollup/plugin-babel';
 
-console.log(__dirname + '/../../../tsconfig.json');
+const getTsConfigAbsolutePath = (tsconfig) => {
+    const path = require('path');
+    const cwd = process.cwd();
+    const tsconfigPath = path.resolve(cwd, tsconfig || 'tsconfig.json');
+    return tsconfigPath;
+};
 
 export default [
     {
@@ -14,7 +19,24 @@ export default [
             json(),
             typescript({
                 useTsconfigDeclarationDir: true,
-                tsconfig: '/Users/zeffirsky/Projects/ya/yagr/tsconfig.publish.json',
+                tsconfig: getTsConfigAbsolutePath('tsconfig.publish.json'),
+            }),
+            babel({
+                babelHelpers: 'bundled',
+                presets: ['@babel/preset-react'],
+            }),
+            commonjs(),
+            resolve(),
+        ],
+    },
+    {
+        input: `${__dirname}/react-tooltip.example.js`,
+        output: [{file: __dirname + '/react-tooltip.example.umd.js', name: 'YagrReact', format: 'umd'}],
+        plugins: [
+            json(),
+            typescript({
+                useTsconfigDeclarationDir: true,
+                tsconfig: getTsConfigAbsolutePath('tsconfig.publish.json'),
             }),
             babel({
                 babelHelpers: 'bundled',

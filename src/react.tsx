@@ -21,14 +21,22 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-export default function YagrReact({id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps) {
+// eslint-disable-next-line prefer-arrow-callback
+export default React.forwardRef(function YagrReact(
+    {id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps,
+    ref,
+) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const chart = React.useRef<Yagr>();
+
+    React.useImperativeHandle(ref, () => ({
+        yagr: () => chart.current,
+        domElement: () => chartRef.current,
+    }));
 
     const initChart = React.useCallback(() => {
         if (chartRef.current) {
             chart.current = new Yagr(chartRef.current, config);
-
             config.hooks = config.hooks || {};
             const hooks = config.hooks;
 
@@ -58,7 +66,7 @@ export default function YagrReact({id, config, className = '', debug, onChartLoa
     }, []);
 
     const onClick = React.useCallback(
-        (event) => {
+        (event: React.MouseEvent) => {
             if (chart.current && (event.ctrlKey || event.metaKey) && event.shiftKey) {
                 const dataUrl = chart.current.toDataUrl().replace('image/png', 'image/octet-stream');
                 const a = document.createElement('a');
@@ -71,4 +79,4 @@ export default function YagrReact({id, config, className = '', debug, onChartLoa
     );
 
     return <div id={id} onClick={onClick} className={`yagr ${className}`} ref={chartRef} />;
-}
+});

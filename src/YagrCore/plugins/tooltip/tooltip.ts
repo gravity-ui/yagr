@@ -157,7 +157,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     tOverlay.style.display = 'none';
 
     const state: TooltipState = {
-        mounted: true,
+        mounted: false,
         pinned: false,
         visible: false,
         clickStartedX: null,
@@ -471,20 +471,24 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 }),
                 options: opts,
                 x,
-                pinned: state.pinned,
-                yagr,
-                defaultRender: DEFAULT_TOOLTIP_OPTIONS.render,
             };
 
-            tOverlay.innerHTML = opts.render(renderData);
+            if (!opts.virtual) {
+                tOverlay.innerHTML = opts.render({
+                    ...renderData,
+                    state,
+                    yagr,
+                    defaultRender: DEFAULT_TOOLTIP_OPTIONS.render,
+                });
 
-            placement(tOverlay, anchor, 'right', {
-                bound,
-                xOffset: opts.xOffset,
-                yOffset: opts.yOffset,
-            });
+                placement(tOverlay, anchor, 'right', {
+                    bound,
+                    xOffset: opts.xOffset,
+                    yOffset: opts.yOffset,
+                });
+            }
 
-            emit('render');
+            emit('render', {...renderData, anchor});
         };
 
         if (state.pinned) {

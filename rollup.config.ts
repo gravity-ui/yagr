@@ -87,22 +87,6 @@ const main = [
             sourceMaps(),
         ],
     },
-    {
-        input: `src/react.tsx`,
-        output: [{file: './dist/yagr.react.esm.js', name: 'YagrReact', format: 'esm'}],
-        watch: {
-            include: 'src/react.tsx',
-        },
-        plugins: [
-            json(),
-            typescript({
-                useTsconfigDeclarationDir: true,
-                tsconfig: './tsconfig.publish.json',
-            }),
-            commonjs(),
-            resolve(),
-        ],
-    },
     css(true),
     css(false),
     iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),

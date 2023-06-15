@@ -30,7 +30,7 @@ export interface TooltipRenderOptions {
     scales: TooltipScale[];
     options: TooltipOptions;
     x: number;
-    pinned: boolean;
+    state: TooltipState;
     yagr: Yagr;
     defaultRender: TooltipOptions['render'];
 }
@@ -40,7 +40,12 @@ export type ValueFormatter = (value: string | number | null, precision?: number)
 export type PerScale<T> = T | {[scale: string]: T};
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
-export interface TooltipData extends TooltipRenderOptions {}
+export interface TooltipData extends Omit<TooltipRenderOptions, 'state' | 'yagr' | 'defaultRender'> {
+    anchor: {
+        left: number;
+        top: number;
+    };
+}
 
 export type TooltipHandler = (
     elem: HTMLElement,
