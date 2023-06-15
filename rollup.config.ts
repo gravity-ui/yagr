@@ -89,9 +89,10 @@ const main = [
     },
     css(true),
     css(false),
+    process.env.YAGR_DEV_BUILD ? iife(false, './src/react.tsx', 'YagrReact', 'yagr-react.iife') : false,
     iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
     iife(false, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
-];
+].filter(Boolean);
 
 const plugins = [
     iife(true, './src/plugins/labels/labels.ts', 'YagrLabels', 'plugins/yagr.labels', 'plugins/yagr.labels.min.css'),

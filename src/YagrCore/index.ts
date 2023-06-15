@@ -98,6 +98,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     public setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
     public setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
     public setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
+    public setConfig!: DynamicUpdatesMixin<TConfig>['setConfig'];
 
     /** Batch update methods */
     public batch!: BatchMixin<TConfig>['batch'];

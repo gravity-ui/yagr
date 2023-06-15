@@ -21,67 +21,56 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-export default class YagrChartComponent extends React.Component<YagrChartProps, never> {
-    chart?: Yagr;
-    charRef = React.createRef<HTMLDivElement>();
+export default function YagrChartComponent({id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps) {
+    const chartRef = React.useRef<HTMLDivElement>(null);
+    const chart = React.useRef<Yagr | undefined>(undefined);
 
-    componentDidMount() {
-        this.initChart();
-    }
+    const initChart = React.useCallback(() => {
+        if (chartRef.current) {
+            chart.current = new Yagr(chartRef.current, config);
 
-    componentDidUpdate() {
-        if (this.chart) {
-            this.chart.dispose();
+            config.hooks = config.hooks || {};
+            const hooks = config.hooks;
+
+            if (onChartLoad) {
+                const load = hooks.load || [];
+                load.push(({chart, meta}) => {
+                    onChartLoad(chart, meta);
+                });
+                hooks.load = load;
+            }
+
+            if (onSelect) {
+                const selection = hooks.onSelect || [];
+                selection.push(({from, to}) => onSelect(from, to));
+                hooks.onSelect = selection;
+            }
         }
+    }, [config, onChartLoad, onSelect]);
 
-        this.initChart();
-    }
+    React.useEffect(() => {
+        chart.current?.setConfig(config);
+    }, [config]);
 
-    componentWillUnmount() {
-        if (this.chart) {
-            this.chart.dispose();
-        }
-    }
+    React.useEffect(() => {
+        initChart();
+        return () => chart.current?.dispose();
+    }, [initChart]);
 
-    render() {
-        const {id, className} = this.props;
+    const onClick = React.useCallback(
+        (event: React.MouseEvent) => {
+            if (chart.current && (event.ctrlKey || event.metaKey) && event.shiftKey) {
+                const dataUrl = chart.current.toDataUrl().replace('image/png', 'image/octet-stream');
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = (debug?.filename || chart.current.id) + '.png';
+                a.click();
+            }
+        },
+        [id, chart],
+    );
 
-        return <div id={id} onClick={this.onClick} className={`yagr ${className || ''}`} ref={this.charRef} />;
-    }
-
-    onClick = (event: React.MouseEvent) => {
-        if (this.chart && (event.ctrlKey || event.metaKey) && event.shiftKey) {
-            const dataUrl = this.chart.toDataUrl().replace('image/png', 'image/octet-stream');
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = (this.props.debug?.filename || this.chart.id) + '.png';
-            a.click();
-        }
-    };
-
-    initChart() {
-        if (!this.charRef.current) {
-            return;
-        }
-        const {onChartLoad, config, onSelect} = this.props;
-
-        config.hooks = config.hooks || {};
-        const hooks = config.hooks;
-
-        if (onChartLoad) {
-            const load = hooks.load || [];
-            load.push(({chart, meta}) => {
-                onChartLoad(chart, meta);
-            });
-            hooks.load = load;
-        }
-
-        if (onSelect) {
-            const selection = hooks.onSelect || [];
-            selection.push(({from, to}) => onSelect(from, to));
-            hooks.onSelect = selection;
-        }
-
-        this.chart = new Yagr(this.charRef.current, this.props.config);
-    }
+    return <div id={id} onClick={onClick} className={`yagr ${className}`} ref={chartRef} />;
 }
+
+YagrChartComponent.React = React;
