@@ -340,7 +340,6 @@ function setSeriesImpl(
     if (shouldRecalcData || timeline.length) {
         batch.recalc = true;
         batch.fns.push(() => {
-            debugger;
             this.uplot.setData(this.series);
         });
     }

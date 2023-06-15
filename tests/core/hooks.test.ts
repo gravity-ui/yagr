@@ -21,6 +21,7 @@ describe('yagr hooks', () => {
                 },
             };
 
+            // eslint-disable-next-line no-new
             new Yagr(window.document.body, cfg);
         });
     });
@@ -46,6 +47,7 @@ describe('yagr hooks', () => {
                 },
             };
 
+            // eslint-disable-next-line no-new
             new Yagr(window.document.body, cfg);
         });
     });

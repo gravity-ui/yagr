@@ -84,27 +84,28 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     protected _startTime!: number;
     protected _meta: Partial<YagrMeta> = {};
 
-    /** Mixin methods */
-    private initMixins!: () => void;
     /** Create uPlot options methods */
     protected createUplotOptions!: CreateUplotOptionsMixin<TConfig>['createUplotOptions'];
     protected transformSeries!: TransformSeriesMixin<TConfig>['transformSeries'];
 
     /** Dynamic update methods */
-    public setTheme!: DynamicUpdatesMixin<TConfig>['setTheme'];
-    public setLocale!: DynamicUpdatesMixin<TConfig>['setLocale'];
-    public setAxes!: DynamicUpdatesMixin<TConfig>['setAxes'];
-    public setSeries!: DynamicUpdatesMixin<TConfig>['setSeries'];
-    public setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
-    public setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
-    public setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
+    setTheme!: DynamicUpdatesMixin<TConfig>['setTheme'];
+    setLocale!: DynamicUpdatesMixin<TConfig>['setLocale'];
+    setAxes!: DynamicUpdatesMixin<TConfig>['setAxes'];
+    setSeries!: DynamicUpdatesMixin<TConfig>['setSeries'];
+    setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
+    setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
+    setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
 
     /** Batch update methods */
-    public batch!: BatchMixin<TConfig>['batch'];
+    batch!: BatchMixin<TConfig>['batch'];
     protected fullUpdate!: BatchMixin<TConfig>['fullUpdate'];
     protected _batch!: BatchMixin<TConfig>['_batch'];
 
     protected _cache!: CachedProps;
+
+    /** Mixin methods */
+    private initMixins!: () => void;
 
     constructor(root: HTMLElement, pConfig: TConfig) {
         this.initMixins();
@@ -234,15 +235,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.utils.sync?.unsub(this.uplot);
     }
 
-    private onError(error: Error) {
-        this.execHooks(this.config.hooks.error, {
-            stage: this.state.stage,
-            error,
-            chart: this,
-        });
-        return error;
-    }
-
     protected initPlotLinesPlugin(config: YagrConfig): any {
         const plotLines: PlotLineConfig[] = [];
 
@@ -257,37 +249,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
         return plotLinesPlugin(this, plotLines);
     }
-
-    /*
-     * Resize handler. Should cache height and width to avoid unneccesary resize handling,
-     * when actial width and height of contentRect doesn't changed
-     */
-    private onResize = (args: ResizeObserverEntry[]) => {
-        const [resize] = args;
-
-        if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
-            return;
-        }
-
-        if (this.plugins.tooltip) {
-            const t = this.plugins.tooltip;
-
-            if (t.state.pinned && t.state.visible) {
-                t.hide();
-                t.pin(false);
-            }
-        }
-
-        this._cache.width = this.options.width = this.root.clientWidth;
-        this._cache.height = this.options.height = this.clientHeight;
-        this.plugins?.legend?.redraw();
-        this.uplot.setSize({
-            width: this.options.width,
-            height: this.options.height,
-        });
-        this.uplot.redraw();
-        this.execHooks(this.config.hooks.resize, {entries: args, chart: this});
-    };
 
     protected init = () => {
         if (this.config.chart.size?.adaptive) {
@@ -329,6 +290,32 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         return this;
     }
 
+    protected initRender = (u: uPlot, done: Function) => {
+        /** Reimplementing appedning u.root to root */
+        this.root.appendChild(u.root);
+
+        /** Init legend if required */
+        this.plugins.legend?.init(u);
+
+        /** Setup font size for title if required */
+        if (this.config.title && this.config.title.fontSize) {
+            const size = this.config.title.fontSize;
+            const t = this.root.querySelector('.u-title') as HTMLElement;
+            t.setAttribute('style', `font-size:${size}px;line-height:${size}px;`);
+        }
+
+        done();
+    };
+
+    private onError(error: Error) {
+        this.execHooks(this.config.hooks.error, {
+            stage: this.state.stage,
+            error,
+            chart: this,
+        });
+        return error;
+    }
+
     private trackMouse() {
         const mouseOver = () => {
             this.state.isMouseOver = true;
@@ -345,21 +332,35 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         };
     }
 
-    protected initRender = (u: uPlot, done: Function) => {
-        /** Reimplementing appedning u.root to root */
-        this.root.appendChild(u.root);
+    /*
+     * Resize handler. Should cache height and width to avoid unneccesary resize handling,
+     * when actial width and height of contentRect doesn't changed
+     */
+    private onResize = (args: ResizeObserverEntry[]) => {
+        const [resize] = args;
 
-        /** Init legend if required */
-        this.plugins.legend?.init(u);
-
-        /** Setup font size for title if required */
-        if (this.config.title && this.config.title.fontSize) {
-            const size = this.config.title.fontSize;
-            const t = this.root.querySelector('.u-title') as HTMLElement;
-            t.setAttribute('style', `font-size:${size}px;line-height:${size}px;`);
+        if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
+            return;
         }
 
-        done();
+        if (this.plugins.tooltip) {
+            const t = this.plugins.tooltip;
+
+            if (t.state.pinned && t.state.visible) {
+                t.hide();
+                t.pin(false);
+            }
+        }
+
+        this._cache.width = this.options.width = this.root.clientWidth;
+        this._cache.height = this.options.height = this.clientHeight;
+        this.plugins?.legend?.redraw();
+        this.uplot.setSize({
+            width: this.options.width,
+            height: this.options.height,
+        });
+        this.uplot.redraw();
+        this.execHooks(this.config.hooks.resize, {entries: args, chart: this});
     };
 
     get clientHeight() {

@@ -1,6 +1,6 @@
 import type {MinimalValidConfig} from '../types';
 import type Yagr from '..';
-import uPlot from 'uplot';
+import UPlot from 'uplot';
 
 export interface Batch {
     active: boolean;
@@ -36,7 +36,7 @@ export class BatchMixin<T extends MinimalValidConfig> {
      * });
      * ```
      */
-    public batch(this: Yagr<T>, fn: (s: Batch) => void) {
+    batch(this: Yagr<T>, fn: (s: Batch) => void) {
         if (this._batch.active) {
             return fn(this._batch);
         }
@@ -85,7 +85,7 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 this.transformSeries();
             })
             .inStage('uplot', () => {
-                this.uplot = new uPlot(this.options, this.series, this.initRender);
+                this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.init();
             })
             .inStage('listen');
