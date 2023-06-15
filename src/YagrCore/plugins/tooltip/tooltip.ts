@@ -137,7 +137,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     let over: HTMLDivElement;
     let bLeft: number;
     let bTop: number;
-    let bound: HTMLElement;
+    const bound = opts.boundClassName ? document.querySelector(opts.boundClassName) || document.body : document.body;
 
     const tOverlay = document.createElement('div');
 
@@ -168,7 +168,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     };
 
     emit('init');
-    bound = opts.boundClassName ? document.querySelector(opts.boundClassName) || document.body : document.body;
+    
     bound.appendChild(tOverlay);
     state.mounted = true;
     emit('mount');

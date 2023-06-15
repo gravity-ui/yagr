@@ -81,7 +81,7 @@ module.exports = {
         'camelcase': [ERROR, {properties: 'never'}],
         'comma-style': [ERROR, 'last'],
         'max-depth': [WARNING, {maximum: 5}],
-        'new-cap': ERROR,
+        'new-cap': OFF,
         'new-parens': ERROR,
         'no-array-constructor': WARNING,
         'no-bitwise': ERROR,
@@ -155,27 +155,7 @@ module.exports = {
                 },
             ],
             '@typescript-eslint/member-delimiter-style': ERROR,
-            '@typescript-eslint/member-ordering': [ERROR, {
-                'default': [
-                    'public-static-field',
-                    'protected-static-field',
-                    'private-static-field',
-
-                    'public-static-method',
-                    'protected-static-method',
-                    'private-static-method',
-
-                    'public-instance-field',
-                    'protected-instance-field',
-                    'private-instance-field',
-
-                    'constructor',
-
-                    'public-instance-method',
-                    'protected-instance-method',
-                    'private-instance-method',
-                ],
-            }],
+            '@typescript-eslint/member-ordering': OFF,
             '@typescript-eslint/explicit-member-accessibility': [ERROR, {'accessibility': 'no-public'}],
             '@typescript-eslint/consistent-type-assertions': ERROR,
             '@typescript-eslint/no-explicit-any': WARNING,

@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import type {AlignedData} from 'uplot';
 import type {DataSeries, MinimalValidConfig} from '../types';
 import type Yagr from '..';

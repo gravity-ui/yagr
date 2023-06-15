@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import uPlot, {Series, Plugin, Options as UPlotOptions, DrawOrderKey} from 'uplot';
 
 import type {MinimalValidConfig} from '../types';
