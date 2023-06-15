@@ -69,7 +69,7 @@ const main = [
     {
         input: `src/index.ts`,
         output: [
-            {file: './dist/yagr.umd.js', name: 'yagr', format: 'umd', sourcemap: true},
+            {file: './dist/yagr.umd.js', name: 'Yagr', format: 'umd', sourcemap: true},
             {file: './dist/yagr.es5.js', format: 'es', sourcemap: true},
         ],
         external: [],
@@ -87,9 +87,24 @@ const main = [
             sourceMaps(),
         ],
     },
+    {
+        input: `src/react.tsx`,
+        output: [{file: './dist/yagr.react.esm.js', name: 'YagrReact', format: 'esm'}],
+        watch: {
+            include: 'src/react.tsx',
+        },
+        plugins: [
+            json(),
+            typescript({
+                useTsconfigDeclarationDir: true,
+                tsconfig: './tsconfig.publish.json',
+            }),
+            commonjs(),
+            resolve(),
+        ],
+    },
     css(true),
     css(false),
-    process.env.YAGR_DEV_BUILD ? iife(false, './src/react.tsx', 'YagrReact', 'yagr-react.iife') : false,
     iife(true, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
     iife(false, './src/YagrCore/index.ts', 'Yagr', 'yagr.iife'),
 ].filter(Boolean);

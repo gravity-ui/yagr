@@ -40,6 +40,8 @@ export type ValueFormatter = (value: string | number | null, precision?: number)
 export type PerScale<T> = T | {[scale: string]: T};
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
+export interface TooltipData extends TooltipRenderOptions {}
+
 export type TooltipHandler = (
     elem: HTMLElement,
     data: {
@@ -49,6 +51,7 @@ export type TooltipHandler = (
             show: () => void;
             hide: () => void;
         };
+        data?: TooltipData;
         yagr: Yagr;
     },
 ) => void;
@@ -98,6 +101,8 @@ export interface TooltipOptions {
     title?: PerScale<TitleRenderer>;
     /** Titles of scales of scale sections */
     scales?: PerScale<string>;
+    /** Is tooltip virtual. Used for custom tooltips, which want to reuse common tooltip */
+    virtual?: boolean;
 }
 
 export type TooltipRow = {

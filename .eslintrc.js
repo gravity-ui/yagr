@@ -81,7 +81,7 @@ module.exports = {
         'camelcase': [ERROR, {properties: 'never'}],
         'comma-style': [ERROR, 'last'],
         'max-depth': [WARNING, {maximum: 5}],
-        'new-cap': OFF,
+        'new-cap': OFF  ,
         'new-parens': ERROR,
         'no-array-constructor': WARNING,
         'no-bitwise': ERROR,

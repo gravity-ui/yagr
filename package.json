@@ -31,6 +31,7 @@
     "prebuild": "rimraf dist",
     "copy:scss": "copyfiles -u 1 \"./src/**/*.scss\" dist",
     "build:tsc": "tsc -p tsconfig.json && npm run copy:scss",
+    "build:examples": "rollup -c ./demo/examples/react/rollup.config.ts",
     "dev": "rollup -c rollup.config.ts -w",
     "build:main": "npm run prebuild && npm run build:tsc && rollup -c rollup.config.ts",
     "build:plugins": "rollup -c rollup.config.ts --plugins",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@doc-tools/docs": "^1.13.1",
+    "@rollup/plugin-babel": "^6.0.3",
     "@types/jest": "^26.0.24",
     "@types/node": "^10.11.0",
     "@types/react": "^17.0.2",
@@ -86,6 +88,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@babel/preset-react": "^7.22.5",
     "uplot": "1.6.24"
   }
 }

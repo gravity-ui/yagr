@@ -21,9 +21,9 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-export default function YagrChartComponent({id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps) {
+export default function YagrReact({id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps) {
     const chartRef = React.useRef<HTMLDivElement>(null);
-    const chart = React.useRef<Yagr | undefined>(undefined);
+    const chart = React.useRef<Yagr>();
 
     const initChart = React.useCallback(() => {
         if (chartRef.current) {
@@ -46,19 +46,19 @@ export default function YagrChartComponent({id, config, className = '', debug, o
                 hooks.onSelect = selection;
             }
         }
-    }, [config, onChartLoad, onSelect]);
+    }, []);
 
     React.useEffect(() => {
-        chart.current?.setConfig(config);
+        config && chart.current?.setConfig(config);
     }, [config]);
 
     React.useEffect(() => {
         initChart();
         return () => chart.current?.dispose();
-    }, [initChart]);
+    }, []);
 
     const onClick = React.useCallback(
-        (event: React.MouseEvent) => {
+        (event) => {
             if (chart.current && (event.ctrlKey || event.metaKey) && event.shiftKey) {
                 const dataUrl = chart.current.toDataUrl().replace('image/png', 'image/octet-stream');
                 const a = document.createElement('a');
@@ -72,5 +72,3 @@ export default function YagrChartComponent({id, config, className = '', debug, o
 
     return <div id={id} onClick={onClick} className={`yagr ${className}`} ref={chartRef} />;
 }
-
-YagrChartComponent.React = React;
