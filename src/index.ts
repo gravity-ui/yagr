@@ -8,4 +8,11 @@ import * as DEF from './YagrCore/defaults';
 export const defaults = DEF;
 
 import Yagr from './YagrCore/index';
+
+if (typeof window !== 'undefined') {
+    Object.assign(window, {
+        Yagr,
+    });
+}
+
 export default Yagr;

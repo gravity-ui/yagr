@@ -15,7 +15,7 @@ describe('plotlines', () => {
         it('should render on bottom of axes and series', () => {
             const y = new Yagr(window.document.body, {
                 ...DEFAULT_CONFIG,
-                chart: {appereance: {drawOrder: ['plotLines', 'axes', 'series']}},
+                chart: {appearance: {drawOrder: ['plotLines', 'axes', 'series']}},
             });
 
             expect(y.plugins.plotLines?.uplot.hooks.drawClear).toBeTruthy();
@@ -24,7 +24,7 @@ describe('plotlines', () => {
         it('should render on top of axes and series', () => {
             const y = new Yagr(window.document.body, {
                 ...DEFAULT_CONFIG,
-                chart: {appereance: {drawOrder: ['series', 'axes', 'plotLines']}},
+                chart: {appearance: {drawOrder: ['series', 'axes', 'plotLines']}},
             });
 
             expect(y.plugins.plotLines?.uplot.hooks.draw).toBeTruthy();
@@ -33,7 +33,7 @@ describe('plotlines', () => {
         it('should render between of axes and series', () => {
             const y = new Yagr(window.document.body, {
                 ...DEFAULT_CONFIG,
-                chart: {appereance: {drawOrder: ['axes', 'plotLines', 'series']}},
+                chart: {appearance: {drawOrder: ['axes', 'plotLines', 'series']}},
             });
 
             expect(y.plugins.plotLines?.uplot.hooks.drawAxes).toBeTruthy();

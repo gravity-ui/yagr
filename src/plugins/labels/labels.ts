@@ -7,8 +7,6 @@ import type {Series} from 'uplot';
 
 import {html, px} from '../../YagrCore/utils/common';
 
-import './styles.scss';
-
 declare module '../../types' {
     interface PBandConfig {
         label?: string;
@@ -142,7 +140,7 @@ const defaultPositionTop = (u: uPlot, x: number, y: number, scale: string) => {
 
 const getId = () => (x: number) => String(x);
 
-export default function YagrLabel(options: LabelsOptions): YagrPlugin {
+export default function YagrLabelsPlugin(options: LabelsOptions): YagrPlugin {
     let textLabelsList: (
         | {idx: number; label: string | null | undefined}
         | {band: PlotLineConfig; label: string | null | undefined}
@@ -538,4 +536,8 @@ export default function YagrLabel(options: LabelsOptions): YagrPlugin {
             },
         };
     };
+}
+
+if (typeof window !== 'undefined') {
+    Object.assign(window, {YagrLabelsPlugin});
 }

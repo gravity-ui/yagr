@@ -28,45 +28,45 @@
             <div id="chart3" class="container left"></div>
             <div id="chart4" class="container right"></div>
         </div>
-    
-    <script>
-       const showTooltip = (y) => y.state.isMouseOver;
 
-        const y1 = new Yagr(chart1, {
-            title: {text: 'Example 1'},
-            timeline: [1, 2, 3],
-            series: [{data: [1, 2, 3], color: 'red'}],
-            cursor: {sync: 'a'},
-            tooltip: {show: showTooltip},
-        });
+        <script>
+            const showTooltip = (y) => y.state.isMouseOver;
 
-        const y2 = new Yagr(chart2, {
-            title: {text: 'Example 2'},
-            timeline: [1, 2, 3],
-            series: [{data: [3, 2, 1], color: 'green'}],
-            cursor: {sync: 'a'},
-            tooltip: {show: showTooltip},
-        });
+            const y1 = new Yagr(chart1, {
+                title: {text: 'Example 1'},
+                timeline: [1, 2, 3],
+                series: [{data: [1, 2, 3], color: 'red'}],
+                cursor: {sync: 'a'},
+                tooltip: {show: showTooltip},
+            });
 
-        y1.subscribe();
-        y2.subscribe();
+            const y2 = new Yagr(chart2, {
+                title: {text: 'Example 2'},
+                timeline: [1, 2, 3],
+                series: [{data: [3, 2, 1], color: 'green'}],
+                cursor: {sync: 'a'},
+                tooltip: {show: showTooltip},
+            });
 
-        const y3 = new Yagr(chart3, {
-            title: {text: 'Example 3'},
-            timeline: [1, 2, 3],
-            series: [{data: [1, 2, 3], color: 'red'}],
-            cursor: {sync: 'b'},
-        });
+            y1.subscribe();
+            y2.subscribe();
 
-        const y4 = new Yagr(chart4, {
-            title: {text: 'Example 4'},
-            timeline: [1, 2, 3],
-            series: [{data: [3, 2, 1], color: 'green'}],
-            cursor: {sync: 'b'},
-        });
+            const y3 = new Yagr(chart3, {
+                title: {text: 'Example 3'},
+                timeline: [1, 2, 3],
+                series: [{data: [1, 2, 3], color: 'red'}],
+                cursor: {sync: 'b'},
+            });
 
-        y4.subscribe();
-        y3.subscribe();
-    </script>
+            const y4 = new Yagr(chart4, {
+                title: {text: 'Example 4'},
+                timeline: [1, 2, 3],
+                series: [{data: [3, 2, 1], color: 'green'}],
+                cursor: {sync: 'b'},
+            });
+
+            y4.subscribe();
+            y3.subscribe();
+        </script>
     </body>
 </html>

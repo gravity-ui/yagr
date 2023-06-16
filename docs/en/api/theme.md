@@ -1,6 +1,6 @@
 ## Chart theme
 
-Yagr supports two color themes by default: `light` and `dark`. You can setup theme in `config.chart.appereance.theme`.
+Yagr supports two color themes by default: `light` and `dark`. You can setup theme in `config.chart.appearance.theme`.
 
 -   `light`
     ![Light theme](../../assets/theme-light.png =600x100%)

@@ -12,12 +12,12 @@ describe('options', () => {
     });
 
     it('should accept light theme and set correct class', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {theme: 'light'}}});
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appearance: {theme: 'light'}}});
         expect(y.root.classList.contains('yagr_theme_light')).toBe(true);
     });
 
     it('should accept dark theme and set correct class', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {theme: 'dark'}}});
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appearance: {theme: 'dark'}}});
         expect(y.root.classList.contains('yagr_theme_dark')).toBe(true);
     });
 });

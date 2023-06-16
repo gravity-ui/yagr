@@ -161,12 +161,12 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
             chart.series ||= {type: 'line'};
             chart.size ||= {adaptive: true};
-            chart.appereance ||= {locale: 'en'};
+            chart.appearance ||= {locale: 'en'};
             chart.select ||= {};
 
             this.utils = {
                 colors: colorParser,
-                i18n: i18n(config.chart.appereance?.locale || 'en'),
+                i18n: i18n(config.chart.appearance?.locale || 'en'),
                 theme: new ThemedDefaults(colorParser),
             };
 
@@ -181,7 +181,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
                 root.style.height = px(chart.size.height);
             }
 
-            this.setTheme(chart.appereance.theme || 'light');
+            this.setTheme(chart.appearance.theme || 'light');
 
             const options = this.createUplotOptions();
             this._cache = {height: options.height, width: options.width};

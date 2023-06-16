@@ -22,47 +22,51 @@
         <div class="grid">
             <div id="chart1" class="container"></div>
         </div>
-   
-    <script>
-        const y1 = new Yagr(chart1, {
-            title: {text: 'Range bands'},
-            timeline: new Array(20).fill().map((_, i) => i * 1000),
-            series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
-            scales: {y: {min: 0, max: 6}},
-            tooltip: {
-                show: false
-            },
-            editUplotOptions: (opts) => {
-                opts.plugins.push({
-                    hooks: {
-                        setCursor: (u) => {
-                            const {left, top, idx} = u.cursor;
-                            y1.plugins.plotLines.clear();
-                            if (idx !== null) {
-                                y1.setAxes({
-                                    x: {
-                                        plotLines: [{
-                                            value: [u.data[0][idx - 1], u.data[0][idx + 1]],
-                                            color: 'rgba(230, 20, 20, 0.3)'
-                                        }]
-                                    },
-                                    y: {
-                                        plotLines: [{
-                                            value: [u.posToVal(top - 10, 'y'),  u.posToVal(top + 10, 'y')],
-                                            color: 'rgba(230, 20, 20, 0.3)'
-                                        }]
-                                    }
-                                })
-                            } else {
-                                y1.setAxes({x: {plotLines: []}, y: {plotLines: []}})
-                            }
-                        }
-                    }
-                });
 
-                return opts;
-            }
-        });
-    </script>
+        <script>
+            const y1 = new Yagr(chart1, {
+                title: {text: 'Range bands'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                scales: {y: {min: 0, max: 6}},
+                tooltip: {
+                    show: false,
+                },
+                editUplotOptions: (opts) => {
+                    opts.plugins.push({
+                        hooks: {
+                            setCursor: (u) => {
+                                const {left, top, idx} = u.cursor;
+                                y1.plugins.plotLines.clear();
+                                if (idx !== null) {
+                                    y1.setAxes({
+                                        x: {
+                                            plotLines: [
+                                                {
+                                                    value: [u.data[0][idx - 1], u.data[0][idx + 1]],
+                                                    color: 'rgba(230, 20, 20, 0.3)',
+                                                },
+                                            ],
+                                        },
+                                        y: {
+                                            plotLines: [
+                                                {
+                                                    value: [u.posToVal(top - 10, 'y'), u.posToVal(top + 10, 'y')],
+                                                    color: 'rgba(230, 20, 20, 0.3)',
+                                                },
+                                            ],
+                                        },
+                                    });
+                                } else {
+                                    y1.setAxes({x: {plotLines: []}, y: {plotLines: []}});
+                                }
+                            },
+                        },
+                    });
+
+                    return opts;
+                },
+            });
+        </script>
     </body>
 </html>

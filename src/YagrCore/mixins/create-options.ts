@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 
-import uPlot, {Series, Plugin, Options as UPlotOptions, DrawOrderKey} from 'uplot';
+import uPlot, {Series, Plugin, Options as UPlotOptions, DrawOrderKey as uDrawOrderKey} from 'uplot';
 
 import type {MinimalValidConfig} from '../types';
 import Yagr, {YagrMeta} from '..';
@@ -19,6 +19,7 @@ import markersPlugin from '../plugins/markers';
 import {configureScales} from '../utils/scales';
 import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
+import {DrawOrderKey} from '../utils/types';
 
 export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
     /**
@@ -191,10 +192,10 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             });
         }
 
-        options.drawOrder = chart.appereance?.drawOrder
-            ? (chart.appereance?.drawOrder.filter(
-                  (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Axes,
-              ) as DrawOrderKey[])
+        options.drawOrder = chart.appearance?.drawOrder
+            ? (chart.appearance?.drawOrder.filter(
+                  (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Series,
+              ) as uDrawOrderKey[])
             : [DrawOrderKey.Series, DrawOrderKey.Axes];
 
         /** Disabling uPlot legend. */
