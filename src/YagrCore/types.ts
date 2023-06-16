@@ -195,7 +195,7 @@ export interface YagrChartOptions {
         zoom?: boolean;
     };
 
-    appereance?: {
+    appearance?: {
         /** Order of drawing. Impacts on zIndex of entity. (axes, series) by default */
         drawOrder?: DrawKey[];
 

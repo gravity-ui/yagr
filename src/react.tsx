@@ -1,7 +1,8 @@
 import React from 'react';
 
 import Yagr, {YagrMeta} from './YagrCore';
-import {MinimalValidConfig} from './YagrCore/types';
+import type {MinimalValidConfig} from './YagrCore/types';
+import type {TooltipHandlerData} from './types';
 
 export interface YagrChartProps {
     /** Chart ID */
@@ -19,6 +20,11 @@ export interface YagrChartProps {
     onChartLoad?: (chart: Yagr, meta: YagrMeta) => void;
     /** Fires on every range selection */
     onSelect?: (from: number, to: number) => void;
+}
+
+interface YagrReactRef {
+    yagr: () => Yagr | undefined;
+    domElement: () => HTMLDivElement | null;
 }
 
 // eslint-disable-next-line prefer-arrow-callback
@@ -80,3 +86,37 @@ export default React.forwardRef(function YagrReact(
 
     return <div id={id} onClick={onClick} className={`yagr ${className}`} ref={chartRef} />;
 });
+
+interface CustomTooltip {
+    onChange: (data: TooltipHandlerData) => void;
+}
+
+export const useTooltipState = (
+    yagrRef: React.MutableRefObject<YagrReactRef>,
+    tooltipRef: React.RefObject<CustomTooltip>,
+) => {
+    React.useEffect(() => {
+        if (!yagrRef.current || !tooltipRef.current) {
+            return;
+        }
+
+        const tooltip = tooltipRef.current;
+        const yagr = yagrRef.current.yagr();
+
+        if (!yagr || !yagr?.plugins?.tooltip) {
+            return;
+        }
+
+        yagr.plugins.tooltip.on('render', (_, data) => {
+            tooltip.onChange(data);
+        });
+
+        yagr.plugins.tooltip.on('show', (_, data) => {
+            tooltip.onChange(data);
+        });
+
+        yagr.plugins.tooltip.on('show', (_, data) => {
+            tooltip.onChange(data);
+        });
+    }, [yagrRef.current]);
+};

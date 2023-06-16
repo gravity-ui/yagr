@@ -57,3 +57,7 @@ export default function WeekendsPlugin({
         };
     };
 }
+
+if (typeof window !== 'undefined') {
+    Object.assign(window, {WeekendsPlugin});
+}

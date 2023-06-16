@@ -25,3 +25,60 @@ Yagr is a high-performance HTML5 canvas chart renderer based on [uPlot](https://
 -   [Data alignment and interpolation for missing data](https://yagr.tech/en/api/data-processing)
 
 ## [Documentation](https://yagr.tech)
+
+## Quick Start
+
+```
+npm i @gravity-ui/yagr
+```
+
+### NPM Module
+
+```typescript
+import Yagr from '@gravity-ui/yagr';
+
+new Yagr(document.body, {
+    timeline: [1, 2, 3, 4, 5],
+    series: [
+        {
+            data: [1, 2, 3, 4, 5],
+            color: 'red',
+        },
+        {
+            data: [2, 3, 1, 4, 5],
+            color: 'green',
+        },
+    ],
+});
+```
+
+### Script Tag
+
+```html
+<script src="https://unpkg.com/@gravity-ui/yagr/dist/yagr.iife.min.js"></script>
+<script>
+    new Yagr(document.body, {
+        timeline: [1, 2, 3, 4, 5],
+        series: [
+            {
+                data: [1, 2, 3, 4, 5],
+                color: 'red',
+            },
+            {
+                data: [2, 3, 1, 4, 5],
+                color: 'green',
+            },
+        ],
+    });
+</script>
+```
+
+### Examples
+
+Need something specific? Yagr presents some useful examples in the [demo/examples](./demo/examples/) folder. How to start them with current version:
+
+1. Clone the repository
+2. Install dependencies `npm i`
+3. Run `npm run build`
+4. Run `npx http-server .`
+5. Open examples in browser according to the http-server output

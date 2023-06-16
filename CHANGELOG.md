@@ -1,9 +1,16 @@
 ### master
 
+## Examples
+
+-   Added React + Custom React tooltip examples
+-   Added `setScales`, dynamic updates and hooks examples
+
 ### Refactor
 
 -   Refactored `YagrCore` class to use mixins.
 -   Refactored batch mechanism to support multiple Yagr change calls in single batch
+-   Refactored Yagr React component to support `setConfig` instead of re-initialization of Yagr instance on every config update
+-   Got rid of Rollup, using ESBuild instead
 
 ### Scales
 
@@ -18,6 +25,7 @@
 ### Tooltip
 
 -   Fixed tooltip render initial position (now it renders in `boundClassName` element)
+-   Added virtual tooltip mode
 
 ### Legend
 

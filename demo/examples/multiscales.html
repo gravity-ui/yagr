@@ -26,40 +26,40 @@
         <div class="grid">
             <div id="chart2" class="container"></div>
         </div>
-    
-    <script>
-       const y1 = new Yagr(chart1, {
-            title: {text: 'Two scales'},
-            timeline: [1, 2, 3],
-            series: [
-                {data: [1, 2, 3], color: 'red'},
 
-                {data: [2, 1, 2], color: 'green', scale: 'r', type: 'area'},
-                {data: [1, 2, 3], color: 'lime', scale: 'r', type: 'area'}
-            ],
-            axes: {
-                y: {values: (u, v) => v.map(x => x + ' Mb')},
-                r: {side: 'right', label: 'Stacked'}
-            },
-            scales: {
-                y: {min: 0, max: 5},
-                r: {stacking: true, max: 5}
-            },
-            tooltip: {
+        <script>
+            const y1 = new Yagr(chart1, {
+                title: {text: 'Two scales'},
+                timeline: [1, 2, 3],
+                series: [
+                    {data: [1, 2, 3], color: 'red'},
+
+                    {data: [2, 1, 2], color: 'green', scale: 'r', type: 'area'},
+                    {data: [1, 2, 3], color: 'lime', scale: 'r', type: 'area'},
+                ],
+                axes: {
+                    y: {values: (u, v) => v.map((x) => x + ' Mb')},
+                    r: {side: 'right', label: 'Stacked'},
+                },
                 scales: {
-                    y: 'Mb',
-                    r: 'Stacked'
+                    y: {min: 0, max: 5},
+                    r: {stacking: true, max: 5},
                 },
-                sum: {
-                    y: false,
-                    r: true,
+                tooltip: {
+                    scales: {
+                        y: 'Mb',
+                        r: 'Stacked',
+                    },
+                    sum: {
+                        y: false,
+                        r: true,
+                    },
+                    tracking: {
+                        y: 'closest',
+                        r: 'area',
+                    },
                 },
-                tracking: {
-                    y: 'closest',
-                    r: 'area',
-                },
-            },
-        });
-    </script>
+            });
+        </script>
     </body>
 </html>

@@ -24,35 +24,35 @@
         </div>
         <button id="scales">Randomize scales min/max</button>
         <button id="log">Make scale logarithmic</button>
-   
-    <script>
-        const yagr = new Yagr(chart1, {
-            title: {text: 'Range bands'},
-            timeline: new Array(20).fill().map((_, i) => i * 1000),
-            series: [
-                {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
-                {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'}
-            ],
-            scales: {
-                y: {
-                    stacking: true
-                }
-            }
-        });
 
-        window.scales.onclick = () => {
-            yagr.setScales({
-                y: {min: Math.random() * 10, max: Math.random() * 10},
-            })
-        };
+        <script>
+            const yagr = new Yagr(chart1, {
+                title: {text: 'Range bands'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                ],
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+            });
 
-        window.log.onclick = () => {
-            yagr.setScales({
-                y: {
-                    type: 'logarithmic',
-                }
-            })
-        };
-    </script>
+            window.scales.onclick = () => {
+                yagr.setScales({
+                    y: {min: Math.random() * 10, max: Math.random() * 10},
+                });
+            };
+
+            window.log.onclick = () => {
+                yagr.setScales({
+                    y: {
+                        type: 'logarithmic',
+                    },
+                });
+            };
+        </script>
     </body>
 </html>

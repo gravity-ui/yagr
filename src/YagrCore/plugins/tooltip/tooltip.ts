@@ -182,7 +182,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     emit('init');
 
     if (opts.virtual) {
-        placement = () => {};
+        placement = (() => {}) as any; // @TODO
     } else {
         bound.appendChild(tOverlay);
         state.mounted = true;
@@ -242,6 +242,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     };
 
     function pin(pinState: boolean, position?: {x: number; y: number}) {
+        state.pinned = pinState;
+        yagr.plugins.cursor?.pin(pinState);
+
+        if (opts.virtual) {
+            return emit(pinState ? 'pin' : 'unpin');
+        }
+
         if (position) {
             placement(
                 tOverlay,
@@ -259,9 +266,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         }
 
         const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
-        state.pinned = pinState;
-
-        yagr.plugins.cursor?.pin(pinState);
 
         if (pinState) {
             if (!state.visible) {

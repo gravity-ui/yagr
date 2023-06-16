@@ -12,12 +12,12 @@ describe('i18n', () => {
     });
 
     it('should set RU locale from settings.locale', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {locale: 'ru'}}});
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appearance: {locale: 'ru'}}});
         expect(y.utils.i18n('sum')).toBe('Сумма');
     });
 
     it('should accept custom locale', () => {
-        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appereance: {locale: {sum: 'Գումարը'}}}});
+        const y = new Yagr(window.document.body, {...DEFAULT_CONFIG, chart: {appearance: {locale: {sum: 'Գումարը'}}}});
         expect(y.utils.i18n('sum')).toBe('Գումարը');
     });
 });

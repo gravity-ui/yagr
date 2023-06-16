@@ -14,7 +14,7 @@ interface UpdateOptions {
 }
 
 function setLocaleImpl(yagr: Yagr, locale: SupportedLocales | Record<string, string>) {
-    yagr.config.chart.appereance?.theme;
+    yagr.config.chart.appearance?.theme;
     yagr.utils.i18n = i18n(locale);
     yagr.plugins.legend?.redraw();
 }
@@ -169,8 +169,8 @@ function isChanged(oldConfig: YagrConfig, newConfig: Partial<YagrConfig>) {
 function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>) {
     const isChangedKey = isChanged(yagr.config, newConfig);
 
-    if (newConfig.chart?.appereance?.theme && isChangedKey('chart.appereance.theme')) {
-        yagr.setTheme(newConfig.chart?.appereance?.theme!);
+    if (newConfig.chart?.appearance?.theme && isChangedKey('chart.appearance.theme')) {
+        yagr.setTheme(newConfig.chart?.appearance?.theme!);
     }
 
     if (newConfig.chart?.series && isChangedKey('chart.series', deepIsEqual)) {
@@ -179,8 +179,8 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
         batch.redraw = [true, false];
     }
 
-    if (newConfig.chart?.appereance?.locale && isChangedKey('chart.appereance.locale')) {
-        yagr.setLocale(newConfig.chart?.appereance?.locale!);
+    if (newConfig.chart?.appearance?.locale && isChangedKey('chart.appearance.locale')) {
+        yagr.setLocale(newConfig.chart?.appearance?.locale!);
     }
 
     if (newConfig.axes && isChangedKey('axes', deepIsEqual)) {

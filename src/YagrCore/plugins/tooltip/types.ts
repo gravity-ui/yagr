@@ -47,19 +47,18 @@ export interface TooltipData extends Omit<TooltipRenderOptions, 'state' | 'yagr'
     };
 }
 
-export type TooltipHandler = (
-    elem: HTMLElement,
-    data: {
-        state: TooltipState;
-        actions: {
-            pin: (state: boolean) => void;
-            show: () => void;
-            hide: () => void;
-        };
-        data?: TooltipData;
-        yagr: Yagr;
-    },
-) => void;
+export interface TooltipHandlerData {
+    state: TooltipState;
+    actions: {
+        pin: (state: boolean) => void;
+        show: () => void;
+        hide: () => void;
+    };
+    data?: TooltipData;
+    yagr: Yagr;
+}
+
+export type TooltipHandler = (elem: HTMLElement, data: TooltipHandlerData) => void;
 
 export interface TooltipOptions {
     /** Predicate to show/hide tooltip on setCursor */
