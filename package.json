@@ -36,7 +36,7 @@
     "build:plugins": "npm run prebuild && npm run build:tsc && node esbuild.js --plugins",
     "build:examples": "node esbuild.js --examples",
     "build": "npm run prebuild && npm run build:tsc && node esbuild.js",
-    "start": "npm run build && node esbuild.js --watch",
+    "start": "npm run build && node esbuild.js --dev",
     "precommit": "lint-staged",
     "docs": "yfm -i ./docs -o ./dist/docs --allowHTML",
     "prepublishOnly": "npm run build"

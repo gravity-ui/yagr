@@ -1,9 +1,8 @@
 ### master
 
-## Examples
+### Configuratoin
 
--   Added React + Custom React tooltip examples
--   Added `setScales`, dynamic updates and hooks examples
+-   Fixed typo `appereance` -> `appearance` in `YagrConfig['chart']`
 
 ### Refactor
 
@@ -26,10 +25,16 @@
 
 -   Fixed tooltip render initial position (now it renders in `boundClassName` element)
 -   Added virtual tooltip mode
+-   Added useCustomTooltip hook for React
 
 ### Legend
 
 -   Fixed legend series mark background-color
+
+## Examples
+
+-   Added React + Custom React tooltip examples
+-   Added `setScales`, dynamic updates and hooks examples
 
 ## [2.2.5](https://github.com/gravity-ui/yagr/compare/v2.2.4...v2.2.5) (2023-06-02)
 

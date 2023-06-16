@@ -53,7 +53,7 @@ function build(entry, outfile, format, minify = false, plugins = []) {
                 });
         }
 
-        ctx;
+        return ctx;
     });
 }
 
@@ -89,7 +89,7 @@ function buildMain() {
     const cjs = build('./src/index.ts', './dist/yagr.cjs.js', 'cjs', false);
     const umd = build('./src/index.ts', './dist/yagr.umd.js', 'umd', true, [umdWrapper()]);
 
-    return [scss, esm, iife, cjs, umd];
+    return [scss, esm, iife, cjs, umd].filter(Boolean);
 }
 
 function buildPlugin(name, css = false) {
@@ -116,15 +116,17 @@ function buildPlugin(name, css = false) {
         : Promise.resolve();
 
     const esm = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.esm.js`, 'esm', true);
-    const iife = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.iife.js`, 'esm', true);
-    const cjs = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.cjs.js`, 'esm', true);
-    const umd = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.umd.js`, 'esm', true);
+    const iife = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.iife.js`, 'iife', true);
+    const cjs = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.cjs.js`, 'cjs', true);
+    const umd = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.umd.js`, 'umd', true, [
+        umdWrapper(),
+    ]);
 
-    return [scss, esm, iife, cjs, umd];
+    return [scss, esm, iife, cjs, umd].filter(Boolean);
 }
 
 function buildPlugins() {
-    return [buildPlugin('labels'), buildPlugin('weekends', false)];
+    return buildPlugin('labels', true).concat(buildPlugin('weekends')).filter(Boolean);
 }
 
 function buildExamples() {
@@ -166,23 +168,26 @@ async function run() {
 
     try {
         if (process.argv.includes('--main')) {
+            console.log('Building main Yagr modules');
             builds.push(...buildMain());
         } else if (process.argv.includes('--plugins')) {
+            console.log('Building Yagr plugins');
             builds.push(...buildPlugins());
         } else if (process.argv.includes('--examples')) {
+            console.log('Building Yagr examples');
             builds.push(...buildExamples());
         } else {
             builds.push(...buildMain(), ...buildPlugins(), ...buildExamples());
         }
 
         const results = await Promise.all(builds);
-
         if (isDevMode) {
+            const watches = [];
             for (const ctx of results) {
-                const watcher = ctx.watch();
-
-                console.log(watcher);
+                watches.push(ctx.watch());
             }
+
+            await Promise.all(watches);
         }
     } catch (e) {
         console.error(e);

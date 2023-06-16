@@ -44,7 +44,7 @@ Series configurations depends on series type. Particular series options see in [
 
 -   `type: 'column'`
 
-### appearance configurations
+### Appearance configurations
 
 -   `chart.appearance.locale?: 'ru' | 'en'` - Locale. See [more about customizing I18N](./i18n.md).
 -   `chart.appearance.theme?: 'light' | 'dark'` - Yagr theme, `'light'` by default. See [more about theming](./theme.md)
