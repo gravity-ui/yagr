@@ -98,7 +98,7 @@ export type TooltipPlugin = YagrPlugin<
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
-    let placement = placementFn;
+    let placement: typeof placementFn | (() => void) = placementFn;
 
     const pSettings = yagr.config.processing || {};
     const handlers: Record<TooltipAction, TooltipHandler[]> = {
@@ -182,7 +182,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     emit('init');
 
     if (opts.virtual) {
-        placement = (() => {}) as any; // @TODO
+        placement = () => {};
     } else {
         bound.appendChild(tOverlay);
         state.mounted = true;
