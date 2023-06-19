@@ -24,6 +24,7 @@ interface LegendState {
     paginated: boolean;
     rowsPerPage: number;
     pageSize: number;
+    requiredSpace: number;
 }
 
 const ALL_SERIES_IDX = 'null' as const;
@@ -40,7 +41,7 @@ const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
 };
 
 const getPrependingTitleId = (series: Series[]): typeof ALL_SERIES_IDX | undefined => {
-    return series.length > 3 && ALL_SERIES_IDX || undefined;
+    return (series.length > 3 && ALL_SERIES_IDX) || undefined;
 };
 
 export default class Legend {
@@ -64,6 +65,7 @@ export default class Legend {
             pageSize: 0,
             rowsPerPage: 1,
             paginated: false,
+            requiredSpace: 0,
         };
 
         this.options = Object.assign(
@@ -219,7 +221,7 @@ export default class Legend {
             this.calc();
         }
 
-        legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.pageSize}px">${this.itemsHtml}</div>`;
+        legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.requiredSpace}px">${this.itemsHtml}</div>`;
 
         this.items = legendEl.querySelector('.yagr-legend__items') as HTMLElement;
         this.container = legendEl.querySelector('.yagr-legend__container') as HTMLElement;
@@ -318,7 +320,7 @@ export default class Legend {
     private createIconLineElement(serie: Series) {
         const iconLineElement = html('span', {
             class: `yagr-legend__icon yagr-legend__icon_${serie.type}`,
-            style: {backgroundColor: serie.color},
+            style: {'background-color': serie.color},
         });
 
         return iconLineElement;
@@ -388,7 +390,7 @@ export default class Legend {
         const pages = Math.ceil(requiredHeight / itemsPageSize);
 
         uplotOptions.height = chartHeight - requiredSpace;
-
+        this.state.requiredSpace = requiredSpace;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
         this.state.pages = pages;

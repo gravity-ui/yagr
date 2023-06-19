@@ -725,9 +725,13 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             }
         }
 
-        this._cache.width = this.options.width = this.root.clientWidth;
-        this._cache.height = this.options.height = this.clientHeight;
+        /* Second assignment ensures that change will apply after implicit modifying in legend.redraw() */
+        this.options.width = this.root.clientWidth;
+        this.options.height = this.clientHeight;
         this.plugins?.legend?.redraw();
+        this._cache.height = this.options.height;
+        this._cache.width = this.options.width;
+
         this.uplot.setSize({
             width: this.options.width,
             height: this.options.height,
