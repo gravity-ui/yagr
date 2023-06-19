@@ -24,6 +24,7 @@ interface LegendState {
     paginated: boolean;
     rowsPerPage: number;
     pageSize: number;
+    requiredSpace: number;
 }
 
 const ALL_SERIES_IDX = 'null' as const;
@@ -64,6 +65,7 @@ export default class Legend {
             pageSize: 0,
             rowsPerPage: 1,
             paginated: false,
+            requiredSpace: 0,
         };
 
         this.options = Object.assign(
@@ -217,7 +219,7 @@ export default class Legend {
             this.calc();
         }
 
-        legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.pageSize}px">${this.itemsHtml}</div>`;
+        legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.requiredSpace}px">${this.itemsHtml}</div>`;
 
         this.items = legendEl.querySelector('.yagr-legend__items') as HTMLElement;
         this.container = legendEl.querySelector('.yagr-legend__container') as HTMLElement;
@@ -387,6 +389,7 @@ export default class Legend {
 
         uplotOptions.height = chartHeight - requiredSpace;
 
+        this.state.requiredSpace = requiredSpace;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
         this.state.pages = pages;
