@@ -353,8 +353,14 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             }
         }
 
-        this._cache.width = this.options.width = this.root.clientWidth;
-        this._cache.height = this.options.height = this.clientHeight;
+        const width = this.root.clientWidth;
+        const height = this.clientHeight;
+
+        this._cache.width = width;
+        this.options.width = width;
+        this._cache.height = height;
+        this.options.height = height;
+
         this.plugins?.legend?.redraw();
         this.uplot.setSize({
             width: this.options.width,
