@@ -360,8 +360,9 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.options.width = width;
         this._cache.height = height;
         this.options.height = height;
-
         this.plugins?.legend?.redraw();
+        this._cache.height = this.options.height;
+        this._cache.width = this.options.width;
         this.uplot.setSize({
             width: this.options.width,
             height: this.options.height,

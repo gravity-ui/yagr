@@ -388,7 +388,6 @@ export default class Legend {
         const pages = Math.ceil(requiredHeight / itemsPageSize);
 
         uplotOptions.height = chartHeight - requiredSpace;
-
         this.state.requiredSpace = requiredSpace;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
