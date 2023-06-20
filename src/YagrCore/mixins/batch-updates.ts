@@ -50,6 +50,7 @@ export class BatchMixin<T extends MinimalValidConfig> {
 
         if (this._batch.reopt) {
             this.createUplotOptions(true);
+            this.plugins.legend?.redraw();
         }
 
         if (this._batch.recalc) {
@@ -77,9 +78,8 @@ export class BatchMixin<T extends MinimalValidConfig> {
 
         this.inStage('config', () => {
             this._batch = {active: false, fns: []};
-            const uplotOptions = this.createUplotOptions(true);
-            this._cache = {height: uplotOptions.height, width: uplotOptions.width};
-            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(uplotOptions) : uplotOptions;
+            this.createUplotOptions();
+            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(this.options) : this.options;
         })
             .inStage('processing', () => {
                 this.transformSeries();

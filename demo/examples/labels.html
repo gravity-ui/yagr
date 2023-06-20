@@ -2,10 +2,10 @@
     <head>
         <title>Yagr</title>
         <script src="../../dist/yagr.iife.js"></script>
-        <script src="../../dist/plugins/yagr.labels.js"></script>
-        <script src="../../dist/plugins/yagr.weekends.js"></script>
+        <script src="../../dist/plugins/labels/labels.iife.js"></script>
+        <script src="../../dist/plugins/weekends/weekends.iife.js"></script>
         <link rel="stylesheet" href="../../dist/index.css" />
-        <link rel="stylesheet" href="../../dist/plugins/yagr.labels.min.css" />
+        <link rel="stylesheet" href="../../dist/plugins/labels/labels.css" />
         <style>
             .container {
                 margin-bottom: 26px;
@@ -125,7 +125,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         scales: {
                             constant: {y: {}},
                         },
@@ -144,7 +144,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         scales: {
                             cursor: {
                                 y: {},
@@ -168,7 +168,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         series: {
                             constant: {green: {}},
                         },
@@ -190,7 +190,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         series: {
                             cursor: {
                                 green: {},
@@ -214,7 +214,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         series: {
                             focus: {
                                 green: {},
@@ -239,7 +239,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         series: {
                             focus: {
                                 green: {},
@@ -282,7 +282,7 @@
                 },
                 plugins: {
                     weekends: YagrWeekends(),
-                    labels: YagrLabels({
+                    labels: YagrLabelsPlugin({
                         series: {
                             cursor: {
                                 green: {show: false},
@@ -305,7 +305,7 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
-                    YagrLabels({
+                    YagrLabelsPlugin({
                         plotLines: {
                             constant: {
                                 x: {},
@@ -331,7 +331,7 @@
                     },
                 },
                 plugins: {
-                    labels: YagrLabels({
+                    labels: YagrLabelsPlugin({
                         axes: {
                             x: [
                                 {
@@ -403,7 +403,7 @@
                 },
                 plugins: {
                     weekends: YagrWeekends({}),
-                    labels: YagrLabels({
+                    labels: YagrLabelsPlugin({
                         plotLines: {
                             cursor: {
                                 x: {show: false},

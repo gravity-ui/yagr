@@ -32,26 +32,30 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         const {config} = this;
         const plugins: Plugin[] = [];
 
-        this.plugins = {};
+        this.plugins = this.plugins ?? {};
 
-        const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
-        this.plugins.plotLines = plotLinesPluginInstance;
-        plugins.push(plotLinesPluginInstance.uplot);
+        if (!reOpt) {
+            const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
+            this.plugins.plotLines = plotLinesPluginInstance;
+            plugins.push(plotLinesPluginInstance.uplot);
 
-        Object.entries(config.plugins).forEach(([name, plugin]) => {
-            const pluginInstance = plugin(this);
-            plugins.push(pluginInstance.uplot);
-            Object.assign(this.plugins, {[name]: pluginInstance});
-        });
+            Object.entries(config.plugins).forEach(([name, plugin]) => {
+                const pluginInstance = plugin(this);
+                plugins.push(pluginInstance.uplot);
+                Object.assign(this.plugins, {[name]: pluginInstance});
+            });
+
+            /** Setting up TooltipPugin */
+            if (config.tooltip && config.tooltip.show !== false) {
+                const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
+                plugins.push(tooltipPluginInstance.uplot);
+                this.plugins.tooltip = tooltipPluginInstance;
+            }
+        } else {
+            this.plugins.tooltip?.updateOptions(config.tooltip);
+        }
 
         const chart = config.chart;
-
-        /** Setting up TooltipPugin */
-        if (config.tooltip && config.tooltip.show !== false) {
-            const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
-            plugins.push(tooltipPluginInstance.uplot);
-            this.plugins.tooltip = tooltipPluginInstance;
-        }
 
         const options: UPlotOptions = {
             width: this.root.clientWidth,
