@@ -236,7 +236,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.utils.sync?.unsub(this.uplot);
     }
 
-    protected initPlotLinesPlugin(config: YagrConfig): any {
+    protected initPlotLinesPlugin(config: YagrConfig): ReturnType<PlotLinesPlugin> {
         const plotLines: PlotLineConfig[] = [];
 
         /** Collecting plot lines from config axes for plotLines plugin */

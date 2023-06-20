@@ -14,7 +14,6 @@ interface UpdateOptions {
 }
 
 function setLocaleImpl(yagr: Yagr, locale: SupportedLocales | Record<string, string>) {
-    yagr.config.chart.appearance?.theme;
     yagr.utils.i18n = i18n(locale);
     yagr.plugins.legend?.redraw();
 }
