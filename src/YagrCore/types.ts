@@ -34,6 +34,11 @@ declare module 'uplot' {
 
         /** Get focus color */
         getFocusedColor: (y: Yagr, idx: number) => string;
+        /**
+         * Postprocessing function to change actual values (doesn't marks as _transformed series)
+         * Use at your own risk
+         **/
+        postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];
 
         /** Current focus state */
         _focus?: boolean | null;
