@@ -26,7 +26,7 @@ describe('yagr plugins', () => {
         });
 
         expect(u.plugins.dataRefs).toBeDefined();
-        expect(u.plugins.dataRefs.getRefs()).toEqual({
+        expect(u.plugins.dataRefs?.getRefs()).toEqual({
             y: {
                 avg: 2,
                 count: 3,

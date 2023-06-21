@@ -1,7 +1,8 @@
 import type Yagr from '../../';
-import UPlot, {DrawOrderKey} from 'uplot';
+import UPlot from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
+import {DrawOrderKey} from '../../utils/types';
 
 const MAX_X_SCALE_LINE_OFFSET = 5;
 const DRAW_MAP = {
@@ -35,7 +36,7 @@ export type PlotLinesPlugin = YagrPlugin<
 export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): ReturnType<PlotLinesPlugin> {
     let plotLines = [...plotLinesCfg];
 
-    const drawOrder = yagr.config.chart.appereance?.drawOrder;
+    const drawOrder = yagr.config.chart.appearance?.drawOrder;
 
     const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 

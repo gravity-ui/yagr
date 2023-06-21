@@ -30,7 +30,7 @@ export interface TooltipRenderOptions {
     scales: TooltipScale[];
     options: TooltipOptions;
     x: number;
-    pinned: boolean;
+    state: TooltipState;
     yagr: Yagr;
     defaultRender: TooltipOptions['render'];
 }
@@ -40,18 +40,25 @@ export type ValueFormatter = (value: string | number | null, precision?: number)
 export type PerScale<T> = T | {[scale: string]: T};
 export type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 
-export type TooltipHandler = (
-    elem: HTMLElement,
-    data: {
-        state: TooltipState;
-        actions: {
-            pin: (state: boolean) => void;
-            show: () => void;
-            hide: () => void;
-        };
-        yagr: Yagr;
-    },
-) => void;
+export interface TooltipData extends Omit<TooltipRenderOptions, 'state' | 'yagr' | 'defaultRender'> {
+    anchor: {
+        left: number;
+        top: number;
+    };
+}
+
+export interface TooltipHandlerData {
+    state: TooltipState;
+    actions: {
+        pin: (state: boolean) => void;
+        show: () => void;
+        hide: () => void;
+    };
+    data?: TooltipData;
+    yagr: Yagr;
+}
+
+export type TooltipHandler = (elem: HTMLElement, data: TooltipHandlerData) => void;
 
 export interface TooltipOptions {
     /** Predicate to show/hide tooltip on setCursor */
@@ -98,6 +105,8 @@ export interface TooltipOptions {
     title?: PerScale<TitleRenderer>;
     /** Titles of scales of scale sections */
     scales?: PerScale<string>;
+    /** Is tooltip virtual. Used for custom tooltips, which want to reuse common tooltip */
+    virtual?: boolean;
 }
 
 export type TooltipRow = {

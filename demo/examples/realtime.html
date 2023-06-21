@@ -24,118 +24,157 @@
         </div>
         <div>
             <button id="play">Play</button>
-            <span>15ms</span><input id="timex" type="range" min="15" max="200" value="50"><span>200ms</span> (now: <span id="timex-value">50</span>ms)
+            <span>15ms</span><input id="timex" type="range" min="15" max="200" value="50" /><span>200ms</span> (now:
+            <span id="timex-value">50</span>ms)
         </div>
         <div>
-            <br>
+            <br />
             <button id="magic">Magic!</button>
         </div>
-    <script>
-        const id1 = (x) => Math.sin(x) * 2;
-        const id2 = (x) => (Math.cos(x) / 2) * (x / 10000) % 3;
-        
-        const id3 = (x) => Math.random();
-        const id4 = (x) => -Math.random();
+        <script>
+            const id1 = (x) => Math.sin(x) * 2;
+            const id2 = (x) => ((Math.cos(x) / 2) * (x / 10000)) % 3;
 
-        const timeline = new Array(40).fill('').map((x, i) => i * 10000);
-        const yagr = new Yagr(chart1, {
-            timeline: timeline,
-            axes: {
-                y: {
-                    splitsCount: 5
+            const id3 = (x) => Math.random();
+            const id4 = (x) => -Math.random();
+
+            const timeline = new Array(40).fill('').map((x, i) => i * 10000);
+            const yagr = new Yagr(chart1, {
+                timeline: timeline,
+                axes: {
+                    y: {
+                        splitsCount: 5,
+                    },
+                    r: {
+                        splitsCount: 5,
+                        side: 'right',
+                    },
+                    t: {
+                        splitsCount: 5,
+                        side: 'right',
+                        show: false,
+                    },
                 },
-                r: {
-                    splitsCount: 5,
-                    side: 'right',
+                tooltip: {
+                    sum: true,
                 },
-                t: {
-                    splitsCount: 5,
-                    side: 'right',
-                    show: false,
-                }
-            },
-            series: [
-                {data: timeline.map(id1), color: 'red', id: '1', interpolation: 'smooth'},
-                {data: timeline.map(id2), color: 'green', id: '2', interpolation: 'left'},
-                
-                {data: timeline.map(id3), color: 'orange', id: '3', interpolation: 'linear', scale: 'r', type: 'area', show: true},
-                {data: timeline.map(id3), color: 'yellow', id: '4', interpolation: 'linear', scale: 'r', type: 'area', show: true},
+                series: [
+                    {data: timeline.map(id1), color: 'red', id: '1', interpolation: 'smooth'},
+                    {data: timeline.map(id2), color: 'green', id: '2', interpolation: 'left'},
 
-                {data: timeline.map(id4), color: 'lime', id: '5', interpolation: 'linear', scale: 't', type: 'area', show: true},
-                {data: timeline.map(id4), color: 'yellow', id: '6', interpolation: 'linear', scale: 't', type: 'area', show: true},
-            ],
-            scales: {
-                y: {
-                    min: -4,
-                    max: 4
+                    {
+                        data: timeline.map(id3),
+                        color: 'orange',
+                        id: '3',
+                        interpolation: 'linear',
+                        scale: 'r',
+                        type: 'area',
+                        show: true,
+                    },
+                    {
+                        data: timeline.map(id3),
+                        color: 'yellow',
+                        id: '4',
+                        interpolation: 'linear',
+                        scale: 'r',
+                        type: 'area',
+                        show: true,
+                    },
+
+                    {
+                        data: timeline.map(id4),
+                        color: 'lime',
+                        id: '5',
+                        interpolation: 'linear',
+                        scale: 't',
+                        type: 'area',
+                        show: true,
+                    },
+                    {
+                        data: timeline.map(id4),
+                        color: 'yellow',
+                        id: '6',
+                        interpolation: 'linear',
+                        scale: 't',
+                        type: 'area',
+                        show: true,
+                    },
+                ],
+                scales: {
+                    y: {
+                        min: -4,
+                        max: 4,
+                    },
+                    r: {
+                        stacking: true,
+                        min: 0,
+                        max: 8,
+                    },
+                    t: {
+                        stacking: true,
+                        min: -8,
+                        max: 0,
+                    },
                 },
-                r: {
-                    stacking: true,
-                    min: 0,
-                    max: 8,
-                },
-                t: {
-                    stacking: true,
-                    min: -8,
-                    max: 0,
-                }
-            }
-        });
-
-        let timer;
-        let timex = 50;
-
-        const play = () => {
-            clearInterval(timer);
-            timer = setInterval(() => {
-                const newTimelinePt = yagr.config.timeline[yagr.config.timeline.length - 1] + 10000;
-                yagr.setSeries([newTimelinePt], [
-                    {data: [id1(newTimelinePt)], id: '1'},
-                    {data: [id2(newTimelinePt)], id: '2'},
-
-                    {data: [id3(newTimelinePt)], id: '3'},
-                    {data: [id3(newTimelinePt)], id: '4'},
-
-                    {data: [id4(newTimelinePt)], id: '5'},
-                    {data: [id4(newTimelinePt)], id: '6'},
-
-                ], {
-                    incremental: true,
-                    splice: true,
-                });
-            }, timex);
-        };
-
-        window.play.onclick = () => {
-            if (timer) {
-                timer = clearInterval(timer)
-                window.play.innerText = 'Play';
-            } else {
-                play();
-                window.play.innerText = 'Stop';
-            }
-        }
-        window.timex.onchange = (e) => {
-            timex = Number(e.target.value);
-            window['timex-value'].innerText = timex
-            timer && play();
-        }
-
-        yagr.batch(() => {
-            yagr.setSeries('3', {show: false});
-            yagr.setSeries('4', {show: false});
-            yagr.setSeries('5', {show: false});
-            yagr.setSeries('6', {show: false});
-        });
-
-        window.magic.onclick = () => {
-            yagr.batch(() => {
-                yagr.setSeries('3', {show: true})
-                yagr.setSeries('4', {show: true})
-                yagr.setSeries('5', {show: true})
-                yagr.setSeries('6', {show: true})
             });
-        }
-    </script>
+
+            let timer;
+            let timex = 50;
+
+            const play = () => {
+                clearInterval(timer);
+                timer = setInterval(() => {
+                    const newTimelinePt = yagr.config.timeline[yagr.config.timeline.length - 1] + 10000;
+                    yagr.setSeries(
+                        [newTimelinePt],
+                        [
+                            {data: [id1(newTimelinePt)], id: '1'},
+                            {data: [id2(newTimelinePt)], id: '2'},
+
+                            {data: [id3(newTimelinePt)], id: '3'},
+                            {data: [id3(newTimelinePt)], id: '4'},
+
+                            {data: [id4(newTimelinePt)], id: '5'},
+                            {data: [id4(newTimelinePt)], id: '6'},
+                        ],
+                        {
+                            incremental: true,
+                            splice: true,
+                        },
+                    );
+                }, timex);
+            };
+
+            window.play.onclick = () => {
+                if (timer) {
+                    timer = clearInterval(timer);
+                    window.play.innerText = 'Play';
+                } else {
+                    play();
+                    window.play.innerText = 'Stop';
+                }
+            };
+            window.timex.onchange = (e) => {
+                timex = Number(e.target.value);
+                window['timex-value'].innerText = timex;
+                timer && play();
+            };
+
+            yagr.batch(() => {
+                yagr.setSeries('3', {show: false});
+                yagr.setSeries('4', {show: false});
+                yagr.setSeries('5', {show: false});
+                yagr.setSeries('6', {show: false});
+            });
+
+            window.magic.onclick = () => {
+                yagr.batch(() => {
+                    yagr.setSeries('3', {show: true});
+                    yagr.setSeries('4', {show: true});
+                    yagr.setSeries('5', {show: true});
+                    yagr.setSeries('6', {show: true});
+                });
+            };
+        </script>
     </body>
 </html>

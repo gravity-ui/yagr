@@ -45,7 +45,7 @@ Configuration for this example:
 
 ### General
 
--   `tooltip.enabled: boolean` - enable tooltip
+-   `tooltip.show: boolean` - enable tooltip
 -   `tooltip.maxLines: PerScale<number> = 10;` - maximum number of lines per scale in the tooltip
 -   `tooltip.sum: PerScale<boolean> = false` - show the `Sum` row in the tooltip
 -   `tooltip.sort?: PerScale<SortFn>` - row comparator

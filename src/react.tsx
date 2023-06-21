@@ -1,7 +1,8 @@
 import React from 'react';
 
 import Yagr, {YagrMeta} from './YagrCore';
-import {MinimalValidConfig} from './YagrCore/types';
+import type {MinimalValidConfig} from './YagrCore/types';
+import type {TooltipHandlerData} from './types';
 
 export interface YagrChartProps {
     /** Chart ID */
@@ -21,67 +22,101 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-export default class YagrChartComponent extends React.Component<YagrChartProps, never> {
-    chart?: Yagr;
-    charRef = React.createRef<HTMLDivElement>();
+interface YagrReactRef {
+    yagr: () => Yagr | undefined;
+    domElement: () => HTMLDivElement | null;
+}
 
-    componentDidMount() {
-        this.initChart();
-    }
+// eslint-disable-next-line prefer-arrow-callback
+export default React.forwardRef(function YagrReact(
+    {id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps,
+    ref,
+) {
+    const chartRef = React.useRef<HTMLDivElement>(null);
+    const chart = React.useRef<Yagr>();
 
-    componentDidUpdate() {
-        if (this.chart) {
-            this.chart.dispose();
+    React.useImperativeHandle(ref, () => ({
+        yagr: () => chart.current,
+        domElement: () => chartRef.current,
+    }));
+
+    const initChart = React.useCallback(() => {
+        if (chartRef.current) {
+            chart.current = new Yagr(chartRef.current, config);
+            config.hooks = config.hooks || {};
+            const hooks = config.hooks;
+
+            if (onChartLoad) {
+                const load = hooks.load || [];
+                load.push(({chart, meta}) => {
+                    onChartLoad(chart, meta);
+                });
+                hooks.load = load;
+            }
+
+            if (onSelect) {
+                const selection = hooks.onSelect || [];
+                selection.push(({from, to}) => onSelect(from, to));
+                hooks.onSelect = selection;
+            }
         }
+    }, []);
 
-        this.initChart();
-    }
+    React.useEffect(() => {
+        config && chart.current?.setConfig(config);
+    }, [config]);
 
-    componentWillUnmount() {
-        if (this.chart) {
-            this.chart.dispose();
-        }
-    }
+    React.useEffect(() => {
+        initChart();
+        return () => chart.current?.dispose();
+    }, []);
 
-    render() {
-        const {id, className} = this.props;
+    const onClick = React.useCallback(
+        (event: React.MouseEvent) => {
+            if (chart.current && (event.ctrlKey || event.metaKey) && event.shiftKey) {
+                const dataUrl = chart.current.toDataUrl().replace('image/png', 'image/octet-stream');
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = (debug?.filename || chart.current.id) + '.png';
+                a.click();
+            }
+        },
+        [id, chart],
+    );
 
-        return <div id={id} onClick={this.onClick} className={`yagr ${className || ''}`} ref={this.charRef} />;
-    }
+    return <div id={id} onClick={onClick} className={`yagr ${className}`} ref={chartRef} />;
+});
 
-    onClick = (event: React.MouseEvent) => {
-        if (this.chart && (event.ctrlKey || event.metaKey) && event.shiftKey) {
-            const dataUrl = this.chart.toDataUrl().replace('image/png', 'image/octet-stream');
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = (this.props.debug?.filename || this.chart.id) + '.png';
-            a.click();
-        }
-    };
+interface CustomTooltip {
+    onChange: (data: TooltipHandlerData) => void;
+}
 
-    initChart() {
-        if (!this.charRef.current) {
+export const useTooltipState = (
+    yagrRef: React.MutableRefObject<YagrReactRef>,
+    tooltipRef: React.RefObject<CustomTooltip>,
+) => {
+    React.useEffect(() => {
+        if (!yagrRef.current || !tooltipRef.current) {
             return;
         }
-        const {onChartLoad, config, onSelect} = this.props;
 
-        config.hooks = config.hooks || {};
-        const hooks = config.hooks;
+        const tooltip = tooltipRef.current;
+        const yagr = yagrRef.current.yagr();
 
-        if (onChartLoad) {
-            const load = hooks.load || [];
-            load.push(({chart, meta}) => {
-                onChartLoad(chart, meta);
-            });
-            hooks.load = load;
+        if (!yagr || !yagr?.plugins?.tooltip) {
+            return;
         }
 
-        if (onSelect) {
-            const selection = hooks.onSelect || [];
-            selection.push(({from, to}) => onSelect(from, to));
-            hooks.onSelect = selection;
-        }
+        yagr.plugins.tooltip.on('render', (_, data) => {
+            tooltip.onChange(data);
+        });
 
-        this.chart = new Yagr(this.charRef.current, this.props.config);
-    }
-}
+        yagr.plugins.tooltip.on('show', (_, data) => {
+            tooltip.onChange(data);
+        });
+
+        yagr.plugins.tooltip.on('show', (_, data) => {
+            tooltip.onChange(data);
+        });
+    }, [yagrRef.current]);
+};

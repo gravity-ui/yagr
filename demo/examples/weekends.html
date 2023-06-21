@@ -22,19 +22,19 @@
     <body>
         <div class="grid">
             <div id="chart1" class="container"></div>
-        </div>  
-    <script>
-        const y1 = new Yagr(chart1, {
-            timeline: new Array(500).fill().map((_, i) => i * 1500000),
-            series: [{data: new Array(500).fill().map((_, i) => Math.random() * 6), color: 'red'}],
-            scales: {y: {min: 0, max: 6}},
-            chart: {
-                appereance: {
-                    drawOrder: ['plotLines', 'series', 'axes']
-                }
-            },
-            plugins: [YagrWeekends()],
-        });
-    </script>
+        </div>
+        <script>
+            const y1 = new Yagr(chart1, {
+                timeline: new Array(500).fill().map((_, i) => i * 1500000),
+                series: [{data: new Array(500).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                scales: {y: {min: 0, max: 6}},
+                chart: {
+                    appearance: {
+                        drawOrder: ['plotLines', 'series', 'axes'],
+                    },
+                },
+                plugins: [YagrWeekends()],
+            });
+        </script>
     </body>
 </html>

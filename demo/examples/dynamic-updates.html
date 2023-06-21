@@ -1,0 +1,203 @@
+<html>
+    <head>
+        <title>Yagr:: Dynamic Updates</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 450px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+            <div class="container">
+                <div id="chart1"></div>
+                <button id="reset">Rest red line and timeline</button>
+                <button id="add">Add data</button>
+            </div>
+            <div class="container">
+                <div id="chart2"></div>
+                <button id="change">Change theme, locale, visible</button>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="container">
+                <div id="chart3"></div>
+                <button id="full">Full change</button>
+                <button id="incr">Incremental update</button>
+            </div>
+            <div class="container">
+                <div id="chart4"></div>
+                <button id="cfgL">Change appeareance</button>
+                <button id="cfgR">Set with data</button>
+            </div>
+        </div>
+
+        <script>
+            function randomColor() {
+                const r = Math.floor(Math.random() * 255);
+                const g = Math.floor(Math.random() * 255);
+                const b = Math.floor(Math.random() * 255);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            const yagr = new Yagr(chart1, {
+                title: {text: 'Change series'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                legend: {
+                    show: true,
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                ],
+            });
+
+            window.reset.onclick = () => {
+                yagr.batch((b) => {
+                    yagr.config.timeline = new Array(20).fill().map((_, i) => i * 10000);
+                    yagr.setSeries('1', {data: new Array(20).fill().map((_, i) => Math.random() * 6)});
+                });
+            };
+
+            window.add.onclick = () => {
+                const l = yagr.config.timeline[yagr.config.timeline.length - 1];
+                yagr.setSeries([l + 1000, l + 2000], [{id: '1', data: [Math.random() * 6, Math.random() * 6]}]);
+            };
+
+            const yagr2 = new Yagr(chart2, {
+                title: {text: 'Change multiple'},
+                chart: {
+                    series: {
+                        type: 'area',
+                    },
+                },
+                legend: {
+                    show: true,
+                },
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'lime', id: '3'},
+                ],
+            });
+
+            window.change.onclick = () => {
+                yagr2.batch((b) => {
+                    yagr2.setTheme('dark');
+                    yagr2.setLocale('ru');
+                    yagr2.setVisible('2', false);
+                });
+            };
+
+            const yagr3 = new Yagr(chart3, {
+                title: {text: 'Change dataset'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'cyan', id: '2'},
+                ],
+            });
+
+            window.full.onclick = () => {
+                const newTimeline = new Array(100).fill().map((_, i) => i * 1000);
+                const newSeries = new Array(5).fill('').map((i, idx) => {
+                    return {
+                        data: new Array(100).fill().map((_, i) => Math.random() * 15),
+                        color: randomColor(),
+                        id: idx.toString(),
+                    };
+                });
+
+                yagr3.batch((b) => {
+                    yagr3.setSeries(newTimeline, newSeries, {
+                        incremental: false,
+                    });
+                });
+            };
+
+            window.incr.onclick = () => {
+                const newTimeline = new Array(20)
+                    .fill()
+                    .map((_, i) => yagr3.config.timeline[yagr3.config.timeline.length - 1] + (i + 1) * 1000);
+
+                const newSeries = [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'cyan', id: '2'},
+                ];
+
+                yagr3.batch((b) => {
+                    yagr3.setSeries(newTimeline, newSeries, {
+                        incremental: true,
+                    });
+                });
+            };
+
+            const yagr4 = new Yagr(chart4, {
+                title: {text: 'Set Config'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                chart: {
+                    series: {
+                        type: 'area',
+                    },
+                },
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'cyan', id: '2'},
+                ],
+            });
+
+            window.cfgL.onclick = () => {
+                yagr4.setConfig({
+                    chart: {
+                        appearance: {
+                            theme: 'dark',
+                        },
+                        series: {
+                            type: 'line',
+                        },
+                    },
+                    scales: {
+                        y: {
+                            stacking: false,
+                        },
+                    },
+                });
+            };
+
+            window.cfgR.onclick = () => {
+                yagr4.setConfig({
+                    timeline: new Array(20).fill().map((_, i) => i * 10000),
+                    series: new Array(10).fill('').map((_, idx) => {
+                        return {
+                            data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                            color: randomColor(),
+                            id: idx.toString(),
+                        };
+                    }),
+                });
+            };
+        </script>
+    </body>
+</html>

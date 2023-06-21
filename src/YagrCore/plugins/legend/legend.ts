@@ -105,8 +105,6 @@ export default class Legend {
 
         /** Removing native uPlot legend */
         u.root.querySelector('.u-legend')?.remove();
-        /** Reimplementing appedning u.root to root */
-        this.yagr.root.appendChild(u.root);
 
         if (this.options.show) {
             this.prepareLegend();

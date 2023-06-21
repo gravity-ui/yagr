@@ -3,7 +3,7 @@
 import {Plugin, Series} from 'uplot';
 
 import {CursorOptions} from '../cursor/cursor';
-import placement from './placement';
+import placementFn from './placement';
 
 import Yagr from '../../index';
 import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
@@ -11,7 +11,15 @@ import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky, px} from '../../utils/common';
-import {TooltipOptions, TooltipRow, TrackingOptions, ValueFormatter, TooltipSection, TooltipHandler} from './types';
+import {
+    TooltipOptions,
+    TooltipRow,
+    TrackingOptions,
+    ValueFormatter,
+    TooltipSection,
+    TooltipHandler,
+    TooltipData,
+} from './types';
 
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
@@ -68,6 +76,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     className: 'yagr-tooltip_default',
     xOffset: TOOLTIP_X_OFFSET,
     yOffset: TOOLTIP_Y_OFFSET,
+    virtual: false,
 };
 
 export type TooltipPlugin = YagrPlugin<
@@ -89,6 +98,8 @@ export type TooltipPlugin = YagrPlugin<
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
+    let placement: typeof placementFn | (() => void) = placementFn;
+
     const pSettings = yagr.config.processing || {};
     const handlers: Record<TooltipAction, TooltipHandler[]> = {
         init: [],
@@ -137,8 +148,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     let over: HTMLDivElement;
     let bLeft: number;
     let bTop: number;
-    let bound: HTMLElement;
 
+    const bound = opts.boundClassName ? document.querySelector(opts.boundClassName) || document.body : document.body;
     const tOverlay = document.createElement('div');
 
     tOverlay.id = `${yagr.id}_tooltip`;
@@ -146,14 +157,14 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     tOverlay.style.display = 'none';
 
     const state: TooltipState = {
-        mounted: true,
+        mounted: false,
         pinned: false,
         visible: false,
         clickStartedX: null,
         focusedSeries: null,
     };
 
-    const emit = (action: TooltipAction) => {
+    const emit = (action: TooltipAction, data?: TooltipData) => {
         handlers[action].forEach((handler) => {
             handler(tOverlay, {
                 state,
@@ -162,15 +173,21 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                     show,
                     hide,
                 },
+                data,
                 yagr,
             });
         });
     };
 
     emit('init');
-    document.body.appendChild(tOverlay);
-    state.mounted = true;
-    emit('mount');
+
+    if (opts.virtual) {
+        placement = () => {};
+    } else {
+        bound.appendChild(tOverlay);
+        state.mounted = true;
+        emit('mount');
+    }
 
     function show() {
         const shouldEmit = !state.visible;
@@ -225,6 +242,13 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     };
 
     function pin(pinState: boolean, position?: {x: number; y: number}) {
+        state.pinned = pinState;
+        yagr.plugins.cursor?.pin(pinState);
+
+        if (opts.virtual) {
+            return emit(pinState ? 'pin' : 'unpin');
+        }
+
         if (position) {
             placement(
                 tOverlay,
@@ -242,9 +266,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         }
 
         const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
-        state.pinned = pinState;
-
-        yagr.plugins.cursor?.pin(pinState);
 
         if (pinState) {
             if (!state.visible) {
@@ -444,7 +465,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         };
 
         renderTooltipCloses = () => {
-            tOverlay.innerHTML = opts.render({
+            const renderData = {
                 scales: Object.entries(sections).map(([scale, sec]) => {
                     return {
                         scale,
@@ -454,18 +475,24 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 }),
                 options: opts,
                 x,
-                pinned: state.pinned,
-                yagr,
-                defaultRender: DEFAULT_TOOLTIP_OPTIONS.render,
-            });
+            };
 
-            placement(tOverlay, anchor, 'right', {
-                bound,
-                xOffset: opts.xOffset,
-                yOffset: opts.yOffset,
-            });
+            if (!opts.virtual) {
+                tOverlay.innerHTML = opts.render({
+                    ...renderData,
+                    state,
+                    yagr,
+                    defaultRender: DEFAULT_TOOLTIP_OPTIONS.render,
+                });
 
-            emit('render');
+                placement(tOverlay, anchor, 'right', {
+                    bound,
+                    xOffset: opts.xOffset,
+                    yOffset: opts.yOffset,
+                });
+            }
+
+            emit('render', {...renderData, anchor});
         };
 
         if (state.pinned) {
@@ -495,10 +522,6 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
                 bLeft = bbox.left;
                 bTop = bbox.top;
-
-                bound = opts.boundClassName
-                    ? document.querySelector(opts.boundClassName) || document.body
-                    : document.body;
             },
 
             setCursor: (u) => {

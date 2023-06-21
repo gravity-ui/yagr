@@ -405,3 +405,62 @@ export const html = (
     }
     return el;
 };
+
+export function containsOnly(obj: Record<string, unknown>, keys: string[]) {
+    return Object.keys(obj).every((key) => keys.includes(key));
+}
+
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...0[]];
+type Join<K, P> = K extends string | number
+    ? P extends string | number
+        ? `${K}${'' extends P ? '' : '.'}${P}`
+        : never
+    : never;
+export type Paths<T, D extends number = 10> = [D] extends [never]
+    ? never
+    : T extends object
+    ? {
+          [K in keyof T]-?: K extends string | number ? `${K}` | Join<K, Paths<T[K], Prev[D]>> : never;
+      }[keyof T]
+    : '';
+
+export function get(obj: object, key: string) {
+    return key.split('.').reduce((acc, key) => Object.getOwnPropertyDescriptor(acc, key)?.value ?? {}, obj);
+}
+
+export function deepIsEqual(a: unknown, b: unknown): boolean {
+    if (typeof a !== typeof b) {
+        return false;
+    }
+
+    if (typeof a === 'function' || typeof b === 'function') {
+        a = (a as Function).toString();
+        b = (b as Function).toString();
+    }
+
+    if (typeof a !== 'object' || a === null || b === null || a === undefined || b === undefined) {
+        return a === b;
+    }
+
+    const aObject = a as Record<string, unknown>;
+    const bObject = b as Record<string, unknown>;
+
+    const aKeys = Object.keys(aObject);
+    const bKeys = Object.keys(bObject);
+
+    if (aKeys.length !== bKeys.length) {
+        return false;
+    }
+
+    for (const key of aKeys) {
+        if (!bObject.hasOwnProperty(key)) {
+            return false;
+        }
+
+        if (!deepIsEqual(aObject[key], bObject[key])) {
+            return false;
+        }
+    }
+
+    return true;
+}

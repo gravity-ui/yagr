@@ -2,58 +2,59 @@
 
 ## [2.2.6](https://github.com/gravity-ui/yagr/compare/v2.2.5...v2.2.6) (2023-06-19)
 
-
 ### Bug Fixes
 
-* fixed legend rendering ([176a25d](https://github.com/gravity-ui/yagr/commit/176a25d8ba0c273c34b468b56656dfe1edc04fea))
+-   fixed legend rendering ([176a25d](https://github.com/gravity-ui/yagr/commit/176a25d8ba0c273c34b468b56656dfe1edc04fea))
 
 ## [2.2.5](https://github.com/gravity-ui/yagr/compare/v2.2.4...v2.2.5) (2023-06-02)
 
+> > > > > > > main
+
+## Examples
+
+-   Added React + Custom React tooltip examples
+-   Added `setScales`, dynamic updates and hooks examples
+
+## [2.2.5](https://github.com/gravity-ui/yagr/compare/v2.2.4...v2.2.5) (2023-06-02)
 
 ### Bug Fixes
 
-* **YagrCore:** fix resize handling ([#57](https://github.com/gravity-ui/yagr/issues/57)) ([3ae9b43](https://github.com/gravity-ui/yagr/commit/3ae9b436324fd1ec7a9585f48a82d436a7fb468c))
+-   **YagrCore:** fix resize handling ([#57](https://github.com/gravity-ui/yagr/issues/57)) ([3ae9b43](https://github.com/gravity-ui/yagr/commit/3ae9b436324fd1ec7a9585f48a82d436a7fb468c))
 
 ## [2.2.4](https://github.com/gravity-ui/yagr/compare/v2.2.3...v2.2.4) (2023-04-13)
 
-
 ### Bug Fixes
 
-* change background color in case of dark-hc theme ([#53](https://github.com/gravity-ui/yagr/issues/53)) ([a647216](https://github.com/gravity-ui/yagr/commit/a647216f0c527b6bfdb9a0cfc630bd07acea3302))
+-   change background color in case of dark-hc theme ([#53](https://github.com/gravity-ui/yagr/issues/53)) ([a647216](https://github.com/gravity-ui/yagr/commit/a647216f0c527b6bfdb9a0cfc630bd07acea3302))
 
 ## [2.2.3](https://github.com/gravity-ui/yagr/compare/v2.2.2...v2.2.3) (2022-12-13)
 
-
 ### Bug Fixes
 
-* columns render options ([#48](https://github.com/gravity-ui/yagr/issues/48)) ([034d652](https://github.com/gravity-ui/yagr/commit/034d65279595b8971a6fb7c03a3e5c9619127123))
+-   columns render options ([#48](https://github.com/gravity-ui/yagr/issues/48)) ([034d652](https://github.com/gravity-ui/yagr/commit/034d65279595b8971a6fb7c03a3e5c9619127123))
 
 ## [2.2.2](https://github.com/gravity-ui/yagr/compare/v2.2.1...v2.2.2) (2022-12-12)
 
-
 ### Bug Fixes
 
-* legend show and hide all button ([da98045](https://github.com/gravity-ui/yagr/commit/da98045ee8f98ab3b3633deff0425c89ab1c6699))
+-   legend show and hide all button ([da98045](https://github.com/gravity-ui/yagr/commit/da98045ee8f98ab3b3633deff0425c89ab1c6699))
 
 ## [2.2.1](https://github.com/gravity-ui/yagr/compare/v2.2.0...v2.2.1) (2022-12-09)
 
-
 ### Bug Fixes
 
-* build dist with new release flow ([8da1b5d](https://github.com/gravity-ui/yagr/commit/8da1b5d0710d7ea3378fc6a5a6374a3b7a1d0ae2))
+-   build dist with new release flow ([8da1b5d](https://github.com/gravity-ui/yagr/commit/8da1b5d0710d7ea3378fc6a5a6374a3b7a1d0ae2))
 
 ## [2.2.0](https://github.com/gravity-ui/yagr/compare/v2.1.1...v2.2.0) (2022-12-09)
 
-
 ### Features
 
-* move yagr to gravity-ui organization ([24b3c27](https://github.com/gravity-ui/yagr/commit/24b3c27ac9902bab824b2897150e246c7c3541bf))
-* test release flow ([#34](https://github.com/gravity-ui/yagr/issues/34)) ([97baa13](https://github.com/gravity-ui/yagr/commit/97baa1336df66982b83250b0e1d9a578db1ddc8f))
-
+-   move yagr to gravity-ui organization ([24b3c27](https://github.com/gravity-ui/yagr/commit/24b3c27ac9902bab824b2897150e246c7c3541bf))
+-   test release flow ([#34](https://github.com/gravity-ui/yagr/issues/34)) ([97baa13](https://github.com/gravity-ui/yagr/commit/97baa1336df66982b83250b0e1d9a578db1ddc8f))
 
 ### Bug Fixes
 
-* try fix release flow ([516b329](https://github.com/gravity-ui/yagr/commit/516b32976c4b352bd361515905f444997932555e))
+-   try fix release flow ([516b329](https://github.com/gravity-ui/yagr/commit/516b32976c4b352bd361515905f444997932555e))
 
 ### 2.1.0 (08-12-2022)
 

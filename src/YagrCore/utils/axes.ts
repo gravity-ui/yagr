@@ -1,28 +1,30 @@
-import uPlot, {Axis} from 'uplot';
+import uPlot from 'uplot';
+import type {Axis} from 'uplot';
 import * as defaults from '../defaults';
 import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
 import {getUnitSuffix, toFixed} from './common';
 import {PlotLinesPlugin} from '../plugins/plotLines/plotLines';
+import {Axis as TypedAxis} from './types';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
-    right: Axis.Side.Right,
-    top: Axis.Side.Top,
-    bottom: Axis.Side.Bottom,
-    left: Axis.Side.Left,
+    right: TypedAxis.Side.Right,
+    top: TypedAxis.Side.Top,
+    bottom: TypedAxis.Side.Bottom,
+    left: TypedAxis.Side.Left,
 };
 
 const AXIS_SIDE_TO_ALIGN = {
-    left: Axis.Align.Right,
-    right: Axis.Align.Left,
+    left: TypedAxis.Align.Right,
+    right: TypedAxis.Align.Left,
     top: undefined,
     bottom: undefined,
 };
 
 export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align']) => {
     return {
-        side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : Axis.Side.Left,
+        side: side ? YAGR_AXIS_TO_UPLOT_AXIS[side] : TypedAxis.Side.Left,
         align: align || (side ? AXIS_SIDE_TO_ALIGN[side] : undefined),
     };
 };

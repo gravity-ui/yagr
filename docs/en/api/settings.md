@@ -44,11 +44,11 @@ Series configurations depends on series type. Particular series options see in [
 
 -   `type: 'column'`
 
-### Appereance configurations
+### Appearance configurations
 
--   `chart.appereance.locale?: 'ru' | 'en'` - Locale. See [more about customizing I18N](./i18n.md).
--   `chart.appereance.theme?: 'light' | 'dark'` - Yagr theme, `'light'` by default. See [more about theming](./theme.md)
--   `chart.appereance.drawOrder?: 'plotLines' | 'axes' | 'series'` - defines order in which will be drawn axes, series, plot lines and bands. By default, `['series', 'axes', 'plotLines']`, which means that axes will be over series but under plotLines.
+-   `chart.appearance.locale?: 'ru' | 'en'` - Locale. See [more about customizing I18N](./i18n.md).
+-   `chart.appearance.theme?: 'light' | 'dark'` - Yagr theme, `'light'` by default. See [more about theming](./theme.md)
+-   `chart.appearance.drawOrder?: 'plotLines' | 'axes' | 'series'` - defines order in which will be drawn axes, series, plot lines and bands. By default, `['series', 'axes', 'plotLines']`, which means that axes will be over series but under plotLines.
 
 ### Selection configurations
 

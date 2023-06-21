@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import UPlot, {Range, Scale as UScale} from 'uplot';
+import UPlot, {Range} from 'uplot';
 import {YagrConfig, Scale} from '../types';
 import {
     DEFAULT_MAX_TICKS,
@@ -9,6 +9,7 @@ import {
     DEFAULT_X_SCALE,
 } from '../defaults';
 import type Yagr from '../index';
+import {Scale as YScale} from './types';
 
 type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
 
@@ -188,7 +189,7 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         const isLogScale = scaleConfig.type === 'logarithmic';
 
         if (isLogScale) {
-            scale.distr = UScale.Distr.Logarithmic;
+            scale.distr = YScale.Distr.Logarithmic;
             scale.range = getScaleRange(scaleConfig, config);
 
             return;

@@ -71,10 +71,15 @@
         white-space: nowrap;
     }
 
+
     &__idx {
         width: 25px;
         white-space: nowrap;
         max-width: 25px;
         overflow: hidden;
+    }
+
+    &__tf {
+        margin-left: 4px;
     }
 }

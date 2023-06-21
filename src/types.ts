@@ -8,5 +8,5 @@ import type YC from './react';
 import type {YagrChartProps as YCProps} from './react';
 
 export type Yagr = Y;
-export type YagrComponent = YC;
+export type YagrComponent = typeof YC;
 export type YagrChartProps = YCProps;
