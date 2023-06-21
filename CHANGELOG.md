@@ -1,5 +1,16 @@
 ### master
 
+## [3.0.0](https://github.com/gravity-ui/yagr/compare/v2.2.6...v3.0.0) (2023-06-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump version
+
+### Features
+
+* bump version ([828b37d](https://github.com/gravity-ui/yagr/commit/828b37de22e3f4819f131170313c40e4ddd4bb54))
+
 ## [2.2.6](https://github.com/gravity-ui/yagr/compare/v2.2.5...v2.2.6) (2023-06-19)
 
 ### Bug Fixes
