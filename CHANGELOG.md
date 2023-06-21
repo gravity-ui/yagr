@@ -1,35 +1,14 @@
 ### master
 
-### Configuratoin
+## [2.2.6](https://github.com/gravity-ui/yagr/compare/v2.2.5...v2.2.6) (2023-06-19)
 
--   Fixed typo `appereance` -> `appearance` in `YagrConfig['chart']`
+### Bug Fixes
 
-### Refactor
+-   fixed legend rendering ([176a25d](https://github.com/gravity-ui/yagr/commit/176a25d8ba0c273c34b468b56656dfe1edc04fea))
 
--   Refactored `YagrCore` class to use mixins.
--   Refactored batch mechanism to support multiple Yagr change calls in single batch
--   Refactored Yagr React component to support `setConfig` instead of re-initialization of Yagr instance on every config update
--   Got rid of Rollup, using ESBuild instead
+## [2.2.5](https://github.com/gravity-ui/yagr/compare/v2.2.4...v2.2.5) (2023-06-02)
 
-### Scales
-
--   Fixed `setVisible` method for stacked areas
-
-### Methods
-
--   Removed workaround to fix [uPlot issue](https://github.com/leeoniya/uPlot/issues/680) in `setVisible` method
--   Added `setScales` method
--   Added generic `setConfig` method. Currently in expriemental mode
-
-### Tooltip
-
--   Fixed tooltip render initial position (now it renders in `boundClassName` element)
--   Added virtual tooltip mode
--   Added useCustomTooltip hook for React
-
-### Legend
-
--   Fixed legend series mark background-color
+> > > > > > > main
 
 ## Examples
 
