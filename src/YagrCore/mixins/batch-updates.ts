@@ -74,8 +74,6 @@ export class BatchMixin<T extends MinimalValidConfig> {
      * @description Full update of chart. Used when config is changed totally.
      */
     protected fullUpdate(this: Yagr<T>) {
-        this.dispose();
-
         this.inStage('config', () => {
             this._batch = {active: false, fns: []};
             this.createUplotOptions();
@@ -85,6 +83,7 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 this.transformSeries();
             })
             .inStage('uplot', () => {
+                this.uplot.destroy();
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.init();
             })

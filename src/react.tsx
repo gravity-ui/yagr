@@ -22,7 +22,7 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-interface YagrReactRef {
+export interface YagrReactRef {
     yagr: () => Yagr | undefined;
     domElement: () => HTMLDivElement | null;
 }
@@ -30,7 +30,7 @@ interface YagrReactRef {
 // eslint-disable-next-line prefer-arrow-callback
 export default React.forwardRef(function YagrReact(
     {id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps,
-    ref,
+    ref: YagrReactRef,
 ) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const chart = React.useRef<Yagr>();
@@ -101,7 +101,7 @@ export const useTooltipState = (
         }
 
         const tooltip = tooltipRef.current;
-        const yagr = yagrRef.current.yagr();
+        const yagr: Yagr = yagrRef.current.yagr();
 
         if (!yagr || !yagr?.plugins?.tooltip) {
             return;

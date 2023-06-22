@@ -4,7 +4,7 @@ const cfg: Config.InitialOptions = {
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
     collectCoverage: true,
-    collectCoverageFrom: ['./src/**/*.{js,ts,tsx}'],
+    collectCoverageFrom: ['./src/**/*.{js,ts}'],
     coverageReporters: ['json', 'html'],
     coverageDirectory: './coverage',
     setupFiles: ['<rootDir>/tests/setup.js'],

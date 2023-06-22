@@ -220,6 +220,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     dispose() {
         this.resizeOb && this.resizeOb.unobserve(this.root);
         this.unsubscribe();
+        this.plugins?.tooltip?.dispose();
         this.uplot.destroy();
         this.execHooks(this.config.hooks.dispose, {chart: this});
     }

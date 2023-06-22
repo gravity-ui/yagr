@@ -1,6 +1,6 @@
 /* eslint-disable complexity, no-nested-ternary */
 
-import {Plugin, Series} from 'uplot';
+import uPlot, {Series} from 'uplot';
 
 import {CursorOptions} from '../cursor/cursor';
 import placementFn from './placement';
@@ -89,19 +89,15 @@ export type TooltipPlugin = YagrPlugin<
         on: (event: TooltipAction, handler: TooltipHandler) => void;
         off: (event: TooltipAction, handler: TooltipHandler) => void;
         display: (props: {left: number; top: number; idx: number}) => void;
+        tooltip: YagrTooltip;
+        dispose: () => void;
+        reInit: (u: uPlot) => void;
     },
     [Partial<TooltipOptions>]
 >;
 
-/*
- * Tooltip plugin constructor.
- * Every charts has it's own tooltip plugin instance
- */
-function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
-    let placement: typeof placementFn | (() => void) = placementFn;
-
-    const pSettings = yagr.config.processing || {};
-    const handlers: Record<TooltipAction, TooltipHandler[]> = {
+class YagrTooltip {
+    handlers: Record<TooltipAction, TooltipHandler[]> = {
         init: [],
         mount: [],
         show: [],
@@ -112,219 +108,172 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         destroy: [],
     };
 
-    /* Tooltip renderer, allows to deffer rendering to avoid jerky renderings when tooltip pinned */
-    let renderTooltipCloses = () => {};
+    private placement: Function = placementFn;
+    private renderTooltipCloses = () => {};
 
-    const defaultTooltipValueFormatter = (n: string | number | null, precision?: number) => {
-        if (typeof n === 'string') {
-            if (pSettings.nullValues && pSettings.nullValues.hasOwnProperty(n)) {
-                return pSettings.nullValues[n] as string;
-            }
+    private tOverlay: HTMLDivElement;
+    private bound: HTMLElement;
 
-            return '-';
+    yagr: Yagr;
+    opts: TooltipOptions;
+    state: TooltipState;
+    over: HTMLDivElement;
+
+    private bLeft: number;
+    private bTop: number;
+
+    constructor(yagr: Yagr, options: Partial<TooltipOptions> = {}) {
+        this.yagr = yagr;
+        this.over = yagr?.uplot?.over;
+        this.opts = {
+            ...DEFAULT_TOOLTIP_OPTIONS,
+            tracking: yagr.config.chart.series?.type === 'area' ? 'area' : 'sticky',
+            value: this.defaultTooltipValueFormatter,
+            ...options,
+        };
+
+        this.bound = this.opts.boundClassName
+            ? document.querySelector(this.opts.boundClassName) || document.body
+            : document.body;
+        this.tOverlay = document.createElement('div');
+
+        this.tOverlay.id = `${yagr.id}_tooltip`;
+        this.tOverlay.className = `yagr-tooltip ${this.opts.className || ''}`;
+        this.tOverlay.style.display = 'none';
+
+        this.state = {
+            mounted: false,
+            pinned: false,
+            visible: false,
+            clickStartedX: null,
+            focusedSeries: null,
+        };
+
+        this.bLeft = 0;
+        this.bTop = 0;
+
+        if (this.opts.virtual) {
+            this.placement = () => {};
+        } else {
+            this.bound.appendChild(this.tOverlay);
+            this.state.mounted = true;
+            this.emit('mount');
         }
+    }
 
-        if (typeof n === 'number') {
-            return n.toFixed(
-                // eslint-disable-next-line no-nested-ternary
-                typeof precision === 'number'
-                    ? precision
-                    : typeof options.precision === 'number'
-                    ? options.precision
-                    : 2,
-            );
-        }
-
-        return '-';
-    };
-
-    const opts: TooltipOptions = {
-        ...DEFAULT_TOOLTIP_OPTIONS,
-        tracking: yagr.config.chart.series?.type === 'area' ? 'area' : 'sticky',
-        value: defaultTooltipValueFormatter,
-        ...options,
-    };
-
-    let over: HTMLDivElement;
-    let bLeft: number;
-    let bTop: number;
-
-    const bound = opts.boundClassName ? document.querySelector(opts.boundClassName) || document.body : document.body;
-    const tOverlay = document.createElement('div');
-
-    tOverlay.id = `${yagr.id}_tooltip`;
-    tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
-    tOverlay.style.display = 'none';
-
-    const state: TooltipState = {
-        mounted: false,
-        pinned: false,
-        visible: false,
-        clickStartedX: null,
-        focusedSeries: null,
-    };
-
-    const emit = (action: TooltipAction, data?: TooltipData) => {
-        handlers[action].forEach((handler) => {
-            handler(tOverlay, {
-                state,
+    emit = (action: TooltipAction, data?: TooltipData) => {
+        this.handlers[action].forEach((handler) => {
+            handler(this.tOverlay, {
+                state: this.state,
                 actions: {
-                    pin,
-                    show,
-                    hide,
+                    pin: this.pin,
+                    show: this.show,
+                    hide: this.hide,
                 },
                 data,
-                yagr,
+                yagr: this.yagr,
             });
         });
     };
 
-    emit('init');
-
-    if (opts.virtual) {
-        placement = () => {};
-    } else {
-        bound.appendChild(tOverlay);
-        state.mounted = true;
-        emit('mount');
-    }
-
-    function show() {
-        const shouldEmit = !state.visible;
-        state.visible = true;
-        tOverlay.style.display = 'block';
-        shouldEmit && emit('show');
-    }
-
-    function hide() {
-        const shouldEmit = state.visible;
-        state.visible = false;
-        tOverlay.style.display = 'none';
-        emit('hide');
-        shouldEmit && emit('show');
-    }
-
-    const checkFocus = (event: MouseEvent) => {
-        const target = event.target as HTMLElement | null;
-        let serieIdx: string | undefined;
-
-        if (target && tOverlay.contains(target) && target.classList.contains('yagr-tooltip__item')) {
-            serieIdx = target.dataset['series'];
-        }
-
-        const serie = serieIdx ? yagr.uplot.series[Number(serieIdx)] : null;
-
-        if (serieIdx && serie) {
-            state.focusedSeries = serieIdx;
-            yagr.setFocus(serie.id, true);
-        } else if (state.focusedSeries) {
-            state.focusedSeries = null;
-            yagr.setFocus(null, true);
-        }
+    show = () => {
+        const shouldEmit = !this.state.visible;
+        this.state.visible = true;
+        this.tOverlay.style.display = 'block';
+        shouldEmit && this.emit('show');
     };
 
-    const onMouseDown = (event: MouseEvent) => {
-        state.clickStartedX = event.clientX;
+    hide = () => {
+        const shouldEmit = this.state.visible;
+        this.state.visible = false;
+        this.tOverlay.style.display = 'none';
+        this.emit('hide');
+        shouldEmit && this.emit('show');
     };
 
-    const detectClickOutside = (event: MouseEvent) => {
-        const target = event.target;
+    pin = (pinState: boolean, position?: {x: number; y: number}) => {
+        this.state.pinned = pinState;
+        this.yagr.plugins.cursor?.pin(pinState);
 
-        if (target instanceof Element) {
-            const isClickInsideTooltip = target && tOverlay.contains(target);
-            const isClickOnUplotOver = target && over.contains(target);
-
-            if (!isClickInsideTooltip && !isClickOnUplotOver) {
-                pin(false);
-                hide();
-            }
-        }
-    };
-
-    function pin(pinState: boolean, position?: {x: number; y: number}) {
-        state.pinned = pinState;
-        yagr.plugins.cursor?.pin(pinState);
-
-        if (opts.virtual) {
-            return emit(pinState ? 'pin' : 'unpin');
+        if (this.opts.virtual) {
+            return this.emit(pinState ? 'pin' : 'unpin');
         }
 
         if (position) {
-            placement(
-                tOverlay,
+            this.placement(
+                this.tOverlay,
                 {
-                    left: position.x + bLeft,
-                    top: bTop + position.y - (opts.yOffset || 0),
+                    left: position.x + this.bLeft,
+                    top: this.bTop + position.y - (this.opts.yOffset || 0),
                 },
                 'right',
                 {
-                    bound,
-                    xOffset: opts.xOffset,
-                    yOffset: opts.yOffset,
+                    bound: this.bound,
+                    xOffset: this.opts.xOffset,
+                    yOffset: this.opts.yOffset,
                 },
             );
         }
 
-        const list = tOverlay.querySelector('._tooltip-list') as HTMLElement;
+        const list = this.tOverlay.querySelector('._tooltip-list') as HTMLElement;
 
         if (pinState) {
-            if (!state.visible) {
-                show();
+            if (!this.state.visible) {
+                this.show();
             }
 
-            tOverlay.classList.add('yagr-tooltip_pinned');
+            this.tOverlay.classList.add('yagr-tooltip_pinned');
             if (list && list?.clientHeight) {
                 list.style.height = px(list.clientHeight);
             }
 
-            if (opts.render === renderTooltip) {
-                document.addEventListener('mousemove', checkFocus);
-                document.addEventListener('mousedown', detectClickOutside);
+            if (this.opts.render === renderTooltip) {
+                document.addEventListener('mousemove', this.checkFocus);
+                document.addEventListener('mousedown', this.detectClickOutside);
             }
         } else {
-            tOverlay.classList.remove('yagr-tooltip_pinned');
+            this.tOverlay.classList.remove('yagr-tooltip_pinned');
 
-            if (opts.render === renderTooltip) {
-                document.removeEventListener('mousemove', checkFocus);
-                document.removeEventListener('mousedown', detectClickOutside);
+            if (this.opts.render === renderTooltip) {
+                document.removeEventListener('mousemove', this.checkFocus);
+                document.removeEventListener('mousedown', this.detectClickOutside);
             }
         }
 
-        emit(pinState ? 'pin' : 'unpin');
-    }
+        this.emit(pinState ? 'pin' : 'unpin');
+    };
 
-    const onMouseUp = (event: MouseEvent) => {
-        if (opts.pinable && state.clickStartedX && state.clickStartedX === event.clientX) {
-            pin(!state.pinned);
-            show();
-            renderTooltipCloses();
+    checkFocus = (event: MouseEvent) => {
+        const target = event.target as HTMLElement | null;
+        let serieIdx: string | undefined;
+
+        if (target && this.tOverlay.contains(target) && target.classList.contains('yagr-tooltip__item')) {
+            serieIdx = target.dataset['series'];
+        }
+
+        const serie = serieIdx ? this.yagr.uplot.series[Number(serieIdx)] : null;
+
+        if (serieIdx && serie) {
+            this.state.focusedSeries = serieIdx;
+            this.yagr.setFocus(serie.id, true);
+        } else if (this.state.focusedSeries) {
+            this.state.focusedSeries = null;
+            this.yagr.setFocus(null, true);
         }
     };
 
-    const onMouseEnter = () => {
-        show();
-    };
-
-    const onMouseLeave = () => {
-        if (!state.pinned) {
-            hide();
-        }
-    };
-
-    const interpolation = pSettings.interpolation;
-    const stripValue = interpolation ? interpolation.value : undefined;
-
-    function calcTooltip(props: {left: number; top: number; idx: number}) {
-        const u = yagr.uplot;
+    render = (props: {left: number; top: number; idx: number}) => {
+        const u = this.yagr.uplot;
         const {left, top, idx} = props;
+        const {opts, state} = this;
 
-        if (opts.show && typeof opts.show === 'function' && opts.show(yagr) === false) {
-            hide();
+        if (opts.show && typeof opts.show === 'function' && opts.show(this.yagr) === false) {
+            this.hide();
             return;
         }
 
         if ((left < 0 || top < 0) && !state.pinned) {
-            hide();
+            this.hide();
         }
 
         const {data} = u;
@@ -371,7 +320,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 const seriesData = u.data[seriesIdx] as DataSeries;
                 const serie = u.series[seriesIdx];
 
-                let value = findValue(yagr.config.cursor, seriesData, serie, idx, interpolation);
+                let value = findValue(this.yagr.config.cursor, seriesData, serie, idx, this.interpolation);
                 let dValue = value;
 
                 if (typeof value === 'string') {
@@ -385,7 +334,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
                 }
 
                 const realY = seriesData[idx];
-                const yValue = serie.$c && serie.$c[idx] === stripValue ? value : realY;
+                const yValue = serie.$c && serie.$c[idx] === this.stripValue ? value : realY;
 
                 if ((value === null && opts.hideNoData) || serie.showInTooltip === false) {
                     continue;
@@ -448,23 +397,23 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
 
         if (hasOneRow) {
-            onMouseEnter();
+            this.onMouseEnter();
         } else {
-            onMouseLeave();
+            this.onMouseLeave();
             return;
         }
 
-        const bbox = over.getBoundingClientRect();
+        const bbox = this.over.getBoundingClientRect();
 
-        bLeft = bbox.left;
-        bTop = bbox.top;
+        this.bLeft = bbox.left;
+        this.bTop = bbox.top;
 
         const anchor = {
-            left: left + bLeft,
-            top: bTop + top - (opts.yOffset || 0),
+            left: left + this.bLeft,
+            top: this.bTop + top - (opts.yOffset || 0),
         };
 
-        renderTooltipCloses = () => {
+        this.renderTooltipCloses = () => {
             const renderData = {
                 scales: Object.entries(sections).map(([scale, sec]) => {
                     return {
@@ -478,93 +427,186 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
             };
 
             if (!opts.virtual) {
-                tOverlay.innerHTML = opts.render({
+                this.tOverlay.innerHTML = opts.render({
                     ...renderData,
                     state,
-                    yagr,
+                    yagr: this.yagr,
                     defaultRender: DEFAULT_TOOLTIP_OPTIONS.render,
                 });
 
-                placement(tOverlay, anchor, 'right', {
-                    bound,
+                this.placement(this.tOverlay, anchor, 'right', {
+                    bound: this.bound,
                     xOffset: opts.xOffset,
                     yOffset: opts.yOffset,
                 });
             }
 
-            emit('render', {...renderData, anchor});
+            this.emit('render', {...renderData, anchor});
         };
 
         if (state.pinned) {
             return;
         }
 
-        renderTooltipCloses();
-    }
-
-    const uPlotPlugin: Plugin = {
-        hooks: {
-            init: (u) => {
-                over = u.root.querySelector('.u-over') as HTMLDivElement;
-
-                over.addEventListener('mousedown', onMouseDown);
-                over.addEventListener('mouseup', onMouseUp);
-                over.addEventListener('mouseenter', onMouseEnter);
-                over.addEventListener('mouseleave', onMouseLeave);
-            },
-            setData: (u) => {
-                if (!u.data.every(Array.isArray)) {
-                    throw new Error('Tooltip plugin applied to unconvient datalines: expected number[][]');
-                }
-            },
-            setSize: () => {
-                const bbox = over.getBoundingClientRect();
-
-                bLeft = bbox.left;
-                bTop = bbox.top;
-            },
-
-            setCursor: (u) => {
-                calcTooltip(u.cursor as Parameters<typeof calcTooltip>[0]);
-            },
-            destroy: () => {
-                /** Free overlay listeners */
-                over.removeEventListener('mousedown', onMouseDown);
-                over.removeEventListener('mouseup', onMouseUp);
-                over.removeEventListener('mouseenter', onMouseEnter);
-                over.removeEventListener('mouseleave', onMouseLeave);
-
-                /** Removing tooltip on destroy */
-                tOverlay.remove();
-                state.mounted = false;
-                emit('destroy');
-            },
-        },
+        this.renderTooltipCloses();
     };
 
-    function updateOptions(newOptions: Partial<TooltipOptions>) {
-        Object.assign(opts, newOptions);
-        tOverlay.className = `yagr-tooltip ${opts.className || ''}`;
-    }
+    initWithUplot = (u: uPlot) => {
+        this.over = u.root.querySelector('.u-over') as HTMLDivElement;
 
-    function on(event: TooltipAction, handler: TooltipHandler) {
-        handlers[event].push(handler);
-    }
+        this.over.addEventListener('mousedown', this.onMouseDown);
+        this.over.addEventListener('mouseup', this.onMouseUp);
+        this.over.addEventListener('mouseenter', this.onMouseEnter);
+        this.over.addEventListener('mouseleave', this.onMouseLeave);
+    };
 
-    function off(event: TooltipAction, handler: TooltipHandler) {
-        handlers[event] = handlers[event].filter((h) => h !== handler);
+    setSize = () => {
+        const bbox = this.over.getBoundingClientRect();
+
+        this.bLeft = bbox.left;
+        this.bTop = bbox.top;
+    };
+
+    dispose = () => {
+        /** Free overlay listeners */
+        this.over.removeEventListener('mousedown', this.onMouseDown);
+        this.over.removeEventListener('mouseup', this.onMouseUp);
+        this.over.removeEventListener('mouseenter', this.onMouseEnter);
+        this.over.removeEventListener('mouseleave', this.onMouseLeave);
+
+        /** Removing tooltip on destroy */
+        this.tOverlay.remove();
+        this.state.mounted = false;
+        this.emit('destroy');
+    };
+
+    updateOptions = (newOptions: Partial<TooltipOptions>) => {
+        Object.assign(this.opts, newOptions);
+        this.tOverlay.className = `yagr-tooltip ${this.opts.className || ''}`;
+    };
+
+    on = (event: TooltipAction, handler: TooltipHandler) => {
+        this.handlers[event].push(handler);
+    };
+
+    off = (event: TooltipAction, handler: TooltipHandler) => {
+        this.handlers[event] = this.handlers[event].filter((h) => h !== handler);
+    };
+
+    private onMouseDown = (event: MouseEvent) => {
+        this.state.clickStartedX = event.clientX;
+    };
+
+    private detectClickOutside = (event: MouseEvent) => {
+        const target = event.target;
+
+        if (target instanceof Element) {
+            const isClickInsideTooltip = target && this.tOverlay.contains(target);
+            const isClickOnUplotOver = target && this.over.contains(target);
+
+            if (!isClickInsideTooltip && !isClickOnUplotOver) {
+                this.pin(false);
+                this.hide();
+            }
+        }
+    };
+
+    private onMouseUp = (event: MouseEvent) => {
+        if (this.opts.pinable && this.state.clickStartedX && this.state.clickStartedX === event.clientX) {
+            this.pin(!this.state.pinned);
+            this.show();
+            this.renderTooltipCloses();
+        }
+    };
+
+    private onMouseEnter = () => {
+        this.show();
+    };
+
+    private onMouseLeave = () => {
+        if (!this.state.pinned) {
+            this.hide();
+        }
+    };
+
+    private defaultTooltipValueFormatter = (n: string | number | null, precision?: number) => {
+        const pSettings = this.yagr.config.processing || {};
+
+        if (typeof n === 'string') {
+            if (pSettings.nullValues && pSettings.nullValues.hasOwnProperty(n)) {
+                return pSettings.nullValues[n] as string;
+            }
+
+            return '-';
+        }
+
+        if (typeof n === 'number') {
+            return n.toFixed(
+                // eslint-disable-next-line no-nested-ternary
+                typeof precision === 'number'
+                    ? precision
+                    : typeof this.opts.precision === 'number'
+                    ? this.opts.precision
+                    : 2,
+            );
+        }
+
+        return '-';
+    };
+
+    get interpolation() {
+        return this.yagr.config.processing?.interpolation;
+    }
+    get stripValue() {
+        return this.interpolation ? this.interpolation.value : undefined;
+    }
+}
+
+/*
+ * Tooltip plugin constructor.
+ * Every charts has it's own tooltip plugin instance
+ */
+function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
+    const tooltip = new YagrTooltip(yagr, options);
+
+    const getUplotPlugin = () => ({
+        hooks: {
+            init: (u: uPlot) => {
+                tooltip.initWithUplot(u);
+            },
+            setSize: () => {
+                tooltip.setSize();
+            },
+
+            setCursor: (u: uPlot) => {
+                tooltip.render(u.cursor as Parameters<typeof tooltip.render>[0]);
+            },
+        },
+    });
+
+    const uPlotPlugin = getUplotPlugin();
+
+    function reInit(u: uPlot) {
+        const uPlugin = getUplotPlugin();
+
+        u.hooks.init!.push(uPlugin.hooks.init);
+        u.hooks.setSize!.push(uPlugin.hooks.setSize);
+        u.hooks.setCursor!.push(uPlugin.hooks.setCursor);
     }
 
     return {
-        state,
-        pin,
-        show,
-        hide,
+        state: tooltip.state,
+        pin: tooltip.pin,
+        show: tooltip.show,
+        hide: tooltip.hide,
         uplot: uPlotPlugin,
-        display: calcTooltip,
-        updateOptions,
-        on,
-        off,
+        display: tooltip.render,
+        updateOptions: tooltip.updateOptions,
+        on: tooltip.on,
+        off: tooltip.off,
+        tooltip,
+        dispose: tooltip.dispose,
+        reInit,
     };
 }
 
