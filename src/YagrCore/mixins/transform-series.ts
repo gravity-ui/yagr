@@ -46,7 +46,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
         const stacks: Record<string, number[][]> = {};
 
         for (let sIdx = 0; sIdx < series.length; sIdx++) {
-            const dataLine: (number | null)[] = [];
+            let dataLine: (number | null)[] = [];
             const realSerieIdx = sIdx + 1;
             const serie = series[sIdx];
 
@@ -128,6 +128,10 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
             serieOptions.avg = (serieOptions.sum || 0) / serieOptions.count;
 
             serieOptions.empty = empty;
+
+            if (serieOptions.postProcess) {
+                dataLine = serieOptions.postProcess(dataLine, sIdx, this);
+            }
             result.unshift(dataLine);
         }
 
