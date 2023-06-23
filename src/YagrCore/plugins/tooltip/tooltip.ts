@@ -474,6 +474,9 @@ class YagrTooltip {
         this.over.removeEventListener('mouseenter', this.onMouseEnter);
         this.over.removeEventListener('mouseleave', this.onMouseLeave);
 
+        document.removeEventListener('mousemove', this.checkFocus);
+        document.removeEventListener('mousedown', this.detectClickOutside);
+
         /** Removing tooltip on destroy */
         this.tOverlay.remove();
         this.state.mounted = false;

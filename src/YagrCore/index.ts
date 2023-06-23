@@ -253,7 +253,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 
     protected init = () => {
-        if (this.config.chart.size?.adaptive) {
+        if (this.config.chart.size?.adaptive && !this.resizeOb) {
             this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.chart.size.resizeDebounceMs || 100));
             this.resizeOb.observe(this.root);
         }

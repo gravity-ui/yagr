@@ -76,7 +76,7 @@ export class BatchMixin<T extends MinimalValidConfig> {
     protected fullUpdate(this: Yagr<T>) {
         this.inStage('config', () => {
             this._batch = {active: false, fns: []};
-            this.createUplotOptions();
+            this.createUplotOptions(true);
             this.options = this.config.editUplotOptions ? this.config.editUplotOptions(this.options) : this.options;
         })
             .inStage('processing', () => {
@@ -84,6 +84,8 @@ export class BatchMixin<T extends MinimalValidConfig> {
             })
             .inStage('uplot', () => {
                 this.uplot.destroy();
+                this.resizeOb?.unobserve(this.root);
+                this.resizeOb = undefined;
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.init();
             })
