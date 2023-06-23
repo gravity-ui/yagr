@@ -8,7 +8,7 @@ import {
     DEFAULT_POINT_SIZE,
     LIGHT_DEFAULT_LINE_COLOR,
 } from '../../src/YagrCore/defaults';
-import {AreaSeriesOptions, LineSeriesOptions, RawSerieData} from '../../src';
+import {AreaSeriesOptions, DotsSeriesOptions, LineSeriesOptions, RawSerieData} from '../../src';
 
 const COLOR = '#000000';
 
@@ -92,16 +92,21 @@ describe('series options', () => {
                 name: 'Line',
                 color: COLOR,
                 data: [1, 2, 3],
-                width: WIDTH,
-                interpolation: INTERPOLATION,
             };
 
             const y = new Yagr(window.document.body, {
                 timeline: [1, 2, 3],
                 series: [line],
+                chart: {
+                    series: {
+                        type: 'line',
+                        width: WIDTH,
+                        interpolation: INTERPOLATION,
+                    },
+                },
             });
 
-            it('should override uPlot fields from config.series[0]', () => {
+            it("should override series' fields from config.chart.series", () => {
                 expect(configureSeries(y, line, 0)).toHaveProperty('width', WIDTH);
                 expect(configureSeries(y, line, 0)).toHaveProperty('interpolation', INTERPOLATION);
             });
@@ -148,17 +153,22 @@ describe('series options', () => {
                 name: 'Line',
                 color: COLOR,
                 data: [1, 2, 3],
-                lineColor: LINE_COLOR,
-                lineWidth: LINE_WIDTH,
-                interpolation: INTERPOLATION,
             };
 
             const y = new Yagr(window.document.body, {
                 timeline: [1, 2, 3],
                 series: [line],
+                chart: {
+                    series: {
+                        type: 'area',
+                        lineColor: LINE_COLOR,
+                        lineWidth: LINE_WIDTH,
+                        interpolation: INTERPOLATION,
+                    },
+                },
             });
 
-            it('should override uPlot fields from config.series[0]', () => {
+            it('should override uPlot fields from config.chart.series', () => {
                 // @ts-ignore
                 expect(configureSeries(y, line, 0).fill(y.uplot, 1)).toBe(COLOR);
                 expect(configureSeries(y, line, 0)).toHaveProperty('lineColor', LINE_COLOR);
@@ -169,7 +179,34 @@ describe('series options', () => {
     });
 
     describe('dots', () => {
-        const line = {
+        describe('defaults', () => {
+            const line = {
+                name: 'Line',
+                color: COLOR,
+                data: [1, 2, 3],
+            };
+
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                chart: {
+                    series: {
+                        type: 'dots',
+                    },
+                },
+                series: [line],
+            });
+
+            it('should setup uPlot fields', () => {
+                expect(configureSeries(y, line, 0)).toHaveProperty('pointsSize', DEFAULT_POINT_SIZE);
+            });
+        });
+    });
+
+    describe('overrides', () => {
+        const POINTS_SIZE = 10;
+
+        const line: RawSerieData<DotsSeriesOptions> = {
+            type: 'dots',
             name: 'Line',
             color: COLOR,
             data: [1, 2, 3],
@@ -177,16 +214,19 @@ describe('series options', () => {
 
         const y = new Yagr(window.document.body, {
             timeline: [1, 2, 3],
+            series: [line],
             chart: {
                 series: {
                     type: 'dots',
+                    pointsSize: POINTS_SIZE,
                 },
             },
-            series: [line],
         });
 
-        it('should setup uPlot fields', () => {
-            expect(configureSeries(y, line, 0)).toHaveProperty('pointsSize', DEFAULT_POINT_SIZE);
+        it('should override uPlot fields from config.chart.series', () => {
+            // @ts-ignore
+            expect(configureSeries(y, line, 0).fill(y.uplot, 1)).toBe(COLOR);
+            expect(configureSeries(y, line, 0)).toHaveProperty('pointsSize', POINTS_SIZE);
         });
     });
 });

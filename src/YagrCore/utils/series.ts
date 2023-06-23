@@ -3,15 +3,40 @@ import {Series} from 'uplot';
 import * as defaults from '../defaults';
 import type Yagr from '..';
 
-import {InterpolationType, RawSerieData} from '../types';
+import {
+    AreaSeriesOptions,
+    ColumnSeriesOptions,
+    DotsSeriesOptions,
+    LineSeriesOptions,
+    RawSerieData,
+    SeriesOptions,
+} from '../types';
 import {genId} from './common';
 import {getFocusedColor, getSerieFocusColors} from './colors';
 import {drawMarkersIfRequired} from '../plugins/markers';
 import {pathsRenderer} from './paths';
 
+function getCommonProperty<T extends SeriesOptions, K extends keyof T>(
+    series: RawSerieData | Series,
+    yagr: Yagr,
+    key: K,
+    defaultValue?: T[K],
+): T[K] | undefined {
+    if (series[key as keyof typeof series] !== undefined) {
+        return series[key as keyof typeof series] as T[K];
+    }
+
+    const seriesOptions = yagr.config.chart.series;
+    if (seriesOptions && key in seriesOptions) {
+        return seriesOptions[key as keyof SeriesOptions] as T[K];
+    }
+
+    return defaultValue;
+}
+
 // eslint-disable-next-line complexity
 export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number): Series {
-    const type = rawSeries.type || yagr.config.chart.series?.type || 'line';
+    const type = getCommonProperty(rawSeries, yagr, 'type', 'line');
 
     const serie: Series = {
         ...rawSeries,
@@ -33,45 +58,70 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     const colorFn = getSerieFocusColors(yagr, 'color');
 
     if (serie.type === 'area') {
-        serie.lineColor = yagr.utils.colors.parse(serie.lineColor || defaults.SERIE_AREA_BORDER_COLOR);
-        serie.lineWidth = serie.lineWidth || defaults.SERIE_AREA_BORDER_WIDTH;
+        serie.lineColor = yagr.utils.colors.parse(
+            getCommonProperty<AreaSeriesOptions, 'lineColor'>(
+                rawSeries,
+                yagr,
+                'lineColor',
+                defaults.SERIE_AREA_BORDER_COLOR,
+            ),
+        );
+        serie.lineWidth = getCommonProperty<AreaSeriesOptions, 'lineWidth'>(
+            rawSeries,
+            yagr,
+            'lineWidth',
+            defaults.SERIE_AREA_BORDER_WIDTH,
+        );
 
         serie.fill = colorFn;
         serie.stroke = getSerieFocusColors(yagr, 'lineColor');
         serie.width = serie.lineWidth;
         serie.points.show = drawMarkersIfRequired;
+        serie.interpolation = getCommonProperty<AreaSeriesOptions, 'interpolation'>(
+            rawSeries,
+            yagr,
+            'interpolation',
+            'linear',
+        );
     }
 
     if (serie.type === 'line') {
+        serie.width = getCommonProperty<LineSeriesOptions, 'width'>(
+            rawSeries,
+            yagr,
+            'width',
+            defaults.SERIE_LINE_WIDTH,
+        );
         serie.width = serie.width || defaults.SERIE_LINE_WIDTH;
         serie.stroke = colorFn;
         serie.points.show = drawMarkersIfRequired;
+        serie.interpolation = getCommonProperty<LineSeriesOptions, 'interpolation'>(
+            rawSeries,
+            yagr,
+            'interpolation',
+            'linear',
+        );
     }
 
     if (serie.type === 'column') {
         serie.stroke = colorFn;
         serie.fill = colorFn;
         serie.points.show = false;
+        serie.renderOptions = getCommonProperty<ColumnSeriesOptions, 'renderOptions'>(serie, yagr, 'renderOptions');
     }
 
     if (serie.type === 'dots') {
         serie.stroke = serie.color;
         serie.fill = colorFn;
         serie.width = 2;
-        serie.pointsSize = serie.pointsSize || defaults.DEFAULT_POINT_SIZE;
+        serie.pointsSize = getCommonProperty<DotsSeriesOptions, 'pointsSize'>(
+            serie,
+            yagr,
+            'pointsSize',
+            defaults.DEFAULT_POINT_SIZE,
+        );
     }
 
-    let commonI = 'linear' as InterpolationType;
-    const seriesOptions = yagr.config.chart.series;
-    if (seriesOptions && 'interpolation' in seriesOptions) {
-        commonI = seriesOptions.interpolation || commonI;
-    }
-
-    if (seriesOptions && 'renderOptions' in seriesOptions && seriesOptions.renderOptions) {
-        serie.renderOptions = serie.renderOptions || seriesOptions.renderOptions;
-    }
-
-    serie.interpolation = serie.interpolation || commonI;
     serie.paths = pathsRenderer;
 
     return serie;
