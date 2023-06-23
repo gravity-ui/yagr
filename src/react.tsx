@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import Yagr, {YagrMeta} from './YagrCore';
 import type {MinimalValidConfig} from './YagrCore/types';
@@ -30,7 +30,7 @@ export interface YagrReactRef {
 // eslint-disable-next-line prefer-arrow-callback
 export default React.forwardRef(function YagrReact(
     {id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps,
-    ref: YagrReactRef,
+    ref,
 ) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const chart = React.useRef<Yagr>();
@@ -101,7 +101,7 @@ export const useTooltipState = (
         }
 
         const tooltip = tooltipRef.current;
-        const yagr: Yagr = yagrRef.current.yagr();
+        const yagr = yagrRef.current.yagr();
 
         if (!yagr || !yagr?.plugins?.tooltip) {
             return;
