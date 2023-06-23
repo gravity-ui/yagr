@@ -9,9 +9,9 @@
     "plot",
     "visualization"
   ],
-  "main": "./dist/yagr.cjs.js",
+  "main": "./dist/index.js",
   "module": "./dist/yagr.esm.js",
-  "typings": "dist/types.d.ts",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "typings"

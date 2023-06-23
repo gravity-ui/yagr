@@ -32,28 +32,30 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         const {config} = this;
         const plugins: Plugin[] = [];
 
+        let tooltipInstance = this.plugins?.tooltip;
+
         this.plugins = this.plugins ?? {};
 
-        if (!reOpt) {
-            const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
-            this.plugins.plotLines = plotLinesPluginInstance;
-            plugins.push(plotLinesPluginInstance.uplot);
-
-            Object.entries(config.plugins).forEach(([name, plugin]) => {
-                const pluginInstance = plugin(this);
-                plugins.push(pluginInstance.uplot);
-                Object.assign(this.plugins, {[name]: pluginInstance});
-            });
-
-            /** Setting up TooltipPugin */
-            if (config.tooltip && config.tooltip.show !== false) {
-                const tooltipPluginInstance = tooltipPlugin(this, config.tooltip);
-                plugins.push(tooltipPluginInstance.uplot);
-                this.plugins.tooltip = tooltipPluginInstance;
+        /** Setting up TooltipPugin */
+        if (config.tooltip && config.tooltip.show !== false) {
+            if (tooltipInstance) {
+                tooltipInstance.updateOptions(config.tooltip);
+            } else {
+                tooltipInstance = tooltipPlugin(this, config.tooltip);
             }
-        } else {
-            this.plugins.tooltip?.updateOptions(config.tooltip);
+            plugins.push(tooltipInstance.uplot);
+            this.plugins.tooltip = tooltipInstance;
         }
+
+        const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
+        this.plugins.plotLines = plotLinesPluginInstance;
+        plugins.push(plotLinesPluginInstance.uplot);
+
+        Object.entries(config.plugins).forEach(([name, plugin]) => {
+            const pluginInstance = plugin(this);
+            plugins.push(pluginInstance.uplot);
+            Object.assign(this.plugins, {[name]: pluginInstance});
+        });
 
         const chart = config.chart;
 

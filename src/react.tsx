@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import Yagr, {YagrMeta} from './YagrCore';
 import type {MinimalValidConfig} from './YagrCore/types';
@@ -22,7 +22,7 @@ export interface YagrChartProps {
     onSelect?: (from: number, to: number) => void;
 }
 
-interface YagrReactRef {
+export interface YagrReactRef {
     yagr: () => Yagr | undefined;
     domElement: () => HTMLDivElement | null;
 }
