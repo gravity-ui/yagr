@@ -1,5 +1,18 @@
 ### master
 
+## [3.1.0](https://github.com/gravity-ui/yagr/compare/v3.0.0...v3.1.0) (2023-06-23)
+
+
+### Features
+
+* added single-ton tooltip, fixed package config ([55ffc2b](https://github.com/gravity-ui/yagr/commit/55ffc2b52da7c9c86b8cc317ee84cf98dcfd5164))
+
+
+### Bug Fixes
+
+* remove tooltip handlers on dispose + don't reiniit hooks ([a33f666](https://github.com/gravity-ui/yagr/commit/a33f666d3a939f761fb3577c7d18357873c7bc6d))
+* removed redundant typings and .d.ts reexporter ([cb291bd](https://github.com/gravity-ui/yagr/commit/cb291bd496d016e65d8d45dc4ba44acd0765b31d))
+
 ## [3.0.0](https://github.com/gravity-ui/yagr/compare/v2.2.6...v3.0.0) (2023-06-21)
 
 
