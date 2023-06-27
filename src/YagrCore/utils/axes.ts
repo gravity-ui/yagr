@@ -4,8 +4,7 @@ import * as defaults from '../defaults';
 import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
-import {getUnitSuffix, toFixed} from './common';
-import {PlotLinesPlugin} from '../plugins/plotLines/plotLines';
+import {asFn, getUnitSuffix, toFixed} from './common';
 import {Axis as TypedAxis} from './types';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
@@ -136,7 +135,7 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
         return Object.assign(axis, {
             getFormatter: getTimeFormatterByRange,
             gap: axisConfig.gap ?? defaults.X_AXIS_TICK_GAP,
-            size: axisConfig.size || (() => defaults.X_AXIS_SIZE),
+            size: asFn(axisConfig.size) || (() => defaults.X_AXIS_SIZE),
             values: axisConfig.values || getTimeFormatter(config),
             ticks: axisConfig.ticks ? {...theme.X_AXIS_TICKS, ...axisConfig.ticks} : theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
@@ -149,7 +148,7 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
 
     Object.assign(axis, {
         gap: axisConfig.gap ?? defaults.Y_AXIS_TICK_GAP,
-        size: axisConfig.size || defaults.Y_AXIS_SIZE,
+        size: asFn(axisConfig.size) || defaults.Y_AXIS_SIZE,
         values: axisConfig.values || getNumericValueFormatter(axisConfig),
         scale: axisConfig.scale || defaults.DEFAULT_Y_SCALE,
         getFormatter: () =>
@@ -188,13 +187,7 @@ export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
     upd.splits = upd.splits || uAxis.splits;
     Object.assign(uAxis, upd);
 
-    const plotLines = yagr.plugins.plotLines as ReturnType<PlotLinesPlugin>;
-
-    if (axisConfig.plotLines?.length) {
-        plotLines.add(axisConfig.plotLines, axisConfig.scale);
-    } else {
-        plotLines.clear(axisConfig.scale);
-    }
+    yagr.plugins.plotLines?.update(axisConfig.plotLines, axisConfig.scale);
 }
 
 export function configureAxes(yagr: Yagr, config: YagrConfig) {

@@ -464,3 +464,11 @@ export function deepIsEqual(a: unknown, b: unknown): boolean {
 
     return true;
 }
+
+export function asFn<T>(t: T) {
+    return typeof t === 'function' ? t : typeof t === 'undefined' ? t : () => t;
+}
+
+export function asPlain<T>(t: T): T extends (...args: any[]) => any ? ReturnType<T> : T {
+    return typeof t === 'function' ? t() : t;
+}

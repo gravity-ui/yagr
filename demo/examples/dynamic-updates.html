@@ -43,6 +43,13 @@
             </div>
         </div>
 
+        <div class="grid">
+            <div class="container">
+                <div id="chart5"></div>
+                <button id="changePlotLines">Change plotlines</button>
+            </div>
+        </div>
+
         <script>
             function randomColor() {
                 const r = Math.floor(Math.random() * 255);
@@ -56,6 +63,17 @@
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 legend: {
                     show: true,
+                },
+                axes: {
+                    x: {
+                        plotLines: [
+                            {
+                                value: 2000,
+                                color: 'rgba(255, 0, 0, 0.5)',
+                                width: 2,
+                            },
+                        ],
+                    },
                 },
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
@@ -196,6 +214,45 @@
                             id: idx.toString(),
                         };
                     }),
+                });
+            };
+
+            const yagr5 = new Yagr(chart5, {
+                title: {text: 'Change poltlines'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                chart: {
+                    series: {
+                        type: 'area',
+                    },
+                },
+                axes: {
+                    x: {
+                        scale: 'x',
+                        plotLines: [
+                            {
+                                width: 10,
+                                color: 'red',
+                                value: 10000,
+                            },
+                        ],
+                    },
+                },
+                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'}],
+            });
+
+            window.changePlotLines.onclick = () => {
+                yagr5.setConfig({
+                    axes: {
+                        x: {
+                            plotLines: [
+                                {
+                                    width: 10,
+                                    color: 'red',
+                                    value: yagr.config.timeline[(Math.random() * yagr.config.timeline.length) >> 0],
+                                },
+                            ],
+                        },
+                    },
                 });
             };
         </script>
