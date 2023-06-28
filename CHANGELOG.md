@@ -2,34 +2,53 @@
 
 ## [3.2.0](https://github.com/gravity-ui/yagr/compare/v3.1.0...v3.2.0) (2023-06-23)
 
-
 ### Features
 
-* version bump ([e89d01c](https://github.com/gravity-ui/yagr/commit/e89d01c20222e6ab1d1afedccb0150d1d63c3297))
+-   version bump ([e89d01c](https://github.com/gravity-ui/yagr/commit/e89d01c20222e6ab1d1afedccb0150d1d63c3297))
 
 ## [3.1.0](https://github.com/gravity-ui/yagr/compare/v3.0.0...v3.1.0) (2023-06-23)
 
-
 ### Features
 
-* added single-ton tooltip, fixed package config ([55ffc2b](https://github.com/gravity-ui/yagr/commit/55ffc2b52da7c9c86b8cc317ee84cf98dcfd5164))
-
+-   added single-ton tooltip, fixed package config ([55ffc2b](https://github.com/gravity-ui/yagr/commit/55ffc2b52da7c9c86b8cc317ee84cf98dcfd5164))
 
 ### Bug Fixes
 
-* remove tooltip handlers on dispose + don't reiniit hooks ([a33f666](https://github.com/gravity-ui/yagr/commit/a33f666d3a939f761fb3577c7d18357873c7bc6d))
-* removed redundant typings and .d.ts reexporter ([cb291bd](https://github.com/gravity-ui/yagr/commit/cb291bd496d016e65d8d45dc4ba44acd0765b31d))
+-   remove tooltip handlers on dispose + don't reiniit hooks ([a33f666](https://github.com/gravity-ui/yagr/commit/a33f666d3a939f761fb3577c7d18357873c7bc6d))
+-   removed redundant typings and .d.ts reexporter ([cb291bd](https://github.com/gravity-ui/yagr/commit/cb291bd496d016e65d8d45dc4ba44acd0765b31d))
 
 ## [3.0.0](https://github.com/gravity-ui/yagr/compare/v2.2.6...v3.0.0) (2023-06-21)
 
+### Configuratoin
 
-### ⚠ BREAKING CHANGES
+-   Fixed typo `appereance` -> `appearance` in `YagrConfig['chart']`
 
-* bump version
+### Refactor
 
-### Features
+-   Refactored `YagrCore` class to use mixins.
+-   Refactored batch mechanism to support multiple Yagr change calls in single batch
+-   Refactored Yagr React component to support `setConfig` instead of re-initialization of Yagr instance on every config update
+-   Got rid of Rollup, using ESBuild instead
 
-* bump version ([828b37d](https://github.com/gravity-ui/yagr/commit/828b37de22e3f4819f131170313c40e4ddd4bb54))
+### Scales
+
+-   Fixed `setVisible` method for stacked areas
+
+### Methods
+
+-   Removed workaround to fix [uPlot issue](https://github.com/leeoniya/uPlot/issues/680) in `setVisible` method
+-   Added `setScales` method
+-   Added generic `setConfig` method. Currently in expriemental mode
+
+### Tooltip
+
+-   Fixed tooltip render initial position (now it renders in `boundClassName` element)
+-   Added virtual tooltip mode
+-   Added useCustomTooltip hook for React
+
+### Legend
+
+-   Fixed legend series mark background-color
 
 ## [2.2.6](https://github.com/gravity-ui/yagr/compare/v2.2.5...v2.2.6) (2023-06-19)
 
