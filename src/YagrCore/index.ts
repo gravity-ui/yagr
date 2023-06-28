@@ -272,18 +272,19 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.config.hooks.dispose.push(this.trackMouse());
     };
 
-    protected execHooks = (
-        hooks: keyof InternalYargHooks,
-        ...args: Parameters<Required<InternalYargHooks>[keyof InternalYargHooks][0]>
+    protected execHooks = <T extends keyof InternalYargHooks>(
+        hookName: T,
+        ...args: Parameters<Required<InternalYargHooks>[T][0]>
     ) => {
+        const hooks = this.config.hooks[hookName];
         if (Array.isArray(hooks)) {
-            hooks.forEach((hook) => {
+            for (const hook of hooks) {
                 if (!hook) {
-                    return;
+                    continue;
                 }
 
                 typeof hook === 'function' && hook(...args);
-            });
+            }
         }
     };
 

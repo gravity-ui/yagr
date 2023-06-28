@@ -19,6 +19,7 @@
         </style>
     </head>
     <body>
+        <h1>Dynamic updates</h1>
         <div class="grid">
             <div class="container">
                 <div id="chart1"></div>
@@ -116,7 +117,7 @@
                     },
                 },
                 series: [
-                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1', show: false},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'lime', id: '3'},
                 ],

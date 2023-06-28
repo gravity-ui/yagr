@@ -29,11 +29,12 @@ interface LegendState {
 }
 
 const ALL_SERIES_IDX = 'null' as const;
-const TOTAL_LEGEND_VERTICAL_PADDING = 20;
+const TOTAL_LEGEND_VERTICAL_PADDING_BOTTOM = 20;
+const TOTAL_LEGEND_VERTICAL_PADDING_TOP = 48;
 const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
 
-const hasOneVisibleLine = (series: Series[]) => {
+export const hasOneVisibleLine = (series: Series[]) => {
     return series.some(({show, id}) => id !== DEFAULT_X_SERIE_NAME && show);
 };
 
@@ -106,6 +107,20 @@ export default class LegendPlugin {
         this.render();
     };
 
+    update = () => {
+        const series: NodeListOf<HTMLDivElement> = this.yagr.root.querySelectorAll('[data-serie-id]');
+
+        series.forEach((serieNode) => {
+            const serieId = serieNode.getAttribute('data-serie-id');
+            if (!serieId || serieId === ALL_SERIES_IDX) {
+                return;
+            }
+            const serieVisible = this.uplot?.series[this.yagr.state.y2uIdx[serieId]]?.show;
+
+            serieNode.classList[serieVisible ? 'remove' : 'add']('yagr-legend__item_hidden');
+        });
+    };
+
     private applyHandlers() {
         const {yagr, uplot: u} = this;
 
@@ -135,12 +150,15 @@ export default class LegendPlugin {
             }
 
             seriesToToggle.forEach(([serie, nextState]) => {
+                if (serie.show === nextState) {
+                    return;
+                }
                 const node = yagr.root.querySelector(`[data-serie-id="${serie.id}"]`);
-                yagr.setVisible(serie.id, nextState);
-                node?.classList[serie.show ? 'remove' : 'add']('yagr-legend__item_hidden');
+                yagr.setVisible(serie.id, nextState, false);
+                node?.classList[nextState ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
 
-            const allSeriesItem = yagr.root.querySelector(`[data-serie-id="${ALL_SERIES_IDX}"]`);
+            const allSeriesItem = yagr.root.querySelector('.yagr-legend__all-series');
 
             if (allSeriesItem) {
                 const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
@@ -150,11 +168,12 @@ export default class LegendPlugin {
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
             const serieId = serieNode.getAttribute('data-serie-id');
-            const targetSerie = this.yagr.uplot.series.find(({id}) => id === serieId);
 
-            if (serieId === ALL_SERIES_IDX) {
+            if (serieNode.classList.contains('yagr-legend__item_hidden') || serieId === ALL_SERIES_IDX) {
                 return;
             }
+
+            const targetSerie = this.yagr.uplot.series.find(({id}) => id === serieId);
 
             if (targetSerie) {
                 yagr.setFocus(targetSerie.id, true);
@@ -198,16 +217,12 @@ export default class LegendPlugin {
             reRender = true;
         } else {
             legendEl = html('div', {
-                class: `yagr-legend ${options?.className || ''}`,
+                class: `yagr-legend yagr-legend__${this.options.position} ${options?.className || ''}`,
             });
         }
 
         if (!legendEl) {
             return;
-        }
-
-        if (options?.position) {
-            u.root.classList.add('yagr-legend_' + options?.position);
         }
 
         if (!reRender) {
@@ -345,10 +360,12 @@ export default class LegendPlugin {
             .map((serie) => {
                 let content;
                 let sId;
+                let additionalCn = ' ';
 
                 if (serie === ALL_SERIES_IDX) {
                     content = title;
                     sId = titleId;
+                    additionalCn = ' yagr-legend__all-series ';
                 } else {
                     sId = serie.id;
                     const icon = this.createIconLineElement(serie);
@@ -359,7 +376,7 @@ export default class LegendPlugin {
 
                 const visible = typeof serie === 'string' ? true : serie.show !== false;
 
-                return `<div class="yagr-legend__item ${
+                return `<div class="yagr-legend__item${additionalCn}${
                     visible ? '' : 'yagr-legend__item_hidden'
                 }" data-serie-id="${sId}">${content}</div>`;
             })
@@ -373,7 +390,7 @@ export default class LegendPlugin {
             return;
         }
 
-        const chartHeight = uplotOptions.height - TOTAL_LEGEND_VERTICAL_PADDING;
+        const chartHeight = uplotOptions.height - this.VERTICAL_PADDING;
         const html = this.renderItems(uplotOptions);
         const {height: requiredHeight} = this.measureLegend(html);
         const rowHeight = (this.options.fontSize as number) + 2;
@@ -388,12 +405,18 @@ export default class LegendPlugin {
         const pages = Math.ceil(requiredHeight / itemsPageSize);
 
         this.state.requiredSpace = requiredSpace;
-        this.state.totalSpace = requiredSpace + TOTAL_LEGEND_VERTICAL_PADDING;
+        this.state.totalSpace = requiredSpace + this.VERTICAL_PADDING;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
         this.state.pages = pages;
         this.state.pageSize = itemsPageSize;
         this.state.rowsPerPage = rowsPerPage;
         this.itemsHtml = html;
+    }
+
+    private get VERTICAL_PADDING() {
+        return this.options.position === 'bottom'
+            ? TOTAL_LEGEND_VERTICAL_PADDING_BOTTOM
+            : TOTAL_LEGEND_VERTICAL_PADDING_TOP;
     }
 }

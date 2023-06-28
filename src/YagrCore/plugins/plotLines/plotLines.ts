@@ -3,7 +3,7 @@ import UPlot from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
-import {asPlain, deepIsEqual} from 'src/YagrCore/utils/common';
+import {asPlain, deepIsEqual} from '../../utils/common';
 
 const MAX_X_SCALE_LINE_OFFSET = 0;
 const DRAW_MAP = {
@@ -149,7 +149,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             }
         },
         update: (newPlotLines?: PlotLineConfig[], scale?: string) => {
-            if (newPlotLines?.length === 0) {
+            if (!newPlotLines || newPlotLines.length === 0) {
                 plugin.clear(scale);
                 return;
             }

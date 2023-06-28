@@ -54,9 +54,12 @@ export class BatchMixin<T extends MinimalValidConfig> {
             return this.fullUpdate();
         }
 
+        if (this._batch.redrawLegend) {
+            this.plugins.legend?.redraw();
+        }
+
         if (this._batch.reopt) {
             this.createUplotOptions(true);
-            this.plugins.legend?.redraw();
         }
 
         if (this._batch.recalc) {
