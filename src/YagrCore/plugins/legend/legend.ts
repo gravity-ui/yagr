@@ -25,6 +25,7 @@ interface LegendState {
     rowsPerPage: number;
     pageSize: number;
     requiredSpace: number;
+    totalSpace: number;
 }
 
 const ALL_SERIES_IDX = 'null' as const;
@@ -44,30 +45,42 @@ const getPrependingTitleId = (series: Series[]): typeof ALL_SERIES_IDX | undefin
     return (series.length > 3 && ALL_SERIES_IDX) || undefined;
 };
 
-export default class Legend {
-    yagr: Yagr;
+export default class LegendPlugin {
+    yagr!: Yagr;
     uplot?: UPlot;
-    options: LegendOptions;
-    pagesCount: number;
-    state: LegendState;
+    options!: LegendOptions;
+    pagesCount = 0;
+    state: LegendState = {
+        page: 0,
+        pages: 1,
+        pageSize: 0,
+        rowsPerPage: 1,
+        paginated: false,
+        requiredSpace: 0,
+        totalSpace: 0,
+    };
     itemsHtml = '';
     legendEl?: HTMLElement;
     items?: HTMLElement;
     container?: HTMLElement;
-    _onDestroy?: () => void;
+    private _onDestroy?: () => void;
 
-    constructor(yagr: Yagr, options?: LegendOptions) {
+    redraw() {
+        if (!this.options.show) {
+            return;
+        }
+        this.render();
+    }
+
+    destroy() {
+        if (this._onDestroy) {
+            this._onDestroy();
+        }
+        this.legendEl?.remove();
+    }
+
+    preInit = (yagr: Yagr, options: LegendOptions, uplotOptions: Options) => {
         this.yagr = yagr;
-        this.pagesCount = 0;
-        this.state = {
-            page: 0,
-            pages: 1,
-            pageSize: 0,
-            rowsPerPage: 1,
-            paginated: false,
-            requiredSpace: 0,
-        };
-
         this.options = Object.assign(
             {
                 show: false,
@@ -78,37 +91,19 @@ export default class Legend {
             },
             options || {},
         );
+        this.calc(uplotOptions);
+    };
 
-        if (this.options.show) {
-            this.calc();
-        }
-    }
-
-    redraw() {
+    init = (u: uPlot) => {
         if (!this.options.show) {
             return;
         }
-        this.destroy();
-        this.calc();
-        this.prepareLegend();
-    }
 
-    destroy() {
-        if (this._onDestroy) {
-            this._onDestroy();
-        }
-        this.legendEl?.remove();
-    }
-
-    init = (u: UPlot) => {
         this.uplot = u;
 
         /** Removing native uPlot legend */
         u.root.querySelector('.u-legend')?.remove();
-
-        if (this.options.show) {
-            this.prepareLegend();
-        }
+        this.render();
     };
 
     private applyHandlers() {
@@ -118,7 +113,7 @@ export default class Legend {
             return () => {};
         }
 
-        const series: NodeListOf<HTMLDivElement> = u.root.querySelectorAll('[data-serie-id]');
+        const series: NodeListOf<HTMLDivElement> = yagr.root.querySelectorAll('[data-serie-id]');
         const unsubsribe: (() => void)[] = [];
 
         const onSerieClick = (serieNode: HTMLElement) => () => {
@@ -140,12 +135,12 @@ export default class Legend {
             }
 
             seriesToToggle.forEach(([serie, nextState]) => {
-                const node = u.root.querySelector(`[data-serie-id="${serie.id}"]`);
+                const node = yagr.root.querySelector(`[data-serie-id="${serie.id}"]`);
                 yagr.setVisible(serie.id, nextState);
                 node?.classList[serie.show ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
 
-            const allSeriesItem = u.root.querySelector(`[data-serie-id="${ALL_SERIES_IDX}"]`);
+            const allSeriesItem = yagr.root.querySelector(`[data-serie-id="${ALL_SERIES_IDX}"]`);
 
             if (allSeriesItem) {
                 const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
@@ -190,33 +185,43 @@ export default class Legend {
         return destroy;
     }
 
-    private prepareLegend() {
+    private render() {
+        let reRender = false;
         const {uplot: u, options} = this;
         if (!u) {
             return;
         }
 
-        const wrapEl = u.root.querySelector('.u-wrap') as HTMLElement;
-        const legendEl = html('div', {
-            class: `yagr-legend ${options?.className || ''}`,
-        });
+        let legendEl = this.yagr.root.querySelector('.yagr-legend') as HTMLElement;
+
+        if (legendEl) {
+            reRender = true;
+        } else {
+            legendEl = html('div', {
+                class: `yagr-legend ${options?.className || ''}`,
+            });
+        }
+
+        if (!legendEl) {
+            return;
+        }
 
         if (options?.position) {
             u.root.classList.add('yagr-legend_' + options?.position);
         }
 
-        if (options.position === 'top') {
-            const titleEl = u.root.querySelector('.u-title');
-            const firstEl = titleEl || wrapEl;
-            firstEl.before(legendEl);
-        } else {
-            wrapEl?.after(legendEl);
+        if (!reRender) {
+            if (options.position === 'top') {
+                u.root.before(legendEl);
+            } else {
+                u.root?.after(legendEl);
+            }
         }
 
         this.legendEl = legendEl;
 
-        if (!this.itemsHtml) {
-            this.calc();
+        if (!this.itemsHtml || reRender) {
+            this.calc(this.yagr.options);
         }
 
         legendEl.innerHTML = `<div class="yagr-legend__container" style="height: ${this.state.requiredSpace}px">${this.itemsHtml}</div>`;
@@ -231,11 +236,7 @@ export default class Legend {
             this.items.style.justifyContent = 'center';
         }
 
-        const destroy = this.applyHandlers();
-        this.uplot?.hooks.destroy?.push(() => {
-            destroy();
-            this.destroy();
-        });
+        this.applyHandlers();
     }
 
     private measureLegend = (body: string) => {
@@ -367,11 +368,10 @@ export default class Legend {
         return `<div class="yagr-legend__items">${content}</div>`;
     }
 
-    private calc() {
+    private calc(uplotOptions: Options) {
         if (!this.options.show) {
             return;
         }
-        const uplotOptions = this.yagr.options;
 
         const chartHeight = uplotOptions.height - TOTAL_LEGEND_VERTICAL_PADDING;
         const html = this.renderItems(uplotOptions);
@@ -387,8 +387,8 @@ export default class Legend {
         const requiredSpace = Math.min(paginated ? paginatedPageSize : itemsPageSize, requiredHeight);
         const pages = Math.ceil(requiredHeight / itemsPageSize);
 
-        uplotOptions.height = chartHeight - requiredSpace;
         this.state.requiredSpace = requiredSpace;
+        this.state.totalSpace = requiredSpace + TOTAL_LEGEND_VERTICAL_PADDING;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
         this.state.pages = pages;

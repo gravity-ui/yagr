@@ -139,7 +139,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
 
         this.series = result as AlignedData;
 
-        this.execHooks(config.hooks.processed, {
+        this.execHooks('processed', {
             chart: this,
             meta: {
                 processTime: performance.now() - processingStartTime,

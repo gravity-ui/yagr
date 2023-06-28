@@ -48,14 +48,20 @@
                 <div id="chart5"></div>
                 <button id="changePlotLines">Change plotlines</button>
             </div>
+            <div class="container">
+                <div id="chart6"></div>
+                <button id="changeData">Change data</button>
+                <button id="mixData">Mix Lines</button>
+                <button id="mashUp">Mash up</button>
+            </div>
         </div>
 
         <script>
-            function randomColor() {
+            function randomColor(a = 1) {
                 const r = Math.floor(Math.random() * 255);
                 const g = Math.floor(Math.random() * 255);
                 const b = Math.floor(Math.random() * 255);
-                return `rgb(${r}, ${g}, ${b})`;
+                return `rgba(${r}, ${g}, ${b}, ${a})`;
             }
 
             const yagr = new Yagr(chart1, {
@@ -180,6 +186,7 @@
                         stacking: true,
                     },
                 },
+
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'cyan', id: '2'},
@@ -224,6 +231,9 @@
                     series: {
                         type: 'area',
                     },
+                    appearance: {
+                        drawOrder: ['plotLines', 'axes', 'series'],
+                    },
                 },
                 axes: {
                     x: {
@@ -231,28 +241,95 @@
                         plotLines: [
                             {
                                 width: 10,
-                                color: 'red',
-                                value: 10000,
+                                color: 'rgba(200, 0, 0, 0.3)',
+                                value: [10000, 12000],
                             },
                         ],
                     },
                 },
-                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'}],
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
             });
 
             window.changePlotLines.onclick = () => {
+                const plStart = yagr.config.timeline[(Math.random() * yagr.config.timeline.length) >> 0];
+
                 yagr5.setConfig({
                     axes: {
                         x: {
                             plotLines: [
                                 {
                                     width: 10,
-                                    color: 'red',
-                                    value: yagr.config.timeline[(Math.random() * yagr.config.timeline.length) >> 0],
+                                    color: randomColor(0.5),
+                                    value: [plStart, plStart + 1000],
                                 },
                             ],
                         },
                     },
+                });
+            };
+
+            const yagr6 = new Yagr(chart6, {
+                title: {text: 'Ensure Legend Redraw'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                legend: {
+                    show: true,
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
+            });
+
+            window.changeData.onclick = () => {
+                yagr6.setConfig({
+                    series: [
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                    ],
+                });
+            };
+
+            window.mixData.onclick = () => {
+                yagr6.setConfig({
+                    series: [
+                        {
+                            data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                            color: 'orange',
+                            name: 'Orange',
+                            id: ('1' + Math.random() * 10) >> 0,
+                        },
+                        {
+                            data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                            color: 'darkred',
+                            name: 'Crimson',
+                            id: ('2' + Math.random() * 10) >> 0,
+                        },
+                    ],
+                });
+            };
+
+            window.mashUp.onclick = () => {
+                yagr6.setConfig({
+                    series: new Array(30).fill(0).map((_, sIdx) => ({
+                        data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                        color: randomColor(),
+                        name: 'Serie ' + sIdx,
+                        id: ('1' + Math.random() * 1000) >> 0,
+                    })),
                 });
             };
         </script>

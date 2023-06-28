@@ -270,18 +270,18 @@
                 scales: {y: {min: 0, max: 6}},
                 tooltip: {
                     render: (data) => {
-                        const appendidx = `<div>${y7.plugins.labels
+                        const appendix = `<div>${y7.plugins.labels
                             .getTextLabels()
                             .map((x) => {
                                 const s = y7.uplot.series[x.idx];
                                 return `<div><b>${s.id} = ${x.label}</b></div>`;
                             })
                             .join('<br>')}</div>`;
-                        return `${data.defaultRender(data)}<br>${appendidx}`;
+                        return `${data.defaultRender(data)}<br>${appendix}`;
                     },
                 },
                 plugins: {
-                    weekends: YagrWeekends(),
+                    weekends: WeekendsPlugin(),
                     labels: YagrLabelsPlugin({
                         series: {
                             cursor: {
@@ -374,13 +374,13 @@
                 }),
                 tooltip: {
                     render: (data) => {
-                        const appendidx = `<div>${y10.plugins.labels
+                        const appendix = `<div>${y10.plugins.labels
                             .getTextLabels()
                             .map((x) => {
                                 return `<div style="background-color:${x.band.color}">${x.label}</div>`;
                             })
                             .join('<br>')}</div>`;
-                        return `${data.defaultRender(data)}<br>${appendidx}`;
+                        return `${data.defaultRender(data)}<br>${appendix}`;
                     },
                 },
                 axes: {
@@ -402,7 +402,7 @@
                     },
                 },
                 plugins: {
-                    weekends: YagrWeekends({}),
+                    weekends: WeekendsPlugin({}),
                     labels: YagrLabelsPlugin({
                         plotLines: {
                             cursor: {

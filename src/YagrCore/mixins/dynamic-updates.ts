@@ -13,9 +13,9 @@ interface UpdateOptions {
     splice?: boolean;
 }
 
-function setLocaleImpl(yagr: Yagr, locale: SupportedLocales | Record<string, string>) {
+function setLocaleImpl(yagr: Yagr, batch: Batch, locale: SupportedLocales | Record<string, string>) {
     yagr.utils.i18n = i18n(locale);
-    yagr.plugins.legend?.redraw();
+    batch.reopt = true;
 }
 
 function setThemeImpl(yagr: Yagr, themeValue: YagrTheme) {
@@ -165,6 +165,29 @@ function isChanged(oldConfig: YagrConfig, newConfig: Partial<YagrConfig>) {
     };
 }
 
+function areSeriesChanged(a: YagrConfig['series'], b?: YagrConfig['series']) {
+    if (a.length !== b?.length) {
+        return true;
+    }
+
+    const mapA = new Map<string, YagrConfig['series'][0]>();
+    const mapB = new Map<string, YagrConfig['series'][0]>();
+
+    a.forEach((serie) => {
+        mapA.set(serie.id!, serie);
+    });
+
+    b.forEach((serie) => {
+        mapB.set(serie.id!, serie);
+    });
+
+    if (b.some(({id}) => !mapA.has(id!)) || a.some(({id}) => !mapB.has(id!))) {
+        return true;
+    }
+
+    return false;
+}
+
 function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>) {
     const isChangedKey = isChanged(yagr.config, newConfig);
 
@@ -190,8 +213,14 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
         yagr.setScales(newConfig.scales!);
     }
 
-    if (newConfig.series && newConfig.timeline) {
-        yagr.setSeries(newConfig.timeline, newConfig.series, {
+    const isChangedSeries = areSeriesChanged(yagr.config.series, newConfig.series);
+
+    if (isChangedSeries) {
+        batch.redrawLegend = true;
+    }
+
+    if (newConfig.series || newConfig.timeline) {
+        yagr.setSeries(newConfig.timeline ?? yagr.config.timeline, newConfig.series ?? yagr.config.series, {
             incremental: false,
         });
     }
@@ -351,7 +380,7 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @description Set's locale of chart and redraws all locale-dependent elements.
      */
     setLocale(this: Yagr<T>, locale: SupportedLocales | Record<string, string>) {
-        this.batch(() => setLocaleImpl(this, locale));
+        this.batch((batch) => setLocaleImpl(this, batch, locale));
     }
 
     /**
