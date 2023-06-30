@@ -19,6 +19,7 @@
         </style>
     </head>
     <body>
+        <h1>Dynamic updates</h1>
         <div class="grid">
             <div class="container">
                 <div id="chart1"></div>
@@ -61,18 +62,14 @@
                 <div id="chart7"></div>
                 <button id="changeAxes">Change axes</button>
             </div>
-            <div class="container">
-                <div id="chart8"></div>
-                <button id="changeScales">Change scales</button>
-            </div>
         </div>
 
         <script>
-            function randomColor() {
+            function randomColor(a = 1) {
                 const r = Math.floor(Math.random() * 255);
                 const g = Math.floor(Math.random() * 255);
                 const b = Math.floor(Math.random() * 255);
-                return `rgb(${r}, ${g}, ${b})`;
+                return `rgba(${r}, ${g}, ${b}, ${a})`;
             }
 
             const yagr = new Yagr(chart1, {
@@ -80,6 +77,17 @@
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 legend: {
                     show: true,
+                },
+                axes: {
+                    x: {
+                        plotLines: [
+                            {
+                                value: 2000,
+                                color: 'rgba(255, 0, 0, 0.5)',
+                                width: 2,
+                            },
+                        ],
+                    },
                 },
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
@@ -116,7 +124,7 @@
                     },
                 },
                 series: [
-                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1', show: false},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'lime', id: '3'},
                 ],
@@ -186,6 +194,7 @@
                         stacking: true,
                     },
                 },
+
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'cyan', id: '2'},

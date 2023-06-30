@@ -34,11 +34,6 @@ declare module 'uplot' {
 
         /** Get focus color */
         getFocusedColor: (y: Yagr, idx: number) => string;
-        /**
-         * Postprocessing function to change actual values (doesn't marks as _transformed series)
-         * Use at your own risk
-         **/
-        postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];
 
         /** Current focus state */
         _focus?: boolean | null;
@@ -109,18 +104,7 @@ export type MinimalValidConfig = Partial<YagrConfig> & {
     series: RawSerieData[];
 };
 
-type ArrayElement<ArrayType extends readonly unknown[] | undefined> = ArrayType extends undefined
-    ? never
-    : ArrayType extends readonly (infer ElementType)[]
-    ? ElementType
-    : never;
-type AsNonUndefined<T> = T extends undefined ? never : T;
 type CommonHookHandlerArg<T> = T & {chart: Yagr};
-
-export type HookParams<T extends YagrHooks[keyof YagrHooks]> = T extends undefined
-    ? never
-    : Parameters<AsNonUndefined<ArrayElement<T>>>;
-
 export type HookHandler<Data> = ((a: CommonHookHandlerArg<Data>) => void)[];
 
 export type LoadHandlerArg = CommonHookHandlerArg<{meta: YagrMeta}>;
@@ -131,7 +115,7 @@ export type InitedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'initT
 export type DisposeHandlerArg = CommonHookHandlerArg<{}>;
 export type ResizeHandlerArg = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}>;
 
-export interface YagrHooks extends Hooks.Arrays {
+export interface InternalYargHooks {
     load?: HookHandler<{meta: YagrMeta}>;
     onSelect?: HookHandler<{from: number; to: number}>;
     error?: HookHandler<{error: Error; stage: YagrState['stage']}>;
@@ -141,6 +125,8 @@ export interface YagrHooks extends Hooks.Arrays {
     resize?: HookHandler<{entries: ResizeObserverEntry[]}>;
     stage?: HookHandler<{stage: YagrState['stage']}>;
 }
+
+export type YagrHooks = Hooks.Arrays & InternalYargHooks;
 
 export interface ProcessingInterpolation {
     /** Interpolation type */
@@ -257,6 +243,12 @@ export interface CommonSeriesOptions {
 
     /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
     showInTooltip?: boolean;
+
+    /**
+     * Postprocessing function to change actual values (doesn't marks as _transformed series)
+     * Use at your own risk
+     **/
+    postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];
 }
 
 export interface LineSeriesOptions extends CommonSeriesOptions {

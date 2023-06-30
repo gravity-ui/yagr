@@ -13,9 +13,9 @@ interface UpdateOptions {
     splice?: boolean;
 }
 
-function setLocaleImpl(yagr: Yagr, locale: SupportedLocales | Record<string, string>) {
+function setLocaleImpl(yagr: Yagr, batch: Batch, locale: SupportedLocales | Record<string, string>) {
     yagr.utils.i18n = i18n(locale);
-    yagr.plugins.legend?.redraw();
+    batch.redrawLegend = true;
 }
 
 function setThemeImpl(yagr: Yagr, themeValue: YagrTheme, batch: Batch) {
@@ -55,7 +55,7 @@ function setFocusImpl(yagr: Yagr, lineId: string | null, focus: boolean) {
     yagr.uplot.setSeries(seriesIdx, {focus});
 }
 
-function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, batch: Batch) {
+function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, updateLegend: boolean, batch: Batch) {
     const seriesIdx = lineId === null ? null : yagr.state.y2uIdx[lineId];
     const seriesCfg = lineId === null ? yagr.config.series : [yagr.config.series.find(({id}) => id === lineId)];
 
@@ -94,6 +94,7 @@ function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, batch:
         batch.recalc = true;
         batch.fns.push(() => {
             yagr.uplot.setData(yagr.series, true);
+            updateLegend && yagr.plugins.legend?.update();
         });
     }
 }
@@ -170,6 +171,29 @@ function isChanged(oldConfig: YagrConfig, newConfig: Partial<YagrConfig>) {
     };
 }
 
+function areSeriesChanged(a: YagrConfig['series'], b?: YagrConfig['series']) {
+    if (a.length !== b?.length) {
+        return true;
+    }
+
+    const mapA = new Map<string, YagrConfig['series'][0]>();
+    const mapB = new Map<string, YagrConfig['series'][0]>();
+
+    a.forEach((serie) => {
+        mapA.set(serie.id!, serie);
+    });
+
+    b.forEach((serie) => {
+        mapB.set(serie.id!, serie);
+    });
+
+    if (b.some(({id}) => !mapA.has(id!)) || a.some(({id}) => !mapB.has(id!))) {
+        return true;
+    }
+
+    return false;
+}
+
 function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>) {
     const isChangedKey = isChanged(yagr.config, newConfig);
 
@@ -195,8 +219,14 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
         yagr.setScales(newConfig.scales!);
     }
 
-    if (newConfig.series && newConfig.timeline) {
-        yagr.setSeries(newConfig.timeline, newConfig.series, {
+    const isChangedSeries = areSeriesChanged(yagr.config.series, newConfig.series);
+
+    if (isChangedSeries) {
+        batch.redrawLegend = true;
+    }
+
+    if (newConfig.series || newConfig.timeline) {
+        yagr.setSeries(newConfig.timeline ?? yagr.config.timeline, newConfig.series ?? yagr.config.series, {
             incremental: false,
         });
     }
@@ -356,7 +386,7 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @description Set's locale of chart and redraws all locale-dependent elements.
      */
     setLocale(this: Yagr<T>, locale: SupportedLocales | Record<string, string>) {
-        this.batch(() => setLocaleImpl(this, locale));
+        this.batch((batch) => setLocaleImpl(this, batch, locale));
     }
 
     /**
@@ -434,8 +464,8 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @param show boolean
      * @description Sets visibility of line with given id. If id is null, sets visibility of all lines.
      */
-    setVisible(this: Yagr<T>, lineId: string | null, show: boolean) {
-        this.batch((batch) => setVisibleImpl(this, lineId, show, batch));
+    setVisible(this: Yagr<T>, lineId: string | null, show: boolean, updateLegend = true) {
+        this.batch((batch) => setVisibleImpl(this, lineId, show, updateLegend, batch));
     }
 
     /**

@@ -19,6 +19,7 @@
         </style>
     </head>
     <body>
+        <h1>Legend</h1>
         <div class="grid">
             <div id="chart1" class="container"></div>
             <div id="chart3" class="container"></div>
@@ -74,7 +75,7 @@
             const y3 = new Yagr(chart3, {
                 title: {text: 'Paginated'},
                 timeline: [1, 2, 3],
-                series: new Array(20).fill(1).map((x) => {
+                series: new Array(60).fill(1).map((x) => {
                     return {
                         data: [1, 2, 3],
                         color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
@@ -90,6 +91,7 @@
                 legend: {
                     show: true,
                     position: 'top',
+                    maxLegendSpace: 0.2,
                 },
             });
 

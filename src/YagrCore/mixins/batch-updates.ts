@@ -5,10 +5,16 @@ import UPlot from 'uplot';
 export interface Batch {
     active: boolean;
     fns: ((s: Batch) => void)[];
+    /** If true then uPlot options will be re-configured  */
     reopt?: boolean;
+    /** If true then data will be recalculated (use for stacks/normalization/other calculations) */
     recalc?: boolean;
+    /** False or redraw uPlot redraw arguments */
     redraw?: false | [series: boolean, axes: boolean];
+    /** If batch will end with full re-instantiation of uPlot */
     reinit?: boolean;
+    /** If true, legend will be fully redrawn instead of re-initialization  */
+    redrawLegend?: boolean;
 }
 
 export class BatchMixin<T extends MinimalValidConfig> {
@@ -48,9 +54,12 @@ export class BatchMixin<T extends MinimalValidConfig> {
             return this.fullUpdate();
         }
 
+        if (this._batch.redrawLegend) {
+            this.plugins.legend?.redraw();
+        }
+
         if (this._batch.reopt) {
             this.createUplotOptions(true);
-            this.plugins.legend?.redraw();
         }
 
         if (this._batch.recalc) {
@@ -84,9 +93,8 @@ export class BatchMixin<T extends MinimalValidConfig> {
             })
             .inStage('uplot', () => {
                 this.uplot.destroy();
-                this.resizeOb?.unobserve(this.root);
-                this.resizeOb = undefined;
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
+                this.plugins.legend?.redraw();
                 this.init();
             })
             .inStage('listen');

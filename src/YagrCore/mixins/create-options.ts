@@ -34,8 +34,6 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
 
         let tooltipInstance = this.plugins?.tooltip;
 
-        this.plugins = this.plugins ?? {};
-
         /** Setting up TooltipPugin */
         if (config.tooltip && config.tooltip.show !== false) {
             if (tooltipInstance) {
@@ -47,9 +45,11 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             this.plugins.tooltip = tooltipInstance;
         }
 
-        const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
-        this.plugins.plotLines = plotLinesPluginInstance;
-        plugins.push(plotLinesPluginInstance.uplot);
+        if (!reOpt) {
+            const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
+            this.plugins.plotLines = plotLinesPluginInstance;
+            plugins.push(plotLinesPluginInstance.uplot);
+        }
 
         Object.entries(config.plugins).forEach(([name, plugin]) => {
             const pluginInstance = plugin(this);
@@ -154,10 +154,10 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                     return;
                 }
                 this.state.stage = 'listen';
-                this.execHooks(this.config.hooks.stage, {chart: this, stage: this.state.stage});
+                this.execHooks('stage', {chart: this, stage: this.state.stage});
                 const renderTime = performance.now() - this._startTime;
                 this._meta.renderTime = renderTime;
-                this.execHooks(config.hooks.load, {
+                this.execHooks('load', {
                     chart: this,
                     meta: this._meta as YagrMeta,
                 });
@@ -165,7 +165,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             options.hooks.ready.push(() => {
                 const initTime = performance.now() - this._startTime;
                 this._meta.initTime = initTime;
-                this.execHooks(config.hooks.inited, {
+                this.execHooks('inited', {
                     chart: this,
                     meta: {
                         initTime,
@@ -189,7 +189,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
                 const {timeMultiplier = 1} = chart;
 
-                this.execHooks(config.hooks.onSelect, {
+                this.execHooks('onSelect', {
                     from: Math.ceil(_from / timeMultiplier),
                     to: Math.ceil(_to / timeMultiplier),
                     chart: this,
@@ -200,13 +200,21 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
 
         options.drawOrder = chart.appearance?.drawOrder
             ? (chart.appearance?.drawOrder.filter(
-                  (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Series,
+                  (key) => key === DrawOrderKey.Series || key === DrawOrderKey.Axes,
               ) as uDrawOrderKey[])
             : [DrawOrderKey.Series, DrawOrderKey.Axes];
 
         /** Disabling uPlot legend. */
         options.legend = {show: false};
         options.padding = config.chart.size?.padding || getPaddingByAxes(options);
+
+        /**
+         * Pre-initialization  of legend allows to calculate
+         * legend's height before actual uPlot instance
+         * will be rendered, to avoid blinking height changes
+         */
+        this.plugins.legend?.preInit(this, this.config.legend, options);
+        options.height = this.clientHeight;
 
         this.options = options;
 

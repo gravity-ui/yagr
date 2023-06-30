@@ -42,6 +42,32 @@ function paintCursorPoint(series: Series, pt: HTMLElement, span?: HTMLElement) {
 }
 
 /*
+ * Draws HTML points for cursor to transform
+ */
+export function cursorPoint(u: UPlot, seriesIndex: number) {
+    const serie = u.series[seriesIndex];
+    const span = html('span');
+    const pt = html(
+        'div',
+        {
+            class: 'yagr-point',
+            'data-idx': String(seriesIndex),
+        },
+        serie.empty ? undefined : span,
+    );
+
+    // @TODO possibly not to render at all. Requires PR into uPlot
+    if (serie.empty) {
+        pt.style.display = 'none';
+        return pt;
+    }
+
+    paintCursorPoint(serie, pt, span);
+
+    return pt;
+}
+
+/*
  * Cursor plugin responsible for drawing cursor points and crosshairs,
  * and for syncing cursors.
  */
@@ -86,32 +112,6 @@ export default function CursorPlugin(
 
         return hoveredIdx;
     };
-
-    /*
-     * Draws HTML points for cursor to transform
-     */
-    function cursorPoint(u: UPlot, seriesIndex: number) {
-        const serie = u.series[seriesIndex];
-        const span = html('span');
-        const pt = html(
-            'div',
-            {
-                class: 'yagr-point',
-                'data-idx': String(seriesIndex),
-            },
-            serie.empty ? undefined : span,
-        );
-
-        // @TODO possibly not to render at all. Requires PR into uPlot
-        if (serie.empty) {
-            pt.style.display = 'none';
-            return pt;
-        }
-
-        paintCursorPoint(serie, pt, span);
-
-        return pt;
-    }
 
     return {
         pin: (pinState: boolean) => {

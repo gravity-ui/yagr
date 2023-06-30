@@ -19,6 +19,7 @@
         </style>
     </head>
     <body>
+        <h1>Set scales</h1>
         <div class="grid">
             <div id="chart1" class="container"></div>
         </div>
@@ -27,7 +28,7 @@
 
         <script>
             const yagr = new Yagr(chart1, {
-                title: {text: 'Range bands'},
+                title: {text: 'Set scales'},
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},

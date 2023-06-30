@@ -3,13 +3,20 @@ import UPlot from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
+import {asPlain, deepIsEqual} from '../../utils/common';
 
-const MAX_X_SCALE_LINE_OFFSET = 5;
+const MAX_X_SCALE_LINE_OFFSET = 0;
 const DRAW_MAP = {
     [DrawOrderKey.Series]: 0,
     [DrawOrderKey.Axes]: 1,
     plotLines: 2,
 };
+
+function hasPlotLine(list: PlotLineConfig[], p: PlotLineConfig) {
+    return list.some((pl) => {
+        return deepIsEqual(pl, p);
+    });
+}
 
 const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'> = {
     '012': 'draw',
@@ -22,6 +29,7 @@ const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'
 
 export type PlotLinesPlugin = YagrPlugin<
     {
+        update: (additionalPlotLines?: PlotLineConfig[], scale?: string) => void;
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
         clear: (scale?: string) => void;
         get: () => PlotLineConfig[];
@@ -31,7 +39,7 @@ export type PlotLinesPlugin = YagrPlugin<
 
 /*
  * Plugin renders custom lines and bands on chart based on axis config.
- * Axis should be binded to scale.
+ * Axis should be bound to scale.
  */
 export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig[] = []): ReturnType<PlotLinesPlugin> {
     let plotLines = [...plotLinesCfg];
@@ -58,7 +66,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
 
             if (Array.isArray(value)) {
                 /** This weird code should handles unexpected Inifinities in values */
-                const values = value.map((val) => {
+                const [fromValue, toValue] = value.map((val) => {
                     if (Math.abs(val) !== Infinity) {
                         return val;
                     }
@@ -69,8 +77,8 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                     return u.posToVal(pos, scale);
                 });
 
-                const from = u.valToPos(values[0], scale, true);
-                const to = u.valToPos(values[1], scale, true);
+                const from = u.valToPos(fromValue, scale, true);
+                const to = u.valToPos(toValue, scale, true);
 
                 if (scale === DEFAULT_X_SCALE) {
                     ctx.fillRect(from, top, to - from, height);
@@ -82,6 +90,8 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                 const pConf = plotLineConfig as PLineConfig;
 
                 ctx.beginPath();
+                const axisSize = asPlain(u.axes.find((a) => a.scale === scale)?.size);
+
                 if (scale === DEFAULT_X_SCALE) {
                     /** Workaround to ensure that plot line will not be drawn over axes */
                     const last = u.data[0][u.data[0].length - 1] as number;
@@ -91,7 +101,8 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                     }
 
                     ctx.moveTo(from, top);
-                    ctx.lineTo(from, height);
+
+                    ctx.lineTo(from, height + (axisSize ?? 0));
                 } else {
                     ctx.moveTo(left, from);
                     ctx.lineTo(width, from);
@@ -116,7 +127,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
               }
             : renderPlotLines;
 
-    return {
+    const plugin = {
         get: () => plotLines,
         clear: (scale?: string) => {
             plotLines = scale
@@ -125,10 +136,34 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                   })
                 : [];
         },
+        remove: (plotLinesToRemove: PlotLineConfig[], scale?: string) => {
+            plotLines = plotLines.filter((p) => {
+                return !plotLinesToRemove.some((pl) => {
+                    return deepIsEqual(pl, p) && (!scale || scale === p.scale);
+                });
+            });
+        },
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
             for (const p of additionalPlotLines) {
                 plotLines.push(scale ? {scale, ...p} : p);
             }
+        },
+        update: (newPlotLines?: PlotLineConfig[], scale?: string) => {
+            if (!newPlotLines || newPlotLines.length === 0) {
+                plugin.clear(scale);
+                return;
+            }
+
+            const additions = newPlotLines!.filter((p) => {
+                return !hasPlotLine(plotLinesCfg, p);
+            });
+
+            const removes = plotLines.filter((p) => {
+                return !hasPlotLine(newPlotLines!, p);
+            });
+
+            additions.length && plugin.add(additions, scale);
+            removes.length && plugin.remove(removes, scale);
         },
         uplot: {
             hooks: {
@@ -137,4 +172,6 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             },
         },
     };
+
+    return plugin;
 }

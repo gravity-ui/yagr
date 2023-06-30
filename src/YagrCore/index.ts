@@ -5,7 +5,7 @@ import {TooltipPlugin} from './plugins/tooltip/tooltip';
 import cursorPlugin from './plugins/cursor/cursor';
 import plotLinesPlugin, {PlotLinesPlugin} from './plugins/plotLines/plotLines';
 
-import {YagrConfig, PlotLineConfig, YagrHooks, MinimalValidConfig, HookParams} from './types';
+import {YagrConfig, PlotLineConfig, MinimalValidConfig, InternalYargHooks} from './types';
 
 import {debounce, genId, px} from './utils/common';
 import ColorParser from './utils/colors';
@@ -59,7 +59,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     config!: YagrConfig;
     resizeOb?: ResizeObserver;
     canvas!: HTMLCanvasElement;
-    plugins!: {
+    plugins: {
         tooltip?: ReturnType<TooltipPlugin>;
         plotLines?: ReturnType<PlotLinesPlugin>;
         cursor?: ReturnType<typeof cursorPlugin>;
@@ -68,7 +68,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         TConfig['plugins'] extends YagrConfig['plugins']
             ? {[key in keyof TConfig['plugins']]: ReturnType<TConfig['plugins'][key]>}
             : {}
-    >;
+    > = {};
     state!: YagrState;
     utils!: {
         colors: ColorParser;
@@ -181,12 +181,16 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
                 root.style.height = px(chart.size.height);
             }
 
+            this.plugins.legend = new LegendPlugin();
             this.setTheme(chart.appearance.theme || 'light');
-
-            const options = this.createUplotOptions();
-            this._cache = {height: options.height, width: options.width};
-            this.options = config.editUplotOptions ? config.editUplotOptions(options) : options;
-            this.plugins.legend = new LegendPlugin(this, config.legend);
+            this.createUplotOptions();
+            this._cache = {
+                height: this.options.height,
+                width: this.options.width,
+            };
+            if (config.editUplotOptions) {
+                this.options = config.editUplotOptions(this.options);
+            }
         })
             .inStage('processing', () => {
                 this.transformSeries();
@@ -221,8 +225,9 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.resizeOb && this.resizeOb.unobserve(this.root);
         this.unsubscribe();
         this.plugins?.tooltip?.dispose();
+        this.plugins?.legend?.destroy();
         this.uplot.destroy();
-        this.execHooks(this.config.hooks.dispose, {chart: this});
+        this.execHooks('dispose', {chart: this});
     }
 
     toDataUrl() {
@@ -267,22 +272,25 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.config.hooks.dispose.push(this.trackMouse());
     };
 
-    protected execHooks = <T extends YagrHooks[keyof YagrHooks]>(hooks: T, ...args: HookParams<T>) => {
+    protected execHooks = <T extends keyof InternalYargHooks>(
+        hookName: T,
+        ...args: Parameters<Required<InternalYargHooks>[T][0]>
+    ) => {
+        const hooks = this.config.hooks[hookName];
         if (Array.isArray(hooks)) {
-            hooks.forEach((hook) => {
+            for (const hook of hooks) {
                 if (!hook) {
-                    return;
+                    continue;
                 }
 
-                // @ts-ignore
                 typeof hook === 'function' && hook(...args);
-            });
+            }
         }
     };
 
     protected inStage(stage: YagrState['stage'], fn?: () => void) {
         this.state.stage === stage;
-        this.execHooks(this.config.hooks.stage, {chart: this, stage});
+        this.execHooks('stage', {chart: this, stage});
         try {
             fn && fn();
         } catch (error) {
@@ -293,11 +301,19 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 
     protected initRender = (u: uPlot, done: Function) => {
-        /** Reimplementing appedning u.root to root */
-        this.root.appendChild(u.root);
+        /**
+         * Reimplementing appending u.root to root
+         * and ensure that uPlot instance will be placed
+         * correctly relative to legend
+         */
+        this.config.legend?.position === 'bottom'
+            ? this.root.appendChild(u.root)
+            : this.root.insertBefore(u.root, this.root.firstChild);
 
-        /** Init legend if required */
-        this.plugins.legend?.init(u);
+        if (this.config.legend?.show) {
+            this.plugins.legend?.init(u);
+            this.reflow(false);
+        }
 
         /** Setup font size for title if required */
         if (this.config.title && this.config.title.fontSize) {
@@ -310,7 +326,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     };
 
     private onError(error: Error) {
-        this.execHooks(this.config.hooks.error, {
+        this.execHooks('error', {
             stage: this.state.stage,
             error,
             chart: this,
@@ -354,6 +370,17 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             }
         }
 
+        this.reflow();
+        this.execHooks('resize', {entries: args, chart: this});
+    };
+
+    get clientHeight() {
+        const MARGIN = 8;
+        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
+        return this.root.clientHeight - offset - (this.plugins.legend?.state.totalSpace || 0);
+    }
+
+    reflow(redraw = true) {
         const width = this.root.clientWidth;
         const height = this.clientHeight;
 
@@ -361,21 +388,12 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.options.width = width;
         this._cache.height = height;
         this.options.height = height;
-        this.plugins?.legend?.redraw();
-        this._cache.height = this.options.height;
-        this._cache.width = this.options.width;
-        this.uplot.setSize({
-            width: this.options.width,
-            height: this.options.height,
-        });
-        this.uplot.redraw();
-        this.execHooks(this.config.hooks.resize, {entries: args, chart: this});
-    };
-
-    get clientHeight() {
-        const MARGIN = 8;
-        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
-        return this.root.clientHeight - offset;
+        redraw &&
+            this.uplot.setSize({
+                width: this.options.width,
+                height: this.options.height,
+            });
+        redraw && this.uplot.redraw();
     }
 }
 
