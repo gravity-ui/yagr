@@ -181,7 +181,14 @@ export function getRedrawOptionsForAxesUpdate(axes: YagrConfig['axes']) {
 }
 
 export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
-    const upd = getAxis(axisConfig, yagr);
+    const upd = getAxis(
+        {
+            ...axisConfig,
+            font: uAxis.font,
+        },
+        yagr,
+    );
+    upd.font = axisConfig.font || upd.font;
     upd.ticks = {...uAxis.ticks, ...upd.ticks};
     upd.grid = {...uAxis.grid, ...upd.grid};
     upd.border = {...uAxis.border, ...upd.border};
