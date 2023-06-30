@@ -1,5 +1,12 @@
 ### master
 
+## [3.2.1](https://github.com/gravity-ui/yagr/compare/v3.2.0...v3.2.1) (2023-06-30)
+
+
+### Bug Fixes
+
+* fixed setAxes method ([68ce5c1](https://github.com/gravity-ui/yagr/commit/68ce5c122ef1cbd7c748df7fdeef9e7998361677))
+
 ## [3.2.0](https://github.com/gravity-ui/yagr/compare/v3.1.0...v3.2.0) (2023-06-23)
 
 
