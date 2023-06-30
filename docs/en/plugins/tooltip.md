@@ -116,3 +116,15 @@ interface TooltipRenderOptions {
     yagr: Yagr;
 }
 ```
+
+## Using external non string-to-HTML rendering system (React, Vue, etc)
+
+Tooltip supports virtualization which means that "tooltip' backend" still will work, but tooltip won't render any DOM-elements. This approach allows to use any rendering system you want, just by subscribing to tooltip events. You can find an example of this approach applied to React in the [React Tooltip example](https://github.com/gravity-ui/yagr/blob/main/demo/examples/react/react-tooltip.html).
+
+Use `tooltip.virtual: true` to enable virtualization.
+
+```js
+tooltip: {
+    virtual: true,
+}
+```

@@ -43,6 +43,30 @@
             </div>
         </div>
 
+        <div class="grid">
+            <div class="container">
+                <div id="chart5"></div>
+                <button id="changePlotLines">Change plotlines</button>
+            </div>
+            <div class="container">
+                <div id="chart6"></div>
+                <button id="changeData">Change data</button>
+                <button id="mixData">Mix Lines</button>
+                <button id="mashUp">Mash up</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="container">
+                <div id="chart7"></div>
+                <button id="changeAxes">Change axes</button>
+            </div>
+            <div class="container">
+                <div id="chart8"></div>
+                <button id="changeScales">Change scales</button>
+            </div>
+        </div>
+
         <script>
             function randomColor() {
                 const r = Math.floor(Math.random() * 255);
@@ -196,6 +220,137 @@
                             id: idx.toString(),
                         };
                     }),
+                });
+            };
+
+            const yagr5 = new Yagr(chart5, {
+                title: {text: 'Change poltlines'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                chart: {
+                    series: {
+                        type: 'area',
+                    },
+                    appearance: {
+                        drawOrder: ['plotLines', 'axes', 'series'],
+                    },
+                },
+                axes: {
+                    x: {
+                        scale: 'x',
+                        plotLines: [
+                            {
+                                width: 10,
+                                color: 'rgba(200, 0, 0, 0.3)',
+                                value: [10000, 12000],
+                            },
+                        ],
+                    },
+                },
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
+            });
+
+            window.changePlotLines.onclick = () => {
+                const plStart = yagr.config.timeline[(Math.random() * yagr.config.timeline.length) >> 0];
+
+                yagr5.setConfig({
+                    axes: {
+                        x: {
+                            plotLines: [
+                                {
+                                    width: 10,
+                                    color: randomColor(0.5),
+                                    value: [plStart, plStart + 1000],
+                                },
+                            ],
+                        },
+                    },
+                });
+            };
+
+            const yagr6 = new Yagr(chart6, {
+                title: {text: 'Ensure Legend Redraw'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+
+                scales: {
+                    y: {
+                        stacking: true,
+                    },
+                },
+                legend: {
+                    show: true,
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
+            });
+
+            window.changeData.onclick = () => {
+                yagr6.setConfig({
+                    series: [
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                    ],
+                });
+            };
+
+            window.mixData.onclick = () => {
+                yagr6.setConfig({
+                    series: [
+                        {
+                            data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                            color: 'orange',
+                            name: 'Orange',
+                            id: ('1' + Math.random() * 10) >> 0,
+                        },
+                        {
+                            data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                            color: 'darkred',
+                            name: 'Crimson',
+                            id: ('2' + Math.random() * 10) >> 0,
+                        },
+                    ],
+                });
+            };
+
+            window.mashUp.onclick = () => {
+                yagr6.setConfig({
+                    series: new Array(30).fill(0).map((_, sIdx) => ({
+                        data: new Array(20).fill().map((_, i) => Math.random() * 6),
+                        color: randomColor(),
+                        name: 'Serie ' + sIdx,
+                        id: ('1' + Math.random() * 1000) >> 0,
+                    })),
+                });
+            };
+
+            const yagr7 = new Yagr(chart7, {
+                title: {text: 'Change axes'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                axes: {
+                    y: {
+                        precision: 4,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
+            });
+
+            window.changeAxes.onclick = () => {
+                yagr7.setAxes({
+                    y: {
+                        precision: 2,
+                    },
                 });
             };
         </script>

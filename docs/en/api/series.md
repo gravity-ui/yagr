@@ -10,6 +10,8 @@ Series type adds extra features to [uPlot series](https://github.com/leeoniya/up
 
 -   `series.transform?: (val: number | null | string, series: DataSeries[], idx: number) => number | null` - series data transformation method
 
+-   `series.postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];` - series data post processing method (will be called if exists after all data transformations)
+
 ### Name and ID
 
 -   `series.name?: string` - series name Renders in the tooltip and inline legend. If not this is not passed, `Series <series index>` name will be generated.
