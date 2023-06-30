@@ -76,7 +76,8 @@ type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 -   `tooltip.render: (data: TooltipRenderOptions) => string` - tooltip renderer See [TooltipRenderOptions](#custom-renderer)
 -   `tooltip.showIndicies: PerScale<boolean>` - show indices in tooltip rows
 -   `tooltip.percent?: PerScale<boolean>` - **Not implemented** show percentages in tooltip rows
--   `tooltip.boundClassName?: string` - an CSS selector that finds the element in which the tooltip will be rendered (visually, not in DOM)
+-   `tooltip.boundClassName?: string` - an CSS selector that finds the element in which the tooltip will be displayed (used only for calculations of offsets, not DOM rendering)
+-   `tooltip.renderClassName?: string` - an CSS selector that finds the element in which the tooltip will be rendered (used only for rendering, not for offset calculations)
 
 #### Custom renderer
 
