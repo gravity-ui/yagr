@@ -306,9 +306,16 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
          * and ensure that uPlot instance will be placed
          * correctly relative to legend
          */
-        this.config.legend?.position === 'bottom'
-            ? this.root.appendChild(u.root)
-            : this.root.insertBefore(u.root, this.root.firstChild);
+        const position = this.config.legend?.position;
+        if (this.root.firstChild) {
+            !position || position === 'bottom'
+                ? this.root.insertBefore(u.root, this.root.firstChild)
+                : this.root.appendChild(u.root);
+        } else {
+            !position || position === 'bottom'
+                ? this.root.appendChild(u.root)
+                : this.root.insertBefore(u.root, this.root.firstChild);
+        }
 
         if (this.config.legend?.show) {
             this.plugins.legend?.init(u);
