@@ -57,6 +57,13 @@
             </div>
         </div>
 
+        <div class="grid">
+            <div class="container">
+                <div id="chart7"></div>
+                <button id="changeAxes">Change axes</button>
+            </div>
+        </div>
+
         <script>
             function randomColor(a = 1) {
                 const r = Math.floor(Math.random() * 255);
@@ -331,6 +338,28 @@
                         name: 'Serie ' + sIdx,
                         id: ('1' + Math.random() * 1000) >> 0,
                     })),
+                });
+            };
+
+            const yagr7 = new Yagr(chart7, {
+                title: {text: 'Change axes'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                axes: {
+                    y: {
+                        precision: 4,
+                    },
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'darkred', id: '2'},
+                ],
+            });
+
+            window.changeAxes.onclick = () => {
+                yagr7.setAxes({
+                    y: {
+                        precision: 2,
+                    },
                 });
             };
         </script>

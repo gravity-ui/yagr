@@ -8,9 +8,10 @@ npm install @gravity-ui/yagr
 
 ## Integration
 
-By default, Yagr exposes the ES2017 module for TypeScript, though you can import other modules:
+By default, Yagr exposes the ES2019 module for TypeScript, though you can import other modules:
 
--   `@gravity-ui/yagr/dist/yagr.es5.js` - ES5 module
+-   `@gravity-ui/yagr/dist/yagr.ejs.js` - EJS module
+-   `@gravity-ui/yagr/dist/yagr.cjs.js` - CommonJS module
 -   `@gravity-ui/yagr/dist/yagr.umd.js` - UMD module
 -   `@gravity-ui/yagr/dist/yagr.iife.js` - IIFE module
 

@@ -18,12 +18,13 @@ function setLocaleImpl(yagr: Yagr, batch: Batch, locale: SupportedLocales | Reco
     batch.redrawLegend = true;
 }
 
-function setThemeImpl(yagr: Yagr, themeValue: YagrTheme) {
+function setThemeImpl(yagr: Yagr, themeValue: YagrTheme, batch: Batch) {
     yagr.utils.theme.setTheme(themeValue);
     const availableThemes: YagrTheme[] = ['light', 'light-hc', 'dark', 'dark-hc'];
     const classesToRemove = availableThemes.map((theme) => `yagr_theme_${theme}`);
     yagr.root.classList.remove(...classesToRemove);
     yagr.root.classList.add('yagr_theme_' + themeValue);
+    batch.redraw = [false, true];
 }
 
 function setAxesImpl(yagr: Yagr, batch: Batch, axes: YagrConfig['axes']) {
@@ -89,7 +90,7 @@ function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, update
     }
 
     if (shouldRebuildStacks) {
-        batch.reopt = true;
+        // batch.reopt = true;
         batch.recalc = true;
         batch.fns.push(() => {
             yagr.uplot.setData(yagr.series, true);
@@ -145,9 +146,13 @@ function setScalesImpl(yagr: Yagr, scales: YagrConfig['scales'], batch: Batch) {
         });
     }
 
-    if (stackingIsChanged || typeIsChanged || normalizationIsChanged) {
-        batch.recalc = true;
+    if (stackingIsChanged || normalizationIsChanged) {
         batch.reinit = true;
+    }
+
+    if (typeIsChanged) {
+        batch.reopt = true;
+        batch.recalc = true;
     }
 
     yagr.config.scales = scales;
@@ -390,10 +395,7 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @description Set's theme of chart and redraws all theme-dependent elements.
      */
     setTheme(this: Yagr<T>, themeValue: YagrTheme) {
-        this.batch((batch) => {
-            setThemeImpl(this, themeValue);
-            batch.redraw = [false, true];
-        });
+        this.batch((batch) => setThemeImpl(this, themeValue, batch));
     }
 
     /**
