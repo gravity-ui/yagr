@@ -90,6 +90,8 @@ export interface TooltipOptions {
     percent?: PerScale<boolean>;
     /** Element bound for tooltip (default: document.body) */
     boundClassName?: string;
+    /** Element for render tooltip (default: document.body) */
+    renderClassName?: string;
     /** Value precision (default: 2) */
     precision?: PerScale<number>;
     /** Tooltip element className appendix */

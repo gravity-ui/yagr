@@ -113,6 +113,7 @@ class YagrTooltip {
 
     private tOverlay: HTMLDivElement;
     private bound: HTMLElement;
+    private renderNode: HTMLElement;
 
     yagr: Yagr;
     opts: TooltipOptions;
@@ -135,6 +136,9 @@ class YagrTooltip {
         this.bound = this.opts.boundClassName
             ? document.querySelector(this.opts.boundClassName) || document.body
             : document.body;
+        this.renderNode = this.opts.renderClassName
+            ? document.querySelector(this.opts.renderClassName) || document.body
+            : document.body;
         this.tOverlay = document.createElement('div');
 
         this.tOverlay.id = `${yagr.id}_tooltip`;
@@ -155,7 +159,7 @@ class YagrTooltip {
         if (this.opts.virtual) {
             this.placement = () => {};
         } else {
-            this.bound.appendChild(this.tOverlay);
+            this.renderNode.appendChild(this.tOverlay);
             this.state.mounted = true;
             this.emit('mount');
         }
