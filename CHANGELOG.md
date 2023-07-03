@@ -1,5 +1,12 @@
 ### master
 
+## [3.3.1](https://github.com/gravity-ui/yagr/compare/v3.3.0...v3.3.1) (2023-07-02)
+
+
+### Bug Fixes
+
+* fixed initRender to support updates without legend dom node change ([c8810d6](https://github.com/gravity-ui/yagr/commit/c8810d632dda66901f776bd372d4304868d25deb))
+
 ## [3.3.0](https://github.com/gravity-ui/yagr/compare/v3.2.1...v3.3.0) (2023-06-30)
 
 
