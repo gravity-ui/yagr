@@ -232,10 +232,7 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
     }
 
     batch.reopt = true;
-
-    batch.fns.push(() => {
-        yagr.config = {...yagr.config, ...newConfig};
-    });
+    yagr.config = {...yagr.config, ...newConfig};
 }
 
 function setSeriesImpl(

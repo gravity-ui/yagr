@@ -45,7 +45,9 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             this.plugins.tooltip = tooltipInstance;
         }
 
-        if (!reOpt) {
+        if (reOpt) {
+            this.plugins.plotLines && plugins.push(this.plugins.plotLines.uplot);
+        } else {
             const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
             this.plugins.plotLines = plotLinesPluginInstance;
             plugins.push(plotLinesPluginInstance.uplot);
