@@ -17,6 +17,8 @@ declare module 'uplot' {
         color: string;
         name: string;
 
+        /** Assigned by Yagr to uPlot series */
+        data: DataSeriesExtended;
         /** Will appear after processing series */
         $c: DataSeriesExtended;
 

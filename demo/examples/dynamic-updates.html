@@ -62,6 +62,10 @@
                 <div id="chart7"></div>
                 <button id="changeAxes">Change axes</button>
             </div>
+            <div class="container">
+                <div id="chart8"></div>
+                <button id="changeForTooltip">Tooltip update</button>
+            </div>
         </div>
 
         <script>
@@ -360,6 +364,32 @@
                     y: {
                         precision: 2,
                     },
+                });
+            };
+
+            const yagr8 = new Yagr(chart8, {
+                title: {text: 'Ensure tooltip renders correctly'},
+                timeline: [100000, 200000],
+                series: [
+                    {
+                        data: [100, 100],
+                        color: 'green',
+                        id: '1',
+                    },
+                ],
+            });
+
+            window.changeForTooltip.onclick = () => {
+                yagr8.setConfig({
+                    title: {text: 'Ensure tooltip renders correctly'},
+                    timeline: [100000, 200000],
+                    series: [
+                        {
+                            data: [120, 120],
+                            color: 'green',
+                            id: '1',
+                        },
+                    ],
                 });
             };
         </script>
