@@ -92,7 +92,7 @@ interface CustomTooltip {
 }
 
 export const useTooltipState = (
-    yagrRef: React.MutableRefObject<YagrReactRef>,
+    yagrRef: React.MutableRefObject<YagrReactRef | null>,
     tooltipRef: React.RefObject<CustomTooltip>,
 ) => {
     React.useEffect(() => {
