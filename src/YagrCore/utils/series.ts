@@ -127,4 +127,13 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     return serie;
 }
 
-export const UPDATE_KEYS: (keyof Series)[] = ['width', 'pointsSize', 'color', 'lineColor', 'lineWidth', '$c'];
+export const overrideSeriesInUpdate = (dest: Series, source: Series) => {
+    dest.$c = source.$c ?? dest.$c;
+    dest.data = source.data ?? dest.data;
+    dest.width = source.width ?? dest.width;
+    dest.pointsSize = source.pointsSize ?? dest.pointsSize;
+    dest.color = source.color ?? dest.color;
+    dest.lineColor = source.lineColor ?? dest.lineColor;
+    dest.lineWidth = source.lineWidth ?? dest.lineWidth;
+    dest.stroke = source.stroke ?? dest.stroke;
+};

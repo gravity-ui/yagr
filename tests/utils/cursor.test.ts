@@ -9,6 +9,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -28,6 +29,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -49,6 +51,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -69,6 +72,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -91,6 +95,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -111,6 +116,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -135,6 +141,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -156,6 +163,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -179,6 +187,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -200,6 +209,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -223,6 +233,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',
@@ -244,6 +255,7 @@ describe('utils:findDataIdx', () => {
                     {
                         id: '1',
                         count: 2,
+                        data: [],
                         $c: [],
                         name: '1',
                         color: 'red',

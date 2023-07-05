@@ -3,9 +3,9 @@ import Yagr from '..';
 
 import i18n from '../locale';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../defaults';
-import {UPDATE_KEYS, configureSeries} from '../utils/series';
+import {overrideSeriesInUpdate, configureSeries} from '../utils/series';
 import {getRedrawOptionsForAxesUpdate, updateAxis} from '../utils/axes';
-import {Paths, assignKeys, containsOnly, deepIsEqual, get} from '../utils/common';
+import {Paths, containsOnly, deepIsEqual, get} from '../utils/common';
 import {Batch} from './batch-updates';
 
 interface UpdateOptions {
@@ -201,12 +201,6 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
         yagr.setTheme(newConfig.chart?.appearance?.theme!);
     }
 
-    if (newConfig.chart?.series && isChangedKey('chart.series', deepIsEqual)) {
-        yagr.config.chart.series = newConfig.chart!.series!;
-        batch.reopt = true;
-        batch.redraw = [true, false];
-    }
-
     if (newConfig.chart?.appearance?.locale && isChangedKey('chart.appearance.locale')) {
         yagr.setLocale(newConfig.chart?.appearance?.locale!);
     }
@@ -330,8 +324,8 @@ function setSeriesImpl(
                     shouldRecalcData = true;
                 }
 
-                assignKeys(UPDATE_KEYS, opts, newSeries);
-                assignKeys(UPDATE_KEYS, uOpts, newSeries);
+                overrideSeriesInUpdate(opts, newSeries);
+                overrideSeriesInUpdate(uOpts, newSeries);
             } else {
                 batch.fns.push(() => {
                     const newSeries = configureSeries(this, serie, this.config.series.length);
@@ -367,6 +361,16 @@ function setSeriesImpl(
 
         this.config.series = series;
         this.config.timeline = timeline;
+        batch.fns.push(() => {
+            this.options.series.forEach((s) => {
+                const uSeries = this.getSeriesById(s.id!);
+                if (!uSeries) {
+                    return;
+                }
+
+                overrideSeriesInUpdate(uSeries, s);
+            });
+        });
         batch.reopt = true;
         shouldRecalcData = true;
     }
