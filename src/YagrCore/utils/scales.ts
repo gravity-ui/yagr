@@ -196,10 +196,7 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         }
 
         if (yagr.isEmpty) {
-            scale.range = [
-                forceMin === null ? (isLogScale ? 1 : 0) : forceMin, // eslint-disable-line no-nested-ternary
-                forceMax === null ? 100 : forceMax,
-            ];
+            scale.range = [forceMin === null ? (isLogScale ? 1 : 0) : forceMin, forceMax === null ? 100 : forceMax];
             return;
         }
 

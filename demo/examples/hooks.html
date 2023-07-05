@@ -140,8 +140,20 @@
                                 max: 15,
                             },
                         },
+                        processing: {
+                            interpolation: {
+                                value: 'x',
+                                type: 'left',
+                            },
+                        },
                         series: [
-                            {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                            {
+                                data: new Array(20)
+                                    .fill()
+                                    .map((_, i) => (Math.random() * 6 > 2 ? 'x' : Math.random() * 6)),
+                                color: 'red',
+                                id: '1',
+                            },
                             {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
                         ],
                     });
