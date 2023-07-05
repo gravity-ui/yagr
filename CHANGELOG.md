@@ -1,5 +1,12 @@
 ### master
 
+## [3.3.3](https://github.com/gravity-ui/yagr/compare/v3.3.2...v3.3.3) (2023-07-05)
+
+
+### Bug Fixes
+
+* **react:** fixed react typings ([#80](https://github.com/gravity-ui/yagr/issues/80)) ([532d1f4](https://github.com/gravity-ui/yagr/commit/532d1f46b8c2c0a7e50e0601962ce154ba52dea6))
+
 ## [3.3.2](https://github.com/gravity-ui/yagr/compare/v3.3.1...v3.3.2) (2023-07-04)
 
 
