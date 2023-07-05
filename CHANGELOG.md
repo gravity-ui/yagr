@@ -1,5 +1,12 @@
 ### master
 
+## [3.3.4](https://github.com/gravity-ui/yagr/compare/v3.3.3...v3.3.4) (2023-07-05)
+
+
+### Bug Fixes
+
+* fixed dynamic updates of series in case if changed only data ([#82](https://github.com/gravity-ui/yagr/issues/82)) ([9ff1979](https://github.com/gravity-ui/yagr/commit/9ff1979aa280b9f77272ba62134a4dcc4948424d))
+
 ## [3.3.3](https://github.com/gravity-ui/yagr/compare/v3.3.2...v3.3.3) (2023-07-05)
 
 
