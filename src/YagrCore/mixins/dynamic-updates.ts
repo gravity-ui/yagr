@@ -197,20 +197,24 @@ function areSeriesChanged(a: YagrConfig['series'], b?: YagrConfig['series']) {
 function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>) {
     const isChangedKey = isChanged(yagr.config, newConfig);
 
+    if (newConfig.title && isChangedKey('title')) {
+        yagr.setTitle(newConfig.title);
+    }
+
     if (newConfig.chart?.appearance?.theme && isChangedKey('chart.appearance.theme')) {
-        yagr.setTheme(newConfig.chart?.appearance?.theme!);
+        yagr.setTheme(newConfig.chart?.appearance?.theme);
     }
 
     if (newConfig.chart?.appearance?.locale && isChangedKey('chart.appearance.locale')) {
-        yagr.setLocale(newConfig.chart?.appearance?.locale!);
+        yagr.setLocale(newConfig.chart?.appearance?.locale);
     }
 
     if (newConfig.axes && isChangedKey('axes', deepIsEqual)) {
-        yagr.setAxes(newConfig.axes!);
+        yagr.setAxes(newConfig.axes);
     }
 
     if (newConfig.scales && isChangedKey('scales', deepIsEqual)) {
-        yagr.setScales(newConfig.scales!);
+        yagr.setScales(newConfig.scales);
     }
 
     const isChangedSeries = areSeriesChanged(yagr.config.series, newConfig.series);
@@ -389,6 +393,19 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      */
     setLocale(this: Yagr<T>, locale: SupportedLocales | Record<string, string>) {
         this.batch((batch) => setLocaleImpl(this, batch, locale));
+    }
+
+    /**
+     * @public
+     * @param title YagrTitleConfig
+     * @description Set's title of chart and redraws all title-dependent elements.
+     */
+    setTitle(this: Yagr<T>, title: YagrConfig['title']) {
+        this.batch((batch) => {
+            this.config.title = title;
+            this.setTitle();
+            batch.redraw = [true, true];
+        });
     }
 
     /**
