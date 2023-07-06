@@ -1,5 +1,12 @@
 ### master
 
+## [3.3.5](https://github.com/gravity-ui/yagr/compare/v3.3.4...v3.3.5) (2023-07-06)
+
+
+### Bug Fixes
+
+* removed redundant reinit after full update + fixed batch series update ([#84](https://github.com/gravity-ui/yagr/issues/84)) ([5f181ec](https://github.com/gravity-ui/yagr/commit/5f181ec76dff76be93a8c811a2f69cb4fbfbf384))
+
 ## [3.3.4](https://github.com/gravity-ui/yagr/compare/v3.3.3...v3.3.4) (2023-07-05)
 
 
