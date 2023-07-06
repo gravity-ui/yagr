@@ -30,6 +30,13 @@
             <div id="chart4" class="container right"></div>
         </div>
 
+        <h2>Sync on dynamic update</h2>
+        <div class="grid">
+            <div id="chart5" class="container left"></div>
+            <div id="chart6" class="container right"></div>
+        </div>
+        <button id="update">Update</button>
+
         <script>
             const showTooltip = (y) => y.state.isMouseOver;
 
@@ -68,6 +75,34 @@
 
             y4.subscribe();
             y3.subscribe();
+
+            const y5 = new Yagr(chart5, {
+                title: {text: 'Example 5'},
+                timeline: [1, 2, 3],
+                series: [{data: [1, 2, 3], color: 'red'}],
+                cursor: {sync: 'c'},
+            });
+
+            const y6 = new Yagr(chart6, {
+                title: {text: 'Example 6'},
+                timeline: [1, 2, 3],
+                series: [{data: [3, 2, 1], color: 'green'}],
+                cursor: {sync: 'c'},
+            });
+
+            y5.subscribe();
+            y6.subscribe();
+
+            update.onclick = () => {
+                y5.setConfig({
+                    timeline: [1, 2, 3, 4],
+                    series: [{data: [1, 2, 3, 4], color: 'red'}],
+                });
+                y6.setConfig({
+                    timeline: [1, 2, 3, 4],
+                    series: [{data: [1, 2, 3, 4], color: 'green'}],
+                });
+            };
         </script>
     </body>
 </html>

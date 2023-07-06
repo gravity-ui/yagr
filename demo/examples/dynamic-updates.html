@@ -65,6 +65,8 @@
             <div class="container">
                 <div id="chart8"></div>
                 <button id="changeForTooltip">Tooltip update</button>
+                <button id="removeLines">Remove lines</button>
+                <button id="addLines">Add lines</button>
             </div>
         </div>
 
@@ -376,6 +378,11 @@
                         color: 'green',
                         id: '1',
                     },
+                    {
+                        data: [200, 100],
+                        color: 'red',
+                        id: '2',
+                    },
                 ],
             });
 
@@ -388,6 +395,27 @@
                             data: [120, 120],
                             color: 'green',
                             id: '1',
+                        },
+                    ],
+                });
+            };
+
+            window.removeLines.onclick = () => {
+                yagr8.setConfig({
+                    timeline: [100000, 200000],
+                    series: [],
+                });
+            };
+
+            window.addLines.onclick = () => {
+                yagr8.setConfig({
+                    timeline: [100000, 200000],
+                    series: [
+                        ...yagr8.config.series,
+                        {
+                            data: [(Math.random() * 100) >> 0, (Math.random() * 100) >> 0],
+                            color: randomColor(),
+                            id: ('1' + Math.random() * 100) >> 0,
                         },
                     ],
                 });

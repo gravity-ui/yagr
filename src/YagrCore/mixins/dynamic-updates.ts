@@ -347,8 +347,9 @@ function setSeriesImpl(
             this.config.timeline.splice(0, timeline.length);
         }
     } else {
-        /** If we're adding new series */
+        /** If we're adding new series or removing */
         if (
+            series.length !== this.config.series.length ||
             series.some(({id}) => {
                 return this.config.series.find((s) => s.id !== id);
             })
