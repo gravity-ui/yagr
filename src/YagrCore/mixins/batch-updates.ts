@@ -95,7 +95,6 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 this.uplot.destroy();
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.plugins.legend?.redraw();
-                this.init();
             })
             .inStage('listen');
     }
