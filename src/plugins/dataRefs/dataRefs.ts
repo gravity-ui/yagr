@@ -54,10 +54,8 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                 const seriesIdx = _.state.y2uIdx[seriesId];
                 const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
                 const values = _.uplot.data[seriesIdx].slice(fromIdx, toIdx + 1) as (number | null)[];
-                console.log('values', values);
                 const integral = integrate(timestamps, values);
                 const sum = values.reduce((acc, v) => (acc === null ? 0 : acc + (v || 0)), 0) || 0;
-                console.log('sum', sum, values);
                 const min = Math.min(...(values.filter((v) => v !== null) as number[]));
                 const max = Math.max(...(values.filter((v) => v !== null) as number[]));
                 const count = values.filter((v) => v !== null).length;
