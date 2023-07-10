@@ -111,7 +111,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
     }
 
     if (serie.type === 'dots') {
-        serie.stroke = serie.color;
+        serie.stroke = () => serie.color;
         serie.fill = colorFn;
         serie.width = 2;
         serie.pointsSize = getCommonProperty<DotsSeriesOptions, 'pointsSize'>(

@@ -360,13 +360,13 @@ function setSeriesImpl(
         this.config.series = series;
         this.config.timeline = timeline;
         batch.fns.push(() => {
-            this.options.series.forEach((s) => {
+            series.forEach((s, idx) => {
                 const uSeries = this.getSeriesById(s.id!);
                 if (!uSeries) {
                     return;
                 }
 
-                overrideSeriesInUpdate(uSeries, s);
+                overrideSeriesInUpdate(uSeries, configureSeries(this, s, idx));
             });
         });
         batch.reopt = true;
