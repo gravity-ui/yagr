@@ -37,6 +37,17 @@ yagr.setTheme('dark');
 
 Cost: **low**. Just call `uPlot.redraw` to redraw chart with new theme.
 
+#### setTitle
+
+```ts
+yagr.setTitle({
+    text: 'New title',
+    fontSize: 12,
+});
+```
+
+Cost: **low**. Just call `uPlot.redraw` to redraw chart with new theme.
+
 #### setVisible
 
 ```ts
