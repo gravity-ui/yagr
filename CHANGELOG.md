@@ -1,5 +1,12 @@
 ### master
 
+## [3.3.6](https://github.com/gravity-ui/yagr/compare/v3.3.5...v3.3.6) (2023-07-10)
+
+
+### Bug Fixes
+
+* **dynamic-updates:** fixed series options override ([#86](https://github.com/gravity-ui/yagr/issues/86)) ([9fdd83e](https://github.com/gravity-ui/yagr/commit/9fdd83e3430b5380db2fb7d14aaa1885a6574407))
+
 ## [3.3.5](https://github.com/gravity-ui/yagr/compare/v3.3.4...v3.3.5) (2023-07-06)
 
 
