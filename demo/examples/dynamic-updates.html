@@ -146,6 +146,11 @@
 
             const yagr3 = new Yagr(chart3, {
                 title: {text: 'Change dataset'},
+                chart: {
+                    series: {
+                        type: 'dots',
+                    },
+                },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
