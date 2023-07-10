@@ -24,11 +24,16 @@ import {
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
 
+export type SelectionRange = [
+    from: {clientX: number; value: number | null; idx: number} | null,
+    to: {clientX: number; value: number | null; idx: number} | null,
+];
+
 export interface TooltipState {
     /** Is tooltip pinned */
     pinned: boolean;
-    /** X-Coord of click to track selections and differ them from single click */
-    clickStartedX: null | number;
+    /** X-Coord of selected range to track selections, differ them from single click and provide info to subsribers */
+    range: null | SelectionRange;
     /** Is tooltip visible */
     visible: boolean;
     /** Is tooltip mounted */
@@ -149,7 +154,7 @@ class YagrTooltip {
             mounted: false,
             pinned: false,
             visible: false,
-            clickStartedX: null,
+            range: null,
             focusedSeries: null,
         };
 
@@ -460,6 +465,7 @@ class YagrTooltip {
 
         this.over.addEventListener('mousedown', this.onMouseDown);
         this.over.addEventListener('mouseup', this.onMouseUp);
+        this.over.addEventListener('mousemove', this.onMouseMove);
         this.over.addEventListener('mouseenter', this.onMouseEnter);
         this.over.addEventListener('mouseleave', this.onMouseLeave);
     };
@@ -475,6 +481,7 @@ class YagrTooltip {
         /** Free overlay listeners */
         this.over.removeEventListener('mousedown', this.onMouseDown);
         this.over.removeEventListener('mouseup', this.onMouseUp);
+        this.over.removeEventListener('mousemove', this.onMouseMove);
         this.over.removeEventListener('mouseenter', this.onMouseEnter);
         this.over.removeEventListener('mouseleave', this.onMouseLeave);
 
@@ -501,7 +508,7 @@ class YagrTooltip {
     };
 
     private onMouseDown = (event: MouseEvent) => {
-        this.state.clickStartedX = event.clientX;
+        this.state.range = [this.evtToRange(event), null];
     };
 
     private detectClickOutside = (event: MouseEvent) => {
@@ -518,12 +525,21 @@ class YagrTooltip {
         }
     };
 
+    private onMouseMove = (event: MouseEvent) => {
+        if (this.state.range?.length) {
+            this.state.range[1] = this.evtToRange(event);
+        }
+    };
+
     private onMouseUp = (event: MouseEvent) => {
-        if (this.opts.pinable && this.state.clickStartedX && this.state.clickStartedX === event.clientX) {
+        const [from] = this.state.range || [];
+        if (this.opts.pinable && from && from.clientX === event.clientX) {
             this.pin(!this.state.pinned);
             this.show();
             this.renderTooltipCloses();
         }
+
+        this.state.range = null;
     };
 
     private onMouseEnter = () => {
@@ -559,6 +575,14 @@ class YagrTooltip {
         }
 
         return '-';
+    };
+
+    private evtToRange = (event: MouseEvent): SelectionRange[number] => {
+        return {
+            clientX: event.clientX,
+            value: this.yagr.uplot.posToVal(event.clientX, 'x'),
+            idx: this.yagr.uplot.posToIdx(event.clientX),
+        };
     };
 
     get interpolation() {

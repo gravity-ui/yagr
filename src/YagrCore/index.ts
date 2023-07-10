@@ -42,6 +42,7 @@ export interface YagrState {
     stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
     inBatch?: boolean;
     y2uIdx: Record<string, number>;
+    subscribed: boolean;
 }
 
 /*
@@ -96,6 +97,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     setVisible!: DynamicUpdatesMixin<TConfig>['setVisible'];
     setFocus!: DynamicUpdatesMixin<TConfig>['setFocus'];
     setScales!: DynamicUpdatesMixin<TConfig>['setScales'];
+    setTitle!: DynamicUpdatesMixin<TConfig>['setTitle'];
     setConfig!: DynamicUpdatesMixin<TConfig>['setConfig'];
 
     /** Batch update methods */
@@ -117,6 +119,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             isMouseOver: false,
             stage: 'config',
             y2uIdx: {},
+            subscribed: false,
         };
 
         const config: YagrConfig = Object.assign(
@@ -235,11 +238,17 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 
     subscribe() {
+        if (this.state.subscribed) {
+            return;
+        }
+
         this.utils.sync?.sub(this.uplot);
+        this.state.subscribed = true;
     }
 
     unsubscribe() {
         this.utils.sync?.unsub(this.uplot);
+        this.state.subscribed = false;
     }
 
     protected initPlotLinesPlugin(config: YagrConfig): ReturnType<PlotLinesPlugin> {
@@ -322,15 +331,20 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             this.reflow(false);
         }
 
+        this.initTitle();
+
+        done();
+    };
+
+    protected initTitle() {
         /** Setup font size for title if required */
         if (this.config.title && this.config.title.fontSize) {
             const size = this.config.title.fontSize;
             const t = this.root.querySelector('.u-title') as HTMLElement;
             t.setAttribute('style', `font-size:${size}px;line-height:${size}px;`);
+            t.innerHTML = this.config.title.text;
         }
-
-        done();
-    };
+    }
 
     private onError(error: Error) {
         this.execHooks('error', {

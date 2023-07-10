@@ -70,6 +70,13 @@
             </div>
         </div>
 
+        <div class="grid">
+            <div class="container">
+                <div id="chart9"></div>
+                <button id="changeTitle">Change title</button>
+            </div>
+        </div>
+
         <script>
             function randomColor(a = 1) {
                 const r = Math.floor(Math.random() * 255);
@@ -423,6 +430,24 @@
                             id: ('1' + Math.random() * 100) >> 0,
                         },
                     ],
+                });
+            };
+
+            const yagr9 = new Yagr(chart9, {
+                title: {text: 'Title', fontSize: 20},
+                timeline: [100000, 200000],
+                series: [
+                    {
+                        data: [0, 100],
+                        color: 'green',
+                        id: '1',
+                    },
+                ],
+            });
+
+            window.changeTitle.onclick = () => {
+                yagr9.setConfig({
+                    title: {text: 'Title Another', fontSize: 14},
                 });
             };
         </script>

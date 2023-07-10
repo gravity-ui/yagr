@@ -126,7 +126,7 @@ function buildPlugin(name, css = false) {
 }
 
 function buildPlugins() {
-    return buildPlugin('labels', true).concat(buildPlugin('weekends')).filter(Boolean);
+    return buildPlugin('labels', true).concat(buildPlugin('weekends')).concat(buildPlugin('dataRefs')).filter(Boolean);
 }
 
 function buildExamples() {
