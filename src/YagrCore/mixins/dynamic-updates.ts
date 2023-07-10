@@ -403,7 +403,7 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
     setTitle(this: Yagr<T>, title: YagrConfig['title']) {
         this.batch((batch) => {
             this.config.title = title;
-            this.setTitle();
+            this.initTitle();
             batch.redraw = [true, true];
         });
     }

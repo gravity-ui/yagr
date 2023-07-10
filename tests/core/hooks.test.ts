@@ -1,6 +1,5 @@
 import {MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
-import dataRefs from '../../src/YagrCore/plugins/dataRefs/dataRefs';
 
 describe('yagr hooks', () => {
     it('should call ready hook', async () => {
@@ -8,9 +7,6 @@ describe('yagr hooks', () => {
             const cfg: MinimalValidConfig = {
                 timeline: [1, 2, 3],
                 series: [{data: [1, 2, 3]}],
-                plugins: {
-                    dataRefs,
-                },
                 hooks: {
                     ready: [
                         () => {
@@ -33,9 +29,6 @@ describe('yagr hooks', () => {
             const cfg: MinimalValidConfig = {
                 timeline: [1, 2, 3],
                 series: [{data: [1, 2, 3]}],
-                plugins: {
-                    dataRefs,
-                },
                 hooks: {
                     stage: [({stage}) => processedStages.push(stage)],
                     ready: [

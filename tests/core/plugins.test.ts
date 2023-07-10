@@ -1,5 +1,6 @@
+import {MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
-import dataRefs from '../../src/YagrCore/plugins/dataRefs/dataRefs';
+import DataRefs from '../../src/plugins/dataRefs/dataRefs';
 
 describe('yagr plugins', () => {
     it('should be able to use dataRefs plugin', async () => {
@@ -7,12 +8,12 @@ describe('yagr plugins', () => {
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3]}],
             plugins: {
-                dataRefs,
+                dataRefs: DataRefs({}),
             },
         };
 
         const u = await new Promise<Yagr<typeof cfg>>((resolve) => {
-            const y = new Yagr(window.document.body, {
+            const y = new Yagr<MinimalValidConfig>(window.document.body, {
                 ...cfg,
                 hooks: {
                     error: [console.error],
@@ -33,6 +34,7 @@ describe('yagr plugins', () => {
                 max: 3,
                 min: 1,
                 sum: 6,
+                integral: 0.004,
             },
         });
     });

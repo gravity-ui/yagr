@@ -79,6 +79,27 @@ type SortFn = ((s1: TooltipRow, s2: TooltipRow) => number) | undefined;
 -   `tooltip.boundClassName?: string` - an CSS selector that finds the element in which the tooltip will be displayed (used only for calculations of offsets, not DOM rendering)
 -   `tooltip.renderClassName?: string` - an CSS selector that finds the element in which the tooltip will be rendered (used only for rendering, not for offset calculations)
 
+### Events
+
+Tooltip instance is an EventEmitter, which supports the following events:
+
+-   `init` - tooltip was initialized
+-   `mount` - tooltip was mounted into DOM
+-   `show` - tooltip is shown
+-   `hide` - tooltip is hidden
+-   `pin` - tooltip is pinned
+-   `unpin` - tooltip is unpinned
+-   `render` - tooltip is rendered
+-   `destroy` - tooltip is destroyed
+
+Examplt:
+
+```ts
+const yagr = new Yagr(...);
+
+yagr.plugins.tooltip.on('show', () => console.log('Tooltip is shown'));
+```
+
 #### Custom renderer
 
 You can replace the native tooltip renderer with a renderer of your own that accepts the `TooltipRenderOptions` type.
