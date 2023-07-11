@@ -105,7 +105,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                         sum: Object.values(result[scale].series).reduce((acc, {sum}) => acc + sum, 0),
                         avg: 0,
                         count: Object.values(result[scale].series).reduce((acc, {count}) => acc + count, 0),
-                        integral: 0,
+                        integral: Object.values(result[scale].series).reduce((acc, {integral}) => acc + integral, 0),
                         last: 0,
                     };
 

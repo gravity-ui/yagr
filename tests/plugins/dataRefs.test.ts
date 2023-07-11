@@ -62,7 +62,7 @@ describe('DataRefs plugin', () => {
                 total: {
                     avg: 2.25,
                     count: 4,
-                    integral: 0,
+                    integral: 0.0045000000000000005,
                     last: null,
                     max: 3,
                     min: 1,
@@ -84,7 +84,7 @@ describe('DataRefs plugin', () => {
                 total: {
                     avg: 5.5,
                     count: 2,
-                    integral: 0,
+                    integral: 0.0055,
                     last: null,
                     max: 6,
                     min: 5,
