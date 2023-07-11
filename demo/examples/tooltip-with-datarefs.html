@@ -43,7 +43,10 @@
                     text: 'By scale, constant',
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
-                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green'},
+                ],
                 chart: {
                     select: {zoom: false},
                 },
@@ -79,11 +82,54 @@
                         return r;
                     }
 
-                    y1.options.series.forEach((s) => {
-                        if (s.id === 'date') return;
-                        refs = y1.plugins.refs.calcRefs(range[0].idx, range[1].idx, s.id);
-                        appendix += `<pre>${s.id}-refs: ${JSON.stringify(refs, null, 2)}\n<pre>`;
-                    });
+                    let rng = [range[0], range[1]];
+
+                    if (range[0].idx >= range[1].idx) {
+                        rng[0] = range[1];
+                        rng[1] = range[0];
+                    }
+
+                    refs = y1.plugins.refs.getRefs(rng[0].idx, rng[1].idx);
+                    console.log('refs', refs);
+                    appendix += `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                        <th>Avg</th>
+                        <th>Sum</th>
+                        <th>Count</th>
+                        <th>Integral</th>
+                        <th>Last</th>
+                    </tr>
+                </thead>
+                <tbody>
+            ${Object.entries(refs.y.series).map(([id, ref]) => {
+                return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${ref.min.toFixed(2) ?? '-'}</td>
+                    <td>${ref.max.toFixed(2) ?? '-'}</td>
+                    <td>${ref.avg.toFixed(2) ?? '-'}</td>
+                    <td>${ref.sum.toFixed(2) ?? '-'}</td>
+                    <td>${ref.count.toFixed(2) ?? '-'}</td>
+                    <td>${ref.integral.toFixed(2) ?? '-'}</td>
+                    <td>${ref.last ?? '-'}</td>
+                </tr>`;
+            })}
+            <tr>
+                <td>Total</td>
+                <td>${refs.y.scaleRefs.min.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.max.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.avg.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.sum.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.count.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.integral.toFixed(2)}</td>
+                <td>${refs.y.scaleRefs.last ?? '-'}</td>
+            </tbody>
+            </table>`;
                 }
 
                 return r + '\n' + appendix + '\n';
