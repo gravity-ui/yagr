@@ -1,5 +1,12 @@
 ### master
 
+## [3.4.1](https://github.com/gravity-ui/yagr/compare/v3.4.0...v3.4.1) (2023-07-11)
+
+
+### Bug Fixes
+
+* updated data refs notations ([#90](https://github.com/gravity-ui/yagr/issues/90)) ([79437df](https://github.com/gravity-ui/yagr/commit/79437df91917e352a777c00859778da3eca0a66f))
+
 ## [3.4.0](https://github.com/gravity-ui/yagr/compare/v3.3.6...v3.4.0) (2023-07-10)
 
 
