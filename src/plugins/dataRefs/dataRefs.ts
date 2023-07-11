@@ -3,8 +3,23 @@ import uPlot, {Series} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../YagrCore/defaults';
 import type Yagr from '../../YagrCore/index';
 
-export type DataRefs = {min: number; max: number; sum: number; avg: number; count: number; integral: number};
+export type DataRefs = {
+    min: number;
+    max: number;
+    sum: number;
+    avg: number;
+    count: number;
+    integral: number;
+    last: number | null;
+};
 export type DataRefsPerScale = Record<string, DataRefs>;
+export type DataRefsPerSeries = Record<
+    string,
+    {
+        series: Record<string, DataRefs>;
+        total: DataRefs;
+    }
+>;
 
 export type DataRefsPluginOptions = {
     /** Should calc ref points on ready event (true by default) */
@@ -41,15 +56,67 @@ export function integrate(timestamps: number[], values: DataSeriesExtended) {
     return integral;
 }
 
+function getLast(values: DataSeriesExtended): number | null {
+    for (let i = values.length - 1; i >= 0; i--) {
+        const val = values[i];
+        if (val !== null && typeof val === 'number') {
+            return val;
+        }
+    }
+    return null;
+}
+
 const DataRef = (opst: DataRefsPluginOptions) => {
     const plugin: YagrPlugin<{
-        getRefs: () => DataRefsPerScale;
+        getRefs: (from?: number, to?: number) => DataRefsPerScale | DataRefsPerSeries;
         calcRefs: (from: number, to: number, id: string) => DataRefs;
     }> = (_: Yagr) => {
         const refs: DataRefsPerScale = {};
 
-        return {
-            getRefs: () => refs,
+        const pluginMethods = {
+            getRefs: (fromIdx?: number, toIdx?: number) => {
+                if (fromIdx === undefined && toIdx === undefined) {
+                    return refs;
+                }
+
+                if (fromIdx === undefined) {
+                    fromIdx = 0;
+                }
+
+                if (toIdx === undefined) {
+                    toIdx = _.uplot.data[0].length - 1;
+                }
+
+                const result: DataRefsPerSeries = {};
+
+                _.uplot.series.forEach(({scale, id}) => {
+                    if (scale === DEFAULT_X_SCALE || !scale) {
+                        return;
+                    }
+                    result[scale] = result[scale] || {};
+                    result[scale].series = result[scale].series || {};
+                    result[scale].series[id] = pluginMethods.calcRefs(fromIdx as number, toIdx as number, id);
+                });
+
+                Object.keys(result).forEach((scale) => {
+                    const total: DataRefs = {
+                        min: Object.values(result[scale].series).reduce((acc, {min}) => Math.min(acc, min), Infinity),
+                        max: Object.values(result[scale].series).reduce((acc, {max}) => Math.max(acc, max), -Infinity),
+                        sum: Object.values(result[scale].series).reduce((acc, {sum}) => acc + sum, 0),
+                        avg: 0,
+                        count: Object.values(result[scale].series).reduce((acc, {count}) => acc + count, 0),
+                        integral: 0,
+                        last: 0,
+                    };
+
+                    total.avg = total.sum / total.count;
+                    total.last = null;
+
+                    result[scale].total = total;
+                });
+
+                return result;
+            },
             calcRefs: (fromIdx: number, toIdx: number, seriesId: string) => {
                 const seriesIdx = _.state.y2uIdx[seriesId];
                 const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
@@ -60,8 +127,9 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                 const max = Math.max(...(values.filter((v) => v !== null) as number[]));
                 const count = values.filter((v) => v !== null).length;
                 const avg = sum / count;
+                const last = getLast(values);
 
-                return {min, max, sum, avg, count, integral};
+                return {min, max, sum, avg, count, integral, last};
             },
 
             uplot: {
@@ -81,6 +149,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           avg: 0,
                                           integral: 0,
                                           count: 0,
+                                          last: null,
                                       };
                                   });
 
@@ -105,6 +174,8 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                           },
             },
         };
+
+        return pluginMethods;
     };
     return plugin;
 };
