@@ -1,5 +1,12 @@
 ### master
 
+## [3.4.0](https://github.com/gravity-ui/yagr/compare/v3.3.6...v3.4.0) (2023-07-10)
+
+
+### Features
+
+* added .setTitle method, subscription state, data refs and range tracking ([8fbbb5c](https://github.com/gravity-ui/yagr/commit/8fbbb5ccfcb2ab7b78e78da108bba83c1e0e4d04))
+
 ## [3.3.6](https://github.com/gravity-ui/yagr/compare/v3.3.5...v3.3.6) (2023-07-10)
 
 
