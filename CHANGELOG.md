@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.0](https://github.com/gravity-ui/yagr/compare/v3.4.1...v3.5.0) (2023-07-12)
+
+
+### Features
+
+* added tooltip pin strategy + fixed dynamic updates of dot-series ([#92](https://github.com/gravity-ui/yagr/issues/92)) ([3babd4b](https://github.com/gravity-ui/yagr/commit/3babd4bf8d4dd65c2c3a9a8b0bd2eb8d61360da2))
+
 ## [3.4.1](https://github.com/gravity-ui/yagr/compare/v3.4.0...v3.4.1) (2023-07-11)
 
 
