@@ -42,10 +42,10 @@
                 title: {
                     text: 'By scale, constant',
                 },
-                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                timeline: new Array(5).fill().map((_, i) => i * 1000),
                 series: [
-                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
-                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green'},
+                    {data: new Array(5).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(5).fill().map((_, i) => Math.random() * 6), color: 'green'},
                 ],
                 chart: {
                     select: {zoom: false},
@@ -56,6 +56,7 @@
                 },
                 tooltip: {
                     render: render,
+                    strategy: 'all',
                 },
                 scales: {y: {min: 0, max: 6}},
             });
@@ -121,13 +122,13 @@
             })}
             <tr>
                 <td>Total</td>
-                <td>${refs.y.scaleRefs.min.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.max.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.avg.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.sum.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.count.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.integral.toFixed(2)}</td>
-                <td>${refs.y.scaleRefs.last ?? '-'}</td>
+                <td>${refs.y.total.min.toFixed(2)}</td>
+                <td>${refs.y.total.max.toFixed(2)}</td>
+                <td>${refs.y.total.avg.toFixed(2)}</td>
+                <td>${refs.y.total.sum.toFixed(2)}</td>
+                <td>${refs.y.total.count.toFixed(2)}</td>
+                <td>${refs.y.total.integral.toFixed(2)}</td>
+                <td>${refs.y.total.last ?? '-'}</td>
             </tbody>
             </table>`;
                 }
@@ -141,6 +142,26 @@
 
             y1.plugins.tooltip.on('hide', (_, data) => {
                 log('event: hide\n');
+            });
+
+            let plToRemove = null;
+            y1.plugins.tooltip.on('pin', (_, data) => {
+                const yData = y1.uplot.data[0];
+
+                plToRemove = [
+                    {
+                        value: [yData[data.state.range[0].idx], yData[data.state.range[1].idx]],
+                        color: 'rgba(0, 0, 0, 0.5)',
+                        id: 'pined',
+                    },
+                ];
+                y1.plugins.plotLines.add(plToRemove, 'x');
+                y1.redraw();
+            });
+
+            y1.plugins.tooltip.on('unpin', (_, data) => {
+                y1.plugins.plotLines.remove(plToRemove);
+                y1.redraw();
             });
 
             y1.plugins.tooltip.on('render', (_, data) => {

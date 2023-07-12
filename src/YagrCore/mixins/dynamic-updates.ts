@@ -286,6 +286,11 @@ function setSeriesImpl(
                 const {data, ...rest} = serie;
                 const seriesIdx = this.state.y2uIdx[id];
 
+                /** @TODO fixme (see Annotations.1) */
+                if (matched.type === 'dots' || serie.type === 'dots' || this.config.chart.series?.type === 'dots') {
+                    batch.reinit = true;
+                }
+
                 if (useIncremental) {
                     matched.data = data ? matched.data.concat(data) : matched.data;
                 } else if (data?.length) {
@@ -354,8 +359,9 @@ function setSeriesImpl(
         /** If we're adding new series or removing */
         if (
             series.length !== this.config.series.length ||
-            series.some(({id}) => {
-                return this.config.series.find((s) => s.id !== id);
+            series.some(({id, type}) => {
+                /** @TODO fixme (see Annotations.1) */
+                return type === 'dots' || this.config.series.find((s) => s.id !== id);
             })
         ) {
             batch.reinit = true;
@@ -506,3 +512,10 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
         this.batch((batch) => setConfigImpl(this, batch, newConfig));
     }
 }
+
+/**
+ * Annotations:
+ * 1. If we're operating with dots type then uPlot will be reinitialized
+ *    cause it's not possible to re-render dot's markers without reinit
+ *
+ */

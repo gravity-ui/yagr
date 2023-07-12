@@ -75,6 +75,12 @@
                 <div id="chart9"></div>
                 <button id="changeTitle">Change title</button>
             </div>
+            <div class="container">
+                <div id="chart10"></div>
+                <button id="remix">Remix</button>
+                <button id="prev">Prev</button>
+                <button id="next">Next</button>
+            </div>
         </div>
 
         <script>
@@ -442,12 +448,47 @@
                         color: 'green',
                         id: '1',
                     },
+                    {
+                        data: [30, 60],
+                        color: 'yellow',
+                        id: '2',
+                    },
                 ],
+                legend: {
+                    show: true,
+                },
             });
 
             window.changeTitle.onclick = () => {
                 yagr9.setConfig({
                     title: {text: 'Title Another', fontSize: 14},
+                });
+            };
+
+            const yagr10 = new Yagr(chart10, {
+                title: {text: 'Change dots', fontSize: 20},
+                timeline: [1, 2, 3, 4],
+                series: [
+                    {
+                        data: [1, 2, null, 4],
+                        color: 'green',
+                        id: '1',
+                        type: 'dots',
+                    },
+                ],
+            });
+
+            window.remix.onclick = () => {
+                yagr10.setConfig({
+                    timeline: [5, 6, 7, 8],
+                    series: [
+                        {
+                            data: [3, null, 1, 4],
+                            color: 'green',
+                            id: '1',
+                            type: 'dots',
+                        },
+                    ],
                 });
             };
         </script>

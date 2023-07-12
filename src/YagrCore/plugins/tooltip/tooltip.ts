@@ -75,6 +75,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     sum: false,
     render: renderTooltip,
     pinable: true,
+    strategy: 'pin',
     sort: undefined,
     showIndicies: false,
     hideNoData: false,
@@ -82,7 +83,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     xOffset: TOOLTIP_X_OFFSET,
     yOffset: TOOLTIP_Y_OFFSET,
     virtual: false,
-};
+} as const;
 
 export type TooltipPlugin = YagrPlugin<
     {
@@ -133,6 +134,7 @@ class YagrTooltip {
         this.over = yagr?.uplot?.over;
         this.opts = {
             ...DEFAULT_TOOLTIP_OPTIONS,
+            strategy: options.pinable ? 'pin' : DEFAULT_TOOLTIP_OPTIONS.strategy,
             tracking: yagr.config.chart.series?.type === 'area' ? 'area' : 'sticky',
             value: this.defaultTooltipValueFormatter,
             ...options,
@@ -533,7 +535,8 @@ class YagrTooltip {
 
     private onMouseUp = (event: MouseEvent) => {
         const [from] = this.state.range || [];
-        if (this.opts.pinable && from && from.clientX === event.clientX) {
+
+        if (this.opts.strategy === 'all' || (this.opts.strategy === 'pin' && from && from.clientX === event.clientX)) {
             this.pin(!this.state.pinned);
             this.show();
             this.renderTooltipCloses();

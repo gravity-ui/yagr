@@ -139,7 +139,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
         remove: (plotLinesToRemove: PlotLineConfig[], scale?: string) => {
             plotLines = plotLines.filter((p) => {
                 return !plotLinesToRemove.some((pl) => {
-                    return deepIsEqual(pl, p) && (!scale || scale === p.scale);
+                    return pl.id === p.id && (scale ? p.scale === scale : true);
                 });
             });
         },

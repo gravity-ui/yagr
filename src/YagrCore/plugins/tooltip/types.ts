@@ -78,8 +78,15 @@ export interface TooltipOptions {
     sort?: PerScale<SortFn>;
     /** Custom tooltip renderer */
     render: (data: TooltipRenderOptions) => string;
-    /** Is tooltip pinable */
+    /** @deprecated Is tooltip pinable */
     pinable: boolean;
+    /**
+     * Tooltip pin strategy:
+     *  - none : tooltip is not pinable
+     *  - pin  : tooltip is pinable only on click
+     *  - all  : tooltip is pinable on drag and click
+     */
+    strategy: 'none' | 'pin' | 'all';
     /** Value formatter */
     value: PerScale<ValueFormatter>;
     /** Show DataLine index */
