@@ -362,7 +362,8 @@ function setSeriesImpl(
             series.some(({id, type}) => {
                 /** @TODO fixme (see Annotations.1) */
                 return type === 'dots' || this.config.series.find((s) => s.id !== id);
-            })
+            }) ||
+            this.config.chart.series?.type === 'dots'
         ) {
             batch.reinit = true;
         }
