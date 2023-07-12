@@ -336,6 +336,9 @@ interface CommonPlotLineConfig {
 
     /** Color of line */
     color: string;
+
+    /** Unique id for updates */
+    id?: string;
 }
 
 export interface PBandConfig extends CommonPlotLineConfig {

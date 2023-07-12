@@ -115,7 +115,6 @@ export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugi
             if (!(config.markers.show || opts.series.some((s) => s.type === 'dots'))) {
                 return;
             }
-
             opts.series.forEach((s, i) => markSeries(i, s));
         },
 

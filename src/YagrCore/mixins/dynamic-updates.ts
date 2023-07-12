@@ -354,8 +354,13 @@ function setSeriesImpl(
         /** If we're adding new series or removing */
         if (
             series.length !== this.config.series.length ||
-            series.some(({id}) => {
-                return this.config.series.find((s) => s.id !== id);
+            series.some(({id, type}) => {
+                /**
+                 * @TODO fixme
+                 * If we're operating with dots type then uPlot will be reinitialized
+                 * cause it's not possible to re-render dot's markers without reinit
+                 */
+                return type === 'dots' || this.config.series.find((s) => s.id !== id);
             })
         ) {
             batch.reinit = true;
