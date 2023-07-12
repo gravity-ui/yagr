@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.1](https://github.com/gravity-ui/yagr/compare/v3.5.0...v3.5.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* fixed setSeries for dots ([#94](https://github.com/gravity-ui/yagr/issues/94)) ([5fedb3d](https://github.com/gravity-ui/yagr/commit/5fedb3de41b07017c0a96c3ef9feeb82cb913e62))
+
 ## [3.5.0](https://github.com/gravity-ui/yagr/compare/v3.4.1...v3.5.0) (2023-07-12)
 
 
