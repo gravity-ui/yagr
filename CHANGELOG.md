@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.5](https://github.com/gravity-ui/yagr/compare/v3.5.4...v3.5.5) (2023-07-13)
+
+
+### Bug Fixes
+
+* tooltip pinnig ([#102](https://github.com/gravity-ui/yagr/issues/102)) ([2d2b4a4](https://github.com/gravity-ui/yagr/commit/2d2b4a4ac26c2e4be1c203a4d9cfca452b4e8eef))
+
 ## [3.5.4](https://github.com/gravity-ui/yagr/compare/v3.5.3...v3.5.4) (2023-07-13)
 
 
