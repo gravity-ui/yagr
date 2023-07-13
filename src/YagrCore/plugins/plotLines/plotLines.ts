@@ -33,6 +33,7 @@ export type PlotLinesPlugin = YagrPlugin<
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => void;
         clear: (scale?: string) => void;
         get: () => PlotLineConfig[];
+        remove: (plotLinesToRemove: PlotLineConfig[], scale?: string) => void;
     },
     [PlotLineConfig[]]
 >;

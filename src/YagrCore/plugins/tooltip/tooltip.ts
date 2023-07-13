@@ -358,6 +358,7 @@ class YagrTooltip {
                     : valueRender(dValue, seriesPrecision);
 
                 const rowData: TooltipRow = {
+                    id: serie.id,
                     name: serie.name,
                     originalValue: value,
                     value: displayValue,
