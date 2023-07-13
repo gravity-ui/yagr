@@ -515,7 +515,7 @@ class YagrTooltip {
     };
 
     private onMouseDown = () => {
-        this.state.range = [this.evtToRange(), null];
+        this.state.range = [this.getCursorPosition(), null];
     };
 
     private detectClickOutside = (event: MouseEvent) => {
@@ -534,14 +534,18 @@ class YagrTooltip {
 
     private onMouseMove = () => {
         if (this.state.range?.length) {
-            this.state.range[1] = this.evtToRange();
+            this.state.range[1] = this.getCursorPosition();
         }
     };
 
-    private onMouseUp = (event: MouseEvent) => {
+    private onMouseUp = () => {
         const [from] = this.state.range || [];
+        const cursor = this.getCursorPosition();
 
-        if (this.opts.strategy === 'all' || (this.opts.strategy === 'pin' && from && from.clientX === event.clientX)) {
+        if (
+            this.opts.strategy === 'all' ||
+            (this.opts.strategy === 'pin' && from && from.clientX === cursor?.clientX)
+        ) {
             this.pin(!this.state.pinned);
             this.show();
             this.renderTooltipCloses();
@@ -585,7 +589,7 @@ class YagrTooltip {
         return '-';
     };
 
-    private evtToRange = (): SelectionRange[number] => {
+    private getCursorPosition = (): SelectionRange[number] => {
         const x = this.yagr.uplot.cursor.left;
 
         if (x === undefined) {
