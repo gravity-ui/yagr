@@ -21,7 +21,7 @@ export interface TooltipRenderOpts {
     pinned: boolean;
 }
 
-interface TooltipScale {
+export interface TooltipScale {
     scale: string;
     rows: TooltipRow[];
     sum?: number;
@@ -89,7 +89,7 @@ export interface TooltipOptions {
     strategy: 'none' | 'pin' | 'all';
     /** Value formatter */
     value: PerScale<ValueFormatter>;
-    /** Show DataLine index */
+    /** Show DataSeries index */
     showIndicies: PerScale<boolean>;
     /** Don't render null data points in tooltip */
     hideNoData?: PerScale<boolean>;
@@ -118,14 +118,16 @@ export interface TooltipOptions {
     virtual?: boolean;
 }
 
-export type TooltipRow = {
-    /** Name of DataLine */
+export interface TooltipRow {
+    /** id of line */
+    id: string;
+    /** Name of DataSeries */
     name?: string;
-    /** Current Y value of DataLine */
+    /** Current Y value of DataSeries */
     value: string | number | null;
-    /** Color of DataLine */
+    /** Color of DataSeries */
     color: string;
-    /** Is cursor over DataLine */
+    /** Is cursor over DataSeries */
     active?: boolean;
     /** Custom className */
     className?: string;
@@ -141,7 +143,7 @@ export type TooltipRow = {
     originalValue?: number | null;
     /** Transformed value */
     transformed?: number | null | string;
-};
+}
 
 export interface TooltipSection {
     rows: TooltipRow[];
