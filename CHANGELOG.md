@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.4](https://github.com/gravity-ui/yagr/compare/v3.5.3...v3.5.4) (2023-07-13)
+
+
+### Bug Fixes
+
+* fixed drawMarkersIfRequired ([#100](https://github.com/gravity-ui/yagr/issues/100)) ([0dee458](https://github.com/gravity-ui/yagr/commit/0dee45812240ab4c9c9107d4c415b39525bfaf9d))
+
 ## [3.5.3](https://github.com/gravity-ui/yagr/compare/v3.5.2...v3.5.3) (2023-07-13)
 
 
