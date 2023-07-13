@@ -1,6 +1,6 @@
 {
   "name": "@gravity-ui/yagr",
-  "version": "3.5.2",
+  "version": "3.5.3",
   "description": "High level wrapper for uPlot",
   "keywords": [
     "canvas",

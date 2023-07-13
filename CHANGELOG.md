@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.3](https://github.com/gravity-ui/yagr/compare/v3.5.2...v3.5.3) (2023-07-13)
+
+
+### Bug Fixes
+
+* fixed pinning tooltip on range selection ([#98](https://github.com/gravity-ui/yagr/issues/98)) ([2762387](https://github.com/gravity-ui/yagr/commit/2762387c361104b9175651c827f83972ae59212b))
+
 ## [3.5.2](https://github.com/gravity-ui/yagr/compare/v3.5.1...v3.5.2) (2023-07-13)
 
 
