@@ -204,7 +204,11 @@ class YagrTooltip {
 
     pin = (pinState: boolean, position?: {x: number; y: number}) => {
         this.state.pinned = pinState;
-        this.yagr.plugins.cursor?.pin(pinState);
+        const range = this.state.range || [];
+
+        if (range[1] === null || range.length < 2) {
+            this.yagr.plugins.cursor?.pin(pinState);
+        }
 
         if (this.opts.virtual) {
             return this.emit(pinState ? 'pin' : 'unpin');
@@ -509,8 +513,8 @@ class YagrTooltip {
         this.handlers[event] = this.handlers[event].filter((h) => h !== handler);
     };
 
-    private onMouseDown = (event: MouseEvent) => {
-        this.state.range = [this.evtToRange(event), null];
+    private onMouseDown = () => {
+        this.state.range = [this.evtToRange(), null];
     };
 
     private detectClickOutside = (event: MouseEvent) => {
@@ -527,9 +531,9 @@ class YagrTooltip {
         }
     };
 
-    private onMouseMove = (event: MouseEvent) => {
+    private onMouseMove = () => {
         if (this.state.range?.length) {
-            this.state.range[1] = this.evtToRange(event);
+            this.state.range[1] = this.evtToRange();
         }
     };
 
@@ -580,11 +584,17 @@ class YagrTooltip {
         return '-';
     };
 
-    private evtToRange = (event: MouseEvent): SelectionRange[number] => {
+    private evtToRange = (): SelectionRange[number] => {
+        const x = this.yagr.uplot.cursor.left;
+
+        if (x === undefined) {
+            return null;
+        }
+
         return {
-            clientX: event.clientX,
-            value: this.yagr.uplot.posToVal(event.clientX, 'x'),
-            idx: this.yagr.uplot.posToIdx(event.clientX),
+            clientX: x,
+            value: this.yagr.uplot.posToVal(x, 'x'),
+            idx: this.yagr.uplot.posToIdx(x),
         };
     };
 

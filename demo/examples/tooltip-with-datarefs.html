@@ -146,17 +146,18 @@
 
             let plToRemove = null;
             y1.plugins.tooltip.on('pin', (_, data) => {
-                const yData = y1.uplot.data[0];
-
-                plToRemove = [
-                    {
-                        value: [yData[data.state.range[0].idx], yData[data.state.range[1].idx]],
-                        color: 'rgba(0, 0, 0, 0.5)',
-                        id: 'pined',
-                    },
-                ];
-                y1.plugins.plotLines.add(plToRemove, 'x');
-                y1.redraw();
+                if (data.state.range && data.state.range[0] && data.state.range[1]) {
+                    const yData = y1.uplot.data[0];
+                    plToRemove = [
+                        {
+                            value: [data.state.range[0].value, data.state.range[1].value],
+                            color: 'rgba(0, 0, 0, 0.5)',
+                            id: 'pined',
+                        },
+                    ];
+                    y1.plugins.plotLines.add(plToRemove, 'x');
+                    y1.redraw();
+                }
             });
 
             y1.plugins.tooltip.on('unpin', (_, data) => {
