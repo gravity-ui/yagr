@@ -1,5 +1,12 @@
 ### master
 
+## [3.5.2](https://github.com/gravity-ui/yagr/compare/v3.5.1...v3.5.2) (2023-07-13)
+
+
+### Bug Fixes
+
+* fixed typings for tooltip and plotLines ([#96](https://github.com/gravity-ui/yagr/issues/96)) ([fe2f59b](https://github.com/gravity-ui/yagr/commit/fe2f59bac91915eef8a939a2e4d076322618ec6e))
+
 ## [3.5.1](https://github.com/gravity-ui/yagr/compare/v3.5.0...v3.5.1) (2023-07-12)
 
 
