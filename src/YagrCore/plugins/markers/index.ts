@@ -24,16 +24,21 @@ export const renderCircle = (
     ctx.fillStyle = color;
 
     if (s) {
+        const lineWidth = ctx.lineWidth;
+        const strokeStyle = ctx.strokeStyle;
         ctx.lineWidth = s;
         ctx.strokeStyle = strokeColor;
         ctx.stroke();
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = strokeStyle;
     }
 
     ctx.fill();
+    ctx.closePath();
 };
 
 export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: number) {
-    const {color, scale, spanGaps, count} = u.series[i];
+    const {color, scale, spanGaps, count, pointsSize} = u.series[i];
 
     if (spanGaps && count > 1) {
         return false;
@@ -52,9 +57,19 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
         }
 
         const next = u.data[i][j + 1];
+        const lastIdx = u.data[i].length - 1;
 
-        if (prev === null && next === null) {
-            renderCircle(u, u.data[0][j] as number, val as number, 2, 1, color, scale || DEFAULT_Y_SCALE);
+        if ((j === 0 && next === null) || (j === lastIdx && prev === null) || (prev === null && next === null)) {
+            renderCircle(
+                u,
+                u.data[0][j] as number,
+                val as number,
+                pointsSize ?? 2,
+                0,
+                color,
+                color,
+                scale || DEFAULT_Y_SCALE,
+            );
         }
         prev = val;
         j++;
