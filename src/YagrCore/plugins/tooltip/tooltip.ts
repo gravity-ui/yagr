@@ -19,30 +19,13 @@ import {
     TooltipSection,
     TooltipHandler,
     TooltipData,
+    TooltipState,
+    TooltipAction,
+    SelectionRange,
 } from './types';
 
 import {renderTooltip} from './render';
 import {getOptionValue} from './utils';
-
-export type SelectionRange = [
-    from: {clientX: number; value: number | null; idx: number} | null,
-    to: {clientX: number; value: number | null; idx: number} | null,
-];
-
-export interface TooltipState {
-    /** Is tooltip pinned */
-    pinned: boolean;
-    /** X-Coord of selected range to track selections, differ them from single click and provide info to subsribers */
-    range: null | SelectionRange;
-    /** Is tooltip visible */
-    visible: boolean;
-    /** Is tooltip mounted */
-    mounted: boolean;
-    /** Current focused series */
-    focusedSeries: null | string;
-}
-
-export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy';
 
 // eslint-disable-next-line complexity
 const findValue = (
@@ -98,6 +81,7 @@ export type TooltipPlugin = YagrPlugin<
         tooltip: YagrTooltip;
         dispose: () => void;
         reInit: (u: uPlot) => void;
+        reset: () => void;
     },
     [Partial<TooltipOptions>]
 >;
@@ -112,6 +96,7 @@ class YagrTooltip {
         hide: [],
         render: [],
         destroy: [],
+        reset: [],
     };
 
     private placement: Function = placementFn;
@@ -180,11 +165,20 @@ class YagrTooltip {
                     pin: this.pin,
                     show: this.show,
                     hide: this.hide,
+                    dispose: this.dispose,
+                    reset: this.reset,
                 },
                 data,
                 yagr: this.yagr,
+                event: action,
             });
         });
+    };
+
+    reset = () => {
+        this.hide();
+        this.pin(false);
+        this.emit('reset');
     };
 
     show = () => {
@@ -638,6 +632,8 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
     function reInit(u: uPlot) {
         const uPlugin = getUplotPlugin();
 
+        tooltip.reset();
+
         u.hooks.init!.push(uPlugin.hooks.init);
         u.hooks.setSize!.push(uPlugin.hooks.setSize);
         u.hooks.setCursor!.push(uPlugin.hooks.setCursor);
@@ -656,6 +652,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         tooltip,
         dispose: tooltip.dispose,
         reInit,
+        reset: tooltip.reset,
     };
 }
 

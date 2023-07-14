@@ -1,5 +1,4 @@
 import Yagr from '../../index';
-import {TooltipState} from './tooltip';
 
 export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
@@ -47,15 +46,38 @@ export interface TooltipData extends Omit<TooltipRenderOptions, 'state' | 'yagr'
     };
 }
 
+export type SelectionRange = [
+    from: {clientX: number; value: number | null; idx: number} | null,
+    to: {clientX: number; value: number | null; idx: number} | null,
+];
+
+export interface TooltipState {
+    /** Is tooltip pinned */
+    pinned: boolean;
+    /** X-Coord of selected range to track selections, differ them from single click and provide info to subsribers */
+    range: null | SelectionRange;
+    /** Is tooltip visible */
+    visible: boolean;
+    /** Is tooltip mounted */
+    mounted: boolean;
+    /** Current focused series */
+    focusedSeries: null | string;
+}
+
+export type TooltipAction = 'init' | 'mount' | 'render' | 'show' | 'hide' | 'pin' | 'unpin' | 'destroy' | 'reset';
+
 export interface TooltipHandlerData {
     state: TooltipState;
     actions: {
         pin: (state: boolean) => void;
         show: () => void;
         hide: () => void;
+        dispose: () => void;
+        reset: () => void;
     };
     data?: TooltipData;
     yagr: Yagr;
+    event: TooltipAction;
 }
 
 export type TooltipHandler = (elem: HTMLElement, data: TooltipHandlerData) => void;
