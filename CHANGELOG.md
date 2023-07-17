@@ -1,5 +1,12 @@
 ### master
 
+## [3.6.0](https://github.com/gravity-ui/yagr/compare/v3.5.5...v3.6.0) (2023-07-17)
+
+
+### Features
+
+* add new tooltip actions + reset method ([#104](https://github.com/gravity-ui/yagr/issues/104)) ([f02c3e8](https://github.com/gravity-ui/yagr/commit/f02c3e812b7b45f528c01369fa7724d69777ec64))
+
 ## [3.5.5](https://github.com/gravity-ui/yagr/compare/v3.5.4...v3.5.5) (2023-07-13)
 
 
