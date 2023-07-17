@@ -1,5 +1,18 @@
 ### master
 
+## [3.6.0](https://github.com/gravity-ui/yagr/compare/v3.5.5...v3.6.0) (2023-07-17)
+
+
+### Features
+
+* add new tooltip actions + reset method ([#104](https://github.com/gravity-ui/yagr/issues/104)) ([f02c3e8](https://github.com/gravity-ui/yagr/commit/f02c3e812b7b45f528c01369fa7724d69777ec64))
+* added  hard-update option for setConfig and react component ([#105](https://github.com/gravity-ui/yagr/issues/105)) ([104334f](https://github.com/gravity-ui/yagr/commit/104334fe4ce9754193495337086aa50929edac78))
+
+
+### Bug Fixes
+
+* ensure unique ticks ([#106](https://github.com/gravity-ui/yagr/issues/106)) ([67bd3d0](https://github.com/gravity-ui/yagr/commit/67bd3d0d6c58802468e7de631637af4a1e5d1f20))
+
 ## [3.5.5](https://github.com/gravity-ui/yagr/compare/v3.5.4...v3.5.5) (2023-07-13)
 
 
