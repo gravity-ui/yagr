@@ -69,15 +69,20 @@ const dayTimeFormatter = uPlot.fmtDate('{DD}.{MM}.{YYYY}');
 const dateTimeFormatter = uPlot.fmtDate('{HH}:{mm}:{ss}');
 const minuteFormatter = uPlot.fmtDate('{mm}:{ss}');
 const secondFormatter = uPlot.fmtDate('{mm}:{ss}.{fff}');
+const yearFormatter = uPlot.fmtDate('{YYYY}');
 
-function getTimeFormatterByRange(rangeMs: number) {
+function getTimeFormatterByRange(range: number, ticksCount: number) {
     let formatter = dayTimeFormatter;
-    if (rangeMs <= defaults.SECOND) {
+    const minRange = Math.ceil(range / ticksCount);
+
+    if (minRange <= defaults.SECOND) {
         formatter = secondFormatter;
-    } else if (rangeMs <= defaults.MINUTE) {
+    } else if (minRange <= defaults.MINUTE) {
         formatter = minuteFormatter;
-    } else if (rangeMs <= defaults.DAY) {
+    } else if (minRange <= defaults.DAY) {
         formatter = dateTimeFormatter;
+    } else if (minRange >= defaults.YEAR) {
+        formatter = yearFormatter;
     }
 
     return (x: number) => formatter(new Date(x));
@@ -88,7 +93,7 @@ export const getTimeFormatter = (config: YagrConfig) => {
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];
         const rangeMs = range / msm;
-        const formatter = getTimeFormatterByRange(rangeMs);
+        const formatter = getTimeFormatterByRange(rangeMs, ticks.length);
 
         return ticks.map((rawValue) => {
             return formatter(rawValue / msm);

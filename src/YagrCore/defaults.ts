@@ -62,6 +62,7 @@ export const MINUTE = SECOND * 60;
 export const HOUR = MINUTE * 60;
 export const DAY = HOUR * 24;
 export const YEAR = DAY * 365;
+export const DECADE = YEAR * 10;
 
 export const X_AXIS_TICK_GAP = 6;
 export const X_AXIS_SIZE = 32;
