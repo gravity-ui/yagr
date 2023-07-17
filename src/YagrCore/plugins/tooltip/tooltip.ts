@@ -176,8 +176,13 @@ class YagrTooltip {
     };
 
     reset = () => {
-        this.hide();
-        this.pin(false);
+        if (this.state.visible) {
+            this.hide();
+        }
+
+        if (this.state.pinned) {
+            this.pin(false);
+        }
         this.emit('reset');
     };
 
