@@ -27,11 +27,15 @@ describe('axes:getTimeFormatter', () => {
         });
 
         it('< day', () => {
-            expect(formatter(null, [1, 71])).toEqual(['00:00:01', '00:01:11']);
+            expect(formatter(null, [1, 71])).toEqual(['00:01', '01:11']);
         });
 
         it('> days', () => {
             expect(formatter(null, [1, 3000000])).toEqual(['01.01.1970', '04.02.1970']);
+        });
+
+        it('>= years', () => {
+            expect(formatter(null, [1, 300000000])).toEqual(['1970', '1979']);
         });
     });
 
@@ -45,11 +49,15 @@ describe('axes:getTimeFormatter', () => {
         });
 
         it('< day', () => {
-            expect(formatterMs(null, [1000, 71000])).toEqual(['00:00:01', '00:01:11']);
+            expect(formatterMs(null, [1000, 71000])).toEqual(['00:01', '01:11']);
         });
 
         it('> days', () => {
             expect(formatterMs(null, [1000, 3000000000])).toEqual(['01.01.1970', '04.02.1970']);
+        });
+
+        it('>= years', () => {
+            expect(formatter(null, [1, 300000000])).toEqual(['1970', '1979']);
         });
     });
 });
