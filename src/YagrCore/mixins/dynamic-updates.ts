@@ -229,6 +229,12 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>)
         });
     }
 
+    if (newConfig.tooltip && isChangedKey('tooltip')) {
+        yagr.plugins.tooltip?.updateOptions(newConfig.tooltip);
+    }
+
+    yagr.plugins.tooltip?.reset();
+
     batch.reopt = true;
     yagr.config = {...yagr.config, ...newConfig};
 }

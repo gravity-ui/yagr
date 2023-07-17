@@ -382,14 +382,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
             return;
         }
 
-        if (this.plugins.tooltip) {
-            const t = this.plugins.tooltip;
-
-            if (t.state.pinned && t.state.visible) {
-                t.hide();
-                t.pin(false);
-            }
-        }
+        this.plugins.tooltip?.reset();
 
         this.reflow();
         this.execHooks('resize', {entries: args, chart: this});

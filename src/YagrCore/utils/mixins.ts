@@ -1,7 +1,7 @@
 import Yagr from '..';
 
 type YagrConstructor = new (...args: any[]) => Yagr;
-type YMixin = new () => unknown;
+export type YMixin<T extends unknown = unknown> = new () => T;
 
 export function applyMixins(derivedCtor: YagrConstructor, constructors: YMixin[]) {
     const inits: (() => void)[] = [];
