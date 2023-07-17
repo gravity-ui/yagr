@@ -11,6 +11,8 @@ export interface YagrChartProps {
     config: MinimalValidConfig;
     /** Root component class name */
     className?: string;
+    /** Update strategy */
+    update?: 'dynamic' | 'hard';
     /** Debug data */
     debug?: {
         filename: string;
@@ -29,7 +31,7 @@ export interface YagrReactRef {
 
 // eslint-disable-next-line prefer-arrow-callback
 export default React.forwardRef(function YagrReact(
-    {id, config, className = '', debug, onChartLoad, onSelect}: YagrChartProps,
+    {id, config, className = '', debug, onChartLoad, onSelect, update = 'dynamic'}: YagrChartProps,
     ref,
 ) {
     const chartRef = React.useRef<HTMLDivElement>(null);
@@ -63,7 +65,7 @@ export default React.forwardRef(function YagrReact(
     }, []);
 
     React.useEffect(() => {
-        config && chart.current?.setConfig(config);
+        config && chart.current?.setConfig(config, update === 'hard');
     }, [config]);
 
     React.useEffect(() => {

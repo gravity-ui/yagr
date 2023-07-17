@@ -194,7 +194,13 @@ function areSeriesChanged(a: YagrConfig['series'], b?: YagrConfig['series']) {
     return false;
 }
 
-function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>) {
+function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>, fullUpdate = false) {
+    if (fullUpdate) {
+        yagr.config = {...yagr.config, ...newConfig};
+        batch.reinit = true;
+        return;
+    }
+
     const isChangedKey = isChanged(yagr.config, newConfig);
 
     if (newConfig.title && isChangedKey('title')) {
@@ -515,8 +521,8 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @param newConfig Partial<YagrConfig>
      * @descriptino Sets new config and redraws.
      */
-    setConfig(this: Yagr<T>, newConfig: Partial<YagrConfig>) {
-        this.batch((batch) => setConfigImpl(this, batch, newConfig));
+    setConfig(this: Yagr<T>, newConfig: Partial<YagrConfig>, fullUpdate = false) {
+        this.batch((batch) => setConfigImpl(this, batch, newConfig, fullUpdate));
     }
 }
 
