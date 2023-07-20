@@ -44,7 +44,6 @@ export default React.forwardRef(function YagrReact(
 
     const initChart = React.useCallback(() => {
         if (chartRef.current) {
-            chart.current = new Yagr(chartRef.current, config);
             config.hooks = config.hooks || {};
             const hooks = config.hooks;
 
@@ -61,6 +60,8 @@ export default React.forwardRef(function YagrReact(
                 selection.push(({from, to}) => onSelect(from, to));
                 hooks.onSelect = selection;
             }
+
+            chart.current = new Yagr(chartRef.current, config);
         }
     }, []);
 
