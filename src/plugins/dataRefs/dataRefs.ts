@@ -120,7 +120,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
             calcRefs: (fromIdx: number, toIdx: number, seriesId: string) => {
                 const seriesIdx = _.state.y2uIdx[seriesId];
                 const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
-                const values = _.uplot.data[seriesIdx].slice(fromIdx, toIdx + 1) as (number | null)[];
+                const values = _.uplot.series[seriesIdx].$c.slice(fromIdx, toIdx + 1) as (number | null)[];
                 const integral = integrate(timestamps, values);
                 const sum = values.reduce((acc, v) => (acc === null ? 0 : acc + (v || 0)), 0) || 0;
                 const min = Math.min(...(values.filter((v) => v !== null) as number[]));
@@ -153,17 +153,21 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                       };
                                   });
 
-                                  (u.series as Required<Series>[]).forEach(({scale, min, max, sum, count}, sIdx) => {
+                                  (u.series as Required<Series>[]).forEach(({scale, $c, count}) => {
                                       if (scale === DEFAULT_X_SCALE) {
                                           return;
                                       }
-                                      refs[scale].min = Math.min(refs[scale].min, min);
-                                      refs[scale].max = Math.max(refs[scale].max, max);
-                                      refs[scale].sum += sum;
+                                      const numericValues = $c.filter(
+                                          (v) => typeof v === 'number' && v !== null,
+                                      ) as number[];
+
+                                      refs[scale].min = Math.min(...numericValues, refs[scale].min);
+                                      refs[scale].max = Math.max(...numericValues, refs[scale].max);
+                                      refs[scale].sum += numericValues.reduce((acc, v) => acc + v, 0);
                                       refs[scale].count += count;
                                       refs[scale].integral += integrate(
                                           u.data[0] as number[],
-                                          u.data[sIdx] as DataSeriesExtended,
+                                          $c as DataSeriesExtended,
                                       );
                                   });
 
