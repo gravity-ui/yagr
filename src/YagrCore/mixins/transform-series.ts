@@ -100,7 +100,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                 empty = false;
 
                 if (scaleConfig.normalize) {
-                    const sum = getSumByIdx(series, this.options.series, idx, scale);
+                    const sum = getSumByIdx(this.options.series, idx, scale);
                     value = sum && (value / sum) * (scaleConfig.normalizeBase || 100);
 
                     serieOptions.normalizedData = serieOptions.normalizedData || [];

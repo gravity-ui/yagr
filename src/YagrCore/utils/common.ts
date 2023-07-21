@@ -64,17 +64,18 @@ export const findInRange = (section: TooltipSection, value: number, stickToRange
 };
 
 /* Gets sum of all values of given data index by all series */
-export const getSumByIdx = (series: DataSeriesExtended[], seriesOptions: Series[], idx: number, scale: string) => {
+export const getSumByIdx = (seriesOptions: Series[], idx: number, scale: string) => {
     let sum = 0;
     let i = 0;
-    while (i < series.length) {
-        const serie = series[i];
-        const opts = seriesOptions[seriesOptions.length - i - 1];
+    while (i < seriesOptions.length) {
+        const seriesIdx = seriesOptions.length - i - 1;
+        const opts = seriesOptions[seriesIdx];
+        const seriesValues = opts.$c;
         i += 1;
         if (opts.scale !== scale || opts.show === false) {
             continue;
         }
-        const value = serie[idx];
+        const value = seriesValues[idx];
         sum += typeof value === 'number' ? value : 0;
     }
     return sum;

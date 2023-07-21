@@ -10,15 +10,15 @@ describe('utils:getSumByIdx', () => {
         ];
         const options = [
             {id: 'date'},
-            {show: true, scale: 'y'},
-            {show: true, scale: 'y'},
-            {show: true, scale: 'y'},
-        ] as Series[];
+            {show: true, scale: 'y', $c: series[0]},
+            {show: true, scale: 'y', $c: series[1]},
+            {show: true, scale: 'y', $c: series[2]},
+        ] as unknown as Series[];
 
-        expect(getSumByIdx(series, options, 0, 'y')).toBe(600);
-        expect(getSumByIdx(series, options, 1, 'y')).toBe(60);
-        expect(getSumByIdx(series, options, 2, 'y')).toBe(6);
-        expect(getSumByIdx(series, options, 3, 'y')).toBe(0);
+        expect(getSumByIdx(options, 0, 'y')).toBe(600);
+        expect(getSumByIdx(options, 1, 'y')).toBe(60);
+        expect(getSumByIdx(options, 2, 'y')).toBe(6);
+        expect(getSumByIdx(options, 3, 'y')).toBe(0);
     });
 
     it('should sum only visible series by idx', () => {
@@ -29,14 +29,14 @@ describe('utils:getSumByIdx', () => {
         ];
         const options = [
             {id: 'date'},
-            {show: true, scale: 'y'},
-            {show: false, scale: 'y'},
-            {show: true, scale: 'y'},
-        ] as Series[];
+            {show: true, scale: 'y', $c: series[0]},
+            {show: false, scale: 'y', $c: series[1]},
+            {show: true, scale: 'y', $c: series[2]},
+        ] as unknown as Series[];
 
-        expect(getSumByIdx(series, options, 0, 'y')).toBe(400);
-        expect(getSumByIdx(series, options, 1, 'y')).toBe(40);
-        expect(getSumByIdx(series, options, 2, 'y')).toBe(4);
-        expect(getSumByIdx(series, options, 3, 'y')).toBe(0);
+        expect(getSumByIdx(options, 0, 'y')).toBe(400);
+        expect(getSumByIdx(options, 1, 'y')).toBe(40);
+        expect(getSumByIdx(options, 2, 'y')).toBe(4);
+        expect(getSumByIdx(options, 3, 'y')).toBe(0);
     });
 });
