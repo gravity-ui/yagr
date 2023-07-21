@@ -1,5 +1,12 @@
 ### master
 
+## [3.6.1](https://github.com/gravity-ui/yagr/compare/v3.6.0...v3.6.1) (2023-07-21)
+
+
+### Bug Fixes
+
+* react and refs ([#109](https://github.com/gravity-ui/yagr/issues/109)) ([de8058d](https://github.com/gravity-ui/yagr/commit/de8058d85aea1390f9270c507fc7b3243388de59))
+
 ## [3.6.0](https://github.com/gravity-ui/yagr/compare/v3.5.5...v3.6.0) (2023-07-17)
 
 
