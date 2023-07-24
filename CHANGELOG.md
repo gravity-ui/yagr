@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.0](https://github.com/gravity-ui/yagr/compare/v3.6.1...v3.7.0) (2023-07-24)
+
+
+### Features
+
+* added tooltip on update strategy ([#111](https://github.com/gravity-ui/yagr/issues/111)) ([41f0c10](https://github.com/gravity-ui/yagr/commit/41f0c105eb3e42fc18644797e5fe113f146f3217))
+
 ## [3.6.1](https://github.com/gravity-ui/yagr/compare/v3.6.0...v3.6.1) (2023-07-21)
 
 
