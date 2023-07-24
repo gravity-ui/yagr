@@ -66,6 +66,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     xOffset: TOOLTIP_X_OFFSET,
     yOffset: TOOLTIP_Y_OFFSET,
     virtual: false,
+    onUpdate: 'reset',
 } as const;
 
 export type TooltipPlugin = YagrPlugin<
@@ -176,6 +177,11 @@ class YagrTooltip {
     };
 
     reset = () => {
+        if (this.opts.onUpdate === 'none') {
+            this.yagr.plugins.cursor?.pin(false);
+            return;
+        }
+
         if (this.state.visible) {
             this.hide();
         }
