@@ -396,6 +396,8 @@ function setSeriesImpl(
         shouldRecalcData = true;
     }
 
+    this._batch.fns.push(() => this.plugins?.tooltip?.reset());
+
     if (shouldRecalcData || timeline.length) {
         batch.recalc = true;
         batch.fns.push(() => {
