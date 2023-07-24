@@ -18,6 +18,7 @@ export interface YagrChartProps {
         filename: string;
     };
 
+    onChartInited?: (chart: Yagr, meta: YagrMeta) => void;
     /** Fires after chart has drawn */
     onChartLoad?: (chart: Yagr, meta: YagrMeta) => void;
     /** Fires on every range selection */

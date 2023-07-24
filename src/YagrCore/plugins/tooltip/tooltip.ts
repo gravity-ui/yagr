@@ -211,9 +211,7 @@ class YagrTooltip {
         this.state.pinned = pinState;
         const range = this.state.range || [];
 
-        if (range[1] === null || range.length < 2) {
-            this.yagr.plugins.cursor?.pin(pinState);
-        }
+        this.yagr.plugins.cursor?.pin(pinState && (range[1] === null || range.length < 2));
 
         if (this.opts.virtual) {
             return this.emit(pinState ? 'pin' : 'unpin');
