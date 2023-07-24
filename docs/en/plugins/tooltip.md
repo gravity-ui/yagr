@@ -49,10 +49,12 @@ Configuration for this example:
 -   `tooltip.maxLines: PerScale<number> = 10;` - maximum number of lines per scale in the tooltip
 -   `tooltip.sum: PerScale<boolean> = false` - show the `Sum` row in the tooltip
 -   `tooltip.sort?: PerScale<SortFn>` - row comparator
--   `tooltip.pinable: boolean` - is tooltip pinable
+-   ~~`tooltip.pinable: boolean` - is tooltip pinable~~ (DEPRECATED)
+-   `tooltip.strategy: 'pin' | 'all' | 'none'` - tooltip strategy. `pin` - pin tooltip on click, `all` - pin both on click and drag, `none` - don't pin
 -   `hideNoData?: PerScale<boolean>` - hide rows if the Y value is equal to `null`
 -   `tooltip.precision?: PerScale<number>` - decimals count in numbers when formatting in the tooltip
 -   `tooltip.value: PerScale<ValueFormatter>`- formatter for line values
+-   `tooltip.onUpdate: 'none' | 'reset'` - how to update tooltip when data is updated. `none` - do nothing, `reset` - reset tooltip state
 
 ```ts
 type ValueFormatter = (value: string | number | null, precision?: number) => string;
@@ -92,7 +94,7 @@ Tooltip instance is an EventEmitter, which supports the following events:
 -   `render` - tooltip is rendered
 -   `destroy` - tooltip is destroyed
 
-Examplt:
+Example:
 
 ```ts
 const yagr = new Yagr(...);

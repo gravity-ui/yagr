@@ -138,6 +138,11 @@ export interface TooltipOptions {
     scales?: PerScale<string>;
     /** Is tooltip virtual. Used for custom tooltips, which want to reuse common tooltip */
     virtual?: boolean;
+    /** What to do with tooltip on data change
+     * - reset : reset tooltip
+     * - none  : do nothing
+     */
+    onUpdate?: 'reset' | 'none';
 }
 
 export interface TooltipRow {

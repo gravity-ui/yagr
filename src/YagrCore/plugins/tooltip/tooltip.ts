@@ -66,6 +66,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     xOffset: TOOLTIP_X_OFFSET,
     yOffset: TOOLTIP_Y_OFFSET,
     virtual: false,
+    onUpdate: 'reset',
 } as const;
 
 export type TooltipPlugin = YagrPlugin<
@@ -176,6 +177,11 @@ class YagrTooltip {
     };
 
     reset = () => {
+        if (this.opts.onUpdate === 'none') {
+            this.yagr.plugins.cursor?.pin(false);
+            return;
+        }
+
         if (this.state.visible) {
             this.hide();
         }
@@ -205,9 +211,7 @@ class YagrTooltip {
         this.state.pinned = pinState;
         const range = this.state.range || [];
 
-        if (range[1] === null || range.length < 2) {
-            this.yagr.plugins.cursor?.pin(pinState);
-        }
+        this.yagr.plugins.cursor?.pin(pinState && (range[1] === null || range.length < 2));
 
         if (this.opts.virtual) {
             return this.emit(pinState ? 'pin' : 'unpin');
