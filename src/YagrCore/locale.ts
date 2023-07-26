@@ -5,6 +5,7 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
         sum: 'Сумма',
         scale: 'Шкала',
         series: 'Линия',
+        weekend: 'Выходной',
     },
     en: {
         'hide-all': 'Hide all',
@@ -12,6 +13,7 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
         sum: 'Total',
         scale: 'Scale',
         series: 'Series',
+        weekend: 'Weekend',
     },
 };
 
