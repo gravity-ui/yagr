@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.1](https://github.com/gravity-ui/yagr/compare/v3.7.0...v3.7.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* fixed hooks update ([#113](https://github.com/gravity-ui/yagr/issues/113)) ([9272e5e](https://github.com/gravity-ui/yagr/commit/9272e5e7016b5a7ef781c8c2c5e1c60b97a70b5f))
+
 ## [3.7.0](https://github.com/gravity-ui/yagr/compare/v3.6.1...v3.7.0) (2023-07-24)
 
 
