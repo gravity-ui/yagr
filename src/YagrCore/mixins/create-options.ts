@@ -21,7 +21,69 @@ import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
 import {DrawOrderKey} from '../utils/types';
 
+const uHooks: Record<string, (u: uPlot) => void> = {};
+
+function setIfNotSet(hooks: uPlot.Hooks.Arrays[keyof uPlot.Hooks.Arrays], fn: (u: uPlot) => void) {
+    for (const hook of hooks || []) {
+        if (hook === fn) {
+            return;
+        }
+    }
+    hooks?.push(fn);
+}
+
 export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
+    initMixin(this: Yagr) {
+        uHooks.onDraw = () => {
+            if (this.state.stage === 'listen') {
+                return;
+            }
+            this.state.stage = 'listen';
+            this.execHooks('stage', {chart: this, stage: this.state.stage});
+            const renderTime = performance.now() - this._startTime;
+            this._meta.renderTime = renderTime;
+            this.execHooks('load', {
+                chart: this,
+                meta: this._meta as YagrMeta,
+            });
+        };
+
+        uHooks.ready = () => {
+            const initTime = performance.now() - this._startTime;
+            this._meta.initTime = initTime;
+            this.execHooks('inited', {
+                chart: this,
+                meta: {
+                    initTime,
+                },
+            });
+        };
+        uHooks.drawClear = (u: uPlot) => {
+            const {ctx} = u;
+            ctx.save();
+            ctx.fillStyle = this.utils.theme.BACKGROUND;
+            ctx.fillRect(
+                DEFAULT_CANVAS_PIXEL_RATIO,
+                DEFAULT_CANVAS_PIXEL_RATIO,
+                u.width * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
+                u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
+            );
+            ctx.restore();
+        };
+        uHooks.setSelect = (u: uPlot) => {
+            const {left, width} = u.select;
+            const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
+            const {timeMultiplier = 1} = this.config.chart || {};
+
+            this.execHooks('onSelect', {
+                from: Math.ceil(_from / timeMultiplier),
+                to: Math.ceil(_to / timeMultiplier),
+                chart: this,
+            });
+            u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
+        };
+    }
+
     /**
      * @internal
      * @param reOpt If in reOpt cycle (e.g. batch update), then won't reinit hooks.
@@ -150,55 +212,10 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         options.hooks.drawClear = options.hooks.drawClear || [];
         options.hooks.setSelect = options.hooks.setSelect || [];
 
-        if (!reOpt) {
-            options.hooks.draw.push(() => {
-                if (this.state.stage === 'listen') {
-                    return;
-                }
-                this.state.stage = 'listen';
-                this.execHooks('stage', {chart: this, stage: this.state.stage});
-                const renderTime = performance.now() - this._startTime;
-                this._meta.renderTime = renderTime;
-                this.execHooks('load', {
-                    chart: this,
-                    meta: this._meta as YagrMeta,
-                });
-            });
-            options.hooks.ready.push(() => {
-                const initTime = performance.now() - this._startTime;
-                this._meta.initTime = initTime;
-                this.execHooks('inited', {
-                    chart: this,
-                    meta: {
-                        initTime,
-                    },
-                });
-            });
-            options.hooks.drawClear.push((u: uPlot) => {
-                const {ctx} = u;
-                ctx.save();
-                ctx.fillStyle = this.utils.theme.BACKGROUND;
-                ctx.fillRect(
-                    DEFAULT_CANVAS_PIXEL_RATIO,
-                    DEFAULT_CANVAS_PIXEL_RATIO,
-                    u.width * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
-                    u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
-                );
-                ctx.restore();
-            });
-            options.hooks.setSelect.push((u: uPlot) => {
-                const {left, width} = u.select;
-                const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
-                const {timeMultiplier = 1} = chart;
-
-                this.execHooks('onSelect', {
-                    from: Math.ceil(_from / timeMultiplier),
-                    to: Math.ceil(_to / timeMultiplier),
-                    chart: this,
-                });
-                u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
-            });
-        }
+        setIfNotSet(options.hooks.draw, uHooks.onDraw);
+        setIfNotSet(options.hooks.ready, uHooks.ready);
+        setIfNotSet(options.hooks.drawClear, uHooks.drawClear);
+        setIfNotSet(options.hooks.setSelect, uHooks.setSelect);
 
         options.drawOrder = chart.appearance?.drawOrder
             ? (chart.appearance?.drawOrder.filter(
