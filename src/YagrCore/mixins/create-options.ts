@@ -24,7 +24,7 @@ import {DrawOrderKey} from '../utils/types';
 const uHooks: Record<string, (u: uPlot) => void> = {};
 
 function setIfNotSet(hooks: uPlot.Hooks.Arrays[keyof uPlot.Hooks.Arrays], fn: (u: uPlot) => void) {
-    for(const hook of hooks || []) {
+    for (const hook of hooks || []) {
         if (hook === fn) {
             return;
         }
@@ -46,7 +46,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 chart: this,
                 meta: this._meta as YagrMeta,
             });
-        }
+        };
 
         uHooks.ready = () => {
             const initTime = performance.now() - this._startTime;
@@ -73,7 +73,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
-            const {timeMultiplier = 1} = this.config.chart || {}
+            const {timeMultiplier = 1} = this.config.chart || {};
 
             this.execHooks('onSelect', {
                 from: Math.ceil(_from / timeMultiplier),
@@ -83,7 +83,6 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
         };
     }
-
 
     /**
      * @internal
