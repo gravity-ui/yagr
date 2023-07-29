@@ -332,7 +332,7 @@ class YagrTooltip {
             const section = sections[scale];
             const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
 
-            const valueRender = getOptionValue<ValueFormatter>(opts.value, scale);
+            const valueRender = getOptionValue<ValueFormatter>(opts.value, scale) ?? this.defaultTooltipValueFormatter;
 
             for (const seriesIdx of serieIndicies) {
                 const seriesData = u.data[seriesIdx] as DataSeries;

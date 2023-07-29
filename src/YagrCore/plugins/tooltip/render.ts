@@ -2,7 +2,7 @@
 import {TooltipRenderOptions, TooltipRow} from './types';
 import {getOptionValue, escapeHTML} from './utils';
 
-function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) {
+function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options'], scale: string) {
     return rows
         .map(({value, name = 'unnamed', color, active, transformed, seriesIdx}, i) => {
             const val = `
@@ -13,7 +13,7 @@ function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options']) 
 <div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
     ${opts.showIndicies ? `<span class="yagr-tooltip__idx">${rows.length - i}</span>` : ''}
     <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${escapeHTML(name)}&nbsp;&nbsp;${val}
-</div>`;
+${getOptionValue(opts.percent, scale) ? '%' : ''}</div>`;
         })
         .join('');
 }
@@ -37,7 +37,7 @@ export function renderTooltip(data: TooltipRenderOptions) {
 <div class="__section" data-scale=${x.scale}>
     ${sectionTitle && sectionTitleBody ? `<div class="_section_title">${sectionTitleBody}</div>` : ''}
     ${scaleBody ? `<div class="__section_scale">${scaleBody}</div>` : ''}
-    <div class="__section_body">${renderItems(x.rows, data.options)}</div>
+    <div class="__section_body">${renderItems(x.rows, data.options, x.scale)}</div>
     ${
         getOptionValue(data.options.sum, x.scale)
             ? `
