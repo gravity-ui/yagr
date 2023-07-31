@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <title>Yagr:: Dynamic Updates</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 450px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tooltip updates</h1>
+        <div class="grid">
+            <div class="container">
+                <div id="chart1"></div>
+                <button id="updateData">Data</button>
+                <button id="updateConfig">Config</button>
+            </div>
+            <div class="container" id="cnt2">
+                <div id="chart2"></div>
+                <button id="updateSeries">Series</button>
+            </div>
+
+        <script>
+        
+
+            const yagr = new Yagr(chart1, {
+                title: {text: 'Tooltip updates'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                legend: {
+                    show: true,
+                },
+                tooltip: {
+                    value: (x) => x + ' in line'
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'orange', id: '2'},
+                ],
+            });
+
+            window.updateData.onclick = () => {
+                yagr.setConfig({
+                    chart: {
+                        series: {
+                            type: 'area'
+                        }
+                    },
+                    series: [
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'blue', id: '1'},
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green', id: '2'},
+                    ],
+                    scales: {
+                        y: {
+                            stacking: true
+                        }
+                    }
+                });
+            };
+
+            window.updateConfig.onclick = () => {
+                yagr.setConfig({
+                    tooltip: {
+                        value: (x) => x + ' in stack',
+                        sum: true,
+                    }
+                })
+            };
+
+            const yagr2 = new Yagr(chart2, {
+                title: {text: 'Series updates'},
+                timeline: new Array(20).fill().map((_, i) => i * 1000), 
+                tooltip: {
+                    value: (x) => x + ' in line',
+                    boundClassName: '#cnt2',
+                },
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1', formatter: (x) => x + ' format 1' },
+                ],
+            });
+
+            window.updateSeries.onclick = () => {
+                yagr2.setConfig({
+                    series: [
+                        {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: '1', formatter: (x) => x + ' format 2' },
+                    ],
+                });
+            };
+
+        </script>
+    </body>
+</html>

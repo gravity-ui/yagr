@@ -136,4 +136,7 @@ export const overrideSeriesInUpdate = (dest: Series, source: Series) => {
     dest.lineColor = source.lineColor ?? dest.lineColor;
     dest.lineWidth = source.lineWidth ?? dest.lineWidth;
     dest.stroke = source.stroke ?? dest.stroke;
+    dest.getFocusedColor = source.getFocusedColor ?? dest.getFocusedColor;
+    dest.formatter = source.formatter ?? dest.formatter;
+    dest.paths = source.paths ?? dest.paths;
 };
