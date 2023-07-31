@@ -4,15 +4,28 @@ import type Yagr from '../../index';
 export interface WeekendsPluginOptions {
     color?: string;
     predicate?: (timestamp: number) => boolean;
+    label?: string;
 }
 
 const DEFAULT_WEEKEND_COLOR = 'rgb(250, 255, 0, 0.38)';
+
+
+declare module '../../types' {
+    interface PBandConfig {
+        label?: string;
+    }
+
+    interface PLineConfig {
+        label?: string;
+    }
+}
 
 /**
  * This plugin highlights weekend ranges using native PlotLines plugin
  */
 export default function WeekendsPlugin({
     color = DEFAULT_WEEKEND_COLOR,
+    label,
     predicate,
 }: WeekendsPluginOptions = {}): YagrPlugin {
     return (yagr: Yagr) => {
@@ -46,7 +59,7 @@ export default function WeekendsPlugin({
                 scale: 'x',
                 value: val,
                 color,
-                label: 'Weekend',
+                label: label ?? yagr.utils.i18n('weekend')
             })),
         );
 

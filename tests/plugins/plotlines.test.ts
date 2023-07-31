@@ -1,3 +1,4 @@
+import {PlotLineConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
 
 const DEFAULT_CONFIG = {
@@ -63,6 +64,24 @@ describe('plotlines', () => {
         it('should clear plotLines all', () => {
             y.plugins.plotLines?.clear();
             expect(y.plugins.plotLines?.get()).toEqual([]);
+        });
+
+        it('should add and remove plotLines', () => {
+            const pl: PlotLineConfig[] = [{value: [1, 2], color: 'green', scale: 'y', id: '1'}];
+            y.plugins.plotLines?.add(pl);
+            expect(y.plugins.plotLines?.get()).toEqual(pl);
+            y.plugins.plotLines?.remove(pl);
+            expect(y.plugins.plotLines?.get()).toEqual([]);
+        });
+
+        it('should update plotLines', () => {
+            const pl: PlotLineConfig[] = [{value: [1, 2], color: 'green', scale: 'y', id: '1'}];
+            y.plugins.plotLines?.add(pl);
+            expect(y.plugins.plotLines?.get()).toEqual(pl);
+
+            const pl2: PlotLineConfig[] = [{value: [1, 2], color: 'green', scale: 'y', id: '2'}];
+            y.plugins.plotLines?.update(pl2);
+            expect(y.plugins.plotLines?.get()).toEqual(pl2);
         });
     });
 });
