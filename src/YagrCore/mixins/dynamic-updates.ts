@@ -1,11 +1,11 @@
-import type {MinimalValidConfig, RawSerieData, SupportedLocales, YagrConfig, YagrTheme} from '../types';
+import type {MinimalValidConfig, RawSerieData, Scale, SupportedLocales, YagrConfig, YagrTheme} from '../types';
 import Yagr from '..';
 
 import i18n from '../locale';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../defaults';
 import {overrideSeriesInUpdate, configureSeries} from '../utils/series';
 import {getRedrawOptionsForAxesUpdate, updateAxis} from '../utils/axes';
-import {Paths, containsOnly, deepIsEqual, get} from '../utils/common';
+import {Paths, deepIsEqual, get} from '../utils/common';
 import {Batch} from './batch-updates';
 
 interface UpdateOptions {
@@ -101,22 +101,17 @@ function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, update
 
 function setScalesImpl(yagr: Yagr, scales: YagrConfig['scales'], batch: Batch) {
     let stackingIsChanged = false;
-    let typeIsChanged = false;
     let normalizationIsChanged = false;
 
     Object.entries(scales).forEach(([scaleName, scaleConfig]) => {
         const scale = yagr.config.scales[scaleName];
 
         if (scale) {
-            const {stacking, type} = scale;
-            const {stacking: newStacking, type: newType} = scaleConfig;
+            const {stacking} = scale;
+            const {stacking: newStacking} = scaleConfig;
 
             if (stacking !== newStacking) {
                 stackingIsChanged = true;
-            }
-
-            if (type !== newType) {
-                typeIsChanged = true;
             }
 
             if (scaleConfig.normalize !== scale.normalize || scaleConfig.normalizeBase !== scale.normalizeBase) {
@@ -125,9 +120,15 @@ function setScalesImpl(yagr: Yagr, scales: YagrConfig['scales'], batch: Batch) {
         }
     });
 
-    const isChangingOnlyMinMax = Object.values(scales).every((scaleConfig) =>
-        containsOnly(scaleConfig as Record<string, unknown>, ['min', 'max']),
-    );
+    const isChangingOnlyMinMax = Object.entries(scales).every(([key, scaleConfig]: [string, Scale]) => {
+        const cfg = yagr.config.scales[key];
+
+        const {min: pMin, max: pMax, ...pRest} = cfg;
+        const {min: nMin, max: nMax, ...nRest} = scaleConfig;
+        const isChangedSomething = deepIsEqual(nRest, pRest) === false;
+
+        return !isChangedSomething && (pMin !== nMin || pMax !== nMax);
+    });
 
     const isChangingXAxis = Object.keys(scales).includes(DEFAULT_X_SCALE);
 
@@ -150,13 +151,8 @@ function setScalesImpl(yagr: Yagr, scales: YagrConfig['scales'], batch: Batch) {
         batch.reinit = true;
     }
 
-    if (typeIsChanged) {
-        batch.reopt = true;
-        batch.recalc = true;
-    }
-
     yagr.config.scales = scales;
-    batch.redraw = [true, true];
+    batch.reinit = true;
 }
 
 function isChanged(oldConfig: YagrConfig, newConfig: Partial<YagrConfig>) {
@@ -223,7 +219,7 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>,
         yagr.setScales(newConfig.scales);
     }
 
-    const isChangedSeries = areSeriesChanged(yagr.config.series, newConfig.series);
+    const isChangedSeries = Boolean(newConfig.series) && areSeriesChanged(yagr.config.series, newConfig.series);
 
     if (isChangedSeries) {
         batch.redrawLegend = true;
