@@ -83,6 +83,14 @@
             </div>
         </div>
 
+        <div class="grid">
+            <div class="container">
+                <div id="chart11"></div>
+                <button id="changeScales">Change scales</button>
+                <button id="changeScalesMinMax">Change scales min/max</button>
+            </div>
+        </div>
+
         <script>
             function randomColor(a = 1) {
                 const r = Math.floor(Math.random() * 255);
@@ -489,6 +497,37 @@
                             type: 'dots',
                         },
                     ],
+                });
+            };
+
+
+            const yagr11 = new Yagr(chart11, {
+                title: {text: 'Change scales'},
+                timeline: [1, 2, 3, 4],
+                series: [
+                    {
+                        data: [1, 2, 3, 4],
+                        color: 'green',
+                    },
+                ],
+                scales: {
+                    y: {min: 0, max: 10}
+                }
+            });
+
+            window.changeScales.onclick = () => {
+                yagr11.setConfig({
+                    scales: {
+                        y: {min: 0, max: 5, range: () => ([0, 5])}
+                    }
+                });
+            };
+
+            window.changeScalesMinMax.onclick = () => {
+                yagr11.setConfig({
+                    scales: {
+                        y: {min: -10, max: 20, range: () => ([0, 5])}
+                    }
                 });
             };
         </script>

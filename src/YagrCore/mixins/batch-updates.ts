@@ -92,7 +92,8 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 this.transformSeries();
             })
             .inStage('uplot', () => {
-                this.uplot.destroy();
+                // uplot may be undefined if chart is not rendered yet, but got update
+                this.uplot?.destroy();
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.plugins.legend?.redraw();
             })
