@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.3](https://github.com/gravity-ui/yagr/compare/v3.7.2...v3.7.3) (2023-08-01)
+
+
+### Bug Fixes
+
+* fixde setScales method ([#119](https://github.com/gravity-ui/yagr/issues/119)) ([e693065](https://github.com/gravity-ui/yagr/commit/e69306532eeda4c55be0ddaae73f48d76cb3fb5b))
+
 ## [3.7.2](https://github.com/gravity-ui/yagr/compare/v3.7.1...v3.7.2) (2023-07-31)
 
 
