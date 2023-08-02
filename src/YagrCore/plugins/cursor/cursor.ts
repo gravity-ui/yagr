@@ -115,7 +115,11 @@ export default function CursorPlugin(
 
     return {
         pin: (pinState: boolean) => {
-            const over = yagr.root.querySelector('.u-over') as HTMLDivElement;
+            const over = yagr.root.querySelector('.u-over');
+
+            if (!over) {
+                return;
+            }
 
             if (pinState) {
                 const pointsHolder = document.createElement('div');
