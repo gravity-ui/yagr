@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.4](https://github.com/gravity-ui/yagr/compare/v3.7.3...v3.7.4) (2023-08-02)
+
+
+### Bug Fixes
+
+* fixed cursor pin in case if uplot not rendered yet ([#121](https://github.com/gravity-ui/yagr/issues/121)) ([3b7e58c](https://github.com/gravity-ui/yagr/commit/3b7e58c1d102d7b90423ecc1a5d918fa78387b6b))
+
 ## [3.7.3](https://github.com/gravity-ui/yagr/compare/v3.7.2...v3.7.3) (2023-08-01)
 
 
