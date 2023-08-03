@@ -23,6 +23,7 @@ Yagr is a high-performance HTML5 canvas chart renderer based on [uPlot](https://
 -   [Paginated inline legend](https://yagr.tech/en/plugins/legend)
 -   [Error handling and extended hooks](https://yagr.tech/en/api/lifecycle)
 -   [Data alignment and interpolation for missing data](https://yagr.tech/en/api/data-processing)
+-   [Realtime updates](https://yagr.tech/en/api/dynamic-updates)
 
 ## [Documentation](https://yagr.tech)
 
