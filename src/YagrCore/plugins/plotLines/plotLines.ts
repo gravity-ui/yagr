@@ -156,7 +156,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             }
 
             const additions = newPlotLines!.filter((p) => {
-                return !hasPlotLine(plotLinesCfg, p);
+                return !hasPlotLine(plotLines, p);
             });
 
             const removes = plotLines.filter((p) => {
