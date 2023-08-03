@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.5](https://github.com/gravity-ui/yagr/compare/v3.7.4...v3.7.5) (2023-08-03)
+
+
+### Bug Fixes
+
+* fixed plotlines update ([#123](https://github.com/gravity-ui/yagr/issues/123)) ([d3f24d4](https://github.com/gravity-ui/yagr/commit/d3f24d452f8d86beedf9139fd091f4de7452f2a2))
+
 ## [3.7.4](https://github.com/gravity-ui/yagr/compare/v3.7.3...v3.7.4) (2023-08-02)
 
 
