@@ -53,6 +53,11 @@ export async function getImage(configOrFunction: MinimalValidConfig | (() => voi
     } else {
         await page.evaluate(async (config) => {
             await new Promise<unknown>((resolve) => {
+                config.axes = config.axes || {};
+                config.axes.x = config.axes.x || {};
+                config.axes.x.font = '11px sans-serif';
+                config.axes.y = config.axes.y || {};
+                config.axes.y.font = '11px sans-serif';
                 config.hooks = config.hooks || {};
                 config.hooks.load = config.hooks.load || [];
                 config.hooks.load.push(resolve);

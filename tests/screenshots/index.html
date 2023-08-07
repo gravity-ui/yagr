@@ -6,6 +6,11 @@
         <script>
             window.AsyncYagr = (...args) => {
                 return new Promise((resolve) => {
+                    args[1].axes = args[1].axes || {};
+                    args[1].axes.y = args[1].axes.y || {};
+                    args[1].axes.x = args[1].axes.x || {};
+                    args[1].axes.y.font = '11px sans-serif';
+                    args[1].axes.x.font = '11px sans-serif';
                     args[1].hooks = args[1].hooks || {};
                     args[1].hooks.load = args[1].hooks.load || [];
                     args[1].hooks.load.push(({chart}) => {

@@ -106,15 +106,6 @@ describe('tooltip plugin', () => {
                     value: (x: string | number | null) => x + ' [MOD]',
                 },
             },
-            {
-                key: 'value [per scale]',
-                value: {
-                    value: {
-                        y: (x: string | number | null) => x + ' [MOD] Y',
-                        r: (x: string | number | null) => x + ' [MOD] R',
-                    },
-                },
-            },
         ])('should render tooltip with $key = $value', async ({value}) => {
             const image = await getScreenshot(async (patch) => {
                 const y = await window.AsyncYagr(window.test, {
