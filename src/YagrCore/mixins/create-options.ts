@@ -21,8 +21,6 @@ import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
 import {DrawOrderKey} from '../utils/types';
 
-const uHooks: Record<string, (u: uPlot) => void> = {};
-
 function setIfNotSet(hooks: uPlot.Hooks.Arrays[keyof uPlot.Hooks.Arrays], fn: (u: uPlot) => void) {
     for (const hook of hooks || []) {
         if (hook === fn) {
@@ -34,7 +32,7 @@ function setIfNotSet(hooks: uPlot.Hooks.Arrays[keyof uPlot.Hooks.Arrays], fn: (u
 
 export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
     initMixin(this: Yagr) {
-        uHooks.onDraw = () => {
+        this._uHooks.onDraw = () => {
             if (this.state.stage === 'listen') {
                 return;
             }
@@ -48,7 +46,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             });
         };
 
-        uHooks.ready = () => {
+        this._uHooks.ready = () => {
             const initTime = performance.now() - this._startTime;
             this._meta.initTime = initTime;
             this.execHooks('inited', {
@@ -58,7 +56,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 },
             });
         };
-        uHooks.drawClear = (u: uPlot) => {
+        this._uHooks.drawClear = (u: uPlot) => {
             const {ctx} = u;
             ctx.save();
             ctx.fillStyle = this.utils.theme.BACKGROUND;
@@ -70,7 +68,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             );
             ctx.restore();
         };
-        uHooks.setSelect = (u: uPlot) => {
+        this._uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
             const {timeMultiplier = 1} = this.config.chart || {};
@@ -212,10 +210,10 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         options.hooks.drawClear = options.hooks.drawClear || [];
         options.hooks.setSelect = options.hooks.setSelect || [];
 
-        setIfNotSet(options.hooks.draw, uHooks.onDraw);
-        setIfNotSet(options.hooks.ready, uHooks.ready);
-        setIfNotSet(options.hooks.drawClear, uHooks.drawClear);
-        setIfNotSet(options.hooks.setSelect, uHooks.setSelect);
+        setIfNotSet(options.hooks.draw, this._uHooks.onDraw);
+        setIfNotSet(options.hooks.ready, this._uHooks.ready);
+        setIfNotSet(options.hooks.drawClear, this._uHooks.drawClear);
+        setIfNotSet(options.hooks.setSelect, this._uHooks.setSelect);
 
         options.drawOrder = chart.appearance?.drawOrder
             ? (chart.appearance?.drawOrder.filter(
