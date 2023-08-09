@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.6](https://github.com/gravity-ui/yagr/compare/v3.7.5...v3.7.6) (2023-08-09)
+
+
+### Bug Fixes
+
+* fixed plotlines removes, update bug with cached uHook ([#125](https://github.com/gravity-ui/yagr/issues/125)) ([9709797](https://github.com/gravity-ui/yagr/commit/9709797f9f79f5308ff5b25d7c7ef8c45cf19e3d))
+
 ## [3.7.5](https://github.com/gravity-ui/yagr/compare/v3.7.4...v3.7.5) (2023-08-03)
 
 
