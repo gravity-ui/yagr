@@ -137,11 +137,9 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                   })
                 : [];
         },
-        remove: (plotLinesToRemove: PlotLineConfig[], scale?: string) => {
+        remove: (plotLinesToRemove: PlotLineConfig[]) => {
             plotLines = plotLines.filter((p) => {
-                return !plotLinesToRemove.some((pl) => {
-                    return pl.id === p.id && (scale ? p.scale === scale : true);
-                });
+                return !hasPlotLine(plotLinesToRemove, p);
             });
         },
         add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
@@ -164,7 +162,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
             });
 
             additions.length && plugin.add(additions, scale);
-            removes.length && plugin.remove(removes, scale);
+            removes.length && plugin.remove(removes);
         },
         uplot: {
             hooks: {

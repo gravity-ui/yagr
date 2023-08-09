@@ -88,6 +88,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     /** Create uPlot options methods */
     protected createUplotOptions!: CreateUplotOptionsMixin<TConfig>['createUplotOptions'];
     protected transformSeries!: TransformSeriesMixin<TConfig>['transformSeries'];
+    protected _uHooks: Record<string, (u: uPlot) => void> = {};
 
     /** Dynamic update methods */
     setTheme!: DynamicUpdatesMixin<TConfig>['setTheme'];
@@ -230,6 +231,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         this.plugins?.tooltip?.dispose();
         this.plugins?.legend?.destroy();
         this.uplot.destroy();
+        this._uHooks = {};
         this.execHooks('dispose', {chart: this});
     }
 
