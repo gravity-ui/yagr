@@ -140,4 +140,50 @@ describe('DataRefs plugin', () => {
             });
         });
     });
+
+    describe('weird data', () => {
+        const y = new Yagr(window.document.createElement('div'), {
+            timeline: [1, 2, 3, 4],
+            scales: {
+                y: {stacking: true},
+            },
+            series: [
+                {data: [1, null, 3, 4], scale: 'y', id: 'one'},
+                {data: [null, null, null, 3], scale: 'y', id: 'two'},
+                {data: [null, null, null, null], scale: 'y', id: 'three'},
+            ],
+            plugins: {
+                refs: DataRefs({}),
+            },
+        });
+
+        it('should calc refs for series perScale', async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(y.plugins.refs?.getRefs()).toEqual({
+                y: {min: 1, max: 4, count: 4, last: null, avg: 2.75, sum: 11, integral: 0.006999999999999999},
+            });
+        });
+
+        it('should calc refs by idxs', async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(y.plugins.refs?.calcRefs(0, 1, 'one')).toEqual({
+                min: 1,
+                max: 1,
+                count: 1,
+                avg: 1,
+                last: 1,
+                sum: 1,
+                integral: 0.0005,
+            });
+            expect(y.plugins.refs?.calcRefs(0, 1, 'two')).toEqual({
+                min: null,
+                max: null,
+                count: 0,
+                avg: null,
+                last: null,
+                sum: null,
+                integral: 0,
+            });
+        });
+    });
 });

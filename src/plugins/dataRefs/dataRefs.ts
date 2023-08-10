@@ -4,12 +4,12 @@ import {DEFAULT_X_SCALE} from '../../YagrCore/defaults';
 import type Yagr from '../../YagrCore/index';
 
 export type DataRefs = {
-    min: number;
-    max: number;
-    sum: number;
-    avg: number;
+    min: number | null;
+    max: number | null;
+    sum: number | null;
+    avg: number | null;
     count: number;
-    integral: number;
+    integral: number | null;
     last: number | null;
 };
 export type DataRefsPerScale = Record<string, DataRefs>;
@@ -66,6 +66,59 @@ function getLast(values: DataSeriesExtended): number | null {
     return null;
 }
 
+const safeMin = (...values: (number | null)[]) => {
+    if (values.length === 0) {
+        return null;
+    }
+    let min = null;
+    for (const val of values) {
+        if (val === null || Number.isNaN(val)) {
+            continue;
+        }
+        if (min === null || val < min) {
+            min = val;
+        }
+    }
+    return min;
+};
+
+const safeMax = (...values: (number | null)[]) => {
+    if (values.length === 0) {
+        return null;
+    }
+
+    let max = null;
+    for (const val of values) {
+        if (val === null || Number.isNaN(val)) {
+            continue;
+        }
+        if (max === null || val > max) {
+            max = val;
+        }
+    }
+    return max;
+};
+
+const safeSum = (...values: (number | null)[]) => {
+    if (values.length === 0) {
+        return null;
+    }
+
+    return values.reduce((acc, v) => {
+        if (v === null) {
+            return acc;
+        }
+
+        if (acc === null) {
+            acc = v;
+        } else {
+            acc += v;
+        }
+
+        return acc;
+    });
+};
+
 const DataRef = (opst: DataRefsPluginOptions) => {
     const plugin: YagrPlugin<{
         getRefs: (from?: number, to?: number) => DataRefsPerScale | DataRefsPerSeries;
@@ -100,16 +153,19 @@ const DataRef = (opst: DataRefsPluginOptions) => {
 
                 Object.keys(result).forEach((scale) => {
                     const total: DataRefs = {
-                        min: Object.values(result[scale].series).reduce((acc, {min}) => Math.min(acc, min), Infinity),
-                        max: Object.values(result[scale].series).reduce((acc, {max}) => Math.max(acc, max), -Infinity),
-                        sum: Object.values(result[scale].series).reduce((acc, {sum}) => acc + sum, 0),
+                        min: safeMin(...Object.values(result[scale].series).map(({min}) => min)),
+                        max: safeMax(...Object.values(result[scale].series).map(({max}) => max)),
+                        sum: safeSum(...Object.values(result[scale].series).map(({sum}) => sum)),
                         avg: 0,
                         count: Object.values(result[scale].series).reduce((acc, {count}) => acc + count, 0),
-                        integral: Object.values(result[scale].series).reduce((acc, {integral}) => acc + integral, 0),
+                        integral: Object.values(result[scale].series).reduce(
+                            (acc, {integral}) => acc + (integral ?? 0),
+                            0,
+                        ),
                         last: 0,
                     };
 
-                    total.avg = total.sum / total.count;
+                    total.avg = total.sum === null ? null : total.sum / total.count;
                     total.last = null;
 
                     result[scale].total = total;
@@ -122,11 +178,11 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                 const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
                 const values = _.uplot.series[seriesIdx].$c.slice(fromIdx, toIdx + 1) as (number | null)[];
                 const integral = integrate(timestamps, values);
-                const sum = values.reduce((acc, v) => (acc === null ? 0 : acc + (v || 0)), 0) || 0;
-                const min = Math.min(...(values.filter((v) => v !== null) as number[]));
-                const max = Math.max(...(values.filter((v) => v !== null) as number[]));
+                const sum = safeSum(...values);
+                const min = safeMin(...values);
+                const max = safeMax(...values);
                 const count = values.filter((v) => v !== null).length;
-                const avg = sum / count;
+                const avg = sum === null ? null : sum / count;
                 const last = getLast(values);
 
                 return {min, max, sum, avg, count, integral, last};
@@ -143,11 +199,11 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           return;
                                       }
                                       refs[key] = {
-                                          min: Infinity,
-                                          max: -Infinity,
-                                          sum: 0,
-                                          avg: 0,
-                                          integral: 0,
+                                          min: null,
+                                          max: null,
+                                          sum: null,
+                                          avg: null,
+                                          integral: null,
                                           count: 0,
                                           last: null,
                                       };
@@ -161,18 +217,25 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           (v) => typeof v === 'number' && v !== null,
                                       ) as number[];
 
-                                      refs[scale].min = Math.min(...numericValues, refs[scale].min);
-                                      refs[scale].max = Math.max(...numericValues, refs[scale].max);
-                                      refs[scale].sum += numericValues.reduce((acc, v) => acc + v, 0);
+                                      refs[scale].min = safeMin(...numericValues, refs[scale].min);
+                                      refs[scale].max = safeMax(...numericValues, refs[scale].max);
+                                      const sum = refs[scale].sum;
+                                      const rowSum = safeSum(...numericValues);
+                                      refs[scale].sum =
+                                          sum === null
+                                              ? safeSum(...numericValues)
+                                              : rowSum === null
+                                              ? sum
+                                              : sum + rowSum;
                                       refs[scale].count += count;
-                                      refs[scale].integral += integrate(
-                                          u.data[0] as number[],
-                                          $c as DataSeriesExtended,
-                                      );
+                                      const integral = refs[scale].integral;
+                                      const rowIntegral = integrate(u.data[0] as number[], $c as DataSeriesExtended);
+                                      refs[scale].integral = integral === null ? rowIntegral : integral + rowIntegral;
                                   });
 
                                   Object.keys(refs).forEach((key) => {
-                                      refs[key].avg = refs[key].sum / refs[key].count;
+                                      const sum = refs[key].sum;
+                                      refs[key].avg = sum === null ? null : sum / refs[key].count;
                                   });
                               },
                           },
