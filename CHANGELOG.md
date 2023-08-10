@@ -1,5 +1,13 @@
 ### master
 
+## [3.7.7](https://github.com/gravity-ui/yagr/compare/v3.7.6...v3.7.7) (2023-08-10)
+
+
+### Bug Fixes
+
+* fixed data-refs plugin ([#128](https://github.com/gravity-ui/yagr/issues/128)) ([f7de2a9](https://github.com/gravity-ui/yagr/commit/f7de2a92a6a33d12f2b899847a81d1860e74c188))
+* updated uplot ([#127](https://github.com/gravity-ui/yagr/issues/127)) ([642cda1](https://github.com/gravity-ui/yagr/commit/642cda1b03ea1fba0f7af101a71927691ec99d8b))
+
 ## [3.7.6](https://github.com/gravity-ui/yagr/compare/v3.7.5...v3.7.6) (2023-08-09)
 
 
