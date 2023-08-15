@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.8](https://github.com/gravity-ui/yagr/compare/v3.7.7...v3.7.8) (2023-08-15)
+
+
+### Bug Fixes
+
+* fixed tooltip pin/unpin for all strategies ([#131](https://github.com/gravity-ui/yagr/issues/131)) ([f1d5c28](https://github.com/gravity-ui/yagr/commit/f1d5c287cd02a3e35227da600763bad3dabea452))
+
 ## [3.7.7](https://github.com/gravity-ui/yagr/compare/v3.7.6...v3.7.7) (2023-08-10)
 
 
