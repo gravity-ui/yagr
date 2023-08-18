@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.9](https://github.com/gravity-ui/yagr/compare/v3.7.8...v3.7.9) (2023-08-18)
+
+
+### Bug Fixes
+
+* fixed markers plugin initiation ([#133](https://github.com/gravity-ui/yagr/issues/133)) ([ed82236](https://github.com/gravity-ui/yagr/commit/ed822362f9acb3001505ed25265bb62f2531be3e))
+
 ## [3.7.8](https://github.com/gravity-ui/yagr/compare/v3.7.7...v3.7.8) (2023-08-15)
 
 
