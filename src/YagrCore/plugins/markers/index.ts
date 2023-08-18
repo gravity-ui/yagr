@@ -84,7 +84,8 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
 export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugin {
     const {size = DEFAULT_POINT_SIZE, strokeWidth = 2, strokeColor = '#ffffff', show} = config.markers;
 
-    const defaultDotsSize = (config.chart.series as DotsSeriesOptions).pointsSize || DEFAULT_POINT_SIZE;
+    const chartSeriesOptions = config.chart?.series as DotsSeriesOptions;
+    const defaultDotsSize = chartSeriesOptions?.pointsSize || DEFAULT_POINT_SIZE;
 
     function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
         const {scale, _focus, color, getFocusedColor, type} = u.series[i];
