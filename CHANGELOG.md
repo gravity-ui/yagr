@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.10](https://github.com/gravity-ui/yagr/compare/v3.7.9...v3.7.10) (2023-08-23)
+
+
+### Bug Fixes
+
+* fixed data aggregation plugin ([#135](https://github.com/gravity-ui/yagr/issues/135)) ([d4ae62c](https://github.com/gravity-ui/yagr/commit/d4ae62c31ed20171e28174a04420024789f378f2))
+
 ## [3.7.9](https://github.com/gravity-ui/yagr/compare/v3.7.8...v3.7.9) (2023-08-18)
 
 
