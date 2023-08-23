@@ -2,6 +2,7 @@ import {DataSeriesExtended, YagrPlugin} from '../../types';
 import uPlot, {Series} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../YagrCore/defaults';
 import type Yagr from '../../YagrCore/index';
+import {count, getLast, integrate, safeMax, safeMin, safeSum} from './utils';
 
 export type DataRefs = {
     min: number | null;
@@ -24,99 +25,6 @@ export type DataRefsPerSeries = Record<
 export type DataRefsPluginOptions = {
     /** Should calc ref points on ready event (true by default) */
     calcOnReady?: boolean;
-};
-
-export function integrate(timestamps: number[], values: DataSeriesExtended) {
-    if (timestamps.length < 2) {
-        return 0;
-    }
-    let t0 = timestamps[0];
-    let x0 = Number(values[0]);
-    let t1: number;
-    let x1: number;
-    let integral = 0;
-    for (let i = 1; i < timestamps.length; i++) {
-        x1 = Number(values[i]);
-        t1 = timestamps[i];
-
-        // we skip over all non-numeric values in a serie
-        // so that all holes and single points (surrounded by
-        // empty void) do not add anything to the integral
-        if (!Number.isNaN(x1) && !Number.isNaN(x0)) {
-            const dt = t1 - t0;
-            const dx = x1 - x0;
-            const area = ((x0 + dx / 2) * dt) / 1000; // convert milliseconds to seconds
-            integral += area;
-        }
-
-        t0 = t1;
-        x0 = x1;
-    }
-
-    return integral;
-}
-
-function getLast(values: DataSeriesExtended): number | null {
-    for (let i = values.length - 1; i >= 0; i--) {
-        const val = values[i];
-        if (val !== null && typeof val === 'number') {
-            return val;
-        }
-    }
-    return null;
-}
-
-const safeMin = (...values: (number | null)[]) => {
-    if (values.length === 0) {
-        return null;
-    }
-    let min = null;
-    for (const val of values) {
-        if (val === null || Number.isNaN(val)) {
-            continue;
-        }
-        if (min === null || val < min) {
-            min = val;
-        }
-    }
-    return min;
-};
-
-const safeMax = (...values: (number | null)[]) => {
-    if (values.length === 0) {
-        return null;
-    }
-
-    let max = null;
-    for (const val of values) {
-        if (val === null || Number.isNaN(val)) {
-            continue;
-        }
-        if (max === null || val > max) {
-            max = val;
-        }
-    }
-    return max;
-};
-
-const safeSum = (...values: (number | null)[]) => {
-    if (values.length === 0) {
-        return null;
-    }
-
-    return values.reduce((acc, v) => {
-        if (v === null) {
-            return acc;
-        }
-
-        if (acc === null) {
-            acc = v;
-        } else {
-            acc += v;
-        }
-
-        return acc;
-    });
 };
 
 const DataRef = (opst: DataRefsPluginOptions) => {
@@ -153,9 +61,9 @@ const DataRef = (opst: DataRefsPluginOptions) => {
 
                 Object.keys(result).forEach((scale) => {
                     const total: DataRefs = {
-                        min: safeMin(...Object.values(result[scale].series).map(({min}) => min)),
-                        max: safeMax(...Object.values(result[scale].series).map(({max}) => max)),
-                        sum: safeSum(...Object.values(result[scale].series).map(({sum}) => sum)),
+                        min: safeMin(Object.values(result[scale].series).map(({min}) => min)),
+                        max: safeMax(Object.values(result[scale].series).map(({max}) => max)),
+                        sum: safeSum(Object.values(result[scale].series).map(({sum}) => sum)),
                         avg: 0,
                         count: Object.values(result[scale].series).reduce((acc, {count}) => acc + count, 0),
                         integral: Object.values(result[scale].series).reduce(
@@ -176,16 +84,16 @@ const DataRef = (opst: DataRefsPluginOptions) => {
             calcRefs: (fromIdx: number, toIdx: number, seriesId: string) => {
                 const seriesIdx = _.state.y2uIdx[seriesId];
                 const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
-                const values = _.uplot.series[seriesIdx].$c.slice(fromIdx, toIdx + 1) as (number | null)[];
+                const values = _.uplot.series[seriesIdx].$c;
                 const integral = integrate(timestamps, values);
-                const sum = safeSum(...values);
-                const min = safeMin(...values);
-                const max = safeMax(...values);
-                const count = values.filter((v) => v !== null).length;
-                const avg = sum === null ? null : sum / count;
-                const last = getLast(values);
+                const sum = safeSum(values, fromIdx, toIdx);
+                const min = safeMin(values, fromIdx, toIdx);
+                const max = safeMax(values, fromIdx, toIdx);
+                const cnt = count(values, fromIdx, toIdx);
+                const avg = sum === null ? null : sum / cnt;
+                const last = getLast(values, fromIdx, toIdx);
 
-                return {min, max, sum, avg, count, integral, last};
+                return {min, max, sum, avg, count: cnt, integral, last};
             },
 
             uplot: {
@@ -217,16 +125,12 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           (v) => typeof v === 'number' && v !== null,
                                       ) as number[];
 
-                                      refs[scale].min = safeMin(...numericValues, refs[scale].min);
-                                      refs[scale].max = safeMax(...numericValues, refs[scale].max);
+                                      refs[scale].min = safeMin([...numericValues, refs[scale].min]);
+                                      refs[scale].max = safeMax([...numericValues, refs[scale].max]);
                                       const sum = refs[scale].sum;
-                                      const rowSum = safeSum(...numericValues);
+                                      const rowSum = safeSum(numericValues);
                                       refs[scale].sum =
-                                          sum === null
-                                              ? safeSum(...numericValues)
-                                              : rowSum === null
-                                              ? sum
-                                              : sum + rowSum;
+                                          sum === null ? safeSum(numericValues) : rowSum === null ? sum : sum + rowSum;
                                       refs[scale].count += count;
                                       const integral = refs[scale].integral;
                                       const rowIntegral = integrate(u.data[0] as number[], $c as DataSeriesExtended);
