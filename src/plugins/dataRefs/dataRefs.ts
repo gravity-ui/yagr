@@ -2,7 +2,7 @@ import {DataSeriesExtended, YagrPlugin} from '../../types';
 import uPlot, {Series} from 'uplot';
 import {DEFAULT_X_SCALE} from '../../YagrCore/defaults';
 import type Yagr from '../../YagrCore/index';
-import {count, getLast, integrate, safeMax, safeMin, safeSum} from './utils';
+import {countNumbers, getLast, integrate, safeMax, safeMin, safeSum} from './utils';
 
 export type DataRefs = {
     min: number | null;
@@ -31,7 +31,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
     const plugin: YagrPlugin<{
         getRefs: (from?: number, to?: number) => DataRefsPerScale | DataRefsPerSeries;
         calcRefs: (from: number, to: number, id: string) => DataRefs;
-    }> = (_: Yagr) => {
+    }> = (yagr: Yagr) => {
         const refs: DataRefsPerScale = {};
 
         const pluginMethods = {
@@ -45,12 +45,12 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                 }
 
                 if (toIdx === undefined) {
-                    toIdx = _.uplot.data[0].length - 1;
+                    toIdx = yagr.uplot.data[0].length - 1;
                 }
 
                 const result: DataRefsPerSeries = {};
 
-                _.uplot.series.forEach(({scale, id}) => {
+                yagr.uplot.series.forEach(({scale, id}) => {
                     if (scale === DEFAULT_X_SCALE || !scale) {
                         return;
                     }
@@ -82,14 +82,14 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                 return result;
             },
             calcRefs: (fromIdx: number, toIdx: number, seriesId: string) => {
-                const seriesIdx = _.state.y2uIdx[seriesId];
-                const timestamps = _.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
-                const values = _.uplot.series[seriesIdx].$c;
-                const integral = integrate(timestamps, values);
+                const seriesIdx = yagr.state.y2uIdx[seriesId];
+                const timestamps = yagr.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
+                const values = yagr.uplot.series[seriesIdx].$c;
+                const integral = integrate(timestamps, values, yagr.config.chart?.timeMultiplier);
                 const sum = safeSum(values, fromIdx, toIdx);
                 const min = safeMin(values, fromIdx, toIdx);
                 const max = safeMax(values, fromIdx, toIdx);
-                const cnt = count(values, fromIdx, toIdx);
+                const cnt = countNumbers(values, fromIdx, toIdx);
                 const avg = sum === null ? null : sum / cnt;
                 const last = getLast(values, fromIdx, toIdx);
 
@@ -133,7 +133,11 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           sum === null ? safeSum(numericValues) : rowSum === null ? sum : sum + rowSum;
                                       refs[scale].count += count;
                                       const integral = refs[scale].integral;
-                                      const rowIntegral = integrate(u.data[0] as number[], $c as DataSeriesExtended);
+                                      const rowIntegral = integrate(
+                                          u.data[0] as number[],
+                                          $c as DataSeriesExtended,
+                                          yagr.config.chart?.timeMultiplier,
+                                      );
                                       refs[scale].integral = integral === null ? rowIntegral : integral + rowIntegral;
                                   });
 
