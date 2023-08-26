@@ -83,6 +83,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
             'interpolation',
             'linear',
         );
+        serie.spanGaps = getCommonProperty<AreaSeriesOptions, 'spanGaps'>(rawSeries, yagr, 'spanGaps', false);
     }
 
     if (serie.type === 'line') {
@@ -101,6 +102,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
             'interpolation',
             'linear',
         );
+        serie.spanGaps = getCommonProperty<LineSeriesOptions, 'spanGaps'>(rawSeries, yagr, 'spanGaps', false);
     }
 
     if (serie.type === 'column') {
