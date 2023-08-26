@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.11](https://github.com/gravity-ui/yagr/compare/v3.7.10...v3.7.11) (2023-08-26)
+
+
+### Bug Fixes
+
+* fixed common spanGaps option passing ([#130](https://github.com/gravity-ui/yagr/issues/130)) ([b71905f](https://github.com/gravity-ui/yagr/commit/b71905f282c6f1deb10440a9fd0d2268607ce0d2))
+
 ## [3.7.10](https://github.com/gravity-ui/yagr/compare/v3.7.9...v3.7.10) (2023-08-23)
 
 
