@@ -109,6 +109,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         serie.stroke = colorFn;
         serie.fill = colorFn;
         serie.points.show = false;
+        serie.width = serie.width ?? 0;
         serie.renderOptions = getCommonProperty<ColumnSeriesOptions, 'renderOptions'>(serie, yagr, 'renderOptions');
     }
 
