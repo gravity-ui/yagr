@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.12](https://github.com/gravity-ui/yagr/compare/v3.7.11...v3.7.12) (2023-08-31)
+
+
+### Bug Fixes
+
+* fixed default bars width passing ([#138](https://github.com/gravity-ui/yagr/issues/138)) ([7dd18e5](https://github.com/gravity-ui/yagr/commit/7dd18e512132b4ca867fea16a7d3f423f6a33985))
+
 ## [3.7.11](https://github.com/gravity-ui/yagr/compare/v3.7.10...v3.7.11) (2023-08-26)
 
 
