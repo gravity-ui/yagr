@@ -54,6 +54,7 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
     function renderPlotLines(u: UPlot) {
         const {ctx} = u;
         const {height, top, width, left} = u.bbox;
+        const timeline = u.data[0];
 
         for (const plotLineConfig of plotLines) {
             if (!plotLineConfig.scale) {
@@ -69,6 +70,25 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                 /** This weird code should handles unexpected Inifinities in values */
                 const [fromValue, toValue] = value.map((val) => {
                     if (Math.abs(val) !== Infinity) {
+                        if (scale === DEFAULT_X_SCALE) {
+                            if (val < timeline[0]) {
+                                return timeline[0];
+                            }
+
+                            if (val > timeline[timeline.length - 1]) {
+                                return timeline[timeline.length - 1];
+                            }
+                        } else {
+                            const scaleCfg = u.scales[scale];
+                            if (scaleCfg.min !== undefined && val < scaleCfg.min) {
+                                return scaleCfg.min;
+                            }
+
+                            if (scaleCfg.max !== undefined && val > scaleCfg.max) {
+                                return scaleCfg.max;
+                            }
+                        }
+
                         return val;
                     }
 
