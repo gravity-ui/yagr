@@ -30,6 +30,10 @@
             <div id="chart4" class="container right"></div>
         </div>
 
+        <div class="grid">
+            <div id="chart5" class="container left"></div>
+        </div>
+
         <script>
             const y1 = new Yagr(chart1, {
                 title: {text: 'Vertical lines'},
@@ -112,6 +116,39 @@
                             },
                             {
                                 value: [0, 1],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                            },
+                        ],
+                    },
+                },
+            });
+
+            const y5 = new Yagr(chart5, {
+                title: {text: 'Restrict with plotting area'},
+                timeline: [5, 6, 7, 8],
+                series: [{data: [1000, 2000, 1000, 3000], color: 'red'}],
+                scales: {y: {min: 0, max: 5000}},
+                axes: {
+                    y: {
+                        plotLines: [
+                            {
+                                value: [-1000, 1000],
+                                color: 'rgba(100, 120, 244, 0.3)',
+                            },
+                            {
+                                value: [2000, 12000],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                            },
+                        ],
+                    },
+                    x: {
+                        plotLines: [
+                            {
+                                value: [0, 6],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                            },
+                            {
+                                value: [7, 10],
                                 color: 'rgba(130, 20, 244, 0.3)',
                             },
                         ],
