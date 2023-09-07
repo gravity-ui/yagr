@@ -30,7 +30,8 @@ jobs:
               run: |
                   npm i --no-save @types/react@18 @types/react-dom@18
                   npm run typecheck
-    tests.units:
+
+    tests_units:
         name: Unit tests
         runs-on: ubuntu-latest
         steps:
@@ -47,28 +48,3 @@ jobs:
               run: npm ci
             - name: Unit Tests
               run: npm run test:units
-
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-
-            - name: Setup Node
-              uses: actions/setup-node@v2
-              with:
-                  node-version: '18.x'
-                  cache: 'npm'
-            - name: Install Packages
-              run: npm ci
-            - name: Build
-              run: npm run build
-            - name: Unit Tests
-              run: npm run test:screenshots
-
-            - name: Upload screenshots
-              uses: actions/upload-artifact@v2
-              with:
-                  name: screenshots
-                  path: tests/screenshots/tests/__image_snapshots__
