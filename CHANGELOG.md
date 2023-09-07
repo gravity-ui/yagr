@@ -1,5 +1,12 @@
 ### master
 
+## [3.7.13](https://github.com/gravity-ui/yagr/compare/v3.7.12...v3.7.13) (2023-09-05)
+
+
+### Bug Fixes
+
+* forced plot bands to draw only inside plotting area ([#140](https://github.com/gravity-ui/yagr/issues/140)) ([72839b1](https://github.com/gravity-ui/yagr/commit/72839b1c3ceac884230ff21806b5892283109c29))
+
 ## [3.7.12](https://github.com/gravity-ui/yagr/compare/v3.7.11...v3.7.12) (2023-08-31)
 
 
