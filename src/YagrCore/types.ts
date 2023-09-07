@@ -220,9 +220,6 @@ export interface CommonSeriesOptions {
     /** Color of serie */
     color?: string;
 
-    /** Should join paths over null-points */
-    spanGaps?: boolean;
-
     /** Cursor options for single serie */
     cursorOptions?: Pick<CursorOptions, 'markersSize' | 'snapToValues'>;
 
@@ -262,6 +259,9 @@ export interface LineSeriesOptions extends CommonSeriesOptions {
 
     /** Interpolation type */
     interpolation?: InterpolationType;
+
+    /** Should join paths over null-points */
+    spanGaps?: boolean;
 }
 
 export interface AreaSeriesOptions extends CommonSeriesOptions {
@@ -275,6 +275,9 @@ export interface AreaSeriesOptions extends CommonSeriesOptions {
 
     /** Interpolation type (default: linear) */
     interpolation?: InterpolationType;
+
+    /** Should join paths over null-points */
+    spanGaps?: boolean;
 }
 
 export interface ColumnSeriesOptions extends CommonSeriesOptions {

@@ -1,5 +1,12 @@
-import {TooltipHandler} from '../../../src';
+import {MinimalValidConfig, TooltipHandler} from '../../../src';
 import Yagr from '../../../src/YagrCore';
+
+const gen = (cfg: MinimalValidConfig) => {
+    const el = window.document.createElement('div');
+    window.document.body.appendChild(el);
+
+    return new Yagr(el, cfg);
+};
 
 describe('tooltip', () => {
     describe('options', () => {
@@ -8,10 +15,7 @@ describe('tooltip', () => {
         });
 
         it('should render tooltip', () => {
-            const el = window.document.createElement('div');
-            window.document.body.appendChild(el);
-
-            const yagr = new Yagr(el, {
+            const yagr = gen({
                 timeline: [1, 2, 3, 4],
                 series: [{data: [1, 2, 3, 4]}],
             });
@@ -20,10 +24,7 @@ describe('tooltip', () => {
         });
 
         it('should render tooltip sum', async () => {
-            const el = window.document.createElement('div');
-            window.document.body.appendChild(el);
-
-            const yagr = new Yagr(el, {
+            const yagr = gen({
                 timeline: [1, 2, 3, 4],
                 series: [{data: [1, 2, 3, 4]}],
             });
@@ -45,9 +46,7 @@ describe('tooltip', () => {
     });
 
     describe('perScale', () => {
-        const el = window.document.createElement('div');
-        window.document.body.appendChild(el);
-        const y = new Yagr(el, {
+        const y = gen({
             timeline: [1, 2, 3, 4],
             series: [
                 {data: [1, 2, 3, 4], scale: 'y'},
@@ -83,10 +82,7 @@ describe('tooltip', () => {
     });
 
     describe('on/off', () => {
-        const el = window.document.createElement('div');
-        window.document.body.appendChild(el);
-
-        const yagr = new Yagr(el, {
+        const yagr = gen({
             timeline: [1, 2, 3, 4],
             series: [{data: [1, 2, 3, 4]}],
         });
@@ -113,6 +109,91 @@ describe('tooltip', () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             expect(handler).toBeCalledTimes(1);
+        });
+    });
+
+    describe('pinning', () => {
+        it('shouldnt pin tooltip if strategy=none', async () => {
+            const yagr = gen({
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+                tooltip: {
+                    strategy: 'none',
+                },
+            });
+
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
+        });
+
+        it('shouldnt pin tooltip if strategy=none', async () => {
+            const yagr = gen({
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+                tooltip: {
+                    strategy: 'none',
+                },
+            });
+
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
+        });
+
+        it('should pin tooltip if strategy=pin', async () => {
+            const yagr = gen({
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+                tooltip: {
+                    strategy: 'pin',
+                },
+            });
+
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            expect(yagr.plugins.tooltip?.state.pinned).toBe(true);
+        });
+
+        it('shouldnt pin tooltip on drag if strategy=pin', async () => {
+            const yagr = gen({
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+                tooltip: {
+                    strategy: 'pin',
+                },
+            });
+
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousemove', {clientX: 40, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(yagr.plugins.tooltip?.state.range).toHaveLength(2);
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30}));
+            expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
+            expect(yagr.plugins.tooltip?.state.range).toBeNull();
+        });
+
+        it('should pin tooltip on drag if strategy=all', async () => {
+            const yagr = gen({
+                timeline: [1, 2, 3, 4],
+                series: [{data: [1, 2, 3, 4]}],
+                tooltip: {
+                    strategy: 'all',
+                },
+            });
+
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousemove', {clientX: 40, clientY: 30}));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(yagr.plugins.tooltip?.state.range).toHaveLength(2);
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30}));
+            expect(yagr.plugins.tooltip?.state.pinned).toBe(true);
+            expect(yagr.plugins.tooltip?.state.range).toBeNull();
         });
     });
 });

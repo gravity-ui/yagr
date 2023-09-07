@@ -63,6 +63,7 @@ describe('series options', () => {
                 chart: {
                     series: {
                         type: 'line',
+                        spanGaps: true,
                     },
                 },
                 series: [line],
@@ -81,6 +82,10 @@ describe('series options', () => {
                 // @ts-ignore
                 expect(cfgSeries.stroke(y.uplot, 1)).toBe(LIGHT_DEFAULT_LINE_COLOR);
             });
+
+            it('should setup default .spanGaps', () => {
+                expect(cfgSeries).toHaveProperty('spanGaps', true);
+            });
         });
 
         describe('overrides', () => {
@@ -91,6 +96,7 @@ describe('series options', () => {
                 type: 'line',
                 name: 'Line',
                 color: COLOR,
+                spanGaps: false,
                 data: [1, 2, 3],
             };
 
@@ -100,6 +106,7 @@ describe('series options', () => {
                 chart: {
                     series: {
                         type: 'line',
+                        spanGaps: true,
                         width: WIDTH,
                         interpolation: INTERPOLATION,
                     },
@@ -109,6 +116,7 @@ describe('series options', () => {
             it("should override series' fields from config.chart.series", () => {
                 expect(configureSeries(y, line, 0)).toHaveProperty('width', WIDTH);
                 expect(configureSeries(y, line, 0)).toHaveProperty('interpolation', INTERPOLATION);
+                expect(configureSeries(y, line, 0)).toHaveProperty('spanGaps', false);
             });
         });
     });
@@ -124,6 +132,7 @@ describe('series options', () => {
                 chart: {
                     series: {
                         type: 'area',
+                        spanGaps: true,
                     },
                 },
                 series: [line],
@@ -141,6 +150,10 @@ describe('series options', () => {
                 expect(s).toHaveProperty('lineColor', SERIE_AREA_BORDER_COLOR);
                 expect(s).toHaveProperty('lineWidth', SERIE_AREA_BORDER_WIDTH);
             });
+
+            it('should setup default .spanGaps', () => {
+                expect(s).toHaveProperty('spanGaps', true);
+            });
         });
 
         describe('overrides', () => {
@@ -153,6 +166,7 @@ describe('series options', () => {
                 name: 'Line',
                 color: COLOR,
                 data: [1, 2, 3],
+                spanGaps: false,
             };
 
             const y = new Yagr(window.document.body, {
@@ -164,6 +178,7 @@ describe('series options', () => {
                         lineColor: LINE_COLOR,
                         lineWidth: LINE_WIDTH,
                         interpolation: INTERPOLATION,
+                        spanGaps: true,
                     },
                 },
             });
@@ -174,6 +189,7 @@ describe('series options', () => {
                 expect(configureSeries(y, line, 0)).toHaveProperty('lineColor', LINE_COLOR);
                 expect(configureSeries(y, line, 0)).toHaveProperty('lineWidth', LINE_WIDTH);
                 expect(configureSeries(y, line, 0)).toHaveProperty('interpolation', INTERPOLATION);
+                expect(configureSeries(y, line, 0)).toHaveProperty('spanGaps', false);
             });
         });
     });

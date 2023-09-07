@@ -1,5 +1,55 @@
 ### master
 
+## [3.7.12](https://github.com/gravity-ui/yagr/compare/v3.7.11...v3.7.12) (2023-08-31)
+
+
+### Bug Fixes
+
+* fixed default bars width passing ([#138](https://github.com/gravity-ui/yagr/issues/138)) ([7dd18e5](https://github.com/gravity-ui/yagr/commit/7dd18e512132b4ca867fea16a7d3f423f6a33985))
+
+## [3.7.11](https://github.com/gravity-ui/yagr/compare/v3.7.10...v3.7.11) (2023-08-26)
+
+
+### Bug Fixes
+
+* fixed common spanGaps option passing ([#130](https://github.com/gravity-ui/yagr/issues/130)) ([b71905f](https://github.com/gravity-ui/yagr/commit/b71905f282c6f1deb10440a9fd0d2268607ce0d2))
+
+## [3.7.10](https://github.com/gravity-ui/yagr/compare/v3.7.9...v3.7.10) (2023-08-23)
+
+
+### Bug Fixes
+
+* fixed data aggregation plugin ([#135](https://github.com/gravity-ui/yagr/issues/135)) ([d4ae62c](https://github.com/gravity-ui/yagr/commit/d4ae62c31ed20171e28174a04420024789f378f2))
+
+## [3.7.9](https://github.com/gravity-ui/yagr/compare/v3.7.8...v3.7.9) (2023-08-18)
+
+
+### Bug Fixes
+
+* fixed markers plugin initiation ([#133](https://github.com/gravity-ui/yagr/issues/133)) ([ed82236](https://github.com/gravity-ui/yagr/commit/ed822362f9acb3001505ed25265bb62f2531be3e))
+
+## [3.7.8](https://github.com/gravity-ui/yagr/compare/v3.7.7...v3.7.8) (2023-08-15)
+
+
+### Bug Fixes
+
+* fixed tooltip pin/unpin for all strategies ([#131](https://github.com/gravity-ui/yagr/issues/131)) ([f1d5c28](https://github.com/gravity-ui/yagr/commit/f1d5c287cd02a3e35227da600763bad3dabea452))
+
+## [3.7.7](https://github.com/gravity-ui/yagr/compare/v3.7.6...v3.7.7) (2023-08-10)
+
+
+### Bug Fixes
+
+* fixed data-refs plugin ([#128](https://github.com/gravity-ui/yagr/issues/128)) ([f7de2a9](https://github.com/gravity-ui/yagr/commit/f7de2a92a6a33d12f2b899847a81d1860e74c188))
+* updated uplot ([#127](https://github.com/gravity-ui/yagr/issues/127)) ([642cda1](https://github.com/gravity-ui/yagr/commit/642cda1b03ea1fba0f7af101a71927691ec99d8b))
+
+## [3.7.6](https://github.com/gravity-ui/yagr/compare/v3.7.5...v3.7.6) (2023-08-09)
+
+
+### Bug Fixes
+
+* fixed plotlines removes, update bug with cached uHook ([#125](https://github.com/gravity-ui/yagr/issues/125)) ([9709797](https://github.com/gravity-ui/yagr/commit/9709797f9f79f5308ff5b25d7c7ef8c45cf19e3d))
+
 ## [3.7.5](https://github.com/gravity-ui/yagr/compare/v3.7.4...v3.7.5) (2023-08-03)
 
 

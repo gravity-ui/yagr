@@ -121,12 +121,14 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
 
                 serieOptions.sum = (serieOptions.sum || 0) + (value || 0);
 
-                serieOptions.count += 1;
+                const originalValue = serieOptions.$c[idx];
+                if (typeof originalValue === 'number') {
+                    serieOptions.count += 1;
+                }
                 dataLine.push(value);
             }
 
             serieOptions.avg = (serieOptions.sum || 0) / serieOptions.count;
-
             serieOptions.empty = empty;
 
             if (serieOptions.postProcess) {

@@ -106,6 +106,11 @@ class YagrTooltip {
     private tOverlay: HTMLDivElement;
     private bound: HTMLElement;
     private renderNode: HTMLElement;
+    /**
+     * Flag to skip next mouseup event, used for unpinning
+     * tooltip on any mousedown, but continiously pinning on drag
+     */
+    private skipNextMouseUp = false;
 
     yagr: Yagr;
     opts: TooltipOptions;
@@ -517,10 +522,6 @@ class YagrTooltip {
         this.handlers[event] = this.handlers[event].filter((h) => h !== handler);
     };
 
-    private onMouseDown = () => {
-        this.state.range = [this.getCursorPosition(), null];
-    };
-
     private detectClickOutside = (event: MouseEvent) => {
         const target = event.target;
 
@@ -535,6 +536,21 @@ class YagrTooltip {
         }
     };
 
+    private onMouseDown = (evt: MouseEvent) => {
+        this.state.range = [this.getCursorPosition(), null];
+
+        if (this.state.pinned) {
+            this.pin(false);
+            this.hide();
+            this.render({
+                left: evt.clientX - this.bLeft,
+                top: evt.clientY - this.bTop,
+                idx: this.yagr.uplot.posToIdx(evt.clientX - this.bLeft),
+            });
+            this.skipNextMouseUp = true;
+        }
+    };
+
     private onMouseMove = () => {
         if (this.state.range?.length) {
             this.state.range[1] = this.getCursorPosition();
@@ -545,16 +561,21 @@ class YagrTooltip {
         const [from] = this.state.range || [];
         const cursor = this.getCursorPosition();
 
-        if (
-            this.opts.strategy === 'all' ||
-            (this.opts.strategy === 'pin' && from && from.clientX === cursor?.clientX)
-        ) {
+        if (this.opts.strategy === 'none') {
+            return;
+        }
+
+        const click = from && from.clientX === cursor?.clientX;
+        const drag = from && from.clientX !== cursor?.clientX;
+
+        if ((click && !this.skipNextMouseUp) || (drag && this.opts.strategy === 'all')) {
             this.pin(!this.state.pinned);
             this.show();
             this.renderTooltipCloses();
         }
 
         this.state.range = null;
+        this.skipNextMouseUp = false;
     };
 
     private onMouseEnter = () => {
