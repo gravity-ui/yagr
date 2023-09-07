@@ -68,14 +68,12 @@ jobs:
             - name: Build
               run: npm run build
             - name: Run tests
-              run: npm run test:screenshots
+              run: npm run test:screenshots -- --updateSnapshot
 
-            - name: Upload screenshots
-              id: upload-artifacts
-              uses: actions/upload-artifact@v2
-              with:
-                  name: screenshots
-                  path: tests/screenshots/tests/__image_snapshots__
-
-            - name: Log Artifact ID
-              run: echo "Artifact ID= ${{ steps.upload-artifacts.outputs.artifact_id }}"
+            - name: Commit
+              run: |
+                  git config --global user.name "GitHub Actions"
+                  git config --global user.email "robot@gravity-ui.com"
+                  git add .
+                  git commit -m "Update screenshots test"
+                  git push origin test/screenshots
