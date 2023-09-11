@@ -106,9 +106,10 @@ export interface TooltipOptions {
      * Tooltip pin strategy:
      *  - none : tooltip is not pinable
      *  - pin  : tooltip is pinable only on click
+     *  - drag : tooltip is pinable on drag
      *  - all  : tooltip is pinable on drag and click
      */
-    strategy: 'none' | 'pin' | 'all';
+    strategy: 'none' | 'pin' | 'drag' | 'all';
     /** Value formatter */
     value: PerScale<ValueFormatter>;
     /** Show DataSeries index */

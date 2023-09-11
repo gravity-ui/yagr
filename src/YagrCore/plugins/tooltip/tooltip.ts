@@ -568,7 +568,12 @@ class YagrTooltip {
         const click = from && from.clientX === cursor?.clientX;
         const drag = from && from.clientX !== cursor?.clientX;
 
-        if ((click && !this.skipNextMouseUp) || (drag && this.opts.strategy === 'all')) {
+        const strategy = this.opts.strategy;
+
+        if (
+            (click && !this.skipNextMouseUp && strategy !== 'drag') ||
+            (drag && (strategy === 'all' || strategy === 'drag'))
+        ) {
             this.pin(!this.state.pinned);
             this.show();
             this.renderTooltipCloses();
