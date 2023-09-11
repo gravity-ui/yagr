@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <title>Yagr:: Tooltip Pin Strategies</title>
+        <script type="module" src="../../dist/yagr.esm.min.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 400px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tooltip pin strategies</h1>
+        <div class="grid">
+            <div id="chart1" class="container"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart2" class="container"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart3" class="container"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart4" class="container"></div>
+        </div>
+
+        <script type="module">
+            const y1 = new Yagr(chart1, {
+                title: {text: 'No pin'},
+                timeline: [1, 2, 3, 4, 5],
+                series: [
+                    {data: [1, 2, 3, 2, 4], color: 'red'},
+                ],
+                tooltip: {
+                    strategy: 'none'
+                },
+            });
+
+            const y2 = new Yagr(chart2, {
+                title: {text: 'Pin on click'},
+                timeline: [1, 2, 3, 4, 5],
+                series: [
+                    {data: [1, 2, 3, 2, 4], color: 'red'},
+                ],
+                tooltip: {
+                    strategy: 'pin'
+                },
+            });
+
+            const y3 = new Yagr(chart3, {
+                title: {text: 'Pin on drag'},
+                timeline: [1, 2, 3, 4, 5],
+                series: [
+                    {data: [1, 2, 3, 2, 4], color: 'red'},
+                ],
+                chart: {
+                    select: {zoom: false},
+                },
+                tooltip: {
+                    strategy: 'drag'
+                },
+            });
+
+            const y4 = new Yagr(chart4, {
+                title: {text: 'Pin both drag and click'},
+                timeline: [1, 2, 3, 4, 5],
+                series: [
+                    {data: [1, 2, 3, 2, 4], color: 'red'},
+                ],
+                chart: {
+                    select: {zoom: false},
+                },
+                tooltip: {
+                    strategy: 'all'
+                },
+            });
+        </script>
+    </body>
+</html>
