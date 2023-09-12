@@ -1,5 +1,12 @@
 ### master
 
+## [3.8.0](https://github.com/gravity-ui/yagr/compare/v3.7.13...v3.8.0) (2023-09-11)
+
+
+### Features
+
+* add tooltip.strategy = 'drag' ([#145](https://github.com/gravity-ui/yagr/issues/145)) ([2d102f0](https://github.com/gravity-ui/yagr/commit/2d102f05801d5ac3ad5e66095e378bf15e407553))
+
 ## [3.7.13](https://github.com/gravity-ui/yagr/compare/v3.7.12...v3.7.13) (2023-09-05)
 
 
