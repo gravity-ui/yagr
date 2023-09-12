@@ -11,6 +11,7 @@ type AllSeriesOptions = ExtendedSeriesOptions &
     Omit<LineSeriesOptions, 'type'> &
     Omit<AreaSeriesOptions, 'type'> &
     Omit<ColumnSeriesOptions, 'type'>;
+
 declare module 'uplot' {
     interface Series extends Omit<AllSeriesOptions, 'data'> {
         id: string;

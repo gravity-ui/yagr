@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <script src="../../dist/yagr.iife.min.js"></script>
+        <link rel="stylesheet" href="../../dist/index.min.css">
+        <script>
+            window.AsyncYagr = (...args) => {
+                return new Promise((resolve) => {
+                    args[1].axes = args[1].axes || {};
+                    args[1].axes.y = args[1].axes.y || {};
+                    args[1].axes.x = args[1].axes.x || {};
+                    args[1].axes.y.font = '11px sans-serif';
+                    args[1].axes.x.font = '11px sans-serif';
+                    args[1].hooks = args[1].hooks || {};
+                    args[1].hooks.load = args[1].hooks.load || [];
+                    args[1].hooks.load.push(({chart}) => {
+                        resolve(chart);
+                    });
+                    new Yagr(...args); // eslint-disable-line no-new
+                });
+            };
+        </script>
+        <title>Test</title>
+    </head>
+    <body>
+        <div id="test" style="width:1000px; height:400px"></div>
+    </body>
+</html>

@@ -26,7 +26,9 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "test": "TZ=UTC jest --coverage",
+    "test": "npm run test:units && npm run test:screenshots",
+    "test:units": "TZ=UTC jest --coverage -c jest.config.units.ts",
+    "test:screenshots": "TZ=UTC jest -c jest.config.screenshots.ts",
     "lint": "eslint src tests --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc -p tsconfig.json",
     "prebuild": "rimraf dist",
@@ -44,7 +46,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "npm run test"
+      "pre-push": "npm run test:units"
     }
   },
   "lint-staged": {
@@ -56,6 +58,7 @@
     "@babel/preset-react": "^7.22.5",
     "@doc-tools/docs": "^1.13.1",
     "@types/jest": "^26.0.24",
+    "@types/jest-image-snapshot": "^6.1.0",
     "@types/node": "^10.11.0",
     "@types/react": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
@@ -71,10 +74,12 @@
     "husky": "^1.0.1",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
+    "jest-image-snapshot": "^6.2.0",
     "lint-staged": "^8.0.0",
     "monaco-editor": "^0.23.0",
     "node-sass": "^7.0.1",
     "prettier": "^2.3.0",
+    "puppeteer": "^20.9.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "rimraf": "^2.6.2",

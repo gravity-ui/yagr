@@ -2,7 +2,7 @@ import type Yagr from '../../index';
 import UPlot, {Plugin, Series} from 'uplot';
 
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
-import {DotsSeriesOptions, YagrConfig} from '../../types';
+import {YagrConfig} from '../../types';
 
 export const renderCircle = (
     u: UPlot,
@@ -84,16 +84,13 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
 export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugin {
     const {size = DEFAULT_POINT_SIZE, strokeWidth = 2, strokeColor = '#ffffff', show} = config.markers;
 
-    const chartSeriesOptions = config.chart?.series as DotsSeriesOptions;
-    const defaultDotsSize = chartSeriesOptions?.pointsSize || DEFAULT_POINT_SIZE;
-
     function drawCircles(u: UPlot, i: number, i0: number, i1: number) {
-        const {scale, _focus, color, getFocusedColor, type} = u.series[i];
+        const {scale, _focus, color, getFocusedColor, type, pointsSize = size} = u.series[i];
 
         let j = i0;
 
         // eslint-disable-next-line no-nested-ternary
-        const pointSize = type === 'dots' ? (show ? size : defaultDotsSize) : size;
+        const pointSize = type === 'dots' ? (show ? size : pointsSize) : size;
 
         while (j <= i1) {
             const val = u.data[i][j];
