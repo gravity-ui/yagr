@@ -1,5 +1,12 @@
 ### master
 
+## [3.8.1](https://github.com/gravity-ui/yagr/compare/v3.8.0...v3.8.1) (2023-09-15)
+
+
+### Bug Fixes
+
+* fixed cursor points updating on series update ([#147](https://github.com/gravity-ui/yagr/issues/147)) ([1185d21](https://github.com/gravity-ui/yagr/commit/1185d218b10df12d7822f024eacc60584f862df6))
+
 ## [3.8.0](https://github.com/gravity-ui/yagr/compare/v3.7.13...v3.8.0) (2023-09-11)
 
 
