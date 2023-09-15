@@ -387,6 +387,7 @@ function setSeriesImpl(
 
                 overrideSeriesInUpdate(uSeries, configureSeries(this, s, idx));
             });
+            this.plugins.cursor?.updatePoints();
         });
         batch.reopt = true;
         shouldRecalcData = true;
