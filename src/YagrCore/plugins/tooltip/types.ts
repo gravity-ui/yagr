@@ -100,6 +100,8 @@ export interface TooltipOptions {
     sort?: PerScale<SortFn>;
     /** Custom tooltip renderer */
     render: (data: TooltipRenderOptions) => string;
+    /** Hide line in tooltip by predicate */
+    omitBy?: (row: TooltipRow) => boolean;
     /** @deprecated Is tooltip pinable */
     pinable: boolean;
     /**
@@ -167,10 +169,12 @@ export interface TooltipRow {
     seriesIdx: number;
     /** Index of row in section */
     rowIdx: number;
-    /** Original value before all transormations */
+    /** Original value in Y scales */
     originalValue?: number | null;
     /** Transformed value */
     transformed?: number | null | string;
+    /** Original value before all transormations */
+    dataValue?: number | null | string;
 }
 
 export interface TooltipSection {

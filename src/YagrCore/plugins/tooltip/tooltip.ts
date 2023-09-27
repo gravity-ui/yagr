@@ -372,6 +372,7 @@ class YagrTooltip {
                 const rowData: TooltipRow = {
                     id: serie.id,
                     name: serie.name,
+                    dataValue: serie.$c[idx],
                     originalValue: value,
                     value: displayValue,
                     y: yValue,
@@ -387,6 +388,10 @@ class YagrTooltip {
 
                 if (serie._transformed) {
                     rowData.transformed = seriesData[idx];
+                }
+
+                if (opts.omitBy && opts.omitBy(rowData)) {
+                    continue;
                 }
 
                 section.rows.push(rowData);
