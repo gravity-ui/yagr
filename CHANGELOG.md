@@ -1,5 +1,12 @@
 ### master
 
+## [3.9.0](https://github.com/gravity-ui/yagr/compare/v3.8.1...v3.9.0) (2023-09-27)
+
+
+### Features
+
+* added tooltip.omitBy option to omit arbitrary line from tooltip by predicate ([#152](https://github.com/gravity-ui/yagr/issues/152)) ([735e62b](https://github.com/gravity-ui/yagr/commit/735e62bcec95a856a27578fefe69351710538255))
+
 ## [3.8.1](https://github.com/gravity-ui/yagr/compare/v3.8.0...v3.8.1) (2023-09-15)
 
 
