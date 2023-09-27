@@ -55,6 +55,8 @@ Configuration for this example:
 -   `tooltip.precision?: PerScale<number>` - decimals count in numbers when formatting in the tooltip
 -   `tooltip.value: PerScale<ValueFormatter>`- formatter for line values
 -   `tooltip.onUpdate: 'none' | 'reset'` - how to update tooltip when data is updated. `none` - do nothing, `reset` - reset tooltip state
+-   `tooltip.omitBy: (row: TooltipRow) => boolean` - omit row from tooltip if this function returns `true`
+
 
 ```ts
 type ValueFormatter = (value: string | number | null, precision?: number) => string;
