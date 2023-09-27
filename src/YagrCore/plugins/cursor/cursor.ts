@@ -29,6 +29,9 @@ export interface CursorOptions {
 
     /** Cursror sync key (default if true) */
     sync?: true | string;
+
+    /** Hide cursor markers by predicate */
+    hideMarkers?: (value: number | null | string, seriesIdx: number) => boolean;
 }
 
 const MAX_CURSORS = 50;
@@ -67,6 +70,12 @@ export function cursorPoint(u: UPlot, seriesIndex: number) {
     return pt;
 }
 
+function getPointsByIdx(over: HTMLDivElement, idx?: number) {
+    return idx === undefined
+        ? (Array.from(over.querySelectorAll('.yagr-point')) as HTMLDivElement[])
+        : [over.querySelector(`.yagr-point[data-idx="${idx}"]`) as HTMLDivElement];
+}
+
 /*
  * Cursor plugin responsible for drawing cursor points and crosshairs,
  * and for syncing cursors.
@@ -79,6 +88,8 @@ export default function CursorPlugin(
     focus: (i: number | null, f: boolean) => void;
     uplot: Plugin;
     updatePoints: () => void;
+    showPoints: (idx?: number) => void;
+    hidePoints: (idx?: number) => void;
 } {
     const config = yagr.config;
     const processing = config.processing || {};
@@ -114,6 +125,30 @@ export default function CursorPlugin(
     };
 
     return {
+        showPoints: (idx?: number) => {
+            const over = yagr.uplot.over;
+
+            if (!over) {
+                return;
+            }
+
+            const points = getPointsByIdx(over, idx);
+            points.forEach((pt) => {
+                pt.style.visibility = 'visible';
+            });
+        },
+        hidePoints: (idx?: number) => {
+            const over = yagr.uplot.over;
+
+            if (!over) {
+                return;
+            }
+
+            const points = getPointsByIdx(over, idx);
+            points.forEach((pt) => {
+                pt.style.visibility = 'hidden';
+            });
+        },
         pin: (pinState: boolean) => {
             const over = yagr.root.querySelector('.u-over');
 
@@ -180,6 +215,25 @@ export default function CursorPlugin(
                 uplotOptions.cursor.dataIdx = snapOnValues;
             },
             hooks: {
+                ...(opts.hideMarkers && {
+                    setCursor: (u: uPlot) => {
+                        const idx = u.cursor.idx;
+
+                        if (idx === undefined || idx === null) {
+                            return;
+                        }
+
+                        for (let i = 1; i < u.series.length; i++) {
+                            const seriesValue = u.series[i].$c[idx];
+
+                            if (opts.hideMarkers!(seriesValue, i)) {
+                                yagr.plugins.cursor?.hidePoints(i);
+                            } else {
+                                yagr.plugins.cursor?.showPoints(i);
+                            }
+                        }
+                    },
+                }),
                 init: (u) => {
                     const cX: HTMLElement | null = u.root.querySelector('.u-cursor-x');
                     if (cX) {
