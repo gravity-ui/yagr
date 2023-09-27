@@ -42,3 +42,14 @@ cursor: {
     y: {visible: true, style: '1px dash grey'},
 },
 ```
+
+### Hide markers on cursor hover
+
+You can hide markers on cursor hover with `cursor.hideMarkers` option.
+
+```js
+cursor: {
+    hideMarkers: (value: number | string | null, seriesIdx: number) => value === 0,
+},
+```
+

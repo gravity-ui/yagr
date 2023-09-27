@@ -50,7 +50,7 @@ Configuration for this example:
 -   `tooltip.sum: PerScale<boolean> = false` - show the `Sum` row in the tooltip
 -   `tooltip.sort?: PerScale<SortFn>` - row comparator
 -   ~~`tooltip.pinable: boolean` - is tooltip pinable~~ (DEPRECATED)
--   `tooltip.strategy: 'pin' | 'all' | 'none'` - tooltip strategy. `pin` - pin tooltip on click, `all` - pin both on click and drag, `none` - don't pin
+-   `tooltip.strategy: 'pin' | 'all' | 'drag' | 'none'` - tooltip strategy. `pin` - pin tooltip on click only, `all` - pin both on click and drag, `drag` - pin tooltip on drag only, `none` - don't pin
 -   `hideNoData?: PerScale<boolean>` - hide rows if the Y value is equal to `null`
 -   `tooltip.precision?: PerScale<number>` - decimals count in numbers when formatting in the tooltip
 -   `tooltip.value: PerScale<ValueFormatter>`- formatter for line values
