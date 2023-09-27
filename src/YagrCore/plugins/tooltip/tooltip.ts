@@ -312,8 +312,8 @@ class YagrTooltip {
 
         const rowsBySections: Record<string, number[]> = {};
 
-        let i = 1;
-        while (i < u.series.length) {
+        let i = u.series.length - 1;
+        while (i >= 1) {
             const serie = u.series[i];
 
             if (!serie.show) {
@@ -325,7 +325,7 @@ class YagrTooltip {
 
             rowsBySections[scale] = rowsBySections[scale] || [];
             rowsBySections[scale].push(i);
-            i += 1;
+            i -= 1;
         }
 
         const rowEntries = Object.entries(rowsBySections);
