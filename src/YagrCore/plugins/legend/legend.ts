@@ -197,7 +197,7 @@ export default class LegendPlugin {
             const selectRange = (serie: UPlot.Series) => {
                 // If startSerieRange is undefined then startSerieRange = first valid legend element
                 if (!this.state.startSerieRange) {
-                    this.state.startSerieRange = u.series.find((s) => s.id !== DEFAULT_X_SERIE_NAME);
+                    this.state.startSerieRange = u.series[1];
                 }
 
                 const range: number[] = [];
