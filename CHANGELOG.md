@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.0](https://github.com/gravity-ui/yagr/compare/v3.9.0...v3.10.0) (2023-09-28)
+
+
+### Features
+
+* added 'extended' legends item onClick behaviour ([#154](https://github.com/gravity-ui/yagr/issues/154)) ([13e19d3](https://github.com/gravity-ui/yagr/commit/13e19d3e1d01cab152ed7782b71e38868ce88758))
+
 ## [3.9.0](https://github.com/gravity-ui/yagr/compare/v3.8.1...v3.9.0) (2023-09-27)
 
 
