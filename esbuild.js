@@ -184,7 +184,7 @@ async function run() {
         if (isDevMode) {
             const watches = [];
             for (const ctx of results) {
-                if (!ctx || !ctx.watch) {
+                if (!ctx?.watch) {
                     continue;
                 }
 
