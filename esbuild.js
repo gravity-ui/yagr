@@ -184,6 +184,10 @@ async function run() {
         if (isDevMode) {
             const watches = [];
             for (const ctx of results) {
+                if (!ctx || !ctx.watch) {
+                    continue;
+                }
+
                 watches.push(ctx.watch());
             }
 
