@@ -17,6 +17,8 @@ export interface LegendOptions {
     maxLegendSpace?: number;
     /** @TODO Maybe bugs here  */
     fontSize?: number;
+    /** Basic behaviour includes only toggle behaviuor ("Hide/show all" button exists) */
+    behaviour?: 'basic' | 'extended';
 }
 
 interface LegendState {
@@ -27,6 +29,7 @@ interface LegendState {
     pageSize: number;
     requiredSpace: number;
     totalSpace: number;
+    startSerieRange?: UPlot.Series;
 }
 
 const ALL_SERIES_IDX = 'null' as const;
@@ -37,6 +40,14 @@ const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
 
 export const hasOneVisibleLine = (series: Series[]) => {
     return series.some(({show, id}) => id !== DEFAULT_X_SERIE_NAME && show);
+};
+
+const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
+    return series.length > 3 && i18n(hasOneVisibleLine(series) ? 'hide-all' : 'show-all');
+};
+
+const getPrependingTitleId = (series: Series[]): typeof ALL_SERIES_IDX | undefined => {
+    return (series.length > 3 && ALL_SERIES_IDX) || undefined;
 };
 
 export default class LegendPlugin {
@@ -57,7 +68,6 @@ export default class LegendPlugin {
     legendEl?: HTMLElement;
     items?: HTMLElement;
     container?: HTMLElement;
-    startSerieRange?: UPlot.Series;
     private _onDestroy?: () => void;
 
     redraw() {
@@ -68,8 +78,6 @@ export default class LegendPlugin {
     }
 
     destroy() {
-        console.log('here');
-
         if (this._onDestroy) {
             this._onDestroy();
         }
@@ -85,6 +93,7 @@ export default class LegendPlugin {
                 fontSize: DEFAULT_FONT_SIZE,
                 maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
                 className: undefined,
+                behaviour: 'basic',
             },
             options || {},
         );
@@ -127,7 +136,42 @@ export default class LegendPlugin {
         const series: NodeListOf<HTMLDivElement> = yagr.root.querySelectorAll('[data-serie-id]');
         const unsubsribe: (() => void)[] = [];
 
-        const onSerieClick = (serieNode: HTMLElement) => {
+        const onSerieClickBasic = (serieNode: HTMLElement) => () => {
+            const serieId = serieNode.getAttribute('data-serie-id');
+            const seriesToToggle: [Series, boolean][] = [];
+
+            if (serieId === ALL_SERIES_IDX) {
+                const nextToggleState = !hasOneVisibleLine(u.series);
+
+                for (let idx = 1; idx < u.series.length; idx++) {
+                    seriesToToggle.push([u.series[idx], nextToggleState]);
+                }
+            } else {
+                const serie = u.series.find(({id}) => id === serieId);
+                if (!serie) {
+                    return;
+                }
+                seriesToToggle.push([serie, !serie.show]);
+            }
+
+            seriesToToggle.forEach(([serie, nextState]) => {
+                if (serie.show === nextState) {
+                    return;
+                }
+                const node = yagr.root.querySelector(`[data-serie-id="${serie.id}"]`);
+                yagr.setVisible(serie.id, nextState, false);
+                node?.classList[nextState ? 'remove' : 'add']('yagr-legend__item_hidden');
+            });
+
+            const allSeriesItem = yagr.root.querySelector('.yagr-legend__all-series');
+
+            if (allSeriesItem) {
+                const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
+                allSeriesItem.innerHTML = title || '';
+            }
+        };
+
+        const onSerieClickExtended = (serieNode: HTMLElement) => {
             const changeVisibility = (id: string, visibility: boolean) => {
                 const node = yagr.root.querySelector(`[data-serie-id="${id}"]`);
                 yagr.setVisible(id, visibility, true);
@@ -139,7 +183,7 @@ export default class LegendPlugin {
             };
 
             const selectSerie = (serie: UPlot.Series) => {
-                this.startSerieRange = serie;
+                this.state.startSerieRange = serie;
 
                 const otherSeries = u.series.filter((s) => s.id !== serie.id);
                 const otherVisibility = !hasOneVisibleLine(otherSeries) && serie.show !== false;
@@ -152,8 +196,8 @@ export default class LegendPlugin {
 
             const selectRange = (serie: UPlot.Series) => {
                 // If startSerieRange is undefined then startSerieRange = first valid legend element
-                if (!this.startSerieRange) {
-                    this.startSerieRange = u.series.find((s) => s.id !== DEFAULT_X_SERIE_NAME);
+                if (!this.state.startSerieRange) {
+                    this.state.startSerieRange = u.series.find((s) => s.id !== DEFAULT_X_SERIE_NAME);
                 }
 
                 const range: number[] = [];
@@ -163,7 +207,7 @@ export default class LegendPlugin {
                         range.push(i);
                     }
                     // There is no 'else' because exist case when startSerieRange and target serie are same elements
-                    if (s.id === this.startSerieRange?.id) {
+                    if (s.id === this.state.startSerieRange?.id) {
                         range.push(i);
                     }
                 });
@@ -183,6 +227,8 @@ export default class LegendPlugin {
                     return;
                 }
 
+                e.preventDefault();
+
                 if (e.ctrlKey || e.metaKey) {
                     toggleSerie(serie);
                 } else if (e.shiftKey) {
@@ -191,6 +237,11 @@ export default class LegendPlugin {
                     selectSerie(serie);
                 }
             };
+        };
+
+        const onSerieClick = {
+            basic: onSerieClickBasic,
+            extended: onSerieClickExtended,
         };
 
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
@@ -212,7 +263,7 @@ export default class LegendPlugin {
         };
 
         series.forEach((serieNode) => {
-            const onClick = onSerieClick(serieNode);
+            const onClick = onSerieClick[this.options.behaviour || 'basic'](serieNode);
             const onFocus = onSerieMouseEnter(serieNode);
 
             serieNode.addEventListener('click', onClick);
@@ -377,7 +428,9 @@ export default class LegendPlugin {
     }
 
     private renderItems(uplotOptions: Options) {
-        const series = [];
+        const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
+        const titleId = this.options.behaviour !== 'extended' && getPrependingTitleId(uplotOptions.series);
+        const series: (Series | typeof ALL_SERIES_IDX)[] = titleId ? [titleId] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
             series.push(uplotOptions.series[i]);
@@ -385,12 +438,21 @@ export default class LegendPlugin {
 
         const content = series
             .map((serie) => {
-                const icon = this.createIconLineElement(serie);
-                const name = this.createSerieNameElement(serie);
+                let serieContent;
+                let sId;
+                let additionalCn = ' ';
 
-                const serieContent = `${icon.outerHTML}${name.outerHTML}`;
-                const sId = serie.id;
-                const additionalCn = ' ';
+                if (serie === ALL_SERIES_IDX) {
+                    serieContent = title;
+                    sId = titleId;
+                    additionalCn = ' yagr-legend__all-series ';
+                } else {
+                    sId = serie.id;
+                    const icon = this.createIconLineElement(serie);
+                    const name = this.createSerieNameElement(serie);
+
+                    serieContent = `${icon.outerHTML}${name.outerHTML}`;
+                }
 
                 const visible = typeof serie === 'string' ? true : serie.show !== false;
 
