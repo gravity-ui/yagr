@@ -174,7 +174,7 @@ export default class LegendPlugin {
         const onSerieClickExtended = (serieNode: HTMLElement) => {
             const changeVisibility = (id: string, visibility: boolean) => {
                 const node = yagr.root.querySelector(`[data-serie-id="${id}"]`);
-                yagr.setVisible(id, visibility, true);
+                yagr.setVisible(id, visibility, false);
                 node?.classList[visibility ? 'remove' : 'add']('yagr-legend__item_hidden');
             };
 
