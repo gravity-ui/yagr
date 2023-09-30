@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.1](https://github.com/gravity-ui/yagr/compare/v3.10.0...v3.10.1) (2023-09-30)
+
+
+### Bug Fixes
+
+* set option "updateLegend" to false in "extended" behaviour ([#157](https://github.com/gravity-ui/yagr/issues/157)) ([7f5d065](https://github.com/gravity-ui/yagr/commit/7f5d06568a9eff4df51d29ddd3a642e2017d9ed0))
+
 ## [3.10.0](https://github.com/gravity-ui/yagr/compare/v3.9.0...v3.10.0) (2023-09-28)
 
 
