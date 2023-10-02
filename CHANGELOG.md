@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.2](https://github.com/gravity-ui/yagr/compare/v3.10.1...v3.10.2) (2023-10-02)
+
+
+### Bug Fixes
+
+* changed legends totalSpace calculation formula ([#159](https://github.com/gravity-ui/yagr/issues/159)) ([900193c](https://github.com/gravity-ui/yagr/commit/900193cae53f4b69948ce328a5027064999e3851))
+
 ## [3.10.1](https://github.com/gravity-ui/yagr/compare/v3.10.0...v3.10.1) (2023-09-30)
 
 
