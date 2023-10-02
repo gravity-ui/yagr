@@ -33,6 +33,7 @@ interface LegendState {
 }
 
 const ALL_SERIES_IDX = 'null' as const;
+const PAGINATION_BUTTON_HEIGHT = 18;
 const TOTAL_LEGEND_VERTICAL_PADDING_BOTTOM = 20;
 const TOTAL_LEGEND_VERTICAL_PADDING_TOP = 48;
 const DEFAULT_FONT_SIZE = 12;
@@ -483,9 +484,10 @@ export default class LegendPlugin {
         const paginated = requiredHeight > itemsPageSize;
         const requiredSpace = Math.min(paginated ? paginatedPageSize : itemsPageSize, requiredHeight);
         const pages = Math.ceil(requiredHeight / itemsPageSize);
+        const additionalSpace = paginated ? this.VERTICAL_PADDING + PAGINATION_BUTTON_HEIGHT : this.VERTICAL_PADDING;
 
         this.state.requiredSpace = requiredSpace;
-        this.state.totalSpace = requiredSpace + this.VERTICAL_PADDING;
+        this.state.totalSpace = requiredSpace + additionalSpace;
         this.state.paginated = paginated;
         this.state.page = this.state.page || 0;
         this.state.pages = pages;
