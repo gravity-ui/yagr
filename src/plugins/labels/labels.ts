@@ -5,7 +5,7 @@ import type uPlot from 'uplot';
 import type Yagr from '../../index';
 import type {Series} from 'uplot';
 
-import {html, px} from '../../YagrCore/utils/common';
+import {html, isNil, px} from '../../YagrCore/utils/common';
 
 declare module '../../types' {
     interface PBandConfig {
@@ -166,7 +166,7 @@ export default function YagrLabelsPlugin(options: LabelsOptions): YagrPlugin {
         const x = yagr.uplot.data[0][xIdx];
         const y = yagr.uplot.data[serieIdx][xIdx];
 
-        if (y === null || y === undefined || !scaleKey || !labelOptions) {
+        if (isNil(y) || !scaleKey || !labelOptions) {
             return;
         }
 
@@ -178,7 +178,7 @@ export default function YagrLabelsPlugin(options: LabelsOptions): YagrPlugin {
                 ? labelOptions.label(x, y)
                 : labelOptions.label || `(${valX}, ${valY})`;
 
-        if (!label || y === null || y === undefined) {
+        if (!label || isNil(y)) {
             return;
         }
 
@@ -222,8 +222,7 @@ export default function YagrLabelsPlugin(options: LabelsOptions): YagrPlugin {
 
             if (
                 data === null ||
-                idx === null ||
-                idx === undefined ||
+                isNil(idx) ||
                 top === undefined ||
                 left === undefined ||
                 left < 0 ||

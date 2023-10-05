@@ -3,7 +3,7 @@ import UPlot, {Plugin, Series} from 'uplot';
 
 import {CURSOR_STYLE, DEFAULT_X_SCALE, MARKER_DIAMETER, SERIE_COLOR} from '../../defaults';
 import CP from '../../utils/colors';
-import {findDataIdx, html} from '../../utils/common';
+import {findDataIdx, html, isNil} from '../../utils/common';
 import type Yagr from '../..';
 
 /**
@@ -224,7 +224,7 @@ export default function CursorPlugin(
                     setCursor: (u: uPlot) => {
                         const idx = u.cursor.idx;
 
-                        if (idx === undefined || idx === null) {
+                        if (isNil(idx)) {
                             return;
                         }
 

@@ -427,7 +427,7 @@ export function deepIsEqual(a: unknown, b: unknown): boolean {
         b = (b as Function).toString();
     }
 
-    if (typeof a !== 'object' || a === null || b === null || a === undefined || b === undefined) {
+    if (typeof a !== 'object' || isNil(a) || isNil(b)) {
         return a === b;
     }
 
@@ -460,4 +460,8 @@ export function asFn<T>(t: T) {
 
 export function asPlain<T>(t: T): T extends (...args: any[]) => any ? ReturnType<T> : T {
     return typeof t === 'function' ? t() : t;
+}
+
+export function isNil(v: unknown): v is null | undefined {
+    return v === null || v === undefined;
 }

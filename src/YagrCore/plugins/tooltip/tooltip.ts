@@ -10,7 +10,7 @@ import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
-import {findInRange, findDataIdx, findSticky, px} from '../../utils/common';
+import {findInRange, findDataIdx, findSticky, px, isNil} from '../../utils/common';
 import {
     TooltipOptions,
     TooltipRow,
@@ -301,7 +301,7 @@ class YagrTooltip {
 
         const {data} = u;
 
-        if (data === null || idx === null || idx === undefined || top === undefined) {
+        if (data === null || isNil(idx) || top === undefined) {
             return;
         }
 
