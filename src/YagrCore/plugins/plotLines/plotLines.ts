@@ -3,7 +3,7 @@ import UPlot from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
-import {asPlain, deepIsEqual} from '../../utils/common';
+import {deepIsEqual} from '../../utils/common';
 
 const MAX_X_SCALE_LINE_OFFSET = 0;
 const DRAW_MAP = {
@@ -111,7 +111,6 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
                 const pConf = plotLineConfig as PLineConfig;
 
                 ctx.beginPath();
-                const axisSize = asPlain(u.axes.find((a) => a.scale === scale)?.size);
 
                 if (scale === DEFAULT_X_SCALE) {
                     /** Workaround to ensure that plot line will not be drawn over axes */
@@ -123,10 +122,10 @@ export default function plotLinesPlugin(yagr: Yagr, plotLinesCfg: PlotLineConfig
 
                     ctx.moveTo(from, top);
 
-                    ctx.lineTo(from, height + (axisSize ?? 0));
+                    ctx.lineTo(from, height + top);
                 } else {
                     ctx.moveTo(left, from);
-                    ctx.lineTo(width, from);
+                    ctx.lineTo(width + left, from);
                 }
 
                 ctx.lineWidth = pConf.width || DEFAULT_CANVAS_PIXEL_RATIO;
