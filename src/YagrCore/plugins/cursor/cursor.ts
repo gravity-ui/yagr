@@ -38,6 +38,11 @@ const MAX_CURSORS = 50;
 
 function paintCursorPoint(series: Series, pt: HTMLElement, span?: HTMLElement) {
     span ||= pt.querySelector('span') as HTMLElement;
+
+    if (!span) {
+        return;
+    }
+
     pt.style.background = `${series.color}`;
     span.style.background = series.color || SERIE_COLOR;
     const colorRgba = CP.parseRgba(series.color) || [256, 256, 256, 0];
