@@ -1,5 +1,13 @@
 ### master
 
+## [3.10.3](https://github.com/gravity-ui/yagr/compare/v3.10.2...v3.10.3) (2023-10-05)
+
+
+### Bug Fixes
+
+* fixed drawMarkersIfRequired in case if timeline.length == 1 ([#163](https://github.com/gravity-ui/yagr/issues/163)) ([9a506f4](https://github.com/gravity-ui/yagr/commit/9a506f491814b5145ea98498a91e383ab2e98859))
+* fixed update point cursro in case if it's empty ([#161](https://github.com/gravity-ui/yagr/issues/161)) ([25c1da4](https://github.com/gravity-ui/yagr/commit/25c1da420c5f5f8e66c072d27048b23b771ddfd3))
+
 ## [3.10.2](https://github.com/gravity-ui/yagr/compare/v3.10.1...v3.10.2) (2023-10-02)
 
 
