@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.4](https://github.com/gravity-ui/yagr/compare/v3.10.3...v3.10.4) (2023-10-05)
+
+
+### Bug Fixes
+
+* fixed width and height of plotlines for filling full rect ([#164](https://github.com/gravity-ui/yagr/issues/164)) ([a6e94c6](https://github.com/gravity-ui/yagr/commit/a6e94c6f7610628564d0ffab0721b563258c35af))
+
 ## [3.10.3](https://github.com/gravity-ui/yagr/compare/v3.10.2...v3.10.3) (2023-10-05)
 
 
