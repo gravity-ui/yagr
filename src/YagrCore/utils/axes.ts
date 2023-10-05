@@ -4,7 +4,7 @@ import * as defaults from '../defaults';
 import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
-import {asFn, getUnitSuffix, toFixed} from './common';
+import {asFn, getUnitSuffix, isNil, toFixed} from './common';
 import {Axis as TypedAxis} from './types';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
@@ -30,7 +30,7 @@ export const getAxisPositioning = (side: AxisOptions['side'], align: Axis['align
 
 export const getDefaultNumberFormatter = (precision: 'auto' | number, nullValue = '') => {
     return (n: number | null) => {
-        if (n === null || n === undefined) {
+        if (isNil(n)) {
             return nullValue;
         }
 

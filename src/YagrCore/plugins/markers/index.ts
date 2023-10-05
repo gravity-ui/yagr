@@ -3,6 +3,7 @@ import UPlot, {Plugin, Series} from 'uplot';
 
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
 import {DotsSeriesOptions, YagrConfig} from '../../types';
+import { isNil } from '../..//utils/common';
 
 export const renderCircle = (
     u: UPlot,
@@ -56,10 +57,10 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
             continue;
         }
 
-        const next = u.data[i][j + 1];
-        const lastIdx = u.data[i].length - 1;
+        const nextIdx = j + 1;
+        const next = u.data[i][nextIdx];
 
-        if ((j === 0 && next === null) || (j === lastIdx && prev === null) || (prev === null && next === null)) {
+        if (isNil(prev) && isNil(next)) {
             renderCircle(
                 u,
                 u.data[0][j] as number,
