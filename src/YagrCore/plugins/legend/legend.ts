@@ -481,7 +481,7 @@ export default class LegendPlugin {
         const itemsRowsPerPage = rowsPerPage - 1;
         const itemsPageSize = Math.min(itemsRowsPerPage * rowHeight, maxPossiblePlace);
         const paginatedPageSize = Math.min(rowsPerPage * rowHeight, maxPossiblePlace);
-        const paginated = requiredHeight > itemsPageSize;
+        const paginated = requiredHeight > itemsPageSize && itemsPageSize > 0;
         const requiredSpace = Math.min(paginated ? paginatedPageSize : itemsPageSize, requiredHeight);
         const pages = Math.ceil(requiredHeight / itemsPageSize);
         const additionalSpace = paginated ? this.VERTICAL_PADDING + PAGINATION_BUTTON_HEIGHT : this.VERTICAL_PADDING;
