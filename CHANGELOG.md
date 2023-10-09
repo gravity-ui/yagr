@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.5](https://github.com/gravity-ui/yagr/compare/v3.10.4...v3.10.5) (2023-10-09)
+
+
+### Bug Fixes
+
+* fixed pagination infinity pages ([#166](https://github.com/gravity-ui/yagr/issues/166)) ([4de5b30](https://github.com/gravity-ui/yagr/commit/4de5b30b603b3db4072f7f31e2ea865dcdbf49c0))
+
 ## [3.10.4](https://github.com/gravity-ui/yagr/compare/v3.10.3...v3.10.4) (2023-10-05)
 
 
