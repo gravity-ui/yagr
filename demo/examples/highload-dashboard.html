@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <title>Yagr</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                border: solid 1px #999;
+                border-radius: 4px;
+            }
+            .grid {
+                height: 300px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                gap: 8px;
+                justify-content: space-between;
+                margin-bottom: 8px;;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Highload Dashboard (500 points X 200 lines) <button id="reload">reload</button></h1>
+        <div class="grid">
+            <div id="chart11" class="container left"></div>
+            <div id="chart12" class="container mid"></div>
+            <div id="chart13" class="container right"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart21" class="container left"></div>
+            <div id="chart22" class="container mid"></div>
+            <div id="chart23" class="container right"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart31" class="container left"></div>
+            <div id="chart32" class="container mid"></div>
+            <div id="chart33" class="container right"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart41" class="container left"></div>
+            <div id="chart42" class="container mid"></div>
+            <div id="chart43" class="container right"></div>
+        </div>
+
+        <script>
+            let charts = []
+            for (let r = 1; r <= 4; r++) {
+                for(let c = 1; c <= 3; c++) {
+                    const chart = document.getElementById(`chart${r}${c}`);
+                    
+                    const randomizer = (r + c) * 10;
+                    const fn = (r + c) % 2 ? Math.sin : Math.tan;
+
+                    charts.push(new Yagr(chart, {
+                        timeline: new Array(500).fill().map((_, i) => i * 5),
+                        series: new Array(200).fill().map((_, i) => ({
+                            data: new Array(500).fill().map((_, j) => fn((j * 5 + i) / randomizer) * 5 + 2.5),
+                            // randomColor
+                            color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
+                                Math.random() * 255
+                            })`,
+                            width: 1,
+                        })),
+                    }));
+                }
+            }
+
+            reload.onclick = () => {
+                charts.forEach(chart => {
+                    const randomizer = Math.random() * 100;
+                    const fn = Math.random() > 0.5 ? Math.sin : Math.tan;
+                    chart.setConfig({
+                        series: new Array(200).fill().map((_, i) => ({
+                            data: new Array(500).fill().map((_, j) => fn((j * 5 + i) / randomizer) * 5 + 2.5),
+                        })),
+                    });
+                })
+            }
+
+           
+        </script>
+    </body>
+</html>
