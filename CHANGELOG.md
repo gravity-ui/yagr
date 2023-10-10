@@ -1,5 +1,12 @@
 ### master
 
+## [3.10.6](https://github.com/gravity-ui/yagr/compare/v3.10.5...v3.10.6) (2023-10-10)
+
+
+### Bug Fixes
+
+* fixed tooltip render when a lot of lines ([#168](https://github.com/gravity-ui/yagr/issues/168)) ([8fff973](https://github.com/gravity-ui/yagr/commit/8fff9735395ac3df754e84ea73fe69364106f3f7))
+
 ## [3.10.5](https://github.com/gravity-ui/yagr/compare/v3.10.4...v3.10.5) (2023-10-09)
 
 
