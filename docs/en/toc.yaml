@@ -67,6 +67,10 @@ items:
             href: ./examples/setdata.md
           - name: Realtime updates
             href: ./examples/realtime.md
+          - name: Highload
+            href: ./examples/highload.md
+          - name: Dashboard
+            href: ./examples/dashboard.md
 
     - name: Contibuting
       href: contribution.md
