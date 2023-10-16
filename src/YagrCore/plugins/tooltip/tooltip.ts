@@ -1,6 +1,6 @@
 /* eslint-disable complexity, no-nested-ternary */
 
-import uPlot, {Series} from 'uplot';
+import uPlot, {Series, TypedArray} from 'uplot';
 
 import {CursorOptions} from '../cursor/cursor';
 import placementFn from './placement';
@@ -10,7 +10,7 @@ import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
-import {findInRange, findDataIdx, findSticky, px, isNil} from '../../utils/common';
+import {findDataIdx, findSticky, px, isNil, findInRange} from '../../utils/common';
 import {
     TooltipOptions,
     TooltipRow,
@@ -25,7 +25,7 @@ import {
 } from './types';
 
 import {renderTooltip} from './render';
-import {getOptionValue} from './utils';
+import {findClosestLines, getOptionValue} from './utils';
 
 // eslint-disable-next-line complexity
 const findValue = (
@@ -397,19 +397,58 @@ class YagrTooltip {
                 section.rows.push(rowData);
             }
 
-            if (getOptionValue(opts.highlight, scale) && section.rows.length) {
-                const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
+            if (getOptionValue(opts.highlight, scale) && section.rows.length && !state.pinned) {
                 let activeIndex: number | null = 0;
-                if (tracking === 'area') {
-                    activeIndex = findInRange(
-                        section,
-                        cursorValue,
-                        getOptionValue<boolean | undefined>(opts.stickToRanges, scale),
-                    );
-                } else if (tracking === 'sticky') {
-                    activeIndex = findSticky(section, cursorValue);
-                } else if (typeof tracking === 'function') {
-                    activeIndex = tracking(section, cursorValue);
+                const tracking = getOptionValue<TrackingOptions>(opts.tracking, scale);
+                const areaSeries = this.yagr.series.filter(
+                    (_, si) => si === 0 || serieIndicies.includes(si),
+                ) as TypedArray[];
+
+                switch (tracking) {
+                    case 'area':
+                        activeIndex = findInRange(
+                            section,
+                            cursorValue,
+                            getOptionValue<boolean | undefined>(opts.stickToRanges, scale),
+                        );
+                        break;
+                    case 'sticky':
+                        activeIndex = findSticky(section, cursorValue);
+                        break;
+                    case 'area-closest': {
+                        const lines = findClosestLines({
+                            x: u.posToVal(left, 'x'),
+                            y: u.posToVal(top, scale),
+                            series: areaSeries,
+                        });
+
+                        if (u.posToVal(top, scale) >= 0) {
+                            activeIndex = lines.higher.index ?? lines.lower.index;
+                        } else {
+                            activeIndex = lines.lower.index ?? lines.higher.index;
+                        }
+
+                        break;
+                    }
+                    case 'line-closest': {
+                        const lines = findClosestLines({
+                            x: u.posToVal(left, 'x'),
+                            y: u.posToVal(top, scale),
+                            series: areaSeries,
+                        });
+
+                        if (lines.higher.distance < lines.lower.distance) {
+                            activeIndex = lines.higher.index;
+                        } else {
+                            activeIndex = lines.lower.index;
+                        }
+
+                        break;
+                    }
+                    default:
+                        if (typeof tracking === 'function') {
+                            activeIndex = tracking(section, cursorValue);
+                        }
                 }
 
                 if (activeIndex !== null) {

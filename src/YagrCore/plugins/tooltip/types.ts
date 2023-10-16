@@ -3,7 +3,11 @@ import Yagr from '../../index';
 export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
     | 'area'
+    /** Tracks mouse to closest area */
+    | 'area-closest'
     /** Tracks mouse to closest line */
+    | 'line-closest'
+    /** Tracks mouse to closest line near closest timeline */
     | 'sticky'
     /** Custom tracking function */
     | ((s: TooltipSection, y: number) => number | null);
