@@ -430,7 +430,7 @@ class YagrTooltip {
         if (hasOneRow) {
             this.onMouseEnter();
         } else {
-            this.onMouseLeave();
+            this.hide();
             return;
         }
 
@@ -579,13 +579,14 @@ class YagrTooltip {
         const end = xInOver > startPoint.clientX;
         const timeline = this.yagr.config.timeline;
 
+        let result;
         if (end) {
             range[1] = {
                 clientX: this.bWidth,
                 value: this.yagr.uplot.posToVal(this.bWidth, 'x'),
                 idx: timeline.length - 1,
             };
-            return range[1];
+            result = range[1];
         } else {
             /** Swap range[1] and range[0] in case if tooltip leaved chart in begining of element */
             range[1] = range[0];
@@ -595,8 +596,10 @@ class YagrTooltip {
                 idx: 0,
             };
 
-            return range[0];
+            result = range[0];
         }
+
+        return result;
     };
 
     private onMouseUp = (e: MouseEvent) => {
@@ -639,8 +642,12 @@ class YagrTooltip {
         this.show();
     };
 
-    private onMouseLeave = () => {
+    private onMouseLeave = (e: MouseEvent) => {
         const isPiiined = this.state.pinned;
+
+        if (this.state.range?.[0]) {
+            this.setCursorLeaved(e);
+        }
 
         if (!isPiiined && this.isNotInDrag) {
             this.hide();
