@@ -566,15 +566,18 @@ class YagrTooltip {
         }
     };
 
+    /**
+     * Calculates where exactly cursor leaved the chart
+     * and sets range[1] to this position
+     */
     private setCursorLeaved = (e: MouseEvent) => {
         const rect = this.over.getBoundingClientRect();
         const x = e.clientX;
-
-        const centerX = rect.left + rect.width / 2;
-        const isLeft = x < centerX;
+        const range = this.state.range!;
+        const startPoint = range[0]!;
+        const xInOver = x - rect.left;
+        const end = xInOver > startPoint.clientX;
         const timeline = this.yagr.config.timeline;
-        const end = !isLeft;
-        const range = this.state.range || [];
 
         if (end) {
             range[1] = {
@@ -584,6 +587,7 @@ class YagrTooltip {
             };
             return range[1];
         } else {
+            /** Swap range[1] and range[0] in case if tooltip leaved chart in begining of element */
             range[1] = range[0];
             range[0] = {
                 clientX: 0,
