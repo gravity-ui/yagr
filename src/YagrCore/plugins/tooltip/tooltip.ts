@@ -297,7 +297,7 @@ class YagrTooltip {
             return;
         }
 
-        if ((left < 0 || top < 0) && !state.pinned && !state.range?.[1]) {
+        if ((left < 0 || top < 0) && !state.pinned && this.isNotInDrag) {
             this.hide();
         }
 
@@ -487,10 +487,11 @@ class YagrTooltip {
         this.over = u.root.querySelector('.u-over') as HTMLDivElement;
 
         this.over.addEventListener('mousedown', this.onMouseDown);
-        document.addEventListener('mouseup', this.onMouseUp);
         this.over.addEventListener('mousemove', this.onMouseMove);
         this.over.addEventListener('mouseenter', this.onMouseEnter);
         this.over.addEventListener('mouseleave', this.onMouseLeave);
+
+        document.addEventListener('mouseup', this.onMouseUp);
     };
 
     setSize = () => {
@@ -503,11 +504,11 @@ class YagrTooltip {
     dispose = () => {
         /** Free overlay listeners */
         this.over.removeEventListener('mousedown', this.onMouseDown);
-        document.removeEventListener('mouseup', this.onMouseUp);
         this.over.removeEventListener('mousemove', this.onMouseMove);
         this.over.removeEventListener('mouseenter', this.onMouseEnter);
         this.over.removeEventListener('mouseleave', this.onMouseLeave);
 
+        document.removeEventListener('mouseup', this.onMouseUp);
         document.removeEventListener('mousemove', this.checkFocus);
         document.removeEventListener('mousedown', this.detectClickOutside);
 
@@ -635,7 +636,9 @@ class YagrTooltip {
     };
 
     private onMouseLeave = () => {
-        if (!this.state.pinned && !this.state.range?.[1]) {
+        const isPiiined = this.state.pinned;
+
+        if (!isPiiined && this.isNotInDrag) {
             this.hide();
         }
     };
@@ -684,6 +687,13 @@ class YagrTooltip {
     }
     get stripValue() {
         return this.interpolation ? this.interpolation.value : undefined;
+    }
+    get isNotInDrag() {
+        if (this.opts.strategy === 'none' || this.opts.strategy === 'pin') {
+            return true;
+        }
+
+        return !this.state.range?.[1];
     }
 }
 
