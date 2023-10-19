@@ -1,4 +1,15 @@
+import {AlignedData} from 'uplot';
 import Yagr from '../../index';
+import {ProcessingInterpolation} from 'src/types';
+
+type CustomTrackingFunctionOptions = {
+    x: number;
+    y: number;
+    idx: number;
+    scale: string;
+    series: AlignedData;
+    interpolation?: ProcessingInterpolation;
+};
 
 export type TrackingOptions =
     /** Tracks serie only if mouse hovered on series' area */
@@ -6,7 +17,7 @@ export type TrackingOptions =
     /** Tracks mouse to closest line */
     | 'sticky'
     /** Custom tracking function */
-    | ((s: TooltipSection, y: number) => number | null);
+    | ((s: TooltipSection, y: number, options: CustomTrackingFunctionOptions) => number | null);
 export interface TooltipRenderOpts {
     /** Tooltip option */
     options: TooltipOptions;

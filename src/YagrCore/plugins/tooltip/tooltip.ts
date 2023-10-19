@@ -409,7 +409,14 @@ class YagrTooltip {
                 } else if (tracking === 'sticky') {
                     activeIndex = findSticky(section, cursorValue);
                 } else if (typeof tracking === 'function') {
-                    activeIndex = tracking(section, cursorValue);
+                    activeIndex = tracking(section, cursorValue, {
+                        x: u.posToVal(left, 'x'),
+                        y: u.posToVal(top, scale),
+                        idx,
+                        scale,
+                        series: this.yagr.series,
+                        interpolation: this.interpolation,
+                    });
                 }
 
                 if (activeIndex !== null) {
