@@ -599,6 +599,11 @@ class YagrTooltip {
             result = range[0];
         }
 
+        this.yagr.uplot.setCursor({
+            left: result.clientX,
+            top: 0,
+        });
+
         return result;
     };
 
@@ -608,12 +613,12 @@ class YagrTooltip {
         }
 
         const [from] = this.state.range || [];
-        let cursor;
+        let cursor: SelectionRange[number];
 
         if (e.target === this.over) {
             cursor = this.getCursorPosition();
         } else {
-            cursor = this.setCursorLeaved(e);
+            cursor = this.state.range[1];
         }
 
         if (this.opts.strategy === 'none') {
