@@ -601,7 +601,7 @@ class YagrTooltip {
 
         this.yagr.uplot.setCursor({
             left: result.clientX,
-            top: 0,
+            top: e.clientY - rect.top,
         });
 
         return result;

@@ -73,11 +73,6 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
             const {timeMultiplier = 1} = this.config.chart || {};
 
-            /** @TODO remove after this will be released https://github.com/leeoniya/uPlot/issues/879 */
-            if (width === 0) {
-                return;
-            }
-
             this.execHooks('onSelect', {
                 from: Math.ceil(_from / timeMultiplier),
                 to: Math.ceil(_to / timeMultiplier),
