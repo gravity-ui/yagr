@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import type {MinimalValidConfig, RawSerieData, Scale, SupportedLocales, YagrConfig, YagrTheme} from '../types';
 import Yagr from '..';
 
@@ -271,6 +273,11 @@ function setSeriesImpl(
     } else {
         series = timelineOrSeriesOrId as RawSerieData[];
         useFullyRedraw = true;
+    }
+
+    if (this.isEmpty && series.some(({data}) => data?.length)) {
+        batch.reinit = true;
+        return;
     }
 
     if (useFullyRedraw === false) {
