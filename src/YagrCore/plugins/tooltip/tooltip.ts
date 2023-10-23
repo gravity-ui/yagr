@@ -119,6 +119,7 @@ class YagrTooltip {
 
     private bLeft: number;
     private bTop: number;
+    private bWidth: number;
 
     constructor(yagr: Yagr, options: Partial<TooltipOptions> = {}) {
         this.yagr = yagr;
@@ -153,6 +154,7 @@ class YagrTooltip {
 
         this.bLeft = 0;
         this.bTop = 0;
+        this.bWidth = 0;
 
         if (this.opts.virtual) {
             this.placement = () => {};
@@ -295,7 +297,7 @@ class YagrTooltip {
             return;
         }
 
-        if ((left < 0 || top < 0) && !state.pinned) {
+        if ((left < 0 || top < 0) && !state.pinned && this.isNotInDrag) {
             this.hide();
         }
 
@@ -435,7 +437,7 @@ class YagrTooltip {
         if (hasOneRow) {
             this.onMouseEnter();
         } else {
-            this.onMouseLeave();
+            this.hide();
             return;
         }
 
@@ -443,6 +445,7 @@ class YagrTooltip {
 
         this.bLeft = bbox.left;
         this.bTop = bbox.top;
+        this.bWidth = bbox.width;
 
         const anchor = {
             left: left + this.bLeft,
@@ -491,10 +494,11 @@ class YagrTooltip {
         this.over = u.root.querySelector('.u-over') as HTMLDivElement;
 
         this.over.addEventListener('mousedown', this.onMouseDown);
-        this.over.addEventListener('mouseup', this.onMouseUp);
         this.over.addEventListener('mousemove', this.onMouseMove);
         this.over.addEventListener('mouseenter', this.onMouseEnter);
         this.over.addEventListener('mouseleave', this.onMouseLeave);
+
+        document.addEventListener('mouseup', this.onMouseUp);
     };
 
     setSize = () => {
@@ -507,11 +511,11 @@ class YagrTooltip {
     dispose = () => {
         /** Free overlay listeners */
         this.over.removeEventListener('mousedown', this.onMouseDown);
-        this.over.removeEventListener('mouseup', this.onMouseUp);
         this.over.removeEventListener('mousemove', this.onMouseMove);
         this.over.removeEventListener('mouseenter', this.onMouseEnter);
         this.over.removeEventListener('mouseleave', this.onMouseLeave);
 
+        document.removeEventListener('mouseup', this.onMouseUp);
         document.removeEventListener('mousemove', this.checkFocus);
         document.removeEventListener('mousedown', this.detectClickOutside);
 
@@ -569,9 +573,58 @@ class YagrTooltip {
         }
     };
 
-    private onMouseUp = () => {
+    /**
+     * Calculates where exactly cursor leaved the chart
+     * and sets range[1] to this position
+     */
+    private setCursorLeaved = (e: MouseEvent) => {
+        const rect = this.over.getBoundingClientRect();
+        const x = e.clientX;
+        const range = this.state.range!;
+        const startPoint = range[0]!;
+        const xInOver = x - rect.left;
+        const end = xInOver > startPoint.clientX;
+        const timeline = this.yagr.config.timeline;
+
+        let result;
+        if (end) {
+            range[1] = {
+                clientX: this.bWidth,
+                value: this.yagr.uplot.posToVal(this.bWidth, 'x'),
+                idx: timeline.length - 1,
+            };
+            result = range[1];
+        } else {
+            /** Swap range[1] and range[0] in case if tooltip leaved chart in begining of element */
+            range[1] = range[0];
+            range[0] = {
+                clientX: 0,
+                value: this.yagr.uplot.posToVal(0, 'x'),
+                idx: 0,
+            };
+
+            result = range[0];
+        }
+
+        this.yagr.uplot.setCursor({
+            left: result.clientX,
+            top: e.clientY - rect.top,
+        });
+    };
+
+    private onMouseUp = (e: MouseEvent) => {
+        if (this.state.range === null) {
+            return;
+        }
+
         const [from] = this.state.range || [];
-        const cursor = this.getCursorPosition();
+        let cursor: SelectionRange[number];
+
+        if (e.target === this.over) {
+            cursor = this.getCursorPosition();
+        } else {
+            cursor = this.state.range[1];
+        }
 
         if (this.opts.strategy === 'none') {
             return;
@@ -599,8 +652,14 @@ class YagrTooltip {
         this.show();
     };
 
-    private onMouseLeave = () => {
-        if (!this.state.pinned) {
+    private onMouseLeave = (e: MouseEvent) => {
+        const isPinned = this.state.pinned;
+
+        if (this.state.range?.[0]) {
+            this.setCursorLeaved(e);
+        }
+
+        if (!isPinned && this.isNotInDrag) {
             this.hide();
         }
     };
@@ -649,6 +708,13 @@ class YagrTooltip {
     }
     get stripValue() {
         return this.interpolation ? this.interpolation.value : undefined;
+    }
+    get isNotInDrag() {
+        if (this.opts.strategy === 'none' || this.opts.strategy === 'pin') {
+            return true;
+        }
+
+        return !this.state.range?.[1];
     }
 }
 

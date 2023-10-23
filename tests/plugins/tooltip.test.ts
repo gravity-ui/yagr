@@ -21,6 +21,8 @@ describe('tooltip', () => {
             });
 
             expect(window.document.querySelector(`#${yagr.id}_tooltip`)).toBeTruthy();
+
+            yagr.dispose();
         });
 
         it('should render tooltip sum', async () => {
@@ -42,6 +44,8 @@ describe('tooltip', () => {
             yagr.plugins.tooltip?.on('show', () => {
                 expect(window.document.querySelector(`.__section_sum`)).not.toBeNull();
             });
+
+            yagr.dispose();
         });
     });
 
@@ -79,6 +83,11 @@ describe('tooltip', () => {
         it('should render tooltip sum', () => {
             expect(tElem.querySelectorAll('.__section_sum').length).toBe(1);
         });
+
+        afterAll(() => {
+            y.dispose();
+            y.root.remove();
+        });
     });
 
     describe('on/off', () => {
@@ -110,6 +119,11 @@ describe('tooltip', () => {
 
             expect(handler).toBeCalledTimes(1);
         });
+
+        afterAll(() => {
+            yagr.dispose();
+            window.document.body.innerHTML = '';
+        });
     });
 
     describe('pinning', () => {
@@ -124,7 +138,7 @@ describe('tooltip', () => {
 
             yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
             await new Promise((resolve) => setTimeout(resolve, 100));
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30, bubbles: true}));
             expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
         });
 
@@ -139,12 +153,18 @@ describe('tooltip', () => {
 
             yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
             await new Promise((resolve) => setTimeout(resolve, 100));
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30, bubbles: true}));
             expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
         });
 
         it('should pin tooltip if strategy=pin', async () => {
             const yagr = gen({
+                chart: {
+                    size: {
+                        width: 600,
+                        height: 400,
+                    },
+                },
                 timeline: [1, 2, 3, 4],
                 series: [{data: [1, 2, 3, 4]}],
                 tooltip: {
@@ -152,9 +172,9 @@ describe('tooltip', () => {
                 },
             });
 
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 30, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 30}));
             await new Promise((resolve) => setTimeout(resolve, 100));
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 30, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 100, clientY: 30, bubbles: true}));
             expect(yagr.plugins.tooltip?.state.pinned).toBe(true);
         });
 
@@ -172,7 +192,7 @@ describe('tooltip', () => {
             yagr.uplot.over.dispatchEvent(new MouseEvent('mousemove', {clientX: 40, clientY: 30}));
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(yagr.plugins.tooltip?.state.range).toHaveLength(2);
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30, bubbles: true}));
             expect(yagr.plugins.tooltip?.state.pinned).toBe(false);
             expect(yagr.plugins.tooltip?.state.range).toBeNull();
         });
@@ -191,7 +211,7 @@ describe('tooltip', () => {
             yagr.uplot.over.dispatchEvent(new MouseEvent('mousemove', {clientX: 40, clientY: 30}));
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(yagr.plugins.tooltip?.state.range).toHaveLength(2);
-            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30}));
+            yagr.uplot.over.dispatchEvent(new MouseEvent('mouseup', {clientX: 40, clientY: 30, bubbles: true}));
             expect(yagr.plugins.tooltip?.state.pinned).toBe(true);
             expect(yagr.plugins.tooltip?.state.range).toBeNull();
         });
