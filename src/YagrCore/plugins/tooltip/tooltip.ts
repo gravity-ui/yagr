@@ -603,8 +603,6 @@ class YagrTooltip {
             left: result.clientX,
             top: e.clientY - rect.top,
         });
-
-        return result;
     };
 
     private onMouseUp = (e: MouseEvent) => {
@@ -648,13 +646,13 @@ class YagrTooltip {
     };
 
     private onMouseLeave = (e: MouseEvent) => {
-        const isPiiined = this.state.pinned;
+        const isPinned = this.state.pinned;
 
         if (this.state.range?.[0]) {
             this.setCursorLeaved(e);
         }
 
-        if (!isPiiined && this.isNotInDrag) {
+        if (!isPinned && this.isNotInDrag) {
             this.hide();
         }
     };
