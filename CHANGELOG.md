@@ -1,5 +1,17 @@
 ### master
 
+## [3.11.0](https://github.com/gravity-ui/yagr/compare/v3.10.6...v3.11.0) (2023-10-23)
+
+
+### Features
+
+* added options for custom tooltip tracking fn ([#171](https://github.com/gravity-ui/yagr/issues/171)) ([03697d0](https://github.com/gravity-ui/yagr/commit/03697d03990957a7ca744845f5550b77ef00b133))
+
+
+### Bug Fixes
+
+* fixed empty chart updating ([#174](https://github.com/gravity-ui/yagr/issues/174)) ([05f9964](https://github.com/gravity-ui/yagr/commit/05f99646e8ef2e6ea930cea86556f562e96b2784))
+
 ## [3.10.6](https://github.com/gravity-ui/yagr/compare/v3.10.5...v3.10.6) (2023-10-10)
 
 
