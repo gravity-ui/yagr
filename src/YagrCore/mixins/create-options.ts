@@ -151,8 +151,8 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         options.cursor.points = options.cursor.points || {};
         options.cursor.drag = options.cursor.drag || {
             dist: chart.select?.minWidth || MIN_SELECTION_WIDTH,
-            x: true,
-            y: false,
+            x: options.cursor.y ?? true,
+            y: options.cursor.y ?? false,
             setScale: chart.select?.zoom ?? true,
         };
 

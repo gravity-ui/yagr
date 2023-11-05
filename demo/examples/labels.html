@@ -105,8 +105,32 @@
         <div class="grid">
             <div id="chart10" class="container"></div>
         </div>
+        <div class="grid">
+            <div id="chart11" class="container"></div>
+        </div>
+        <div class="grid">
+            <div id="chart12" class="container"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart13" class="container"></div>
+        </div>
 
         <script>
+            function renderTooltipWithSeriesLabels(data) {
+                const appendix = `<div>${Object.entries(y1.plugins.labels
+                            .getCurrentSeriesLabels())
+                            .map(([seriesIdx, labelData]) => {
+                                const series = y1.uplot.series[seriesIdx];
+                                if (!labelData || !series.show) {
+                                    return '';
+                                }
+                                return `<div style="background-color:${series.color}">${labelData.label}</div>`;
+                            })
+                            .join('<br>')}</div>`;
+                        return `${data.defaultRender(data)}<br>${appendix}`;
+            }
+
             function getRandomColor() {
                 var letters = '0123456789ABCDEF';
                 var color = '#';
@@ -115,23 +139,35 @@
                 }
                 return color;
             }
+
             const y1 = new Yagr(chart1, {
                 title: {
-                    text: 'By scale, constant',
+                    text: 'By scale, constant, only over 4',
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
-                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green'}
+                ],
+                tooltip: {
+                    render: renderTooltipWithSeriesLabels,
+                },
+                legend: {
+                    show: true
+                },
                 axes: {
                     y: {precision: 0},
                 },
                 scales: {y: {min: 0, max: 6}},
-                plugins: [
-                    YagrLabelsPlugin({
+                plugins: {
+                    labels: YagrLabelsPlugin({
                         scales: {
-                            constant: {y: {}},
+                            constant: {y: {
+                                label: (x, y) => y > 4 ? y.toString(26).slice(2, 5) : null,
+                            }},
                         },
                     }),
-                ],
+                },
             });
 
             const y2 = new Yagr(chart2, {
@@ -139,16 +175,22 @@
                     text: 'By scale, cursor',
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
-                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'purple', scale: 'r'}
+                ],
                 axes: {
-                    y: {precision: 0},
+                    y: {precision: 0, splitsCount: 5},
+                    r: {side: 'right', splitsCount: 5}
                 },
-                scales: {y: {min: 0, max: 6}},
+                scales: {y: {min: 0, max: 6}, r: {min: 0, max: 6}},
                 plugins: [
                     YagrLabelsPlugin({
                         scales: {
                             cursor: {
-                                y: {},
+                                y: {
+                                    label: (x, y) => `${x/1000}s - ${y.toFixed(1)}`
+                                },
                             },
                         },
                     }),
@@ -157,7 +199,7 @@
 
             const y3 = new Yagr(chart3, {
                 title: {
-                    text: 'By series, constant',
+                    text: 'By series, constant, over 4',
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
@@ -171,7 +213,11 @@
                 plugins: [
                     YagrLabelsPlugin({
                         series: {
-                            constant: {green: {}},
+                            constant: {
+                                green: {
+                                    label: (x, y) => y > 4 ? y.toFixed(1) : null
+                                }
+                            },
                         },
                     }),
                 ],
@@ -207,18 +253,28 @@
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
-                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: 'red'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green', id: 'green'},
                 ],
                 axes: {
                     y: {precision: 0},
                 },
+                legend: {
+                    show: true
+                },
                 scales: {y: {min: 0, max: 6}},
                 plugins: [
                     YagrLabelsPlugin({
                         series: {
+                            cursor: {
+                                red: {
+                                    label: 'R'
+                                },
+                            },
                             focus: {
-                                green: {},
+                                green: {
+                                    label: 'G'
+                                },
                             },
                         },
                     }),
@@ -243,13 +299,19 @@
                     YagrLabelsPlugin({
                         series: {
                             focus: {
-                                green: {},
+                                green: {
+                                    label: 'G'
+                                },
                             },
                             cursor: {
-                                orange: {},
+                                orange: {
+                                    label: 'O'
+                                },
                             },
                             constant: {
-                                red: {},
+                                red: {
+                                    label: 'R'
+                                },
                             },
                         },
                     }),
@@ -260,7 +322,7 @@
                 title: {
                     text: 'By series, show in tooltip',
                 },
-                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                timeline: new Array(20).fill().map((_, i) => i * 100000000),
                 series: [
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: 'red'},
                     {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'green', id: 'green'},
@@ -270,23 +332,31 @@
                 },
                 scales: {y: {min: 0, max: 6}},
                 tooltip: {
-                    render: (data) => {
-                        const appendix = `<div>${y7.plugins.labels
-                            .getTextLabels()
-                            .map((x) => {
-                                const s = y7.uplot.series[x.idx];
-                                return `<div><b>${s.id} = ${x.label}</b></div>`;
+                    render: function renderTooltipWithSeriesLabels(data) {
+                        const appendix = `<div>${Object.entries(y7.plugins.labels
+                            .getCurrentSeriesLabels())
+                            .map(([seriesIdx, labelData]) => {
+                                const series = y1.uplot.series[seriesIdx];
+                                if (!labelData || !series.show) {
+                                    return '';
+                                }
+                                return `<div style="background-color:${series.color}">${labelData.label}</div>`;
                             })
                             .join('<br>')}</div>`;
                         return `${data.defaultRender(data)}<br>${appendix}`;
-                    },
+                },
                 },
                 plugins: {
                     weekends: WeekendsPlugin(),
                     labels: YagrLabelsPlugin({
                         series: {
+                            constant: {
+                                red: {
+                                    show: false,
+                                },
+                            },
                             cursor: {
-                                green: {show: false},
+                                green: {show: true, label: (x, y) => `${x.toFixed(1)} - ${y.toFixed(1)}`},
                             },
                         },
                     }),
@@ -294,8 +364,14 @@
             });
 
             const y8 = new Yagr(chart8, {
+                title: {
+                    text: 'Plot lines',
+                },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
-                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                series: [
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(20).fill().map((_, i) => Math.random() * 50), color: 'blue', scale: 'r'}
+                ],
                 axes: {
                     x: {
                         plotLines: [
@@ -303,17 +379,45 @@
                             {color: 'rgba(100, 200, 103, 0.3)', value: [10000, 15000], label: 'Wheee'},
                         ],
                     },
+                    y: {
+                        plotLines: [
+                            {color: 'rgba(155, 100, 101, 0.3)', value: [3, 4], label: 'Y Axis'},
+                        ],
+                    },
+                    r: {
+                        side: 'right',
+                        plotLines: [
+                            {color: 'rgba(20, 200, 201, 0.3)', value: [10, 20], label: 'R Axis'},
+                        ],
+                    }
+                },
+                tooltip: {
+                    render: function renderTooltipWithSeriesLabels(data) {
+                        const appendix = `<div>${y8.plugins.labels
+                                    .getCurrentPlotLinesLabels()
+                                    .map(({label, band}) => {
+                                        return `<div style="background-color:${band.color}">${label}</div>`;
+                                    })
+                                    .join('<br>')}</div>`;
+                                return `${data.defaultRender(data)}<br>${appendix}`;
+                    },
                 },
                 scales: {y: {min: 0, max: 6}},
-                plugins: [
-                    YagrLabelsPlugin({
+                plugins: {
+                    labels: YagrLabelsPlugin({
                         plotLines: {
                             constant: {
                                 x: {},
+                                y: {
+                                    show: false
+                                },
                             },
+                            cursor: {
+                                r: {}
+                            }
                         },
                     }),
-                ],
+                },
             });
 
             const y9 = new Yagr(chart9, {
@@ -322,10 +426,10 @@
                 scales: {y: {min: 0, max: 6}},
                 tooltip: {
                     render: (data) => {
-                        const appendidx = `<div>${y9.plugins.labels
-                            .getAxisPoints()
-                            .map(({scale, title}) => {
-                                return `<div>Scale = <b>${scale}</b>, title = ${title}</div>`;
+                        const appendidx = `<div>${Object.entries(y9.plugins.labels
+                            .getCurrentAxisLabels(1000))
+                            .map(([scale, d]) => {
+                                return d.map(({title}) => `<div>Scale = <b>${scale}</b>, title = ${title}</div>`).join('<br>')
                             })
                             .join('<br>')}</div>`;
                         return `${data.defaultRender(data)}<br>${appendidx}`;
@@ -344,6 +448,13 @@
                                     value: 10000,
                                     className: 'whee',
                                     title: 'WHEE',
+                                },
+                            ],
+                            y: [
+                                {
+                                    value: 4,
+                                    className: 'wow',
+                                    title: 'Four',
                                 },
                             ],
                         },
@@ -374,14 +485,14 @@
                     };
                 }),
                 tooltip: {
-                    render: (data) => {
+                    render: function renderTooltipWithSeriesLabels(data) {
                         const appendix = `<div>${y10.plugins.labels
-                            .getTextLabels()
-                            .map((x) => {
-                                return `<div style="background-color:${x.band.color}">${x.label}</div>`;
-                            })
-                            .join('<br>')}</div>`;
-                        return `${data.defaultRender(data)}<br>${appendix}`;
+                                    .getCurrentPlotLinesLabels()
+                                    .map(({label, band}) => {
+                                        return `<div style="background-color:${band.color}">${label}</div>`;
+                                    })
+                                    .join('<br>')}</div>`;
+                                return `${data.defaultRender(data)}<br>${appendix}`;
                     },
                 },
                 axes: {
@@ -409,6 +520,177 @@
                             cursor: {
                                 x: {show: false},
                             },
+                        },
+                    }),
+                },
+            });
+
+            const y11 = new Yagr(chart11, {
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                title: {
+                    text: 'By axis, custom render',
+                },
+                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
+                scales: {y: {min: 0, max: 6}},
+                plugins: {
+                    labels: YagrLabelsPlugin({
+                        axes: {
+                            x: [
+                                {
+                                    value: 5000,
+                                    title: 'WOW',
+                                    render: (yagr, x, y, {title}) => {
+                                        const div = document.createElement('div');
+                                        div.style.width = '1px'
+                                        div.style.height = '100%';
+                                        div.style.borderRight = 'solid 2px red';
+                                        div.style.position = 'absolute';
+                                        div.style.left = `${x}px`;
+                                        const text = document.createElement('div');
+                                        text.style.position = 'absolute';
+                                        text.style.left = `${x - 10}px`;
+                                        text.style.top = `10px`;
+                                        text.innerHTML = title;
+                                        text.style.transform = 'rotate(90deg)'
+                                        yagr.uplot.over.appendChild(div);
+                                        yagr.uplot.over.appendChild(text);
+                                        return () => {
+                                            yagr.uplot.over.removeChild(div);
+                                            yagr.uplot.over.removeChild(text);
+                                        };
+                                    }
+                                },
+                            ],
+                        },
+                    }),
+                },
+            });
+
+            function drawPentagram(context, centerX, centerY, radius, fillStyle = 'black', strokeStyle = 'black') {
+                const points = 5;
+                const sweep = Math.PI * 2 / points;
+                const startAngle = Math.PI / 2;
+
+                context.beginPath();
+                context.fillStyle = fillStyle;
+                context.strokeStyle = strokeStyle;
+
+                for (let i = 0; i < points; i++) {
+                    let x = centerX + radius * Math.cos(startAngle - sweep * i * 2);
+                    let y = centerY - radius * Math.sin(startAngle - sweep * i * 2);
+                    context.lineTo(x, y);
+                }
+
+                context.closePath();
+                context.fill();
+                context.stroke(); // Add this line to stroke the pentagram
+            }
+
+            function clearPentagram(context, centerX, centerY, radius) {
+                // Calculate the bounding box of the pentagram
+                const left = centerX - radius;
+                const top = centerY - radius;
+                const width = radius * 2;
+                const height = radius * 2;
+
+                // Clear the bounding box of the pentagram
+                context.clearRect(left, top, width, height);
+            }
+
+
+            const y12 = new Yagr(chart12, {
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                title: {
+                    text: 'By axis, custom canvas render',
+                },
+                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: 'mySeries'}],
+                scales: {y: {min: 0, max: 6}},
+                plugins: {
+                    labels: YagrLabelsPlugin({
+                        series: {
+                            constant: {
+                                mySeries: {
+                                    render: (yagr, sIdx, xIdx, scale) => {
+                                        const x = yagr.uplot.valToPos(yagr.uplot.data[0][xIdx], 'x');
+                                        const y = yagr.uplot.valToPos(yagr.uplot.series[sIdx].data[xIdx], scale);
+                                        // yagr.uplot.ctx.fillStyle = 'red';
+                                        // yagr.uplot.ctx.beginPath();
+                                        drawPentagram(yagr.uplot.ctx, x * devicePixelRatio + yagr.uplot.bbox.left, y * devicePixelRatio + yagr.uplot.bbox.top, 20, 'orange', 'orange');
+                                        // yagr.uplot.ctx.arc(x * devicePixelRatio + yagr.uplot.bbox.left, y * devicePixelRatio + yagr.uplot.bbox.top, 10, 0, 2 * Math.PI);
+                                        // yagr.uplot.ctx.fill();
+                                        return () => {}
+                                    }
+                                }
+                            }
+                        },
+                    }),
+                },
+            });
+
+            function createPentagram(x, y) {
+                // Create SVG element
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "20");
+                svg.setAttribute("height", "20");
+                svg.style.position = "absolute";
+                svg.style.left = `${x - 10}px`;
+                svg.style.top = `${y - 10}px`;
+
+                // Create pentagram
+                const pentagram = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                pentagram.setAttribute("points", "10,2 4,18 18,7 2,7 16,18");
+                pentagram.setAttribute("stroke", "black");
+                pentagram.setAttribute("fill", "black"); // Fill color
+                pentagram.setAttribute("stroke-width", "1");
+
+                // Add pentagram to SVG
+                svg.appendChild(pentagram);
+
+                return svg;
+            }
+
+
+            const y13 = new Yagr(chart13, {
+                timeline: new Array(20).fill().map((_, i) => i * 1000),
+                title: {
+                    text: 'By axis, custom SVG render, y < 4',
+                },
+                series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: 'mySeries'}],
+                scales: {y: {min: 0, max: 6}},
+                tooltip: {
+                    render: (data) => {
+                        const appendix = `<div>${y13.plugins.labels
+                            .getPointLabels()
+                            .map((x) => {
+                                return `<div style="background-color:${x.band.color}">${x.label}</div>`;
+                            })
+                            .join('<br>')}</div>`;
+                        return `${data.defaultRender(data)}<br>${appendix}`;
+                    },
+                },
+                plugins: {
+                    labels: YagrLabelsPlugin({
+                        series: {
+                            constant: {
+                                mySeries: {
+                                    render: (yagr, sIdx, xIdx, scale) => {
+                                        const yValue = yagr.uplot.series[sIdx].data[xIdx];
+
+                                        if (yValue >= 4) {
+                                            return () => {};
+                                        }
+
+                                        const x = yagr.uplot.valToPos(yagr.uplot.data[0][xIdx], 'x');
+                                        const y = yagr.uplot.valToPos(yValue, scale);
+                                                                                
+                                        const svg = createPentagram(x, y);
+                                        yagr.uplot.over.appendChild(svg);
+                                        return () => {
+                                            svg.remove();
+                                        }
+                                    }
+                                }
+                            }
                         },
                     }),
                 },
