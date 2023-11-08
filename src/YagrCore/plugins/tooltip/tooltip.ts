@@ -455,6 +455,15 @@ class YagrTooltip {
                 x,
             };
 
+            const hasDataNow = Object.values(sections).some(
+                ({rows}) => rows.filter(({id}) => this.yagr.getSeriesById(id)?.show).length > 0,
+            );
+
+            if (!hasDataNow) {
+                this.hide();
+                return;
+            }
+
             if (!opts.virtual) {
                 this.tOverlay.innerHTML = opts.render({
                     ...renderData,

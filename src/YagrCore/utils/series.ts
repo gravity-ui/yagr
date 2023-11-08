@@ -132,6 +132,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
 
 export const overrideSeriesInUpdate = (dest: Series, source: Series) => {
     dest.$c = source.$c ?? dest.$c;
+    dest.show = source.show ?? dest.show;
     dest.data = source.data ?? dest.data;
     dest.width = source.width ?? dest.width;
     dest.pointsSize = source.pointsSize ?? dest.pointsSize;
