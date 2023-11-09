@@ -1,5 +1,5 @@
 import Yagr from '../../src/YagrCore';
-import DataRefs from '../../src/plugins/dataRefs/dataRefs';
+import DataRefs from '../../src/plugins/aggregates/aggregates';
 
 describe('DataRefs plugin', () => {
     describe('plain data', () => {
@@ -11,13 +11,13 @@ describe('DataRefs plugin', () => {
                 {data: [5, 6, 7, 8], scale: 'r', id: 'three'},
             ],
             plugins: {
-                refs: DataRefs({}),
+                aggr: DataRefs({}),
             },
         });
 
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.getRefs()).toEqual({
+            expect(y.plugins.aggr?.get()).toEqual({
                 y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 0.0165},
                 r: {min: 5, max: 8, count: 4, last: null, avg: 6.5, sum: 26, integral: 0.0195},
             });
@@ -25,7 +25,7 @@ describe('DataRefs plugin', () => {
 
         it('should calc refs by idxs', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.calcRefs(0, 1, 'one')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'one')).toEqual({
                 min: 1,
                 max: 2,
                 count: 2,
@@ -38,7 +38,7 @@ describe('DataRefs plugin', () => {
 
         it('should calc refs by ranges', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.getRefs(0, 1)).toEqual({
+            expect(y.plugins.aggr?.get(0, 1)).toEqual({
                 y: {
                     series: {
                         one: {
@@ -107,20 +107,20 @@ describe('DataRefs plugin', () => {
                 {data: [3, 3, 3, 3], scale: 'y', id: 'two'},
             ],
             plugins: {
-                refs: DataRefs({}),
+                aggr: DataRefs({}),
             },
         });
 
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.getRefs()).toEqual({
+            expect(y.plugins.aggr?.get()).toEqual({
                 y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 0.0165},
             });
         });
 
         it('should calc refs by idxs', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.calcRefs(0, 1, 'one')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'one')).toEqual({
                 min: 1,
                 max: 2,
                 count: 2,
@@ -129,7 +129,7 @@ describe('DataRefs plugin', () => {
                 sum: 3,
                 integral: 0.0015,
             });
-            expect(y.plugins.refs?.calcRefs(0, 1, 'two')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'two')).toEqual({
                 min: 3,
                 max: 3,
                 count: 2,
@@ -153,20 +153,20 @@ describe('DataRefs plugin', () => {
                 {data: [null, null, null, null], scale: 'y', id: 'three'},
             ],
             plugins: {
-                refs: DataRefs({}),
+                aggr: DataRefs({}),
             },
         });
 
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.getRefs()).toEqual({
+            expect(y.plugins.aggr?.get()).toEqual({
                 y: {min: 1, max: 4, count: 4, last: null, avg: 2.75, sum: 11, integral: 0.006999999999999999},
             });
         });
 
         it('should calc refs by idxs', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.calcRefs(0, 1, 'one')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'one')).toEqual({
                 min: 1,
                 max: 1,
                 count: 1,
@@ -175,7 +175,7 @@ describe('DataRefs plugin', () => {
                 sum: 1,
                 integral: 0.0005,
             });
-            expect(y.plugins.refs?.calcRefs(0, 1, 'two')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'two')).toEqual({
                 min: null,
                 max: null,
                 count: 0,
@@ -204,20 +204,20 @@ describe('DataRefs plugin', () => {
                 },
             },
             plugins: {
-                refs: DataRefs({}),
+                aggr: DataRefs({}),
             },
         });
 
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.getRefs()).toEqual({
+            expect(y.plugins.aggr?.get()).toEqual({
                 y: {min: 1, max: 4, count: 5, last: null, avg: 2.6, sum: 13, integral: 0.005},
             });
         });
 
         it('should calc refs by idxs', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            expect(y.plugins.refs?.calcRefs(0, 1, 'one')).toEqual({
+            expect(y.plugins.aggr?.calc(0, 1, 'one')).toEqual({
                 min: 1,
                 max: 1,
                 count: 1,
@@ -226,7 +226,7 @@ describe('DataRefs plugin', () => {
                 sum: 1,
                 integral: 0,
             });
-            expect(y.plugins.refs?.calcRefs(1, 3, 'two')).toEqual({
+            expect(y.plugins.aggr?.calc(1, 3, 'two')).toEqual({
                 min: 3,
                 max: 3,
                 count: 1,
