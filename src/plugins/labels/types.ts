@@ -41,16 +41,16 @@ export interface LabelsOptions {
     series?: {
         cursor?: PerScale<PointLabel>;
         focus?: PerScale<PointLabel>;
-        constant?: PerScale<PointLabel>;
+        draw?: PerScale<PointLabel>;
     };
     scales?: {
         cursor?: PerScale<PointLabel>;
-        constant?: PerScale<PointLabel>;
+        draw?: PerScale<PointLabel>;
     };
     axes?: Record<string, AxisLabel[]>;
     plotLines?: {
         cursor?: PerScale<PlotLabel>;
-        constant?: PerScale<PlotLabel>;
+        draw?: PerScale<PlotLabel>;
     };
 }
 

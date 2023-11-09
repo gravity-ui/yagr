@@ -111,9 +111,9 @@ export function plotLinesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, 
         });
     }
 
-    if (options.plotLines?.constant) {
+    if (options.plotLines?.draw) {
         hooks.draw.push(() => {
-            renderLabelsOnPlotLines(options.plotLines?.constant!, drawClears);
+            renderLabelsOnPlotLines(options.plotLines?.draw!, drawClears);
         });
 
         hooks.drawClear.push(() => {
@@ -128,10 +128,10 @@ export function plotLinesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, 
 
             return bands
                 .filter((band) => {
-                    return options.plotLines?.constant?.[band.scale || 'y'];
+                    return options.plotLines?.draw?.[band.scale || 'y'];
                 })
                 .map((band) => {
-                    return {band, label: options.plotLines?.constant?.[band.scale || 'y']?.label || band.label};
+                    return {band, label: options.plotLines?.draw?.[band.scale || 'y']?.label || band.label};
                 });
         },
         getCurrentPlotLinesLabels: () => {

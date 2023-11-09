@@ -33,15 +33,15 @@ export function seriesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, opt
             for (let sIdx = 1; sIdx < u.series.length; sIdx++) {
                 const series = u.series[sIdx];
 
-                if (options.scales?.constant) {
+                if (options.scales?.draw) {
                     const scaleKey = series.scale;
-                    if (scaleKey && options.scales?.constant[scaleKey]) {
+                    if (scaleKey && options.scales?.draw[scaleKey]) {
                         sIdxs.push(sIdx);
                     }
                 }
 
-                if (options.series?.constant) {
-                    if (options.series?.constant[series.id]) {
+                if (options.series?.draw) {
+                    if (options.series?.draw[series.id]) {
                         sIdxs.push(sIdx);
                     }
                 }
@@ -55,7 +55,7 @@ export function seriesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, opt
             }
             const {scale = 'y', min, max} = series;
             const tSeries = u.series[0] as Required<uPlot.Series>;
-            const labelOptions = options.series?.constant?.[series.id] || options.scales?.constant?.[series.scale];
+            const labelOptions = options.series?.draw?.[series.id] || options.scales?.draw?.[series.scale];
 
             const selfAxisFormatter = (u.axes.find((a) => a.scale === scale)?.getFormatter || getId)(max - min);
             const xAxisFormatter = (u.axes.find((a) => a.scale === 'x')?.getFormatter || getId)(
@@ -169,7 +169,7 @@ export function seriesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, opt
         });
     }
 
-    if (options.scales?.constant || options.series?.constant) {
+    if (options.scales?.draw || options.series?.draw) {
         hooks.draw.push((u) => {
             drawLabelsOnSeries(u);
         });
