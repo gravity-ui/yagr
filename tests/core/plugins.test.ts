@@ -1,6 +1,6 @@
 import {MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
-import DataRefs from '../../src/plugins/dataRefs/dataRefs';
+import Aggregates from '../../src/plugins/aggregates/aggregates';
 
 describe('yagr plugins', () => {
     it('should be able to use dataRefs plugin', async () => {
@@ -8,7 +8,7 @@ describe('yagr plugins', () => {
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3]}],
             plugins: {
-                dataRefs: DataRefs({}),
+                aggregates: Aggregates({}),
             },
         };
 
@@ -26,8 +26,8 @@ describe('yagr plugins', () => {
             });
         });
 
-        expect(u.plugins.dataRefs).toBeDefined();
-        expect(u.plugins.dataRefs?.getRefs()).toEqual({
+        expect(u.plugins.aggregates).toBeDefined();
+        expect(u.plugins.aggregates?.get()).toEqual({
             y: {
                 avg: 2,
                 count: 3,
