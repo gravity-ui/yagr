@@ -118,10 +118,10 @@
 
         <script>
             function renderTooltipWithSeriesLabels(data) {
-                const appendix = `<div>${Object.entries(y1.plugins.labels
+                const appendix = `<div>${Object.entries(data.yagr.plugins.labels
                             .getCurrentSeriesLabels())
                             .map(([seriesIdx, labelData]) => {
-                                const series = y1.uplot.series[seriesIdx];
+                                const series = data.yagr.uplot.series[seriesIdx];
                                 if (!labelData || !series.show) {
                                     return '';
                                 }
@@ -613,11 +613,7 @@
                                     render: (yagr, sIdx, xIdx, scale) => {
                                         const x = yagr.uplot.valToPos(yagr.uplot.data[0][xIdx], 'x');
                                         const y = yagr.uplot.valToPos(yagr.uplot.series[sIdx].data[xIdx], scale);
-                                        // yagr.uplot.ctx.fillStyle = 'red';
-                                        // yagr.uplot.ctx.beginPath();
                                         drawPentagram(yagr.uplot.ctx, x * devicePixelRatio + yagr.uplot.bbox.left, y * devicePixelRatio + yagr.uplot.bbox.top, 20, 'orange', 'orange');
-                                        // yagr.uplot.ctx.arc(x * devicePixelRatio + yagr.uplot.bbox.left, y * devicePixelRatio + yagr.uplot.bbox.top, 10, 0, 2 * Math.PI);
-                                        // yagr.uplot.ctx.fill();
                                         return () => {}
                                     }
                                 }
@@ -628,7 +624,6 @@
             });
 
             function createPentagram(x, y) {
-                // Create SVG element
                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svg.setAttribute("width", "20");
                 svg.setAttribute("height", "20");
@@ -636,14 +631,12 @@
                 svg.style.left = `${x - 10}px`;
                 svg.style.top = `${y - 10}px`;
 
-                // Create pentagram
                 const pentagram = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 pentagram.setAttribute("points", "10,2 4,18 18,7 2,7 16,18");
                 pentagram.setAttribute("stroke", "black");
                 pentagram.setAttribute("fill", "black"); // Fill color
                 pentagram.setAttribute("stroke-width", "1");
 
-                // Add pentagram to SVG
                 svg.appendChild(pentagram);
 
                 return svg;
@@ -658,15 +651,7 @@
                 series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red', id: 'mySeries'}],
                 scales: {y: {min: 0, max: 6}},
                 tooltip: {
-                    render: (data) => {
-                        const appendix = `<div>${y13.plugins.labels
-                            .getPointLabels()
-                            .map((x) => {
-                                return `<div style="background-color:${x.band.color}">${x.label}</div>`;
-                            })
-                            .join('<br>')}</div>`;
-                        return `${data.defaultRender(data)}<br>${appendix}`;
-                    },
+                    render: renderTooltipWithSeriesLabels,
                 },
                 plugins: {
                     labels: YagrLabelsPlugin({
@@ -687,7 +672,7 @@
                                         yagr.uplot.over.appendChild(svg);
                                         return () => {
                                             svg.remove();
-                                        }
+                                        };
                                     }
                                 }
                             }

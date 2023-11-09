@@ -35,12 +35,7 @@ export function renderAxisLabel({
     const over = yagr.root.querySelector('.u-over') as HTMLElement;
 
     if (render) {
-        const res = render(yagr, x, y, label);
-        const clear = Array.isArray(res) ? res[0] : res;
-
-        return () => {
-            clear?.();
-        };
+        return render(yagr, x, y, label);
     }
 
     const div = html('div', {
@@ -122,21 +117,19 @@ export function drawLabelOnPoint(
         return;
     }
 
-    if (labelOptions.render) {
-        const res = labelOptions.render(yagr, serieIdx, xIdx, scaleKey, labelOptions);
-        const [clear, label] = Array.isArray(res) ? res : [res, ''];
-
-        clear && onDraw && onDraw(clear, label, serieIdx);
-        return;
-    }
-
     const valX = xAxisFormatter(x);
     const valY = selfAxisFormatter(y);
-
     const label =
         typeof labelOptions.label === 'function'
             ? labelOptions.label(x, y)
             : labelOptions.label || `(${valX}, ${valY})`;
+
+    if (labelOptions.render) {
+        const clear = labelOptions.render(yagr, serieIdx, xIdx, scaleKey, labelOptions);
+
+        clear && onDraw && onDraw(clear, label ?? '', serieIdx);
+        return;
+    }
 
     if (!label || isNil(y)) {
         return;

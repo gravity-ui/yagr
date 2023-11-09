@@ -14,7 +14,6 @@ declare module '../../types' {
 }
 
 type PerScale<T> = {[scale: string]: T};
-type RenderResult = [clear: Clear | undefined | null, label: string] | (Clear | undefined | null);
 
 export interface CommonLabel {
     show?: boolean;
@@ -26,16 +25,16 @@ export interface CommonLabel {
 
 export interface PointLabel extends CommonLabel {
     label: (x: number, y: number | null | undefined) => string | undefined | null;
-    render?: (yagr: Yagr, seriesIdx: number, xIdx: number, scale: string, label: PointLabel) => RenderResult;
+    render?: (yagr: Yagr, seriesIdx: number, xIdx: number, scale: string, label: PointLabel) => Clear;
 }
 export interface PlotLabel extends CommonLabel {
     label: (band: PlotLineConfig) => string | undefined | null;
-    render?: (yagr: Yagr, plotLine: PlotLineConfig, x: number, y: number, label: PlotLabel) => RenderResult;
+    render?: (yagr: Yagr, plotLine: PlotLineConfig, x: number, y: number, label: PlotLabel) => Clear;
 }
 export interface AxisLabel extends CommonLabel {
     value: number;
     label: (a: AxisLabel) => string | undefined | null;
-    render?: (yagr: Yagr, x: number, y: number, label: AxisLabel) => RenderResult;
+    render?: (yagr: Yagr, x: number, y: number, label: AxisLabel) => Clear;
 }
 
 export interface LabelsOptions {
