@@ -30,7 +30,9 @@
     "./labels": "./dist/plugins/labels/labels.js",
     "./aggregates": "./dist/plugins/aggregates/aggregates.js",
     "./weekends": "./dist/plugins/weekends/weekends.js",
-    "./react": "./dist/react.js"
+    "./react": "./dist/react.js",
+    "./tooltip/*": "./dist/YagrCore/plugins/tooltip/*.js",
+    "./dist/*": "./dist/*"
   },
   "typesVersions": {
     "*": {
