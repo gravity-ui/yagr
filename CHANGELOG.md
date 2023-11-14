@@ -1,5 +1,12 @@
 ### master
 
+## [3.11.1](https://github.com/gravity-ui/yagr/compare/v3.11.0...v3.11.1) (2023-11-08)
+
+
+### Bug Fixes
+
+* fixed tooltip render on pin with empty data ([#176](https://github.com/gravity-ui/yagr/issues/176)) ([52a0847](https://github.com/gravity-ui/yagr/commit/52a0847e8ff4a653ab34194c54af5a24870a6193))
+
 ## [3.11.0](https://github.com/gravity-ui/yagr/compare/v3.10.6...v3.11.0) (2023-10-23)
 
 
