@@ -14,6 +14,8 @@ declare module '../../types' {
 }
 
 type PerScale<T> = {[scale: string]: T};
+type PerSeries<T> = {[series: string]: T};
+type PerAxis<T> = {[axis: string]: T};
 
 export interface CommonLabel {
     show?: boolean;
@@ -39,15 +41,15 @@ export interface AxisLabel extends CommonLabel {
 
 export interface LabelsOptions {
     series?: {
-        cursor?: PerScale<PointLabel>;
-        focus?: PerScale<PointLabel>;
-        draw?: PerScale<PointLabel>;
+        cursor?: PerSeries<PointLabel>;
+        focus?: PerSeries<PointLabel>;
+        draw?: PerSeries<PointLabel>;
     };
     scales?: {
         cursor?: PerScale<PointLabel>;
         draw?: PerScale<PointLabel>;
     };
-    axes?: Record<string, AxisLabel[]>;
+    axes?: PerAxis<AxisLabel[]>;
     plotLines?: {
         cursor?: PerScale<PlotLabel>;
         draw?: PerScale<PlotLabel>;
