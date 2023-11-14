@@ -23,7 +23,8 @@ export const findInRange = (section: TooltipSection, value: number, stickToRange
     const diffs: Array<number | null> = [];
     let result: number | null = null;
 
-    section.rows.forEach((row) => {
+    for (let r = section.rows.length - 1; r >= 0; r--) {
+        const row = section.rows[r];
         const {displayY: y, rowIdx} = row;
 
         let diff: number | null;
@@ -54,7 +55,7 @@ export const findInRange = (section: TooltipSection, value: number, stickToRange
         if ((diff !== null && currentMin === diff) || nextMin !== currentMin) {
             result = rowIdx;
         }
-    });
+    }
 
     if (result === null && stickToRanges) {
         return value >= max ? maxIdx : value <= min ? minIdx : null;
@@ -89,14 +90,12 @@ export const getSumByIdx = (seriesOptions: Series[], idx: number, scale: string)
  * @returns {number | null}
  */
 export const findSticky = (section: TooltipSection, value: number): number | null => {
-    const ranges = section.rows.map((x) => x.displayY);
-
     let nearestIndex;
     let nearestValue;
 
     let i = 0;
-    while (!nearestValue && i < ranges.length) {
-        const r = ranges[i];
+    while (!nearestValue && i < section.rows.length) {
+        const r = section.rows[i].displayY;
         if (r !== null) {
             nearestIndex = i;
             nearestValue = Math.abs(r - (value || 0));
@@ -108,8 +107,8 @@ export const findSticky = (section: TooltipSection, value: number): number | nul
         return null;
     }
 
-    for (i = nearestIndex + 1; i < ranges.length; i++) {
-        const v = ranges[i];
+    for (i = nearestIndex + 1; i < section.rows.length; i++) {
+        const v = section.rows[i].displayY;
 
         if (v === null) {
             continue;
