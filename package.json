@@ -31,8 +31,11 @@
     "./aggregates": "./dist/plugins/aggregates/aggregates.js",
     "./weekends": "./dist/plugins/weekends/weekends.js",
     "./react": "./dist/react.js",
-    "./tooltip/*": "./dist/YagrCore/plugins/tooltip/*.js",
-    "./dist/*": "./dist/*"
+    "./dist/*": "./dist/*",
+    "./dist/index.css": {
+      "import": "./dist/index.css",
+      "require": "./dist/index.css"
+    }
   },
   "typesVersions": {
     "*": {
@@ -50,6 +53,9 @@
       ],
       "react": [
         "./dist/react.d.ts"
+      ],
+      "types": [
+        "./dist/types.d.ts"
       ]
     }
   },
