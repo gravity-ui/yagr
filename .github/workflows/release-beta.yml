@@ -1,0 +1,48 @@
+# Build and publish -beta tag for @gravity-ui/yagr
+# Runs manually in Actions tabs in github
+# Runs on any branch except main
+
+name: Release beta version
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                type: string
+                required: false
+                description: 'If your build failed and the version is already exists you can set version of package manually, e.g. 3.0.0-beta.0. Use the prefix `beta` otherwise you will get error.'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - run: |
+                  if [ "${{ github.event.inputs.version }}" != "" ]; then
+                    if [[ "${{ github.event.inputs.version }}" != *"beta"* ]]; then
+                       echo "version set incorrectly! Check that is contains beta in it's name"
+                      exit 1
+                    fi
+                  fi
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 18
+                  registry-url: 'https://registry.npmjs.org'
+            - run: npm ci
+              shell: bash
+            - run: npm test
+              shell: bash
+            - name: Bump and commit version
+              run: |
+                  echo ${{ github.event.inputs.version }}
+
+                  if [ "${{ github.event.inputs.version }}" == "" ]; then
+                    npm version prerelease --preid=beta --git-tag-version=false
+                  else
+                    npm version ${{ github.event.inputs.version }} --git-tag-version=false
+                  fi
+            - name: Publish version
+              run: npm publish --tag beta --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GRAVITY_UI_BOT_NPM_TOKEN }}
+              shell: bash
