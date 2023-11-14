@@ -142,7 +142,12 @@
 
             const y1 = new Yagr(chart1, {
                 title: {
-                    text: 'By scale, constant, only over 4',
+                    text: 'By scale, draw, only over 4',
+                },
+                chart: {
+                    appearance: {
+                        theme: 'dark'
+                    }
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
@@ -162,7 +167,7 @@
                 plugins: {
                     labels: YagrLabelsPlugin({
                         scales: {
-                            constant: {y: {
+                            draw: {y: {
                                 label: (x, y) => y > 4 ? y.toString(26).slice(2, 5) : null,
                             }},
                         },
@@ -199,7 +204,7 @@
 
             const y3 = new Yagr(chart3, {
                 title: {
-                    text: 'By series, constant, over 4',
+                    text: 'By series, draw, over 4',
                 },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [
@@ -213,7 +218,7 @@
                 plugins: [
                     YagrLabelsPlugin({
                         series: {
-                            constant: {
+                            draw: {
                                 green: {
                                     label: (x, y) => y > 4 ? y.toFixed(1) : null
                                 }
@@ -308,7 +313,7 @@
                                     label: 'O'
                                 },
                             },
-                            constant: {
+                            draw: {
                                 red: {
                                     label: 'R'
                                 },
@@ -350,7 +355,7 @@
                     weekends: WeekendsPlugin(),
                     labels: YagrLabelsPlugin({
                         series: {
-                            constant: {
+                            draw: {
                                 red: {
                                     show: false,
                                 },
@@ -406,7 +411,7 @@
                 plugins: {
                     labels: YagrLabelsPlugin({
                         plotLines: {
-                            constant: {
+                            draw: {
                                 x: {},
                                 y: {
                                     show: false
@@ -608,7 +613,7 @@
                 plugins: {
                     labels: YagrLabelsPlugin({
                         series: {
-                            constant: {
+                            draw: {
                                 mySeries: {
                                     render: (yagr, sIdx, xIdx, scale) => {
                                         const x = yagr.uplot.valToPos(yagr.uplot.data[0][xIdx], 'x');
@@ -656,7 +661,7 @@
                 plugins: {
                     labels: YagrLabelsPlugin({
                         series: {
-                            constant: {
+                            draw: {
                                 mySeries: {
                                     render: (yagr, sIdx, xIdx, scale) => {
                                         const yValue = yagr.uplot.series[sIdx].data[xIdx];
