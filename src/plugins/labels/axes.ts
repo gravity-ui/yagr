@@ -3,7 +3,7 @@ import type Yagr from '../../index';
 
 import {AxisLabel, Clear, LabelsOptions} from './types';
 import {renderAxisLabel} from './utils';
-import {isNil} from 'src/YagrCore/utils/common';
+import {isNil} from '../../YagrCore/utils/common';
 
 export function axisDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, options: LabelsOptions) {
     let pointsClears: Clear[] = [];
