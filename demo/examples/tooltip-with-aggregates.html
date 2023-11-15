@@ -51,7 +51,7 @@
                     select: {zoom: false},
                     series: {type: 'area'},
                 },
-                plugins: {refs: YagrAggregates({})},
+                plugins: {aggregates: YagrAggregates({})},
                 axes: {
                     y: {precision: 0},
                 },
@@ -63,7 +63,7 @@
             });
 
             setTimeout(() => {
-                log(`refs: ${JSON.stringify(y1.plugins.refs.getRefs())}\n`);
+                log(`aggregates: ${JSON.stringify(y1.plugins.aggregates.get())}\n`);
             }, 20);
 
             function log(str) {
@@ -91,7 +91,7 @@
                         rng[1] = range[0];
                     }
 
-                    refs = y1.plugins.refs.getRefs(rng[0].idx, rng[1].idx);
+                    refs = y1.plugins.aggregates.get(rng[0].idx, rng[1].idx);
                     console.log('refs', refs);
                     appendix += `
             <table>
