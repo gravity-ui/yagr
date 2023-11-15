@@ -2,7 +2,7 @@
     <head>
         <title>Yagr</title>
         <script src="../../dist/yagr.iife.js"></script>
-        <script src="../../dist//plugins//dataRefs/dataRefs.iife.js"></script>
+        <script src="../../dist/plugins/aggregates/aggregates.iife.js"></script>
         <link rel="stylesheet" href="../../dist/index.css" />
         <style>
             .container {
@@ -51,7 +51,7 @@
                     select: {zoom: false},
                     series: {type: 'area'},
                 },
-                plugins: {refs: YagrDataRefs({})},
+                plugins: {refs: YagrAggregates({})},
                 axes: {
                     y: {precision: 0},
                 },

@@ -15,6 +15,7 @@ export const getId = () => (x: number) => String(x);
 
 export function renderAxisLabel({
     yagr,
+    scaleKey,
     x,
     y,
     className = '',
@@ -24,6 +25,7 @@ export function renderAxisLabel({
     label,
 }: {
     yagr: Yagr;
+    scaleKey: string;
     x: number;
     y: number;
     label: AxisLabel;
@@ -38,15 +40,34 @@ export function renderAxisLabel({
         return render(yagr, x, y, label);
     }
 
-    const div = html('div', {
-        class: `yagr-label_point ${className}`,
-        style: {
-            top: px(y),
-            left: px(x),
+    const labelValue = label.label ? (typeof label.label === 'function' ? label.label(label) : label.label) : '';
+
+    const div = html(
+        'div',
+        {
+            class: `yagr-label ${className}`,
+            style: {
+                visibility: 'hidden',
+            },
         },
-    });
+        labelValue ?? label.value.toString(),
+    );
 
     over.append(div);
+
+    if (scaleKey === 'x') {
+        div.style.top = px(y - div.clientHeight / 2);
+        div.style.left = px(x - div.clientWidth / 2);
+    } else {
+        if (yagr.config.axes[scaleKey]?.side === 'right') {
+            div.style.left = px(x - div.clientWidth / 2);
+        } else {
+            div.style.left = px(x);
+        }
+        div.style.top = px(y - div.clientHeight / 2);
+    }
+
+    div.style.visibility = 'visible';
 
     onRender && onRender(div);
 

@@ -21,6 +21,8 @@
     border-radius: 4px;
     padding: 2px 4px;
 
+    pointer-events: none;
+
     font-size: var(--yagr-label-font-size);
     color: var(--yagr-label-color);
     background: var(--yagr-label-background);
@@ -32,13 +34,4 @@
     &._top {
         transform: translateY(-40%);
     }
-}
-
-.yagr .yagr-label_point {
-    width: 8px;
-    height: 8px;
-    background-color: red;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
 }

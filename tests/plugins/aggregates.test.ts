@@ -1,7 +1,7 @@
 import Yagr from '../../src/YagrCore';
-import DataRefs from '../../src/plugins/aggregates/aggregates';
+import Aggregates from '../../src/plugins/aggregates/aggregates';
 
-describe('DataRefs plugin', () => {
+describe('Aggregates plugin', () => {
     describe('plain data', () => {
         const y = new Yagr(window.document.createElement('div'), {
             timeline: [1, 2, 3, 4],
@@ -11,7 +11,7 @@ describe('DataRefs plugin', () => {
                 {data: [5, 6, 7, 8], scale: 'r', id: 'three'},
             ],
             plugins: {
-                aggr: DataRefs({}),
+                aggr: Aggregates({}),
             },
         });
 
@@ -107,7 +107,7 @@ describe('DataRefs plugin', () => {
                 {data: [3, 3, 3, 3], scale: 'y', id: 'two'},
             ],
             plugins: {
-                aggr: DataRefs({}),
+                aggr: Aggregates({}),
             },
         });
 
@@ -153,7 +153,7 @@ describe('DataRefs plugin', () => {
                 {data: [null, null, null, null], scale: 'y', id: 'three'},
             ],
             plugins: {
-                aggr: DataRefs({}),
+                aggr: Aggregates({}),
             },
         });
 
@@ -204,7 +204,7 @@ describe('DataRefs plugin', () => {
                 },
             },
             plugins: {
-                aggr: DataRefs({}),
+                aggr: Aggregates({}),
             },
         });
 

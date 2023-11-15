@@ -25,13 +25,18 @@ export function axisDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, optio
                     x = u.valToPos(opt.value, 'x');
                     y = u.valToPos(0, 'y');
                 } else {
-                    x = u.valToPos(0, 'x');
+                    if (yagr.config.axes[scaleKey]?.side === 'right') {
+                        x = u.valToPos(u.data[0][u.data[0].length - 1], 'x');
+                    } else {
+                        x = u.valToPos(u.data[0][0], 'x');
+                    }
                     y = u.valToPos(opt.value, 'y');
                 }
 
                 pointsClears.push(
                     renderAxisLabel({
                         yagr,
+                        scaleKey,
                         x,
                         y,
                         render: opt.render,
@@ -55,7 +60,7 @@ export function axisDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, optio
         getAxisLabels() {
             return options.axes || {};
         },
-        getCurrentAxisLabels(proximity: number) {
+        getCurrentAxisLabels(proximity: {x: number; y: number}) {
             const cursor = yagr.uplot.cursor;
 
             if (!cursor) {
@@ -81,14 +86,14 @@ export function axisDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, optio
                     if (scaleKey === 'x') {
                         x = yagr.uplot.posToVal(left, 'x');
 
-                        if (Math.abs(x - opt.value) < proximity) {
+                        if (Math.abs(x - opt.value) < proximity.x) {
                             labels[scaleKey] = labels[scaleKey] || [];
                             labels[scaleKey].push(opt);
                         }
                     } else {
                         y = yagr.uplot.posToVal(top, 'y');
 
-                        if (Math.abs(y - opt.value) < proximity) {
+                        if (Math.abs(y - opt.value) < proximity.y) {
                             labels[scaleKey] = labels[scaleKey] || [];
                             labels[scaleKey].push(opt);
                         }

@@ -50,8 +50,10 @@ items:
                   href: ./plugins/tooltip.md
                 - name: Legend
                   href: ./plugins/legend.md
-                - name: DataRefs
-                  href: ./plugins/datarefs.md
+                - name: Aggregates
+                  href: ./plugins/aggregates.md
+                - name: Labels
+                  href: ./plugins/labels.md
 
     - name: Examples
       items:

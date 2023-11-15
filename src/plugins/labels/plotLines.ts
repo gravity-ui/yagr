@@ -24,7 +24,10 @@ export function plotLinesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, 
         clears: Clear[],
         predicate?: (pl: PlotLineConfig) => boolean,
     ) {
-        const bands = [];
+        const bands: {
+            bands: PlotLineConfig[];
+            labelOptions: PlotLabel;
+        }[] = [];
 
         for (const [scaleName, labelOptions] of Object.entries(psOptions || {})) {
             const foundBands = (yagr.plugins.plotLines?.get() || []).filter((p) => {
@@ -59,7 +62,7 @@ export function plotLinesDrawBasedLabels(yagr: Yagr, hooks: uPlot.Hooks.Arrays, 
                         : labelOptions.label || band.label;
 
                 if (labelOptions.render) {
-                    const [clear] = labelOptions.render(yagr, band, xP, yP, labelOptions);
+                    const clear = labelOptions.render(yagr, band, xP, yP, labelOptions);
                     clear && drawClears.push(clear);
                     return;
                 }

@@ -26,16 +26,16 @@ export interface CommonLabel {
 }
 
 export interface PointLabel extends CommonLabel {
-    label: (x: number, y: number | null | undefined) => string | undefined | null;
+    label?: string | ((x: number, y: number | null | undefined) => string | undefined | null);
     render?: (yagr: Yagr, seriesIdx: number, xIdx: number, scale: string, label: PointLabel) => Clear;
 }
 export interface PlotLabel extends CommonLabel {
-    label: (band: PlotLineConfig) => string | undefined | null;
+    label?: string | ((band: PlotLineConfig) => string | undefined | null);
     render?: (yagr: Yagr, plotLine: PlotLineConfig, x: number, y: number, label: PlotLabel) => Clear;
 }
 export interface AxisLabel extends CommonLabel {
     value: number;
-    label: (a: AxisLabel) => string | undefined | null;
+    label?: string | ((a: AxisLabel) => string | undefined | null);
     render?: (yagr: Yagr, x: number, y: number, label: AxisLabel) => Clear;
 }
 

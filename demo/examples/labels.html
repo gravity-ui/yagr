@@ -22,14 +22,16 @@
 
             .wow {
                 background-color: blue !important;
+                color: white !important;
             }
 
             .whee {
                 background-color: blueviolet;
-                width: 18px !important;
-                height: 18px !important;
+                width: 40px !important;
+                height: 20px !important;
                 animation: rainbow-bg 1.5s linear;
                 animation-iteration-count: infinite;
+                line-height: 20px;;
             }
 
             @keyframes rainbow-bg {
@@ -426,15 +428,18 @@
             });
 
             const y9 = new Yagr(chart9, {
+                title: {
+                    text: 'By axis, custom classnames',
+                },
                 timeline: new Array(20).fill().map((_, i) => i * 1000),
                 series: [{data: new Array(20).fill().map((_, i) => Math.random() * 6), color: 'red'}],
                 scales: {y: {min: 0, max: 6}},
                 tooltip: {
                     render: (data) => {
                         const appendidx = `<div>${Object.entries(y9.plugins.labels
-                            .getCurrentAxisLabels(1000))
+                            .getCurrentAxisLabels({x: 1000, y: 0.2}))
                             .map(([scale, d]) => {
-                                return d.map(({title}) => `<div>Scale = <b>${scale}</b>, title = ${title}</div>`).join('<br>')
+                                return d.map(({label}) => `<div>Scale = <b>${scale}</b>, title = ${label}</div>`).join('<br>')
                             })
                             .join('<br>')}</div>`;
                         return `${data.defaultRender(data)}<br>${appendidx}`;
@@ -446,20 +451,20 @@
                             x: [
                                 {
                                     value: 5000,
-                                    className: 'wow',
-                                    title: 'WOW',
+                                    className: 'wow',    
+                                    label: 'WOW',
                                 },
                                 {
                                     value: 10000,
                                     className: 'whee',
-                                    title: 'WHEE',
+                                    label: 'WHEE',
                                 },
                             ],
                             y: [
                                 {
                                     value: 4,
                                     className: 'wow',
-                                    title: 'Four',
+                                    label: 'WOW',
                                 },
                             ],
                         },
