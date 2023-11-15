@@ -142,7 +142,7 @@ export function drawLabelOnPoint(
     const valY = selfAxisFormatter(y);
     const label =
         typeof labelOptions.label === 'function'
-            ? labelOptions.label(x, y)
+            ? labelOptions.label(x, y, xIdx)
             : labelOptions.label || `(${valX}, ${valY})`;
 
     if (labelOptions.render) {

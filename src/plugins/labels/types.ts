@@ -26,7 +26,7 @@ export interface CommonLabel {
 }
 
 export interface PointLabel extends CommonLabel {
-    label?: string | ((x: number, y: number | null | undefined) => string | undefined | null);
+    label?: string | ((x: number, y: number | null | undefined, idx: number) => string | undefined | null);
     render?: (yagr: Yagr, seriesIdx: number, xIdx: number, scale: string, label: PointLabel) => Clear;
 }
 export interface PlotLabel extends CommonLabel {
