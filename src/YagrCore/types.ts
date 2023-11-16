@@ -4,6 +4,7 @@ import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
 import {LegendOptions} from './plugins/legend/legend';
 import {CursorOptions} from './plugins/cursor/cursor';
+import {PlotLineOptions} from './plugins/plotLines/plotLines';
 
 type AllSeriesOptions = ExtendedSeriesOptions &
     CommonSeriesOptions &
@@ -84,6 +85,9 @@ export interface YagrConfig {
 
     /** Scales options */
     scales: Record<string, Scale>;
+
+    /** PlotLines plugin options */
+    plotLines: PlotLineOptions;
 
     /** Raw series data and options */
     series: RawSerieData[];
@@ -346,6 +350,10 @@ interface CommonPlotLineConfig {
 
 export interface PBandConfig extends CommonPlotLineConfig {
     value: [from: number, to: number];
+    accent?: {
+        color: string;
+        space: number;
+    };
 }
 
 export interface PLineConfig extends CommonPlotLineConfig {

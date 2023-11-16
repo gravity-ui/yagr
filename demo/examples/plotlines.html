@@ -32,6 +32,11 @@
 
         <div class="grid">
             <div id="chart5" class="container left"></div>
+            <div id="chart6" class="container right"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart7" class="container" style="width: 100%"></div>
         </div>
 
         <script>
@@ -150,6 +155,174 @@
                             {
                                 value: [7, 10],
                                 color: 'rgba(130, 20, 244, 0.3)',
+                            },
+                        ],
+                    },
+                },
+            });
+
+            const y6 = new Yagr(chart6, {
+                title: {text: 'Accent'},
+                timeline: [5, 6, 7, 8],
+                series: [{data: [1000, 2000, 1000, 3000], color: 'red'}],
+                scales: {y: {min: 0, max: 5000}},
+                axes: {
+                    x: {
+                        plotLines: [
+                            {
+                                value: [0, 6],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                                accent: {
+                                    color: 'rgb(130, 20, 244)',
+                                    space: 10,
+                                }
+                            },
+                            {
+                                value: [7, 10],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                                accent: {
+                                    color: 'rgb(130, 20, 244)',
+                                    space: 10,
+                                }
+                            },
+                        ],
+                    },
+                    y: {
+                        plotLines: [
+                            {
+                                value: [1000, 2000],
+                                color: 'rgba(100, 120, 244, 0.3)',
+                                accent: {
+                                    color: 'rgba(100, 120, 244, 1)',
+                                    space: 10,
+                                }
+                            },
+                        ],
+                    },
+                },
+            });
+
+            const y7 = new Yagr(chart7, {
+                title: {text: 'Custom render'},
+                timeline: [5, 6, 7, 8],
+                series: [{data: [1000, 2000, 1000, 3000], color: 'red'}],
+                scales: {y: {min: 0, max: 5000}},
+                plotLines: {
+                    render: (u, plotLineConfig) => {
+                        const ctx = u.ctx;
+                        const timeline = y7.config.timeline
+                        const {height, top, width, left} = u.bbox;
+                        ctx.save();
+                        ctx.fillStyle = y7.utils.colors.parse(plotLineConfig.color);
+
+                        const {scale, value, accent} = plotLineConfig;
+
+                        if (Array.isArray(value)) {
+                            const [fromValue, toValue] = value.map((val) => {
+                                if (Math.abs(val) !== Infinity) {
+                                    if (scale === 'x') {
+                                        if (val < timeline[0]) {
+                                            return timeline[0];
+                                        }
+
+                                        if (val > timeline[timeline.length - 1]) {
+                                            return timeline[timeline.length - 1];
+                                        }
+                                    } else {
+                                        const scaleCfg = u.scales[scale];
+                                        if (scaleCfg.min !== undefined && val < scaleCfg.min) {
+                                            return scaleCfg.min;
+                                        }
+
+                                        if (scaleCfg.max !== undefined && val > scaleCfg.max) {
+                                            return scaleCfg.max;
+                                        }
+                                    }
+
+                                    return val;
+                                }
+
+                                const pos =
+                                    val > 0
+                                        ? scale === 'x'
+                                            ? u.width
+                                            : 0
+                                        : scale === 'x'
+                                        ? 0
+                                        : u.height;
+
+                                return u.posToVal(pos, scale);
+                            });
+
+                            const from = u.valToPos(fromValue, scale, true);
+                            const to = u.valToPos(toValue, scale, true);
+
+                            if (scale === 'x') {
+                                ctx.fillRect(from, top, to - from, height);
+                                accent && (ctx.fillStyle = accent.color);
+                                accent && (ctx.fillRect(from, top - accent.space, accent.width, accent.space));
+                            } else {
+                                ctx.fillRect(left, from, width, to - from);
+                                accent && (ctx.fillStyle = accent.color);
+                                accent && (ctx.fillRect(width + left, from, accent.space, accent.height));
+                            }
+                        } else {
+                            const from = u.valToPos(value, scale, true);
+                            const pConf = plotLineConfig;
+
+                            ctx.beginPath();
+                            ctx.lineWidth = pConf.width || window.devicePixelRatio;
+                            ctx.strokeStyle = pConf.color || '#000';
+                            pConf.dash && ctx.setLineDash(pConf.dash);
+
+                            if (scale === 'x') {
+                                /** Workaround to ensure that plot line will not be drawn over axes */
+                                const last = u.data[0][u.data[0].length - 1];
+                                const lastValue = u.valToPos(last, scale, true);
+                                if (from - lastValue > 0) {
+                                    return;
+                                }
+
+                                ctx.moveTo(from, top);
+
+                                ctx.lineTo(from, height + top);
+                                ctx.closePath();
+                                ctx.stroke();
+                                accent && (ctx.fillStyle = accent.color);
+                                accent && (ctx.fillRect(from - (pConf.width || window.devicePixelRatio), top - accent.space, accent.width, accent.space));
+                            } else {
+                                ctx.moveTo(left, from);
+                                ctx.lineTo(width + left, from);
+                                ctx.closePath();
+                                ctx.stroke();
+                                accent && (ctx.fillStyle = accent.color);
+                                accent && (ctx.fillRect(width + left, from, accent.space, accent.height));
+                            }
+
+                        }
+                        ctx.restore();
+                    }
+                },
+                axes: {
+                    x: {
+                        plotLines: [
+                            {
+                                value: [0, 6],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                                accent: {
+                                    color: 'rgb(130, 20, 244)',
+                                    width: 10,
+                                    space: 10
+                                }
+                            },
+                            {
+                                value: [7, 7.02],
+                                color: 'rgba(130, 20, 244, 0.3)',
+                                accent: {
+                                    color: 'rgb(130, 20, 244)',
+                                    width: 10,
+                                    space: 10
+                                }
                             },
                         ],
                     },

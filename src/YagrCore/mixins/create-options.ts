@@ -20,6 +20,7 @@ import {configureScales} from '../utils/scales';
 import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
 import {DrawOrderKey} from '../utils/types';
+import plotLinesPlugin from '../plugins/plotLines/plotLines';
 
 function setIfNotSet(hooks: uPlot.Hooks.Arrays[keyof uPlot.Hooks.Arrays], fn: (u: uPlot) => void) {
     for (const hook of hooks || []) {
@@ -108,7 +109,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         if (reOpt) {
             this.plugins.plotLines && plugins.push(this.plugins.plotLines.uplot);
         } else {
-            const plotLinesPluginInstance = this.initPlotLinesPlugin(config);
+            const plotLinesPluginInstance = plotLinesPlugin(this.config.plotLines || {})(this);
             this.plugins.plotLines = plotLinesPluginInstance;
             plugins.push(plotLinesPluginInstance.uplot);
         }
