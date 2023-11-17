@@ -72,7 +72,10 @@ export default React.forwardRef(function YagrReact(
 
     React.useEffect(() => {
         initChart();
-        return () => chart.current?.dispose();
+        return () => {
+            chart.current?.dispose();
+            chart.current = undefined;
+        };
     }, []);
 
     const onClick = React.useCallback(
