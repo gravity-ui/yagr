@@ -1,5 +1,12 @@
 ### master
 
+## [3.11.2](https://github.com/gravity-ui/yagr/compare/v3.11.1...v3.11.2) (2023-11-17)
+
+
+### Bug Fixes
+
+* fixed react component to drop ref on disposing ([#179](https://github.com/gravity-ui/yagr/issues/179)) ([c419cb9](https://github.com/gravity-ui/yagr/commit/c419cb9119c5cb08057bc02973700ce9acb167e6))
+
 ## [3.11.1](https://github.com/gravity-ui/yagr/compare/v3.11.0...v3.11.1) (2023-11-08)
 
 
