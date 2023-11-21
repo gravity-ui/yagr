@@ -92,10 +92,22 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 this.transformSeries();
             })
             .inStage('uplot', () => {
-                // uplot may be undefined if chart is not rendered yet, but got update
-                this.uplot?.destroy();
+                let left: number | undefined;
+                let top: number | undefined;
+
+                if (this.uplot) {
+                    const cursor = this.uplot.cursor;
+                    left = cursor.left;
+                    top = cursor.top;
+                    // uplot may be undefined if chart is not rendered yet, but got update
+                    this.uplot.destroy();
+                }
+
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
                 this.plugins.legend?.redraw();
+                if (left && top && left > 0 && top > 0) {
+                    this.uplot.setCursor({left, top});
+                }
             })
             .inStage('listen');
     }
