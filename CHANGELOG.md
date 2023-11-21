@@ -1,5 +1,12 @@
 ### master
 
+## [3.11.3](https://github.com/gravity-ui/yagr/compare/v3.11.2...v3.11.3) (2023-11-21)
+
+
+### Bug Fixes
+
+* persist cursor position on full update ([#182](https://github.com/gravity-ui/yagr/issues/182)) ([939e29b](https://github.com/gravity-ui/yagr/commit/939e29bb4036657a297100b9899b52002131697e))
+
 ## [3.11.2](https://github.com/gravity-ui/yagr/compare/v3.11.1...v3.11.2) (2023-11-17)
 
 
