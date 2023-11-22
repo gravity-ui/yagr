@@ -108,6 +108,11 @@ export class BatchMixin<T extends MinimalValidConfig> {
                 if (left && top && left > 0 && top > 0) {
                     this.uplot.setCursor({left, top});
                 }
+
+                // by default uPlot subsribes self to cursor, if we don't need it, we should unsubscribe manually
+                if (!this.state.subscribed) {
+                    this.unsubscribe();
+                }
             })
             .inStage('listen');
     }
