@@ -1,5 +1,12 @@
 ### master
 
+## [3.11.4](https://github.com/gravity-ui/yagr/compare/v3.11.3...v3.11.4) (2023-11-22)
+
+
+### Bug Fixes
+
+* persist subsribe state on full update ([#184](https://github.com/gravity-ui/yagr/issues/184)) ([b0721d9](https://github.com/gravity-ui/yagr/commit/b0721d92e82dec187afa0f7a918176d4a9e20825))
+
 ## [3.11.3](https://github.com/gravity-ui/yagr/compare/v3.11.2...v3.11.3) (2023-11-21)
 
 
