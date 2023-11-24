@@ -3,9 +3,9 @@ import UPlot, {Options as UPlotOptions, AlignedData, Series, SyncPubSub} from 'u
 import LegendPlugin from './plugins/legend/legend';
 import {TooltipPlugin} from './plugins/tooltip/tooltip';
 import cursorPlugin from './plugins/cursor/cursor';
-import plotLinesPlugin, {PlotLinesPlugin} from './plugins/plotLines/plotLines';
+import {PlotLinesPlugin} from './plugins/plotLines/plotLines';
 
-import {YagrConfig, PlotLineConfig, MinimalValidConfig, InternalYargHooks} from './types';
+import {YagrConfig, MinimalValidConfig, InternalYargHooks} from './types';
 
 import {debounce, genId, px} from './utils/common';
 import ColorParser from './utils/colors';
@@ -251,21 +251,6 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     unsubscribe() {
         this.utils.sync?.unsub(this.uplot);
         this.state.subscribed = false;
-    }
-
-    protected initPlotLinesPlugin(config: YagrConfig): ReturnType<PlotLinesPlugin> {
-        const plotLines: PlotLineConfig[] = [];
-
-        /** Collecting plot lines from config axes for plotLines plugin */
-        Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-            if (axisConfig.plotLines) {
-                axisConfig.plotLines.forEach((plotLine) => {
-                    plotLines.push({...plotLine, scale});
-                });
-            }
-        });
-
-        return plotLinesPlugin(this, plotLines);
     }
 
     protected init = () => {
