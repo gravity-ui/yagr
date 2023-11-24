@@ -4,7 +4,7 @@ import {DEFAULT_X_SCALE} from '../../YagrCore/defaults';
 import type Yagr from '../../YagrCore/index';
 import {countNumbers, getLast, integrate, safeMax, safeMin, safeSum} from './utils';
 
-export type DataRefs = {
+export type Aggregates = {
     min: number | null;
     max: number | null;
     sum: number | null;
@@ -13,31 +13,31 @@ export type DataRefs = {
     integral: number | null;
     last: number | null;
 };
-export type DataRefsPerScale = Record<string, DataRefs>;
-export type DataRefsPerSeries = Record<
+export type AggregatesPerScale = Record<string, Aggregates>;
+export type AggregatesPerSeries = Record<
     string,
     {
-        series: Record<string, DataRefs>;
-        total: DataRefs;
+        series: Record<string, Aggregates>;
+        total: Aggregates;
     }
 >;
 
-export type DataRefsPluginOptions = {
-    /** Should calc ref points on ready event (true by default) */
+export type AggregatesPluginOptions = {
+    /** Should calc aggregates on ready event (true by default) */
     calcOnReady?: boolean;
 };
 
-const DataRef = (opst: DataRefsPluginOptions) => {
+const DataRef = (opst: AggregatesPluginOptions) => {
     const plugin: YagrPlugin<{
-        getRefs: (from?: number, to?: number) => DataRefsPerScale | DataRefsPerSeries;
-        calcRefs: (from: number, to: number, id: string) => DataRefs;
+        get: (from?: number, to?: number) => AggregatesPerScale | AggregatesPerSeries;
+        calc: (from: number, to: number, id: string) => Aggregates;
     }> = (yagr: Yagr) => {
-        const refs: DataRefsPerScale = {};
+        const aggrs: AggregatesPerScale = {};
 
         const pluginMethods = {
-            getRefs: (fromIdx?: number, toIdx?: number) => {
+            get: (fromIdx?: number, toIdx?: number) => {
                 if (fromIdx === undefined && toIdx === undefined) {
-                    return refs;
+                    return aggrs;
                 }
 
                 if (fromIdx === undefined) {
@@ -48,7 +48,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                     toIdx = yagr.uplot.data[0].length - 1;
                 }
 
-                const result: DataRefsPerSeries = {};
+                const result: AggregatesPerSeries = {};
 
                 yagr.uplot.series.forEach(({scale, id}) => {
                     if (scale === DEFAULT_X_SCALE || !scale) {
@@ -56,11 +56,11 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                     }
                     result[scale] = result[scale] || {};
                     result[scale].series = result[scale].series || {};
-                    result[scale].series[id] = pluginMethods.calcRefs(fromIdx as number, toIdx as number, id);
+                    result[scale].series[id] = pluginMethods.calc(fromIdx as number, toIdx as number, id);
                 });
 
                 Object.keys(result).forEach((scale) => {
-                    const total: DataRefs = {
+                    const total: Aggregates = {
                         min: safeMin(Object.values(result[scale].series).map(({min}) => min)),
                         max: safeMax(Object.values(result[scale].series).map(({max}) => max)),
                         sum: safeSum(Object.values(result[scale].series).map(({sum}) => sum)),
@@ -81,7 +81,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
 
                 return result;
             },
-            calcRefs: (fromIdx: number, toIdx: number, seriesId: string) => {
+            calc: (fromIdx: number, toIdx: number, seriesId: string) => {
                 const seriesIdx = yagr.state.y2uIdx[seriesId];
                 const timestamps = yagr.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
                 const values = yagr.uplot.series[seriesIdx].$c;
@@ -106,7 +106,7 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                       if (key === DEFAULT_X_SCALE) {
                                           return;
                                       }
-                                      refs[key] = {
+                                      aggrs[key] = {
                                           min: null,
                                           max: null,
                                           sum: null,
@@ -125,25 +125,25 @@ const DataRef = (opst: DataRefsPluginOptions) => {
                                           (v) => typeof v === 'number' && v !== null,
                                       ) as number[];
 
-                                      refs[scale].min = safeMin([...numericValues, refs[scale].min]);
-                                      refs[scale].max = safeMax([...numericValues, refs[scale].max]);
-                                      const sum = refs[scale].sum;
+                                      aggrs[scale].min = safeMin([...numericValues, aggrs[scale].min]);
+                                      aggrs[scale].max = safeMax([...numericValues, aggrs[scale].max]);
+                                      const sum = aggrs[scale].sum;
                                       const rowSum = safeSum(numericValues);
-                                      refs[scale].sum =
+                                      aggrs[scale].sum =
                                           sum === null ? safeSum(numericValues) : rowSum === null ? sum : sum + rowSum;
-                                      refs[scale].count += count;
-                                      const integral = refs[scale].integral;
+                                      aggrs[scale].count += count;
+                                      const integral = aggrs[scale].integral;
                                       const rowIntegral = integrate(
                                           u.data[0] as number[],
                                           $c as DataSeriesExtended,
                                           yagr.config.chart?.timeMultiplier,
                                       );
-                                      refs[scale].integral = integral === null ? rowIntegral : integral + rowIntegral;
+                                      aggrs[scale].integral = integral === null ? rowIntegral : integral + rowIntegral;
                                   });
 
-                                  Object.keys(refs).forEach((key) => {
-                                      const sum = refs[key].sum;
-                                      refs[key].avg = sum === null ? null : sum / refs[key].count;
+                                  Object.keys(aggrs).forEach((key) => {
+                                      const sum = aggrs[key].sum;
+                                      aggrs[key].avg = sum === null ? null : sum / aggrs[key].count;
                                   });
                               },
                           },
@@ -158,5 +158,5 @@ const DataRef = (opst: DataRefsPluginOptions) => {
 export default DataRef;
 
 if (typeof window !== 'undefined') {
-    Object.assign(window, {YagrDataRefs: DataRef});
+    Object.assign(window, {YagrAggregates: DataRef});
 }

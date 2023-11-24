@@ -4,7 +4,7 @@ Yagr exports default React wrapper. You can import it as:
 
 ```tsx
 import {YagrConfig} from '@gravity-ui/yagr';
-import YagrComponent from '@gravity-ui/yagr/dist/react';
+import YagrComponent from '@gravity-ui/yagr/react';
 
 function App({config}: {config: YagrConfig}) {
     return <YagrComponent config={config} />;
