@@ -1,5 +1,16 @@
 ### master
 
+## [4.0.0](https://github.com/gravity-ui/yagr/compare/v3.11.4...v4.0.0) (2023-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump version ([#187](https://github.com/gravity-ui/yagr/issues/187))
+
+### Features
+
+* bump version ([#187](https://github.com/gravity-ui/yagr/issues/187)) ([049b307](https://github.com/gravity-ui/yagr/commit/049b307e68684e371c36411ba5bee864bdf75799))
+
 ## [3.11.4](https://github.com/gravity-ui/yagr/compare/v3.11.3...v3.11.4) (2023-11-22)
 
 
