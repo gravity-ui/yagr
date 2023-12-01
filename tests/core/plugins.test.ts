@@ -3,7 +3,7 @@ import Yagr from '../../src/YagrCore';
 import Aggregates from '../../src/plugins/aggregates/aggregates';
 
 describe('yagr plugins', () => {
-    it('should be able to use dataRefs plugin', async () => {
+    it('should be able to use aggregates plugin', async () => {
         const cfg = {
             timeline: [1, 2, 3],
             series: [{data: [1, 2, 3]}],
