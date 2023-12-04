@@ -1,5 +1,12 @@
 ### master
 
+## [4.0.1](https://github.com/gravity-ui/yagr/compare/v4.0.0...v4.0.1) (2023-12-04)
+
+
+### Bug Fixes
+
+* fixed plotlines updates on uplot change ([#189](https://github.com/gravity-ui/yagr/issues/189)) ([ca268da](https://github.com/gravity-ui/yagr/commit/ca268da72f80560904dab0d8e6089b3ba84d7efb))
+
 ## [4.0.0](https://github.com/gravity-ui/yagr/compare/v3.11.4...v4.0.0) (2023-11-27)
 
 
