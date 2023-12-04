@@ -209,6 +209,7 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
             uplot: {
                 opts: () => {
                     const config = yagr.config;
+                    plotLines = [];
 
                     /** Collecting plot lines from config axes for plotLines plugin */
                     Object.entries(config.axes).forEach(([scale, axisConfig]) => {

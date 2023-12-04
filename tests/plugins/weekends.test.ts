@@ -14,30 +14,40 @@ describe('weekends plugin', () => {
     };
 
     it('should set plotline with label', () => {
-        const y = new Yagr(document.createElement('div'), {
-            ...cfg,
-            plugins: {
-                weekends: WeekendsPlugin(),
-            },
+        new Promise<Yagr>((resolve) => {
+            const yagr: Yagr = new Yagr(document.createElement('div'), {
+                ...cfg,
+                plugins: {
+                    weekends: WeekendsPlugin(),
+                },
+                hooks: {
+                    load: [() => resolve(yagr)],
+                },
+            });
+        }).then((y) => {
+            expect(y.plugins.plotLines?.get().length).toBe(2);
+            expect(y.plugins.plotLines?.get()[0].label).toBe('Weekend');
         });
-
-        expect(y.plugins.plotLines?.get().length).toBe(2);
-        expect(y.plugins.plotLines?.get()[0].label).toBe('Weekend');
     });
 
     it('should set plotline with custom label and color', () => {
-        const y = new Yagr(document.createElement('div'), {
-            ...cfg,
-            plugins: {
-                weekends: WeekendsPlugin({
-                    label: 'some',
-                    color: 'orange',
-                }),
-            },
+        new Promise<Yagr>((resolve) => {
+            const yagr: Yagr = new Yagr(document.createElement('div'), {
+                ...cfg,
+                plugins: {
+                    weekends: WeekendsPlugin({
+                        label: 'some',
+                        color: 'orange',
+                    }),
+                },
+                hooks: {
+                    load: [() => resolve(yagr)],
+                },
+            });
+        }).then((y) => {
+            expect(y.plugins.plotLines?.get().length).toBe(2);
+            expect(y.plugins.plotLines?.get()[0].label).toBe('some');
+            expect(y.plugins.plotLines?.get()[0].color).toBe('orange');
         });
-
-        expect(y.plugins.plotLines?.get().length).toBe(2);
-        expect(y.plugins.plotLines?.get()[0].label).toBe('some');
-        expect(y.plugins.plotLines?.get()[0].color).toBe('orange');
     });
 });
