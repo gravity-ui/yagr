@@ -2,12 +2,13 @@ import {AlignedData} from 'uplot';
 import Yagr from '../../index';
 import {ProcessingInterpolation} from 'src/types';
 
-type CustomTrackingFunctionOptions = {
+export type CustomTrackingFunctionOptions = {
     x: number;
     y: number;
     idx: number;
     scale: string;
     series: AlignedData;
+    serieIndicies: number[];
     interpolation?: ProcessingInterpolation;
 };
 

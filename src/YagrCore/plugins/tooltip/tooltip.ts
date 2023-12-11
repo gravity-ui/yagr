@@ -417,6 +417,7 @@ class YagrTooltip {
                         idx,
                         scale,
                         series: this.yagr.series,
+                        serieIndicies,
                         interpolation: this.interpolation,
                     });
                 }
