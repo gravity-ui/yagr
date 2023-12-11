@@ -319,7 +319,7 @@ class YagrTooltip {
             const serie = u.series[i];
 
             if (!serie.show) {
-                i += 1;
+                i -= 1;
                 continue;
             }
 
