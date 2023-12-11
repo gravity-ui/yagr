@@ -1,5 +1,12 @@
 ### master
 
+## [4.0.3](https://github.com/gravity-ui/yagr/compare/v4.0.2...v4.0.3) (2023-12-11)
+
+
+### Bug Fixes
+
+* added option serieIndicies to CustomTrackingFunctionOptions ([#193](https://github.com/gravity-ui/yagr/issues/193)) ([79fcc3e](https://github.com/gravity-ui/yagr/commit/79fcc3e27594d6d45a07f11725584dca76a7bdcb))
+
 ## [4.0.2](https://github.com/gravity-ui/yagr/compare/v4.0.1...v4.0.2) (2023-12-11)
 
 
