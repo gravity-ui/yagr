@@ -1,5 +1,12 @@
 ### master
 
+## [4.0.2](https://github.com/gravity-ui/yagr/compare/v4.0.1...v4.0.2) (2023-12-11)
+
+
+### Bug Fixes
+
+* fixed inifinite loop in series traverse in tooltip's setCursor ([#191](https://github.com/gravity-ui/yagr/issues/191)) ([f7c0b2e](https://github.com/gravity-ui/yagr/commit/f7c0b2ef28392fd569cadc91e083ab2bd0e88413))
+
 ## [4.0.1](https://github.com/gravity-ui/yagr/compare/v4.0.0...v4.0.1) (2023-12-04)
 
 
