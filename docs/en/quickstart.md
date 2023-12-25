@@ -22,6 +22,10 @@ Let's see the config for a minimum valid chart:
 ```ts
 import Yagr from '@gravity-ui/yagr';
 
+// don't forget to import styles
+import '@gravity-ui/yagr/dist/index.css';
+
+
 const config = {
     timeline: [0, 1000, 2000],
     series: [
