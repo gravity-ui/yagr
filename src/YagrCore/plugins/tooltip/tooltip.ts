@@ -10,7 +10,7 @@ import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 
 import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
 
-import {findInRange, findDataIdx, findSticky, px, isNil} from '../../utils/common';
+import {findInRange, findDataIdx, findSticky, px, isNil, inBetween} from '../../utils/common';
 import {
     TooltipOptions,
     TooltipRow,
@@ -289,7 +289,8 @@ class YagrTooltip {
 
     render = (props: {left: number; top: number; idx: number}) => {
         const u = this.yagr.uplot;
-        const {left, top, idx} = props;
+        let {left, top} = props;
+        const {idx} = props;
         const {opts, state} = this;
 
         if (opts.show && typeof opts.show === 'function' && opts.show(this.yagr) === false) {
@@ -300,6 +301,9 @@ class YagrTooltip {
         if ((left < 0 || top < 0) && !state.pinned && this.isNotInDrag) {
             this.hide();
         }
+
+        top = inBetween(top, 0, u.bbox.top + u.bbox.height);
+        left = inBetween(left, 0, u.bbox.left + u.bbox.width);
 
         const {data} = u;
 
