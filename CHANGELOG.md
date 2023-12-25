@@ -1,5 +1,12 @@
 ### master
 
+## [4.0.4](https://github.com/gravity-ui/yagr/compare/v4.0.3...v4.0.4) (2023-12-25)
+
+
+### Bug Fixes
+
+* fixed tooltip positioning when synced with different scale ([#196](https://github.com/gravity-ui/yagr/issues/196)) ([100c472](https://github.com/gravity-ui/yagr/commit/100c472ee27e9c334a393e252d7cef7b46ac80d8))
+
 ## [4.0.3](https://github.com/gravity-ui/yagr/compare/v4.0.2...v4.0.3) (2023-12-11)
 
 
