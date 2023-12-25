@@ -464,3 +464,7 @@ export function asPlain<T>(t: T): T extends (...args: any[]) => any ? ReturnType
 export function isNil(v: unknown): v is null | undefined {
     return v === null || v === undefined;
 }
+
+export function inBetween(value: number, start: number, end: number) {
+    return value >= start && value <= end ? value : value < start ? start : end;
+}
