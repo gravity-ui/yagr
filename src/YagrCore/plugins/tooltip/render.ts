@@ -5,22 +5,31 @@ import {getOptionValue, escapeHTML} from './utils';
 function renderItems(rows: TooltipRow[], opts: TooltipRenderOptions['options'], scale: string) {
     const rowsMax = rows.slice(0, getOptionValue(opts.maxLines, scale));
 
-    return rowsMax
-        .map(({value, name = 'unnamed', color, active, transformed, seriesIdx}, i) => {
-            const val = `
+    return (
+        rowsMax
+            .map(({value, name = 'unnamed', color, active, transformed, seriesIdx}, i) => {
+                const val = `
 <span class="yagr-tooltip__val">${value}</span>
     ${typeof transformed === 'number' ? `<span class="yagr-tooltip__tf">${transformed.toFixed(2)}</span>` : ''}
 `;
-            return `
+                return `
 <div class="yagr-tooltip__item ${active ? '_active' : ''}" data-series="${seriesIdx}">
     ${opts.showIndicies ? `<span class="yagr-tooltip__idx">${rows.length - i}</span>` : ''}
     <span class="yagr-tooltip__mark" style="background-color: ${color}"></span>${escapeHTML(name)}&nbsp;&nbsp;${val}
 </div>`;
-        })
-        .join('') + (rows.length > rowsMax.length ? `<div class="yagr-tooltip__item _more">+${rows.length - rowsMax.length}</div>` : '');
+            })
+            .join('') +
+        (rows.length > rowsMax.length
+            ? `<div class="yagr-tooltip__item _more">+${rows.length - rowsMax.length}</div>`
+            : '')
+    );
 }
 
 export function renderTooltip(data: TooltipRenderOptions) {
+    if (data.scales.length === 0) {
+        return data.yagr.utils.i18n('nodata');
+    }
+
     const [allTitle, sectionTitle] = data.options.title
         ? typeof data.options.title === 'string'
             ? [data.options.title, false]

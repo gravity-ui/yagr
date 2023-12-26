@@ -6,6 +6,7 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
         scale: 'Шкала',
         series: 'Линия',
         weekend: 'Выходной',
+        nodata: 'Нет данных',
     },
     en: {
         'hide-all': 'Hide all',
@@ -14,6 +15,7 @@ const LOCALIZATIONS: Record<string, Record<string, string>> = {
         scale: 'Scale',
         series: 'Series',
         weekend: 'Weekend',
+        nodata: 'No data',
     },
 };
 
