@@ -158,6 +158,10 @@ export interface TooltipOptions {
      * - none  : do nothing
      */
     onUpdate?: 'reset' | 'none';
+    /**
+     * If true, tooltip will be shown even if there is no data in tooltip
+     */
+    showEmpty?: boolean;
 }
 
 export interface TooltipRow {

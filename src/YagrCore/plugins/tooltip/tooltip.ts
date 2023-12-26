@@ -66,6 +66,7 @@ const DEFAULT_TOOLTIP_OPTIONS = {
     xOffset: TOOLTIP_X_OFFSET,
     yOffset: TOOLTIP_Y_OFFSET,
     virtual: false,
+    showEmpty: false,
     onUpdate: 'reset',
 } as const;
 
@@ -439,7 +440,7 @@ class YagrTooltip {
 
         const hasOneRow = Object.values(sections).some(({rows}) => rows.length > 0);
 
-        if (hasOneRow) {
+        if (hasOneRow || opts.showEmpty) {
             this.onMouseEnter();
         } else {
             this.hide();
@@ -474,7 +475,7 @@ class YagrTooltip {
                 ({rows}) => rows.filter(({id}) => this.yagr.getSeriesById(id)?.show).length > 0,
             );
 
-            if (!hasDataNow) {
+            if (!hasDataNow && !opts.showEmpty) {
                 this.hide();
                 return;
             }
