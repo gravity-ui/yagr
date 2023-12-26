@@ -1,5 +1,12 @@
 ### master
 
+## [4.1.0](https://github.com/gravity-ui/yagr/compare/v4.0.4...v4.1.0) (2023-12-26)
+
+
+### Features
+
+* adding tooltip.showEmpty to allow show tooltip when there's no data ([#199](https://github.com/gravity-ui/yagr/issues/199)) ([83b66ee](https://github.com/gravity-ui/yagr/commit/83b66eefa0f538648c9d1dcd625a95dcce414e49))
+
 ## [4.0.4](https://github.com/gravity-ui/yagr/compare/v4.0.3...v4.0.4) (2023-12-25)
 
 
