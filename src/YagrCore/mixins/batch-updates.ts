@@ -1,6 +1,7 @@
 import type {MinimalValidConfig} from '../types';
 import type Yagr from '..';
 import UPlot from 'uplot';
+import LegendPlugin from '../plugins/legend/legend';
 
 export interface Batch {
     active: boolean;
@@ -83,28 +84,30 @@ export class BatchMixin<T extends MinimalValidConfig> {
      * @description Full update of chart. Used when config is changed totally.
      */
     protected fullUpdate(this: Yagr<T>) {
-        this.inStage('config', () => {
-            this._batch = {active: false, fns: []};
-            this.createUplotOptions(true);
-            this.options = this.config.editUplotOptions ? this.config.editUplotOptions(this.options) : this.options;
+        let left: number | undefined;
+        let top: number | undefined;
+
+        this.inStage('dispose', () => {
+            if (this.uplot) {
+                const cursor = this.uplot.cursor;
+                left = cursor.left;
+                top = cursor.top;
+                // uplot may be undefined if chart is not rendered yet, but got update
+                this.uplot.destroy();
+            }
+            this.plugins.legend?.destroy();
         })
+            .inStage('config', () => {
+                this.plugins.legend = new LegendPlugin();
+                this._batch = {active: false, fns: []};
+                this.createUplotOptions(true);
+                this.options = this.config.editUplotOptions ? this.config.editUplotOptions(this.options) : this.options;
+            })
             .inStage('processing', () => {
                 this.transformSeries();
             })
             .inStage('uplot', () => {
-                let left: number | undefined;
-                let top: number | undefined;
-
-                if (this.uplot) {
-                    const cursor = this.uplot.cursor;
-                    left = cursor.left;
-                    top = cursor.top;
-                    // uplot may be undefined if chart is not rendered yet, but got update
-                    this.uplot.destroy();
-                }
-
                 this.uplot = new UPlot(this.options, this.series, this.initRender);
-                this.plugins.legend?.redraw();
                 if (left && top && left > 0 && top > 0) {
                     this.uplot.setCursor({left, top});
                 }
