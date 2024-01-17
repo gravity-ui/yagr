@@ -16,3 +16,4 @@ if (typeof window !== 'undefined') {
 }
 
 export default Yagr;
+export {Pie} from './pie';

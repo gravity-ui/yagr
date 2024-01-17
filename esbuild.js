@@ -59,10 +59,12 @@ function build(entry, outfile, format, minify = false, plugins = []) {
 
 function buildMain() {
     /** Build SCSS */
-    const scss = buildFn({
-        entryPoints: ['./src/Yagr.scss'],
+    const css = buildFn({
+        entryPoints: [
+            './src/yagr.css'
+        ],
+        bundle: true,
         outfile: './dist/index.css',
-        plugins: [sassPlugin()],
     }).then((ctx) => {
         console.log('SCSS build finished');
 
@@ -89,7 +91,7 @@ function buildMain() {
     const cjs = build('./src/index.ts', './dist/yagr.cjs.js', 'cjs', false);
     const umd = build('./src/index.ts', './dist/yagr.umd.js', 'umd', true, [umdWrapper()]);
 
-    return [scss, esm, iife, cjs, umd].filter(Boolean);
+    return [css, esm, iife, cjs, umd].filter(Boolean);
 }
 
 function buildPlugin(name, css = false) {

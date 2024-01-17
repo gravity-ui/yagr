@@ -1,0 +1,113 @@
+.yagr-legend {
+    padding: 8px 24px 12px;
+    display: block;
+}
+
+.yagr-legend__top {
+    padding: 8px 24px 0;
+}
+
+.yagr-legend__container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.yagr-legend__items {
+    display: flex;
+    flex-flow: row wrap;
+    padding-left: 16px;
+}
+
+.yagr-legend__item {
+    cursor: pointer;
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 16px;
+
+    color: var(--yagr-legend-item);
+    font-weight: normal;
+    position: relative;
+    white-space: nowrap;
+
+    max-height: 14px;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.yagr-legend__item:last-child {
+    margin-right: 0;
+}
+
+.yagr-legend__item:hover {
+    color: var(--yagr-legend-item-hover);
+}
+
+.yagr-legend__item_hidden {
+    color: var(--yagr-legend-item-hidden);
+}
+
+.yagr-legend__item_hidden .yagr-legend__icon {
+    /* important required to override element style color; */
+    background-color: var(--yagr-legend-item-hidden) !important;
+}
+
+.yagr-legend__icon {
+    margin-right: 4px;
+    width: 12px;
+    display: inline-block;
+    position: relative;
+}
+
+.yagr-legend__icon_area, .yagr-legend__icon_column, .yagr-legend__icon_dots, .yagr-legend__icon_pie {
+    height: 12px;
+    border-radius: 50%;
+    top: 2px;
+}
+
+.yagr-legend__icon_line {
+    height: 3px;
+    top: -2px;
+}
+
+.yagr-legend__pagination {
+    padding-left: 14px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.yagr-legend__pagination-text {
+    user-select: none;
+    color: var(--yagr-legend-item-hover);
+    font-size: 12px;
+}
+
+.yagr-legend__icon-up {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 6px 12px;
+    border-color: transparent transparent #003399;
+    cursor: pointer;
+}
+
+.yagr-legend__icon-up_disabled {
+    cursor: initial;
+    border-color: transparent transparent #cccccc;
+}
+
+.yagr-legend__icon-down {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 12px 6px 0;
+    border-color: #003399 transparent transparent;
+    cursor: pointer;
+}
+
+.yagr-legend__icon-down_disabled {
+    cursor: initial;
+    border-color: #cccccc transparent transparent;
+}

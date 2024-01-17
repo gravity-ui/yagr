@@ -1,15 +1,15 @@
 .yagr {
     --yagr-label-font-size: 12px;
+}
 
-    &_theme_light {
-        --yagr-label-color: #333333;
-        --yagr-label-background: rgba(255, 255, 255, 0.8);
-    }
+.yagr_theme_light {
+    --yagr-label-color: #333333;
+    --yagr-label-background: rgba(255, 255, 255, 0.8);
+}
 
-    &_theme_dark {
-        --yagr-label-color: #ffffff;
-        --yagr-label-background: #48474f;
-    }
+.yagr_theme_dark {
+    --yagr-label-color: #ffffff;
+    --yagr-label-background: #48474f;
 }
 
 .yagr .yagr-label {
@@ -26,12 +26,12 @@
     font-size: var(--yagr-label-font-size);
     color: var(--yagr-label-color);
     background: var(--yagr-label-background);
+}
 
-    &._bottom {
-        transform: translateY(80%);
-    }
+.yagr-label._bottom {
+    transform: translateY(80%);
+}
 
-    &._top {
-        transform: translateY(-40%);
-    }
+.yagr-label._top {
+    transform: translateY(-40%);
 }

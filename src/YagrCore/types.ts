@@ -45,6 +45,7 @@ declare module 'uplot' {
     }
 
     interface Axis {
+        /** Axis formatting */
         getFormatter?: (range: number) => (value: number) => string;
     }
 }
