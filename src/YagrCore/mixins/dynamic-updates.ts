@@ -237,6 +237,10 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>,
         yagr.plugins.tooltip?.updateOptions(newConfig.tooltip);
     }
 
+    if (newConfig.legend && isChangedKey('legend')) {
+        batch.reinit = true;
+    }
+
     yagr.plugins.tooltip?.reset();
 
     batch.reopt = true;
