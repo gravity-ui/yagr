@@ -1,5 +1,12 @@
 ### master
 
+## [4.1.1](https://github.com/gravity-ui/yagr/compare/v4.1.0...v4.1.1) (2024-01-17)
+
+
+### Bug Fixes
+
+* fixed chart updatewhen legend changes ([700cfce](https://github.com/gravity-ui/yagr/commit/700cfceb01b2b30b8ee9a0cc00e2ffe2f4619d1c))
+
 ## [4.1.0](https://github.com/gravity-ui/yagr/compare/v4.0.4...v4.1.0) (2023-12-26)
 
 
