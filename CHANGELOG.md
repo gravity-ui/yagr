@@ -1,5 +1,12 @@
 ### master
 
+## [4.2.0](https://github.com/gravity-ui/yagr/compare/v4.1.1...v4.2.0) (2024-01-18)
+
+
+### Features
+
+* added 'dispose' stage and fixed legend discard when chart is updating ([#203](https://github.com/gravity-ui/yagr/issues/203)) ([990c965](https://github.com/gravity-ui/yagr/commit/990c9651a5e5499b0081a4e822956f7ce6748d8d))
+
 ## [4.1.1](https://github.com/gravity-ui/yagr/compare/v4.1.0...v4.1.1) (2024-01-17)
 
 
