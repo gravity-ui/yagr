@@ -138,6 +138,11 @@ function Perf() {
                 },
             ],
         },
+        legend: {
+            behaviour: 'extended',
+            position: 'bottom',
+            show: false,
+        },
     });
 
     const startPerf = React.useCallback(() => {
@@ -165,12 +170,23 @@ function Perf() {
         }));
     }, [config, setConfig]);
 
+    const toggleLegend = React.useCallback(() => {
+        setConfig((prev) => ({
+            ...prev,
+            legend: {
+                ...prev.legend,
+                show: !prev.legend.show,
+            }
+        }))
+    });
+
     return (
         <div className="container">
             <YagrComponent config={config} />
             <button onClick={startPerf}>Start</button>
             <button onClick={random}>Random</button>
             <button onClick={() => (hooktrace.innerHTML = '')}>Clear</button>
+            <button onClick={toggleLegend}>Turn legend {config.legend.show ? 'off' : 'on'}</button>
         </div>
     );
 }

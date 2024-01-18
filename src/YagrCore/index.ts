@@ -39,7 +39,7 @@ type CachedProps = {
 export interface YagrState {
     isEmptyDataSet: boolean;
     isMouseOver: boolean;
-    stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen';
+    stage: 'config' | 'processing' | 'uplot' | 'render' | 'listen' | 'dispose';
     inBatch?: boolean;
     y2uIdx: Record<string, number>;
     subscribed: boolean;
