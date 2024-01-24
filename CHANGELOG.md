@@ -1,5 +1,12 @@
 ### master
 
+## [4.2.1](https://github.com/gravity-ui/yagr/compare/v4.2.0...v4.2.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* fixed fully redrawing updates in .setSeries ([#205](https://github.com/gravity-ui/yagr/issues/205)) ([e86f2cd](https://github.com/gravity-ui/yagr/commit/e86f2cd935638ec015b2f45972fdf5f4c5cd00ae))
+
 ## [4.2.0](https://github.com/gravity-ui/yagr/compare/v4.1.1...v4.2.0) (2024-01-18)
 
 
