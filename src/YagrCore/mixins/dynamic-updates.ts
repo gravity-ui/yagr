@@ -375,42 +375,20 @@ function setSeriesImpl(
             this.config.timeline.splice(0, timeline.length);
         }
     } else {
-        /** If we're adding new series or removing */
-        if (
-            series.length !== this.config.series.length ||
-            series.some(({id, type}) => {
-                /** @TODO fixme (see Annotations.1) */
-                return type === 'dots' || this.config.series.find((s) => s.id !== id);
-            }) ||
-            this.config.chart.series?.type === 'dots'
-        ) {
-            batch.reinit = true;
-        }
-
-        this.config.series = series;
         this.config.timeline = timeline;
-        batch.fns.push(() => {
-            series.forEach((s, idx) => {
-                const uSeries = this.getSeriesById(s.id!);
-                if (!uSeries) {
-                    return;
-                }
-
-                overrideSeriesInUpdate(uSeries, configureSeries(this, s, idx));
-            });
-            this.plugins.cursor?.updatePoints();
-        });
-        batch.reopt = true;
-        shouldRecalcData = true;
+        this.config.series = series;
+        batch.reinit = true;
     }
 
-    this._batch.fns.push(() => this.plugins?.tooltip?.reset());
+    if (!batch.reinit) {
+        this._batch.fns.push(() => this.plugins?.tooltip?.reset());
 
-    if (shouldRecalcData || timeline.length) {
-        batch.recalc = true;
-        batch.fns.push(() => {
-            this.uplot.setData(this.series);
-        });
+        if (shouldRecalcData || timeline.length) {
+            batch.recalc = true;
+            batch.fns.push(() => {
+                this.uplot.setData(this.series);
+            });
+        }
     }
 }
 
