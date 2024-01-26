@@ -65,7 +65,7 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
                 u,
                 u.data[0][j] as number,
                 val as number,
-                pointsSize ?? 2,
+                pointsSize ?? (DEFAULT_POINT_SIZE / 2),
                 0,
                 color,
                 color,
