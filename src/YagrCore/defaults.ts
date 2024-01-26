@@ -11,7 +11,7 @@ export const DEFAULT_MAX_TICKS = 5;
 export const DEFAULT_Y_AXIS_OFFSET = 0.05;
 export const DEFAULT_SCALE_MIN_RANGE = 0.01;
 export const DEFAULT_LOGARITHMIC_MIN_SCALE_VALUE = 0.001;
-export const DEFAULT_POINT_SIZE = 4;
+export const DEFAULT_POINT_SIZE = DEFAULT_CANVAS_PIXEL_RATIO >= 2 ? 4 : 2;
 
 export const DEFAULT_SYNC_KEY = 'sync';
 export const DEFAULT_TITLE_FONT_SIZE = 14;
