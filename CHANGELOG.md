@@ -1,5 +1,12 @@
 ### master
 
+## [4.2.2](https://github.com/gravity-ui/yagr/compare/v4.2.1...v4.2.2) (2024-01-26)
+
+
+### Bug Fixes
+
+* fixed points rendering for devices with DPR &lt; 2 ([#207](https://github.com/gravity-ui/yagr/issues/207)) ([af61f6e](https://github.com/gravity-ui/yagr/commit/af61f6ed3f5a2be14d8fad73ea9b75c8b5c98b23))
+
 ## [4.2.1](https://github.com/gravity-ui/yagr/compare/v4.2.0...v4.2.1) (2024-01-24)
 
 
