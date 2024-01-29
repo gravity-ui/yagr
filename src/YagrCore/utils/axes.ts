@@ -4,7 +4,7 @@ import * as defaults from '../defaults';
 import type Yagr from '../../';
 import {YagrConfig, AxisOptions} from '../types';
 
-import {asFn, getUnitSuffix, isNil, toFixed} from './common';
+import {asFn, getUnitSuffix, isNil, px, toFixed} from './common';
 import {Axis as TypedAxis} from './types';
 
 const YAGR_AXIS_TO_UPLOT_AXIS = {
@@ -184,6 +184,14 @@ export function getRedrawOptionsForAxesUpdate(axes: YagrConfig['axes']) {
     return options;
 }
 
+
+function pxRatioFont(font: string) {
+	let fontSize, fontSizeCss;
+    // eslint-disable-next-line no-return-assign
+	font = font.replace(/(\d+)px/, (_, p1) => px((fontSize = Math.round((fontSizeCss = Number(p1)) * window.devicePixelRatio))));
+	return [font, fontSize, fontSizeCss];
+}
+
 export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
     const upd = getAxis(
         {
@@ -192,11 +200,26 @@ export function updateAxis(yagr: Yagr, uAxis: Axis, axisConfig: AxisOptions) {
         },
         yagr,
     );
-    upd.font = axisConfig.font || upd.font;
+
     upd.ticks = {...uAxis.ticks, ...upd.ticks};
     upd.grid = {...uAxis.grid, ...upd.grid};
     upd.border = {...uAxis.border, ...upd.border};
     upd.splits = upd.splits || uAxis.splits;
+
+    /**
+     * uPlot implicitly converts theese properties and mutate axis.font and axis.labelFont
+     * but doesn't cover it with typings.
+     * @see https://github.com/leeoniya/uPlot/blob/378faf6fab9b84d86fd25a5b4425dc44d486b64d/src/uPlot.js#L275
+     */
+    if (axisConfig.font && axisConfig.font !== uAxis.font?.[0]) {
+        //@ts-ignore 
+        upd.font = pxRatioFont(axisConfig.font);
+    }
+    if (axisConfig.labelFont && axisConfig.labelFont !== uAxis.labelFont?.[0]) {
+        //@ts-ignore
+        upd.labelFont = pxRatioFont(axisConfig.labelFont);
+    }
+
     Object.assign(uAxis, upd);
 
     yagr.plugins.plotLines?.update(axisConfig.plotLines, axisConfig.scale);
