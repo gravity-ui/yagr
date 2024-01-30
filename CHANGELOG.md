@@ -1,5 +1,12 @@
 ### master
 
+## [4.2.3](https://github.com/gravity-ui/yagr/compare/v4.2.2...v4.2.3) (2024-01-29)
+
+
+### Bug Fixes
+
+* fixed axes update ([#209](https://github.com/gravity-ui/yagr/issues/209)) ([6dafbb1](https://github.com/gravity-ui/yagr/commit/6dafbb17b712ad83240f055db44e84eeac1119e7))
+
 ## [4.2.2](https://github.com/gravity-ui/yagr/compare/v4.2.1...v4.2.2) (2024-01-26)
 
 
