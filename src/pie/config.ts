@@ -1,50 +1,38 @@
+import type {LegendOptions} from '../plugins/legend/legend-old';
 import {genId} from '../utils/id';
-import type {PieConfig} from './types';
+import type {PieConfig, PieHooks} from './types';
+import type {PieTooltipOptions} from './plugins/tooltip';
 
-export class Config {
-    _data?: PieConfig['data'];
-
-    private readonly cfg: PieConfig;
-
-    constructor(cfg: PieConfig) {
-        this.cfg = cfg;
-    }
-
-    get hooks() {
-        return this.cfg.hooks ?? {};
-    }
-
-    get legend() {
-        return {
-            show: false,
-            ...this.cfg.legend,
-        };
-    }
-
-    get chart() {
-        return {
-            ...this.cfg.chart,
+export function wrapPieConfig(cfg: PieConfig) {
+    return {
+        ...cfg,
+        chart: {
+            ...cfg.chart,
             appearance: {
-                ...this.cfg.chart?.appearance,
-                theme: this.cfg.chart?.appearance?.theme ?? 'light',
+                ...cfg.chart?.appearance,
+                theme: cfg.chart?.appearance?.theme ?? 'light',
             },
-            size: this.cfg.chart?.size ?? {
+            size: cfg.chart?.size ?? {
                 responsive: true,
                 debounce: 100,
             },
-        };
-    }
-
-    get data() {
-        this._data =
-            this._data ||
-            this.cfg.data.map((s, i) => {
-                s.name = s.name || 'Series ' + i;
-                s.id = s.id || genId();
-                s.type = 'pie';
-                s.show = s.show ?? true;
-                return s;
-            });
-        return this._data;
-    }
+        },
+        legend: {
+            show: false,
+            ...cfg.legend,
+        } as LegendOptions,
+        tooltip: {
+            show: true,
+            ...cfg.tooltip,
+        } as PieTooltipOptions,
+        hooks: (cfg.hooks ?? {}) as PieHooks,
+        data: cfg.data.map((s, i) => {
+            s.name = s.name || 'Item ' + i;
+            s.id = s.id || genId();
+            s.type = 'pie';
+            s.show = s.show ?? true;
+            s.index = i;
+            return s;
+        }),
+    };
 }

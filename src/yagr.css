@@ -1,5 +1,7 @@
 @import '../node_modules/uPlot/dist/uPlot.min.css';
+
 @import './plugins/legend/legend.css';
+@import './plugins/tooltip/tooltip.css';
 
 .yagr {
     --yagr-font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
@@ -50,7 +52,7 @@
     font-family: var(--yagr-font-family);
 }
 
-.yagr .u-title {
+.yagr .u-title, .yagr .yagr__title {
     color: var(--yagr-title-color);
     font-size: 14px;
     font-weight: bold;

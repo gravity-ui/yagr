@@ -1,10 +1,10 @@
 import {isNil} from '../utils/common';
-import type {PieSeries, YagrPie} from './types';
+import type {PieItem, YagrPie} from './types';
 
 export const PADDING = 24;
 
 export function drawPie(yagr: YagrPie) {
-    const {radius = 1, cutout = 0} = yagr.config.chart.appearance;
+    const {radius = 1, cutout = 0, labels = false} = yagr.config.chart.appearance;
     const {canvas, ctx, config, utils} = yagr;
     const width = canvas.width;
     const height = canvas.height;
@@ -24,10 +24,14 @@ export function drawPie(yagr: YagrPie) {
     ctx.fillStyle = utils.colorParser.parse(utils.theme.BACKGROUND);
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
+    yagr.run('clear');
 
     for (let i = 0; i < config.data.length; i++) {
-        let value = config.data[i].value;
-        if (!config.data[i].show) {
+        const item = config.data[i];
+        const {show, color, _focus} = item;
+        let value = item.value;
+
+        if (!show) {
             value = 0;
         }
 
@@ -38,9 +42,7 @@ export function drawPie(yagr: YagrPie) {
         ctx.arc(centerX, centerY, radiusPx, startAngle, endAngle, false);
         ctx.arc(centerX, centerY, cutoutPx, endAngle, startAngle, true);
         ctx.closePath();
-        ctx.fillStyle = config.data[i]._focus
-            ? yagr.utils.colorParser.shade(config.data[i].color, 0.1)
-            : config.data[i].color;
+        ctx.fillStyle = _focus ? yagr.utils.colorParser.shade(color, 0.1) : color;
         ctx.fill();
 
         const segment = {
@@ -48,8 +50,29 @@ export function drawPie(yagr: YagrPie) {
             end: endAngle,
         };
 
-        config.data[i]._segment = segment;
+        item._segment = segment;
+
+        // render name label
+        if (!config.data[i].show || !labels) {
+            continue;
+        }
+
+        const label = config.data[i].name as string;
+        const labelRadius = radiusPx + (cutoutPx - radiusPx) / 2;
+        const labelAngle = (startAngle + endAngle) / 2;
+        const labelX = centerX + labelRadius * Math.cos(labelAngle);
+        const labelY = centerY + labelRadius * Math.sin(labelAngle);
+
+        ctx.save();
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, labelX, labelY);
+        ctx.restore();
     }
+
+    yagr.run('render');
 }
 
 export function findSegmentByCoords(yagr: YagrPie, x: number, y: number) {
@@ -79,7 +102,7 @@ export function findSegmentByCoords(yagr: YagrPie, x: number, y: number) {
     });
 }
 
-export function setFocusImpl(yagr: YagrPie, series: PieSeries | null, state: boolean) {
+export function setFocusImpl(yagr: YagrPie, series: PieItem | null, state: boolean) {
     yagr.config.data.forEach((item) => {
         item._focus = series === null ? state : false;
     });
@@ -117,7 +140,7 @@ export function setFocusImpl(yagr: YagrPie, series: PieSeries | null, state: boo
     }
 }
 
-export function setVisibleImpl(yagr: YagrPie, series: PieSeries | null, state: boolean) {
+export function setVisibleImpl(yagr: YagrPie, series: PieItem | null, state: boolean) {
     if (isNil(series)) {
         yagr.config.data.forEach((item) => {
             item.show = state;
@@ -125,6 +148,8 @@ export function setVisibleImpl(yagr: YagrPie, series: PieSeries | null, state: b
     } else {
         series.show = state;
     }
+
+    yagr.run('update');
 
     drawPie(yagr);
 }

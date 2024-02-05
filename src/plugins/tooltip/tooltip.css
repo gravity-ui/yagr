@@ -1,0 +1,87 @@
+.yagr-tooltip {
+    --yagr-tooltip-font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
+
+    position: absolute;
+    z-index: 1000;
+    background-color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+
+    font-family: var(--yagr-tooltip-font-family);
+    pointer-events: none;
+}
+
+.yagr-tooltip__item {
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.yagr-tooltip__item._active {
+    font-weight: bold;
+}
+
+.yagr-tooltip_default {
+    font-size: 12px;
+    padding: 4px 12px;
+
+    box-shadow: 2px 0px 3px rgba(0, 0, 0, 0.1);
+}
+
+.yagr-tooltip_default .__title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+    
+.yagr-tooltip_default .__section {
+    margin-bottom: 4px;
+}
+
+.yagr-tooltip_default .__section:last-child {
+    margin: 0;
+}
+
+.yagr-tooltip_default .__section_title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.yagr-tooltip_default .__section_scale {
+    margin-bottom: 2px;
+    background-color: #eee;
+    padding: 2px;
+}
+
+.yagr-tooltip_default .yagr-tooltip__mark {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: block;
+}
+
+.yagr-tooltip_pinned {
+    pointer-events: all;
+}
+
+.yagr-tooltip_pinned ._tooltip-list {
+    max-height: 320px;
+}
+
+.yagr-tooltip ._hidden-rows-number {
+    white-space: nowrap;
+}
+
+.yagr-tooltip__idx {
+    width: 25px;
+    white-space: nowrap;
+    max-width: 25px;
+    overflow: hidden;
+}
+
+.yagr-tooltip__tf {
+    margin-left: 4px;
+}

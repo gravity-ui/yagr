@@ -1,39 +1,24 @@
-import BaseLegendPlugin, {LegendOptions} from '../../plugins/legend/legend';
+import {legendBase} from 'src/plugins/legend/legend';
 import type {YagrPie} from '../types';
 import {isResponsiveSize} from '../utils';
 
-export class PieLegend extends BaseLegendPlugin {
-    pie: YagrPie;
+export const PieLegend = legendBase<YagrPie>({
+    getSeries(yagr: YagrPie) {
+        return yagr.config.data;
+    },
 
-    constructor(root: HTMLElement, options: LegendOptions, pie: YagrPie) {
-        super(root, options, pie.utils.i18n);
-        this.pie = pie;
-    }
+    getChartHeight(yagr: YagrPie) {
+        const size = yagr.config.chart.size;
+        return isResponsiveSize(size) ? yagr.chart.clientHeight : size.height;
+    },
 
-    onInit = () => {
-        this.redraw();
-    };
+    onSetFocus(yagr: YagrPie, id: string | null) {
+        const idx = yagr.config.data.findIndex((s) => s.id === id);
+        yagr.setFocus(idx ?? null, true);
+    },
 
-    getSeries = () => {
-        return this.pie.config.data;
-    };
-
-    getChartElement = () => {
-        return this.pie.chart;
-    };
-
-    getChartHeight = () => {
-        const size = this.pie.config.chart.size;
-        return isResponsiveSize(size) ? this.pie.chart.clientHeight : size.height;
-    };
-
-    onSetFocus = (id: string | null) => {
-        const idx = this.pie.config.data.findIndex((s) => s.id === id);
-        this.pie.setFocus(idx ?? null, true);
-    };
-
-    onToggleSeries = (id: string, state: boolean) => {
-        const idx = this.pie.config.data.findIndex((s) => s.id === id);
-        this.pie.setVisible(idx ?? null, state);
-    };
-}
+    onToggleSeries(yagr: YagrPie, id: string, state: boolean) {
+        const idx = yagr.config.data.findIndex((s) => s.id === id);
+        yagr.setVisible(idx ?? null, state);
+    },
+});

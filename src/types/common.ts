@@ -5,6 +5,11 @@ import type I18n from '../utils/i18n';
 export type Theme = 'light' | 'dark' | string;
 
 export interface CommonApi {
+    id: string;
+    root: HTMLElement;
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+
     dispose(): void;
     redraw(): void;
     toDataURL(fmt?: string): string;
@@ -28,23 +33,27 @@ export interface CommonAppearance {
     theme: Theme;
 }
 
-export type CommonHookHandlerArg<T, C> = T & {chart: C};
-
-export type Hook<A> = ((a: A) => void)[];
-
-export type LoadHandlerArg<C> = CommonHookHandlerArg<{}, C>;
-export type ErrorHandlerArg<C> = CommonHookHandlerArg<{error: Error}, C>;
-export type InitHandlerArg<C> = CommonHookHandlerArg<{}, C>;
-export type DisposeHandlerArg<C> = CommonHookHandlerArg<{}, C>;
-export type ResizeHandlerArg<C> = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}, C>;
-
-export interface CommonHooks<C> {
-    load?: Hook<LoadHandlerArg<C>>;
-    error?: Hook<ErrorHandlerArg<C>>;
-    init?: Hook<InitHandlerArg<C>>;
-    dispose?: Hook<DisposeHandlerArg<C>>;
-    resize?: Hook<ResizeHandlerArg<C>>;
+/** Graph title style. To customize other properties use CSS */
+export interface Title {
+    text: string;
+    fontSize?: number;
+    align?: 'left' | 'center' | 'right';
 }
+
+export interface CommonHooksShape<C> {
+    opts?: (chart: C) => void;
+    init?: (chart: C) => void;
+    ready?: (chart: C) => void;
+    error?: (chart: C, error: Error) => void;
+    dispose?: (chart: C) => void;
+    resize?: (chart: C, entries: ResizeObserverEntry[]) => void;
+    clear?: (chart: C) => void;
+    update?: (chart: C) => void;
+}
+
+export type CommonHooks<C> = {
+    [K in keyof CommonHooksShape<C>]?: Required<CommonHooksShape<C>>[K][];
+};
 
 export interface CommonSeries {
     id: string;
@@ -54,3 +63,7 @@ export interface CommonSeries {
 
     name?: string;
 }
+
+export type Plugin<C> = (chart: C) => {
+    hooks: CommonHooksShape<C>;
+};

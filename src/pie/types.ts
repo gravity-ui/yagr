@@ -1,26 +1,29 @@
 import type {LegendOptions} from '../plugins/legend/legend';
-import type {CommonApi, CommonAppearance, CommonHooks, CommonSeries} from '../types/common';
+import type {CommonApi, CommonAppearance, CommonHooks, CommonSeries, Title} from '../types/common';
 
-import type ColorParser from '../utils/colors';
-import type ThemedDefaults from '../utils/defaults';
-import type I18n from '../utils/i18n';
-import {Config} from './config';
+import type {PieTooltipOptions} from './plugins/tooltip';
+import {wrapPieConfig} from './config';
+
+export type PieHooks = Required<CommonHooks<YagrPie>> & {
+    render: [(yagr: YagrPie) => void];
+};
 
 export interface YagrPie extends CommonApi {
+    id: string;
     chart: HTMLElement;
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
-    config: Config;
-    utils: {
-        colorParser: ColorParser;
-        theme: ThemedDefaults;
-        i18n: ReturnType<typeof I18n>;
-    };
+    config: ReturnType<typeof wrapPieConfig>;
+
+    run<T extends keyof PieHooks>(
+        s: T,
+        a1?: Parameters<PieHooks[T][number]>[1],
+        a2?: Parameters<PieHooks[T][number]>[2],
+    ): void;
 }
 
-export interface PieSeries extends CommonSeries {
+export interface PieItem extends CommonSeries {
     readonly value: number;
 
+    index?: number;
     _segment?: {
         start: number;
         end: number;
@@ -52,13 +55,17 @@ interface PieAppearance {
     cutout?: number;
     /* Accent radius in pixels */
     accent?: number;
+    /* Show labels on pie segments */
+    labels?: boolean;
 }
 
 export interface PieConfig extends CommonYagrOptions {
     chart?: {
+        title?: Title;
         size?: SizeOptions;
         appearance?: CommonAppearance & PieAppearance;
     };
-    data: PieSeries[];
+    data: PieItem[];
     hooks?: CommonHooks<YagrPie>;
+    tooltip?: PieTooltipOptions;
 }

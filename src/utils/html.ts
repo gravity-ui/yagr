@@ -17,6 +17,7 @@ export const html = <T extends HTMLElement>(
                 : attr,
         );
     });
+
     if (content) {
         if (typeof content === 'string') {
             el.innerHTML = content;
@@ -27,3 +28,10 @@ export const html = <T extends HTMLElement>(
 
     return el;
 };
+
+export function escapeHTML(body: string) {
+    const elem = document.createElement('span');
+
+    elem.innerText = body;
+    return elem.innerHTML;
+}

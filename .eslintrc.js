@@ -87,7 +87,7 @@ module.exports = {
         'no-bitwise': ERROR,
         'no-lonely-if': WARNING,
         'no-negated-condition': WARNING,
-        'no-nested-ternary': WARNING,
+        'no-nested-ternary': OFF,
         'no-new-object': WARNING,
         'no-restricted-syntax': [ERROR, 'WithStatement'],
         'no-unneeded-ternary': ERROR,

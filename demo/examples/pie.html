@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Yagr:: Pie</title>
+        <title>Yagr :: Pie</title>
         <link rel="stylesheet" href="../../dist/index.css" />
         <style>
             .container {
@@ -36,18 +36,38 @@
                         radius: 1,
                         cutout: 0.5,
                         accent: 10,
-                    }
+                        labels: true
+                    },
+                    // title: {
+                    //     text: 'Pie Chart',
+                    //     fontSize: 30,
+                    // }
+                },
+                tooltip: {
+                    boundClassName: '#chart1',
+                    // renderClassName: '#chart1'
                 },
                 legend: {
                     show: true,
-                    // behavior: 'extended'
-
+                    fontSize: 30,
                 },
                 data: [
                     {
                         color: 'rgba(255, 99, 132, 0.4)',
                         value: 50,
                         show: false,
+                    },
+                    {
+                        color: 'rgba(54, 162, 235, 0.4)',
+                        value: 5,
+                    },
+                    {
+                        color: 'rgba(153, 162, 235, 0.4)',
+                        value: 5,
+                    },
+                    {
+                        color: 'rgba(154, 62, 235, 0.4)',
+                        value: 5,
                     },
                     {
                         color: 'rgba(54, 162, 235, 0.4)',
