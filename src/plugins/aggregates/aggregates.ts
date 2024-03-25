@@ -85,7 +85,7 @@ const DataRef = (opst: AggregatesPluginOptions) => {
                 const seriesIdx = yagr.state.y2uIdx[seriesId];
                 const timestamps = yagr.uplot.data[0].slice(fromIdx, toIdx + 1) as number[];
                 const values = yagr.uplot.series[seriesIdx].$c;
-                const integral = integrate(timestamps, values, yagr.config.chart?.timeMultiplier);
+                const integral = integrate(timestamps, values.slice(fromIdx, toIdx + 1));
                 const sum = safeSum(values, fromIdx, toIdx);
                 const min = safeMin(values, fromIdx, toIdx);
                 const max = safeMax(values, fromIdx, toIdx);
@@ -136,7 +136,6 @@ const DataRef = (opst: AggregatesPluginOptions) => {
                                       const rowIntegral = integrate(
                                           u.data[0] as number[],
                                           $c as DataSeriesExtended,
-                                          yagr.config.chart?.timeMultiplier,
                                       );
                                       aggrs[scale].integral = integral === null ? rowIntegral : integral + rowIntegral;
                                   });

@@ -89,7 +89,7 @@ function getTimeFormatterByRange(range: number, ticksCount: number) {
 }
 
 export const getTimeFormatter = (config: YagrConfig) => {
-    const msm = config.chart.timeMultiplier || 1;
+    const msm = config.chart.timeMultiplier || defaults.TIME_MULTIPLIER;
     return (_: unknown, ticks: number[]) => {
         const range = ticks[ticks.length - 1] - ticks[0];
         const rangeMs = range / msm;
@@ -145,7 +145,7 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
             ticks: axisConfig.ticks ? {...theme.X_AXIS_TICKS, ...axisConfig.ticks} : theme.X_AXIS_TICKS,
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || (() => defaults.X_AXIS_SPACE),
-            incrs: axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.chart.timeMultiplier || 1))),
+            incrs: axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.chart.timeMultiplier || defaults.TIME_MULTIPLIER))),
             side: 2,
             stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
         });
