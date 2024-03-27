@@ -1,5 +1,12 @@
 ### master
 
+## [4.2.4](https://github.com/gravity-ui/yagr/compare/v4.2.3...v4.2.4) (2024-03-27)
+
+
+### Bug Fixes
+
+* fixed integral calculation ([#211](https://github.com/gravity-ui/yagr/issues/211)) ([888b483](https://github.com/gravity-ui/yagr/commit/888b48347d05a0592bb8f065dc0d5249bf9b7683))
+
 ## [4.2.3](https://github.com/gravity-ui/yagr/compare/v4.2.2...v4.2.3) (2024-01-29)
 
 
