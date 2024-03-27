@@ -44,7 +44,7 @@
                 },
                 timeline: new Array(100).fill().map((_, i) => i * 1000),
                 series: [
-                    {data: new Array(100).fill().map((_, i) => Math.random() * 6), color: 'red'},
+                    {data: new Array(100).fill().map((_, i) => i > 20 && i < 30 ? Math.random() * 6 : null), color: 'red'},
                     {data: new Array(100).fill().map((_, i) => Math.random() * 6), color: 'green'},
                 ],
                 chart: {
@@ -112,23 +112,23 @@
                 return `
                 <tr>
                     <td>${id}</td>
-                    <td>${ref.min.toFixed(1) ?? '-'}</td>
-                    <td>${ref.max.toFixed(1) ?? '-'}</td>
-                    <td>${ref.avg.toFixed(1) ?? '-'}</td>
-                    <td>${ref.sum.toFixed(1) ?? '-'}</td>
-                    <td>${ref.count.toFixed(1) ?? '-'}</td>
-                    <td>${ref.integral.toFixed(1) ?? '-'}</td>
+                    <td>${ref.min?.toFixed(1) ?? '-'}</td>
+                    <td>${ref.max?.toFixed(1) ?? '-'}</td>
+                    <td>${ref.avg?.toFixed(1) ?? '-'}</td>
+                    <td>${ref.sum?.toFixed(1) ?? '-'}</td>
+                    <td>${ref.count?.toFixed(1) ?? '-'}</td>
+                    <td>${ref.integral?.toFixed(1) ?? '-'}</td>
                     <td>${ref.last?.toFixed(1) ?? '-'}</td>
                 </tr>`;
             })}
             <tr>
                 <td>Total</td>
-                <td>${refs.y.total.min.toFixed(1)}</td>
-                <td>${refs.y.total.max.toFixed(1)}</td>
-                <td>${refs.y.total.avg.toFixed(1)}</td>
-                <td>${refs.y.total.sum.toFixed(1)}</td>
-                <td>${refs.y.total.count.toFixed(1)}</td>
-                <td>${refs.y.total.integral.toFixed(1)}</td>
+                <td>${refs.y.total.min?.toFixed(1)}</td>
+                <td>${refs.y.total.max?.toFixed(1)}</td>
+                <td>${refs.y.total.avg?.toFixed(1)}</td>
+                <td>${refs.y.total.sum?.toFixed(1)}</td>
+                <td>${refs.y.total.count?.toFixed(1)}</td>
+                <td>${refs.y.total.integral?.toFixed(1)}</td>
                 <td>${refs.y.total.last ?? '-'}</td>
             </tbody>
             </table>`;

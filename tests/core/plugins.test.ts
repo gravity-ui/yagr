@@ -35,7 +35,7 @@ describe('yagr plugins', () => {
                 min: 1,
                 sum: 6,
                 last: null,
-                integral: 0.004,
+                integral: 4,
             },
         });
     });

@@ -1,5 +1,6 @@
 import type {YagrPlugin} from '../../types';
 import type Yagr from '../../index';
+import {TIME_MULTIPLIER} from '../../YagrCore/defaults';
 
 export interface WeekendsPluginOptions {
     color?: string;
@@ -38,7 +39,7 @@ export default function WeekendsPlugin({
             if (predicate) {
                 isWeekend = predicate(ts);
             } else {
-                const date = new Date(ts / (yagr.config.chart?.timeMultiplier || 1));
+                const date = new Date(ts / (yagr.config.chart?.timeMultiplier || TIME_MULTIPLIER));
                 const dayOfWeek = date.getDay();
                 isWeekend = dayOfWeek === 6 || dayOfWeek === 0;
             }

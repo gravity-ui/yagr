@@ -18,8 +18,8 @@ describe('Aggregates plugin', () => {
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(y.plugins.aggr?.get()).toEqual({
-                y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 0.0165},
-                r: {min: 5, max: 8, count: 4, last: null, avg: 6.5, sum: 26, integral: 0.0195},
+                y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 16.5},
+                r: {min: 5, max: 8, count: 4, last: null, avg: 6.5, sum: 26, integral: 19.5},
             });
         });
 
@@ -32,7 +32,7 @@ describe('Aggregates plugin', () => {
                 avg: 1.5,
                 last: 2,
                 sum: 3,
-                integral: 0.0015,
+                integral: 1.5,
             });
         });
 
@@ -47,13 +47,13 @@ describe('Aggregates plugin', () => {
                             count: 2,
                             avg: 1.5,
                             sum: 3,
-                            integral: 0.0015,
+                            integral: 1.5,
                             last: 2,
                         },
                         two: {
                             avg: 3,
                             count: 2,
-                            integral: 0.003,
+                            integral: 3,
                             last: 3,
                             max: 3,
                             min: 3,
@@ -63,7 +63,7 @@ describe('Aggregates plugin', () => {
                     total: {
                         avg: 2.25,
                         count: 4,
-                        integral: 0.0045000000000000005,
+                        integral: 4.5,
                         last: null,
                         max: 3,
                         min: 1,
@@ -75,7 +75,7 @@ describe('Aggregates plugin', () => {
                         three: {
                             avg: 5.5,
                             count: 2,
-                            integral: 0.0055,
+                            integral: 5.5,
                             last: 6,
                             max: 6,
                             min: 5,
@@ -85,7 +85,7 @@ describe('Aggregates plugin', () => {
                     total: {
                         avg: 5.5,
                         count: 2,
-                        integral: 0.0055,
+                        integral: 5.5,
                         last: null,
                         max: 6,
                         min: 5,
@@ -114,7 +114,7 @@ describe('Aggregates plugin', () => {
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(y.plugins.aggr?.get()).toEqual({
-                y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 0.0165},
+                y: {min: 1, max: 4, count: 8, last: null, avg: 2.75, sum: 22, integral: 16.5},
             });
         });
 
@@ -127,7 +127,7 @@ describe('Aggregates plugin', () => {
                 avg: 1.5,
                 last: 2,
                 sum: 3,
-                integral: 0.0015,
+                integral: 1.5,
             });
             expect(y.plugins.aggr?.calc(0, 1, 'two')).toEqual({
                 min: 3,
@@ -136,7 +136,7 @@ describe('Aggregates plugin', () => {
                 avg: 3,
                 last: 3,
                 sum: 6,
-                integral: 0.003,
+                integral: 3,
             });
         });
     });
@@ -160,7 +160,7 @@ describe('Aggregates plugin', () => {
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(y.plugins.aggr?.get()).toEqual({
-                y: {min: 1, max: 4, count: 4, last: null, avg: 2.75, sum: 11, integral: 0.006999999999999999},
+                y: {min: 1, max: 4, count: 4, last: null, avg: 2.75, sum: 11, integral: 7},
             });
         });
 
@@ -173,7 +173,7 @@ describe('Aggregates plugin', () => {
                 avg: 1,
                 last: 1,
                 sum: 1,
-                integral: 0.0005,
+                integral: 0.5,
             });
             expect(y.plugins.aggr?.calc(0, 1, 'two')).toEqual({
                 min: null,
@@ -211,7 +211,7 @@ describe('Aggregates plugin', () => {
         it('should calc refs for series perScale', async () => {
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(y.plugins.aggr?.get()).toEqual({
-                y: {min: 1, max: 4, count: 5, last: null, avg: 2.6, sum: 13, integral: 0.005},
+                y: {min: 1, max: 4, count: 5, last: null, avg: 2.6, sum: 13, integral: 5},
             });
         });
 
@@ -233,7 +233,7 @@ describe('Aggregates plugin', () => {
                 avg: 3,
                 last: 3,
                 sum: 3,
-                integral: 0,
+                integral: 1.5,
             });
         });
     });

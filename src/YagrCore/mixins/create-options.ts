@@ -13,6 +13,7 @@ import {
     DEFAULT_X_SCALE,
     DEFAULT_X_SERIE_NAME,
     MIN_SELECTION_WIDTH,
+    TIME_MULTIPLIER,
 } from '../defaults';
 import {configureSeries} from '../utils/series';
 import markersPlugin from '../plugins/markers';
@@ -72,7 +73,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         this._uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;
             const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
-            const {timeMultiplier = 1} = this.config.chart || {};
+            const {timeMultiplier = TIME_MULTIPLIER} = this.config.chart || {};
 
             this.execHooks('onSelect', {
                 from: Math.ceil(_from / timeMultiplier),
@@ -136,7 +137,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                     count: config.timeline.length,
                 } as Series,
             ],
-            ms: chart.timeMultiplier || 1,
+            ms: chart.timeMultiplier || TIME_MULTIPLIER,
             hooks: config.hooks || {},
         };
 

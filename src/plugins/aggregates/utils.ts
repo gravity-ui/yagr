@@ -1,14 +1,16 @@
 import {DataSeriesExtended} from '../../types';
 
-export function integrate(timestamps: number[], values: DataSeriesExtended, timeMultiplier = 0.001) {
+export function integrate(timestamps: number[], values: DataSeriesExtended) {
     if (timestamps.length < 2) {
         return 0;
     }
+
     let t0 = timestamps[0];
     let x0 = Number(values[0]);
     let t1: number;
     let x1: number;
     let integral = 0;
+
     for (let i = 1; i < timestamps.length; i++) {
         x1 = Number(values[i]);
         t1 = timestamps[i];
@@ -19,7 +21,7 @@ export function integrate(timestamps: number[], values: DataSeriesExtended, time
         if (!Number.isNaN(x1) && !Number.isNaN(x0)) {
             const dt = t1 - t0;
             const dx = x1 - x0;
-            const area = (x0 + dx / 2) * dt * timeMultiplier; // convert milliseconds to seconds
+            const area = (x0 + dx / 2) * dt;
             integral += area;
         }
 
