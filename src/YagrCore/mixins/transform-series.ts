@@ -93,7 +93,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                         dataLine.push(null);
                         continue;
                     } else {
-                        value = 0;
+                        value = isStacking ? 0 : null;
                     }
                 }
 
@@ -101,7 +101,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
 
                 if (scaleConfig.normalize) {
                     const sum = getSumByIdx(this.options.series, idx, scale);
-                    value = sum && (value / sum) * (scaleConfig.normalizeBase || 100);
+                    value = sum && ((value ?? 0) / sum) * (scaleConfig.normalizeBase || 100);
 
                     serieOptions.normalizedData = serieOptions.normalizedData || [];
                     serieOptions.normalizedData[idx] = value;
@@ -112,7 +112,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                         value = 0;
                     }
 
-                    value = stacks[scale][sGroup][idx] += value;
+                    value = stacks[scale][sGroup][idx] += (value ?? 0);
                 }
 
                 if (scaleConfig.type === 'logarithmic' && value === 0) {
