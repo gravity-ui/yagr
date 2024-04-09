@@ -1,5 +1,17 @@
 ### master
 
+## [4.3.0](https://github.com/gravity-ui/yagr/compare/v4.2.4...v4.3.0) (2024-04-09)
+
+
+### Features
+
+* rebuild 4.5 ([#216](https://github.com/gravity-ui/yagr/issues/216)) ([a28e124](https://github.com/gravity-ui/yagr/commit/a28e124020bcf4d0f50acd0842a60f0e918a7eef))
+
+
+### Bug Fixes
+
+* fixed series transform for non stacked areas ([#214](https://github.com/gravity-ui/yagr/issues/214)) ([211c653](https://github.com/gravity-ui/yagr/commit/211c65354dd290ca28ba64bf565238ce672d7fca))
+
 ## [4.2.4](https://github.com/gravity-ui/yagr/compare/v4.2.3...v4.2.4) (2024-03-27)
 
 
