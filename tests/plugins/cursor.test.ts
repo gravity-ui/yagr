@@ -41,6 +41,32 @@ describe('cursor plugin', () => {
         });
     });
 
+    describe('markers', () => {
+        const el = document.createElement('div');
+        document.body.appendChild(el);
+
+        afterAll(() => {
+            document.body.removeChild(el);
+        });
+
+        const y = new Yagr(el, {
+            timeline: [1, 2, 3],
+            cursor: {maxMarkers: 100 },
+            series: Array.from({ length: 100 }).fill(0).map((_, i) => ({
+                id: String(i),
+                data: [1, 2, 3],
+                color: 'rgb(255, 0, 0)'
+            }))
+        });
+
+        y.reflow();
+
+        it('should use the maxMarkers option', () => {
+            const n = document.querySelectorAll('.yagr-point');
+            expect(n.length).toBe(100 + 2);
+        });
+    });
+
     describe('methods', () => {
         const el = document.createElement('div');
         document.body.appendChild(el);
