@@ -1,5 +1,12 @@
 ### master
 
+## [4.3.1](https://github.com/gravity-ui/yagr/compare/v4.3.0...v4.3.1) (2024-08-13)
+
+
+### Bug Fixes
+
+* overscreen tooltip ([08e3337](https://github.com/gravity-ui/yagr/commit/08e33378c4f5f3b79486cc931d10336a594d28cd))
+
 ## [4.3.0](https://github.com/gravity-ui/yagr/compare/v4.2.4...v4.3.0) (2024-04-09)
 
 
