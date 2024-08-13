@@ -12,6 +12,8 @@ const NAMES = {
     scrollOffset: ['pageYOffset', 'pageXOffset'],
     offset: ['offsetY', 'offsetY'],
     offsetOpt: ['yOffset', 'xOffset'],
+    bodyScroll: ['scrollHeight', 'scrollWidth'],
+    inner: ['innerHeight', 'innerWidth'],
 };
 
 interface Props {
@@ -26,6 +28,8 @@ interface Props {
     scrollOffset: 'pageYOffset' | 'pageXOffset';
     offset: 'offsetY' | 'offsetY';
     offsetOpt: 'yOffset' | 'xOffset';
+    bodyScroll: 'scrollHeight' | 'scrollWidth';
+    inner: 'innerHeight' | 'innerWidth';
 }
 
 type Side = 'top' | 'bottom' | 'left' | 'right';
@@ -148,7 +152,8 @@ export default function (
     // Set the position of the popup element along the primary axis using the
     // anchor's bounding rect. If we are working in the context of position:
     // absolute, then we will need to add the window's scroll position as well.
-    const scrollOffset = window[primary.scrollOffset] as unknown as number;
+    const maxOffset = document.body[primary.bodyScroll] - window[primary.inner];
+    const scrollOffset = Math.min(window[primary.scrollOffset] as unknown as number, maxOffset);
 
     const boundPrimaryPos = (pos: number) => {
         return Math.max(
@@ -179,7 +184,8 @@ export default function (
     }
 
     // Set the position of the popup element along the secondary axis.
-    const secondaryScrollOffset = window[secondary.scrollOffset] as unknown as number;
+    const maxSecondaryOffset = document.body[secondary.bodyScroll] - window[secondary.inner];
+    const secondaryScrollOffset = Math.min(window[secondary.scrollOffset] as unknown as number, maxSecondaryOffset);
 
     elem.style[secondary.before] = px(
         secondaryScrollOffset + boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore),
