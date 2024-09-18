@@ -742,6 +742,9 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
 
     const getUplotPlugin = () => ({
         hooks: {
+            destroy: () => {
+                tooltip.dispose();
+            },
             init: (u: uPlot) => {
                 tooltip.initWithUplot(u);
             },
@@ -763,6 +766,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         tooltip.reset();
 
         u.hooks.init!.push(uPlugin.hooks.init);
+        u.hooks.destroy!.push(uPlugin.hooks.destroy);
         u.hooks.setSize!.push(uPlugin.hooks.setSize);
         u.hooks.setCursor!.push(uPlugin.hooks.setCursor);
     }
