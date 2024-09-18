@@ -734,7 +734,7 @@ class YagrTooltip {
 }
 
 /*
- * Tooltip plugin constructor.
+ * Tooltip plugin constructor .
  * Every charts has it's own tooltip plugin instance
  */
 function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
