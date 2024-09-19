@@ -1,5 +1,12 @@
 ### master
 
+## [4.3.2](https://github.com/gravity-ui/yagr/compare/v4.3.1...v4.3.2) (2024-09-19)
+
+
+### Bug Fixes
+
+* tooltip memory leak ([ec80853](https://github.com/gravity-ui/yagr/commit/ec80853d7cabe41ff4df129120e1e206cff36f9e))
+
 ## [4.3.1](https://github.com/gravity-ui/yagr/compare/v4.3.0...v4.3.1) (2024-08-13)
 
 
