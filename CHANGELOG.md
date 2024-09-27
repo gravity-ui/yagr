@@ -1,5 +1,12 @@
 ### master
 
+## [4.3.3](https://github.com/gravity-ui/yagr/compare/v4.3.2...v4.3.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* bug with focus in stacking column chart ([#222](https://github.com/gravity-ui/yagr/issues/222)) ([c04ac11](https://github.com/gravity-ui/yagr/commit/c04ac115217bd8df59d095cbf767dc096457a3a3))
+
 ## [4.3.2](https://github.com/gravity-ui/yagr/compare/v4.3.1...v4.3.2) (2024-09-19)
 
 
