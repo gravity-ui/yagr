@@ -35,6 +35,10 @@
             <div id="chart6" class="container"></div>
         </div>
 
+        <div class="grid">
+            <div id="chart7" class="container"></div>
+        </div>
+
         <script>
             const y1 = new Yagr(chart1, {
                 title: {text: 'On top'},
@@ -164,6 +168,34 @@
                     position: 'bottom',
                     maxLegendSpace: 0.2,
                     behaviour: 'extended',
+                },
+            });
+
+            const y7 = new Yagr(chart7, {
+                title: {text: 'On top'},
+                timeline: [1, 2, 3],
+                series: [
+                    {data: [1, 2, 3], color: 'red', type: 'column',},
+
+                    {data: [2, 1, 2], color: 'green', type: 'column'},
+                    {data: [1, 2, 3], color: 'lime', type: 'column'},
+                ],
+                "scales": {
+                    "x": {},
+                    "y": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    },
+                    "yRight": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
                 },
             });
         </script>
