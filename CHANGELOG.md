@@ -1,5 +1,12 @@
 ### master
 
+## [4.3.4](https://github.com/gravity-ui/yagr/compare/v4.3.3...v4.3.4) (2024-10-07)
+
+
+### Bug Fixes
+
+* update uplot to v1.6.31 ([#226](https://github.com/gravity-ui/yagr/issues/226)) ([b069208](https://github.com/gravity-ui/yagr/commit/b069208789cc02975d1dfc7c917c0c23f48b76ee))
+
 ## [4.3.3](https://github.com/gravity-ui/yagr/compare/v4.3.2...v4.3.3) (2024-09-27)
 
 
