@@ -1,5 +1,45 @@
 ### master
 
+## [4.3.4](https://github.com/gravity-ui/yagr/compare/v4.3.3...v4.3.4) (2024-10-07)
+
+
+### Bug Fixes
+
+* update uplot to v1.6.31 ([#226](https://github.com/gravity-ui/yagr/issues/226)) ([b069208](https://github.com/gravity-ui/yagr/commit/b069208789cc02975d1dfc7c917c0c23f48b76ee))
+
+## [4.3.3](https://github.com/gravity-ui/yagr/compare/v4.3.2...v4.3.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* bug with focus in stacking column chart ([#222](https://github.com/gravity-ui/yagr/issues/222)) ([c04ac11](https://github.com/gravity-ui/yagr/commit/c04ac115217bd8df59d095cbf767dc096457a3a3))
+
+## [4.3.2](https://github.com/gravity-ui/yagr/compare/v4.3.1...v4.3.2) (2024-09-19)
+
+
+### Bug Fixes
+
+* tooltip memory leak ([ec80853](https://github.com/gravity-ui/yagr/commit/ec80853d7cabe41ff4df129120e1e206cff36f9e))
+
+## [4.3.1](https://github.com/gravity-ui/yagr/compare/v4.3.0...v4.3.1) (2024-08-13)
+
+
+### Bug Fixes
+
+* overscreen tooltip ([08e3337](https://github.com/gravity-ui/yagr/commit/08e33378c4f5f3b79486cc931d10336a594d28cd))
+
+## [4.3.0](https://github.com/gravity-ui/yagr/compare/v4.2.4...v4.3.0) (2024-04-09)
+
+
+### Features
+
+* rebuild 4.5 ([#216](https://github.com/gravity-ui/yagr/issues/216)) ([a28e124](https://github.com/gravity-ui/yagr/commit/a28e124020bcf4d0f50acd0842a60f0e918a7eef))
+
+
+### Bug Fixes
+
+* fixed series transform for non stacked areas ([#214](https://github.com/gravity-ui/yagr/issues/214)) ([211c653](https://github.com/gravity-ui/yagr/commit/211c65354dd290ca28ba64bf565238ce672d7fca))
+
 ## [4.2.4](https://github.com/gravity-ui/yagr/compare/v4.2.3...v4.2.4) (2024-03-27)
 
 

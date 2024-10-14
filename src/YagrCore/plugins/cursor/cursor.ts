@@ -206,8 +206,10 @@ export default function CursorPlugin(
 
                 const emptyLines = uplotOptions.series.filter((s) => s.empty).length;
                 const totalLines = uplotOptions.series.length - 1;
+                const maxCursors = opts?.maxMarkers ?? MAX_CURSORS;
+
                 uplotOptions.cursor.points = {
-                    show: totalLines - emptyLines <= MAX_CURSORS ? cursorPoint : false,
+                    show: totalLines - emptyLines <= maxCursors ? cursorPoint : false,
                     size: (u: uPlot, seriesIdx: number) => {
                         const serie = u.series[seriesIdx];
                         return (

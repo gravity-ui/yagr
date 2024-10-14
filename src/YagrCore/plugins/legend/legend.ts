@@ -256,14 +256,19 @@ export default class LegendPlugin {
             }
 
             const targetSerie = this.yagr.uplot.series.find(({id}) => id === serieId);
-
             if (targetSerie) {
                 yagr.setFocus(targetSerie.id, true);
+
+                // fix bug with focus in stacking column chart
+                yagr.redraw(true, false);
             }
         };
 
         const onSerieMouseLeave = () => {
             yagr.setFocus(null, true);
+
+            // fix bug with focus in stacking column chart
+            yagr.redraw(true, false);
         };
 
         series.forEach((serieNode) => {

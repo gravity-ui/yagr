@@ -40,6 +40,10 @@
             <div id="chart8" class="container"></div>
         </div>
 
+        <div class="grid">
+            <div id="chart9" class="container"></div>
+        </div>
+
         <script>
             const y1 = new Yagr(chart1, {
                 title: {text: 'On top'},
@@ -173,11 +177,39 @@
             });
 
             const y7 = new Yagr(chart7, {
-                title: {text: 'Pagination on'},
+                title: {text: 'On top'},
                 timeline: [1, 2, 3],
-                series: new Array(60).fill(1).map((x) => {
+                series: [
+                    {data: [1, 2, 3], color: 'red', type: 'column',},
+
+                    {data: [2, 1, 2], color: 'green', type: 'column'},
+                    {data: [1, 2, 3], color: 'lime', type: 'column'},
+                ],
+                "scales": {
+                    "x": {},
+                    "y": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    },
+                    "yRight": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                },
+            });
+
+            const y8 = new Yagr(chart8, {
+                title: {text: 'Pagination on'},
+                timeline: new Array(100).fill(1).map((_, i) => i + 1),
+                series: new Array(100).fill(1).map((x) => {
                     return {
-                        data: new Array(3).fill(1).map(() => Math.floor(Math.random() * 4)),
+                        data: new Array(100).fill(1).map(() => Math.floor(Math.random() * 4)),
                         color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
                         type: 'line',
                     };
@@ -197,12 +229,12 @@
                 },
             });
 
-            const y8 = new Yagr(chart8, {
+            const y9 = new Yagr(chart9, {
                 title: {text: 'Pagination off'},
-                timeline: [1, 2, 3],
-                series: new Array(60).fill(1).map((x, i) => {
+                timeline: new Array(100).fill(1).map((_, i) => i + 1),
+                series: new Array(100).fill(1).map((x, i) => {
                     return {
-                        data: new Array(3).fill(1).map(() => Math.floor(Math.random() * 4)),
+                        data: new Array(100).fill(1).map(() => Math.floor(Math.random() * 4)),
                         color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
                         type: 'line',
                     };
@@ -221,6 +253,7 @@
                     pagination: false,
                 },
             });
+          
         </script>
     </body>
 </html>
