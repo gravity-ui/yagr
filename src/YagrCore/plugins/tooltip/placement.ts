@@ -153,7 +153,7 @@ export default function (
     // anchor's bounding rect. If we are working in the context of position:
     // absolute, then we will need to add the window's scroll position as well.
     const maxOffset = document.body[primary.bodyScroll] - window[primary.inner];
-    const scrollOffset = Math.min(window[primary.scrollOffset] as unknown as number, maxOffset);
+    const scrollOffset = Math.max(Math.min(window[primary.scrollOffset] as unknown as number, maxOffset), 0);
 
     const boundPrimaryPos = (pos: number) => {
         return Math.max(
@@ -185,7 +185,7 @@ export default function (
 
     // Set the position of the popup element along the secondary axis.
     const maxSecondaryOffset = document.body[secondary.bodyScroll] - window[secondary.inner];
-    const secondaryScrollOffset = Math.min(window[secondary.scrollOffset] as unknown as number, maxSecondaryOffset);
+    const secondaryScrollOffset = Math.max(Math.min(window[secondary.scrollOffset] as unknown as number, maxSecondaryOffset), 0);
 
     elem.style[secondary.before] = px(
         secondaryScrollOffset + boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore),
