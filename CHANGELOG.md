@@ -1,5 +1,12 @@
 ### master
 
+## [4.3.5](https://github.com/gravity-ui/yagr/compare/v4.3.4...v4.3.5) (2024-11-05)
+
+
+### Bug Fixes
+
+* tooltip position calculation ([#229](https://github.com/gravity-ui/yagr/issues/229)) ([26876d7](https://github.com/gravity-ui/yagr/commit/26876d7c1966a6a1d9f1ba089b2156e14b5f6bf0))
+
 ## [4.3.4](https://github.com/gravity-ui/yagr/compare/v4.3.3...v4.3.4) (2024-10-07)
 
 
