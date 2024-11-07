@@ -37,6 +37,11 @@
 
         <div class="grid">
             <div id="chart7" class="container"></div>
+            <div id="chart8" class="container"></div>
+        </div>
+
+        <div class="grid">
+            <div id="chart9" class="container"></div>
         </div>
 
         <script>
@@ -198,6 +203,57 @@
                     position: 'top',
                 },
             });
+
+            const y8 = new Yagr(chart8, {
+                title: {text: 'Pagination on'},
+                timeline: new Array(100).fill(1).map((_, i) => i + 1),
+                series: new Array(100).fill(1).map((x) => {
+                    return {
+                        data: new Array(100).fill(1).map(() => Math.floor(Math.random() * 4)),
+                        color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
+                        type: 'line',
+                    };
+                }),
+                axes: {
+                    y: {values: (u, v) => v.map((x) => x + ' Mb')},
+                },
+                scales: {
+                    y: {min: 0, max: 5},
+                },
+                legend: {
+                    show: true,
+                    position: 'bottom',
+                    maxLegendSpace: 0.2,
+                    behaviour: 'extended',
+                    pagination: true,
+                },
+            });
+
+            const y9 = new Yagr(chart9, {
+                title: {text: 'Pagination off'},
+                timeline: new Array(100).fill(1).map((_, i) => i + 1),
+                series: new Array(100).fill(1).map((x, i) => {
+                    return {
+                        data: new Array(100).fill(1).map(() => Math.floor(Math.random() * 4)),
+                        color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
+                        type: 'line',
+                    };
+                }),
+                axes: {
+                    y: {values: (u, v) => v.map((x) => x + ' Mb')},
+                },
+                scales: {
+                    y: {min: 0, max: 5},
+                },
+                legend: {
+                    show: true,
+                    position: 'bottom',
+                    maxLegendSpace: 0.2,
+                    behaviour: 'extended',
+                    pagination: false,
+                },
+            });
+          
         </script>
     </body>
 </html>
