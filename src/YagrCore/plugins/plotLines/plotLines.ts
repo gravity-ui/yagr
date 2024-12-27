@@ -200,13 +200,13 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                 opts: () => {
                     const config = yagr.config;
                     plotLines = new Map();
-
+                    let counter = 0;
                     for (const scale in config.axes) {
                         if (config.axes.hasOwnProperty(scale)) {
                             const axisConfig = config.axes[scale];
                             if (axisConfig.plotLines) {
                                 for (const plotLine of axisConfig.plotLines) {
-                                    plotLines.set(plotLine.id || `${Math.random()}`, {...plotLine, scale});
+                                    plotLines.set(plotLine.id || `${++counter}`, {...plotLine, scale});
                                 }
                             }
                         }
