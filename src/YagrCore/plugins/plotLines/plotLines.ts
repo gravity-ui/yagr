@@ -6,7 +6,6 @@ import {DrawOrderKey} from '../../utils/types';
 import {PBandConfig} from 'src/types';
 import {deepIsEqual} from '../../utils/common';
 import {calculateFromTo} from './utils';
-import {nanoid} from 'nanoid';
 
 const MAX_X_SCALE_LINE_OFFSET = 0;
 const DRAW_MAP = {
@@ -49,13 +48,14 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
         const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 
         const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
+        let lineCounter = 0;
 
         function getLineId(line: PlotLineConfig): string {
             if (line.id) {
                 return line.id;
             }
             const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) => deepIsEqual(l, line))?.[0];
-            return lineWithoutId || `${nanoid()}`;
+            return lineWithoutId || `plot-line-${++lineCounter}`;
         }
 
         function renderPlotLines(u: UPlot) {
