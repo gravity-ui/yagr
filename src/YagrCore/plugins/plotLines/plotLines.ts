@@ -206,7 +206,7 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                             const axisConfig = config.axes[scale];
                             if (axisConfig.plotLines) {
                                 for (const plotLine of axisConfig.plotLines) {
-                                    plotLines.set(plotLine.id || `${++counter}`, {...plotLine, scale});
+                                    plotLines.set(plotLine.id || `plot-line-${++counter}`, {...plotLine, scale});
                                 }
                             }
                         }
