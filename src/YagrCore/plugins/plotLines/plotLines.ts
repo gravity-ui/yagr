@@ -4,7 +4,7 @@ import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
 import {PBandConfig} from 'src/types';
-import {deepIsEqual} from '../../utils/common';
+import {deepIsEqual, genId} from '../../utils/common';
 import {calculateFromTo} from './utils';
 
 const MAX_X_SCALE_LINE_OFFSET = 0;
@@ -48,13 +48,13 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
         const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
 
         const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
-        let lineCounter = 0;
+
         function getLineId(line: PlotLineConfig): string {
             if (line.id) {
                 return line.id;
             }
             const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) => deepIsEqual(l, line))?.[0];
-            return lineWithoutId || `plot-line-${++lineCounter}`;
+            return lineWithoutId || genId();
         }
 
         function renderPlotLines(u: UPlot) {
@@ -204,9 +204,8 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                         if (config.axes.hasOwnProperty(scale)) {
                             const axisConfig = config.axes[scale];
                             if (axisConfig.plotLines) {
-                                let initialCounter = 0;
                                 for (const plotLine of axisConfig.plotLines) {
-                                    plotLines.set(plotLine.id || `plot-line-initial-${++initialCounter}`, {
+                                    plotLines.set(plotLine.id || genId(), {
                                         ...plotLine,
                                         scale,
                                     });
