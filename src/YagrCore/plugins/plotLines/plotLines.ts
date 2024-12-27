@@ -49,13 +49,11 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
 
         const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
-        function getLineId(line: PlotLineConfig, scale?: string): string {
+        function getLineId(line: PlotLineConfig): string {
             if (line.id) {
                 return line.id;
             }
-            const lineWithoutId = Array.from(plotLines.entries()).find(
-                ([_, l]) => deepIsEqual(l, line) && (!scale || line.scale === scale),
-            )?.[0];
+            const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) => deepIsEqual(l, line))?.[0];
             return lineWithoutId || `${Math.random()}`;
         }
 
@@ -80,7 +78,9 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                 const {scale, value} = plotLineConfig;
 
                 const isBand = Array.isArray(value);
-                const [from, to] = calculateFromTo(value, scale, timeline, u);
+                const [from, to] = isBand
+                    ? calculateFromTo(value, scale, timeline, u)
+                    : [u.valToPos(value, scale, true), 0];
 
                 if (isBand) {
                     const accent = (plotLineConfig as PBandConfig).accent;
@@ -99,9 +99,14 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                     }
                 } else {
                     const pConf = plotLineConfig as PLineConfig;
+
+                    ctx.beginPath();
+
                     if (scale === DEFAULT_X_SCALE) {
-                        const last = u.valToPos(u.data[0][u.data[0].length - 1] as number, scale, true);
-                        if (from - last > MAX_X_SCALE_LINE_OFFSET) {
+                        /** Workaround to ensure that plot line will not be drawn over axes */
+                        const last = u.data[0][u.data[0].length - 1] as number;
+                        const lastValue = u.valToPos(last, scale, true);
+                        if (from - lastValue > MAX_X_SCALE_LINE_OFFSET) {
                             continue;
                         }
 
@@ -140,9 +145,9 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
             }
         }
 
-        function removePlotLines(plotLinesToRemove: PlotLineConfig[], scale?: string | undefined) {
+        function removePlotLines(plotLinesToRemove: PlotLineConfig[]) {
             for (const lineToRemove of plotLinesToRemove) {
-                const lineId = getLineId(lineToRemove, scale);
+                const lineId = getLineId(lineToRemove);
                 plotLines.delete(lineId);
             }
         }
@@ -159,7 +164,7 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
             const existingKeys = new Set<string>();
 
             for (const newLine of newPlotLines) {
-                const lineId = getLineId(newLine, scale);
+                const lineId = getLineId(newLine);
                 plotLines.set(lineId, newLine);
                 existingKeys.add(lineId);
             }
