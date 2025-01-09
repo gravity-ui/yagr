@@ -1,5 +1,24 @@
 ### master
 
+## [4.4.0](https://github.com/gravity-ui/yagr/compare/v4.3.5...v4.4.0) (2025-01-09)
+
+
+### Features
+
+* use map for plot lines ([e80c0a5](https://github.com/gravity-ui/yagr/commit/e80c0a59909717bec62df29df0dac0d55214820a))
+
+
+### Bug Fixes
+
+* id generation ([eaf5595](https://github.com/gravity-ui/yagr/commit/eaf55952845f2524e4334d7c37fd897dbeb9a857))
+* id generation ([d7fece3](https://github.com/gravity-ui/yagr/commit/d7fece37b83657358432c8d93a7b8e107d352e41))
+* id generation ([a3f8e6a](https://github.com/gravity-ui/yagr/commit/a3f8e6a546a2794cd3ce1f42ef066c85eee705bf))
+* id generation ([0bfe4d0](https://github.com/gravity-ui/yagr/commit/0bfe4d03b890425844bdc7b2909628eb035573fb))
+* id generation func ([ec18654](https://github.com/gravity-ui/yagr/commit/ec18654e036c9306eda3e190a04db754a19717cd))
+* moved to incremental id generator ([ed2def1](https://github.com/gravity-ui/yagr/commit/ed2def1d255e51f3486e12de9c9ba87a604e076e))
+* review changes ([1699c82](https://github.com/gravity-ui/yagr/commit/1699c825f36e4039367bbc3b52e0101935c6f5db))
+* use nanoid for id generations ([a26c10f](https://github.com/gravity-ui/yagr/commit/a26c10f7dadbddbb148bad7fe6bb316d9b9d0a77))
+
 ## [4.3.5](https://github.com/gravity-ui/yagr/compare/v4.3.4...v4.3.5) (2024-11-05)
 
 
