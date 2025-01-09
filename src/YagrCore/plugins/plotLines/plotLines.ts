@@ -3,8 +3,9 @@ import UPlot, {Plugin} from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
 import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
-import {deepIsEqual} from '../../utils/common';
 import {PBandConfig} from 'src/types';
+import {deepIsEqual, genId} from '../../utils/common';
+import {calculateFromTo} from './utils';
 
 const MAX_X_SCALE_LINE_OFFSET = 0;
 const DRAW_MAP = {
@@ -12,12 +13,6 @@ const DRAW_MAP = {
     [DrawOrderKey.Axes]: 1,
     plotLines: 2,
 };
-
-function hasPlotLine(list: PlotLineConfig[], p: PlotLineConfig) {
-    return list.some((pl) => {
-        return deepIsEqual(pl, p);
-    });
-}
 
 const HOOKS_MAP: Record<string, 'draw' | 'drawClear' | 'drawAxes' | 'drawSeries'> = {
     '012': 'draw',
@@ -45,7 +40,7 @@ export interface PlotLineOptions {
  * Axis should be bound to scale.
  */
 export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlugin {
-    let plotLines: PlotLineConfig[] = [];
+    let plotLines = new Map<string, PlotLineConfig>();
 
     return function (yagr: Yagr) {
         const drawOrder = yagr.config.chart.appearance?.drawOrder;
@@ -54,12 +49,20 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
 
         const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
+        function getLineId(line: PlotLineConfig): string {
+            if (line.id) {
+                return line.id;
+            }
+            const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) => deepIsEqual(l, line))?.[0];
+            return lineWithoutId || genId();
+        }
+
         function renderPlotLines(u: UPlot) {
             const {ctx} = u;
             const {height, top, width, left} = u.bbox;
             const timeline = u.data[0];
 
-            for (const plotLineConfig of plotLines) {
+            for (const plotLineConfig of plotLines.values()) {
                 if (!plotLineConfig.scale) {
                     continue;
                 }
@@ -74,48 +77,13 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
 
                 const {scale, value} = plotLineConfig;
 
-                if (Array.isArray(value)) {
-                    /** This weird code should handles unexpected Inifinities in values */
-                    const [fromValue, toValue] = value.map((val) => {
-                        if (Math.abs(val) !== Infinity) {
-                            if (scale === DEFAULT_X_SCALE) {
-                                if (val < timeline[0]) {
-                                    return timeline[0];
-                                }
+                const isBand = Array.isArray(value);
+                const [from, to] = isBand
+                    ? calculateFromTo(value, scale, timeline, u)
+                    : [u.valToPos(value, scale, true), 0];
 
-                                if (val > timeline[timeline.length - 1]) {
-                                    return timeline[timeline.length - 1];
-                                }
-                            } else {
-                                const scaleCfg = u.scales[scale];
-                                if (scaleCfg.min !== undefined && val < scaleCfg.min) {
-                                    return scaleCfg.min;
-                                }
-
-                                if (scaleCfg.max !== undefined && val > scaleCfg.max) {
-                                    return scaleCfg.max;
-                                }
-                            }
-
-                            return val;
-                        }
-
-                        const pos =
-                            val > 0
-                                ? scale === DEFAULT_X_SCALE
-                                    ? u.width
-                                    : 0
-                                : scale === DEFAULT_X_SCALE
-                                ? 0
-                                : u.height;
-
-                        return u.posToVal(pos, scale);
-                    });
-
-                    const from = u.valToPos(fromValue, scale, true);
-                    const to = u.valToPos(toValue, scale, true);
+                if (isBand) {
                     const accent = (plotLineConfig as PBandConfig).accent;
-
                     if (scale === DEFAULT_X_SCALE) {
                         ctx.fillRect(from, top, to - from, height);
                         if (accent) {
@@ -130,7 +98,6 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                         }
                     }
                 } else {
-                    const from = u.valToPos(value, scale, true);
                     const pConf = plotLineConfig as PLineConfig;
 
                     ctx.beginPath();
@@ -144,7 +111,6 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                         }
 
                         ctx.moveTo(from, top);
-
                         ctx.lineTo(from, height + top);
                     } else {
                         ctx.moveTo(left, from);
@@ -153,10 +119,12 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
 
                     ctx.lineWidth = pConf.width || DEFAULT_CANVAS_PIXEL_RATIO;
                     ctx.strokeStyle = pConf.color || '#000';
-                    pConf.dash && ctx.setLineDash(pConf.dash);
-                    ctx.closePath();
+                    if (pConf.dash) {
+                        ctx.setLineDash(pConf.dash);
+                    }
                     ctx.stroke();
                 }
+
                 ctx.restore();
             }
         }
@@ -170,55 +138,81 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                   }
                 : renderPlotLines;
 
+        function addPlotLines(additionalPlotLines: PlotLineConfig[]) {
+            for (const line of additionalPlotLines) {
+                const lineId = getLineId(line);
+                plotLines.set(lineId, line);
+            }
+        }
+
+        function removePlotLines(plotLinesToRemove: PlotLineConfig[]) {
+            for (const lineToRemove of plotLinesToRemove) {
+                const lineId = getLineId(lineToRemove);
+                plotLines.delete(lineId);
+            }
+        }
+        function getPlotLines(): PlotLineConfig[] {
+            return Array.from(plotLines.values());
+        }
+
+        function updatePlotLines(newPlotLines?: PlotLineConfig[], scale?: string) {
+            if (!newPlotLines || newPlotLines.length === 0) {
+                clearPlotLines(scale);
+                return;
+            }
+
+            const existingKeys = new Set<string>();
+
+            for (const newLine of newPlotLines) {
+                const lineId = getLineId(newLine);
+                plotLines.set(lineId, newLine);
+                existingKeys.add(lineId);
+            }
+
+            // Delete not actual lines from map
+            for (const [key, line] of plotLines.entries()) {
+                if ((!scale || line.scale === scale) && !existingKeys.has(key)) {
+                    plotLines.delete(key);
+                }
+            }
+        }
+
+        function clearPlotLines(scale?: string) {
+            if (scale) {
+                plotLines.forEach((line, key) => {
+                    if (line.scale === scale) {
+                        plotLines.delete(key);
+                    }
+                });
+            } else {
+                plotLines.clear();
+            }
+        }
+
         const plugin = {
-            get: () => plotLines,
-            clear: (scale?: string) => {
-                plotLines = scale
-                    ? plotLines.filter((p) => {
-                          return p.scale !== scale;
-                      })
-                    : [];
-            },
-            remove: (plotLinesToRemove: PlotLineConfig[]) => {
-                plotLines = plotLines.filter((p) => {
-                    return !hasPlotLine(plotLinesToRemove, p);
-                });
-            },
-            add: (additionalPlotLines: PlotLineConfig[], scale?: string) => {
-                for (const p of additionalPlotLines) {
-                    plotLines.push(scale ? {scale, ...p} : p);
-                }
-            },
-            update: (newPlotLines?: PlotLineConfig[], scale?: string) => {
-                if (!newPlotLines || newPlotLines.length === 0) {
-                    plugin.clear(scale);
-                    return;
-                }
-
-                const additions = newPlotLines!.filter((p) => {
-                    return !hasPlotLine(plotLines, p);
-                });
-
-                const removes = plotLines.filter((p) => {
-                    return !hasPlotLine(newPlotLines!, p);
-                });
-
-                additions.length && plugin.add(additions, scale);
-                removes.length && plugin.remove(removes);
-            },
+            get: getPlotLines,
+            clear: clearPlotLines,
+            remove: removePlotLines,
+            add: addPlotLines,
+            update: updatePlotLines,
             uplot: {
                 opts: () => {
                     const config = yagr.config;
-                    plotLines = [];
+                    plotLines = new Map();
 
-                    /** Collecting plot lines from config axes for plotLines plugin */
-                    Object.entries(config.axes).forEach(([scale, axisConfig]) => {
-                        if (axisConfig.plotLines) {
-                            axisConfig.plotLines.forEach((plotLine) => {
-                                plotLines.push({...plotLine, scale});
-                            });
+                    for (const scale in config.axes) {
+                        if (config.axes.hasOwnProperty(scale)) {
+                            const axisConfig = config.axes[scale];
+                            if (axisConfig.plotLines) {
+                                for (const plotLine of axisConfig.plotLines) {
+                                    plotLines.set(plotLine.id || genId(), {
+                                        ...plotLine,
+                                        scale,
+                                    });
+                                }
+                            }
                         }
-                    });
+                    }
                 },
                 hooks: {
                     // @TODO Add feature to draw plot lines over series
