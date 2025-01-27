@@ -1,5 +1,12 @@
 ### master
 
+## [4.4.1](https://github.com/gravity-ui/yagr/compare/v4.4.0...v4.4.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* baseline align for legend items ([#236](https://github.com/gravity-ui/yagr/issues/236)) ([bb62787](https://github.com/gravity-ui/yagr/commit/bb62787ef2e8db8458050701830d1f93c0f67113))
+
 ## [4.4.0](https://github.com/gravity-ui/yagr/compare/v4.3.5...v4.4.0) (2025-01-09)
 
 
