@@ -19,6 +19,8 @@ export interface LegendOptions {
     fontSize?: number;
     /** Basic behaviour includes only toggle behaviuor ("Hide/show all" button exists) */
     behaviour?: 'basic' | 'extended';
+    /** Displays pagination if rows exceed the available height (default: true) */
+    pagination?: boolean;
 }
 
 interface LegendState {
@@ -95,6 +97,7 @@ export default class LegendPlugin {
                 maxLegendSpace: DEFAULT_LEGEND_PLACE_RATIO,
                 className: undefined,
                 behaviour: 'basic',
+                pagination: true,
             },
             options || {},
         );
@@ -330,10 +333,14 @@ export default class LegendPlugin {
         this.items = legendEl.querySelector('.yagr-legend__items') as HTMLElement;
         this.container = legendEl.querySelector('.yagr-legend__container') as HTMLElement;
 
+        if (!this.options.pagination) {
+            this.container.classList.add('yagr-legend__container_scroll');
+        }
+
         if (this.state.paginated) {
             const pagination = this.renderPagination();
             this.container?.after(pagination);
-        } else {
+        } else if (this.options.pagination) {
             this.items.style.justifyContent = 'center';
         }
 
@@ -486,7 +493,7 @@ export default class LegendPlugin {
         const itemsRowsPerPage = rowsPerPage - 1;
         const itemsPageSize = Math.min(itemsRowsPerPage * rowHeight, maxPossiblePlace);
         const paginatedPageSize = Math.min(rowsPerPage * rowHeight, maxPossiblePlace);
-        const paginated = requiredHeight > itemsPageSize && itemsPageSize > 0;
+        const paginated = Boolean(this.options.pagination) && requiredHeight > itemsPageSize && itemsPageSize > 0;
         const requiredSpace = Math.min(paginated ? paginatedPageSize : itemsPageSize, requiredHeight);
         const pages = Math.ceil(requiredHeight / itemsPageSize);
         const additionalSpace = paginated ? this.VERTICAL_PADDING + PAGINATION_BUTTON_HEIGHT : this.VERTICAL_PADDING;
