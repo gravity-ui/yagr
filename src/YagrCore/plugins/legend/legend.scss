@@ -19,6 +19,7 @@ $block: yagr-legend;
     &__items {
         display: flex;
         flex-flow: row wrap;
+        align-items: baseline;
         padding-left: 16px;
     }
 
