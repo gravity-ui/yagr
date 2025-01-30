@@ -1,5 +1,12 @@
 ### master
 
+## [4.5.0](https://github.com/gravity-ui/yagr/compare/v4.4.1...v4.5.0) (2025-01-30)
+
+
+### Features
+
+* add legendColorKey property to series options ([#239](https://github.com/gravity-ui/yagr/issues/239)) ([87f590b](https://github.com/gravity-ui/yagr/commit/87f590b9e4dd48a06ab241b66b37a3c63347ad6a))
+
 ## [4.4.1](https://github.com/gravity-ui/yagr/compare/v4.4.0...v4.4.1) (2025-01-27)
 
 
