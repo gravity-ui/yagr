@@ -237,8 +237,7 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
                 }
                 break;
             }
-            case 'color':
-            default: {
+            case 'color': {
                 serieColor = color;
             }
         }
