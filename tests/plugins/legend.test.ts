@@ -1,5 +1,5 @@
-import { Series } from 'uplot';
-import {MinimalValidConfig} from '../../src';
+import {Series} from 'uplot';
+import {AreaSeriesOptions, ExtendedSeriesOptions, MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
 import {DEFAULT_X_SERIE_NAME} from '../../src/YagrCore/defaults';
 import {hasOneVisibleLine} from '../../src/YagrCore/plugins/legend/legend';
@@ -66,6 +66,54 @@ describe('legend', () => {
 
             expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
             expect(y.root.lastChild).toBe(y.root.querySelector('.yagr-legend'));
+        });
+    });
+
+    describe('color', () => {
+        afterEach(() => {
+            el.innerHTML = '';
+        });
+
+        const serie: ExtendedSeriesOptions & AreaSeriesOptions = {
+            type: 'area',
+            data: [1, 2, 3, 4],
+            id: '1',
+            color: 'rgba(255, 0, 0, 0.1)',
+            lineColor: 'rgb(255, 0, 0)',
+        };
+
+        const colorTestConfig: MinimalValidConfig = {
+            series: [serie],
+            timeline: [1, 2, 3, 4],
+            legend: {
+                show: true,
+                position: 'top',
+            },
+        };
+
+        it('should use color for legend if there is no legendColorKey', () => {
+            const y = new Yagr(el, {
+                ...colorTestConfig,
+            });
+
+            expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
+
+            const legendIcon = y.root.querySelector('.yagr-legend .yagr-legend__icon') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgba(255, 0, 0, 0.1)');
+        });
+
+        it('should use lineColor for legend if legendColorKey is lineColor', () => {
+            const y = new Yagr(el, {
+                ...colorTestConfig,
+                series: [{...colorTestConfig.series[0], legendColorKey: 'lineColor'}],
+            });
+
+            expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
+
+            const legendIcon = y.root.querySelector('.yagr-legend .yagr-legend__icon') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgb(255, 0, 0)');
         });
     });
 

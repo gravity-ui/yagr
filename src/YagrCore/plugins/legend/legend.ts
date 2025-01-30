@@ -420,7 +420,7 @@ export default class LegendPlugin {
     private createIconLineElement(serie: Series) {
         const iconLineElement = html('span', {
             class: `yagr-legend__icon yagr-legend__icon_${serie.type}`,
-            style: {'background-color': serie.color},
+            style: {'background-color': this.yagr.getSerieLegendColor(serie)},
         });
 
         return iconLineElement;

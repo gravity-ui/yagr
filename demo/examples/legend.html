@@ -39,6 +39,13 @@
             <div id="chart7" class="container"></div>
         </div>
 
+        <h2>Charts with semi-transparent colors</h2>
+        <div>To prevent transparent colors in legend and tooltip, 
+            you can set <b>'lineColor'</b> to them with <b>legendColorKey</b> serie option</div>
+        <div class="grid">
+            <div id="chart8" class="container"></div>
+        </div>
+
         <script>
             const y1 = new Yagr(chart1, {
                 title: {text: 'On top'},
@@ -196,6 +203,38 @@
                 legend: {
                     show: true,
                     position: 'top',
+                },
+            });
+
+            const timeline = Array(50).fill(0.2).map((v, i) => v * i)
+            const data1 = timeline.map(x => Math.sin(x))
+            const data2 = timeline.map(x => Math.cos(x))
+
+            const y8 = new Yagr(chart8, {
+                timeline: timeline,
+                series: [
+                    {
+                        name: "sin(x)",
+                        data: data1, 
+                        color: 'rgba(126, 178, 109, 0.1)', 
+                        lineColor: 'rgba(126, 178, 109)', 
+                        type: 'area', 
+                        legendColorKey: 'lineColor'
+                    },
+                    {
+                        name: "cos(x)",
+                        data: data2, 
+                        color: 'rgba(110, 208, 224, 0.1)', 
+                        lineColor: 'rgba(110, 208, 224)', 
+                        type: 'area', 
+                        legendColorKey: 'lineColor'
+                    },
+                ],
+                scales: {
+                    y: {min: -1.5, max: 1.5},
+                },
+                legend: {
+                    show: true,
                 },
             });
         </script>

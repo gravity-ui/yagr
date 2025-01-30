@@ -24,7 +24,9 @@ Series type adds extra features to [uPlot series](https://github.com/leeoniya/up
 
 -   `series.width?: number` - line width (line type charts)
 
--   `series.lineColor? string` - line color (area type charts)
+-   `series.lineColor?: string` - line color (area type charts)
+
+-   `series.legendColorKey?: 'color' | 'lineColor'` - determines which color field to use for serie in legend and tooltip
 
 -   `series.lineWidth?: number` - line width over area (area type charts)
 
