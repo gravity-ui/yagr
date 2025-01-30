@@ -225,6 +225,27 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
         return this.uplot.series[this.state.y2uIdx[id]];
     }
 
+    getSerieLegendColor(serie: Series) {
+        const {legendColorKey, color, lineColor} = serie;
+
+        let serieColor = color;
+
+        switch (legendColorKey) {
+            case 'lineColor': {
+                if (lineColor) {
+                    serieColor = lineColor;
+                }
+                break;
+            }
+            case 'color':
+            default: {
+                serieColor = color;
+            }
+        }
+
+        return serieColor;
+    }
+
     dispose() {
         this.resizeOb && this.resizeOb.unobserve(this.root);
         this.unsubscribe();

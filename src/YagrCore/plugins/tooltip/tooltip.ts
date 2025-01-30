@@ -384,7 +384,7 @@ class YagrTooltip {
                     value: displayValue,
                     y: yValue,
                     displayY: realY,
-                    color: serie.color,
+                    color: this.yagr.getSerieLegendColor(serie),
                     seriesIdx,
                     rowIdx: section.rows.length ? section.rows[section.rows.length - 1].rowIdx + 1 : 0,
                 };

@@ -252,6 +252,15 @@ export interface CommonSeriesOptions {
      * Use at your own risk
      **/
     postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];
+
+    /**
+     * Determines what data value should be used to get a color for legend and tooltip.
+     * - `lineColor` indicates that lineColor property should be used
+     * - `color` indicates that color property should be used
+     *
+     * @default 'color'
+     */
+    legendColorKey?: 'color' | 'lineColor';
 }
 
 export interface LineSeriesOptions extends CommonSeriesOptions {
