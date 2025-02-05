@@ -234,6 +234,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
          */
         this.plugins.legend?.preInit(this, this.config.legend, options);
         options.height = this.clientHeight;
+        options.bands = config.bands;
 
         this.options = options;
 
