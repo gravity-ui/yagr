@@ -73,6 +73,8 @@ items:
             href: ./examples/highload.md
           - name: Dashboard
             href: ./examples/dashboard.md
+          - name: Custom X Scale Values
+            href: ./examples/custom-x-scale-values.md
 
     - name: Contibuting
       href: contribution.md
