@@ -1,5 +1,12 @@
 ### master
 
+## [4.6.0](https://github.com/gravity-ui/yagr/compare/v4.5.0...v4.6.0) (2025-02-06)
+
+
+### Features
+
+* Added uplot bands settings ([#242](https://github.com/gravity-ui/yagr/issues/242)) ([56c7128](https://github.com/gravity-ui/yagr/commit/56c71281d59f1c65cee2a52a2f09b9be070f336d))
+
 ## [4.5.0](https://github.com/gravity-ui/yagr/compare/v4.4.1...v4.5.0) (2025-01-30)
 
 
