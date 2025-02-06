@@ -1,4 +1,4 @@
-import uPlot, {Axis as UAxis, Hooks, Series, Options, Plugin} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, Series, Options, Plugin, Band} from 'uplot';
 
 import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -91,6 +91,9 @@ export interface YagrConfig {
 
     /** Raw series data and options */
     series: RawSerieData[];
+
+    /** UPlot bands for grouping series*/
+    bands?: Band[];
 
     /** uPlot hooks + Yagr hooks */
     hooks: YagrHooks;
