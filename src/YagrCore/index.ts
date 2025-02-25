@@ -398,7 +398,10 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     get clientHeight() {
         const MARGIN = 8;
         const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
-        return this.root.clientHeight - offset - (this.plugins.legend?.state.totalSpace || 0);
+        // https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model/Determining_the_dimensions_of_elements#how_much_room_does_it_use_up
+        // getBoundingClientRect() provides more precise decimal point values.
+        // To prevent extra scroll we need round to floor 
+        return Math.floor(this.root.getBoundingClientRect().height) - offset - (this.plugins.legend?.state.totalSpace || 0);
     }
 
     reflow(redraw = true) {
