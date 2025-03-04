@@ -1,5 +1,13 @@
 ### master
 
+## [4.6.1](https://github.com/gravity-ui/yagr/compare/v4.6.0...v4.6.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* `dist` exports ([#247](https://github.com/gravity-ui/yagr/issues/247)) ([11a821f](https://github.com/gravity-ui/yagr/commit/11a821f95a7f2eea05ece0735965579ad495fc2b))
+* fix clientHeight calculation ([#245](https://github.com/gravity-ui/yagr/issues/245)) ([0ac3eda](https://github.com/gravity-ui/yagr/commit/0ac3eda0d95787a6ac9b28e05802f87eae98de77))
+
 ## [4.6.0](https://github.com/gravity-ui/yagr/compare/v4.5.0...v4.6.0) (2025-02-06)
 
 
