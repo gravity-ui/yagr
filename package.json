@@ -31,7 +31,10 @@
     "./aggregates": "./dist/plugins/aggregates/aggregates.js",
     "./weekends": "./dist/plugins/weekends/weekends.js",
     "./react": "./dist/react.js",
-    "./dist/*": "./dist/*",
+    "./dist/*": {
+      "default": "./dist/*",
+      "types": "./dist/*.d.ts"
+    },
     "./dist/index.css": {
       "import": "./dist/index.css",
       "require": "./dist/index.css"
