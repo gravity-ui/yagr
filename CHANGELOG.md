@@ -1,5 +1,12 @@
 ### master
 
+## [4.7.0](https://github.com/gravity-ui/yagr/compare/v4.6.1...v4.7.0) (2025-04-04)
+
+
+### Features
+
+* update uplot to v1.6.32 ([#249](https://github.com/gravity-ui/yagr/issues/249)) ([45ccf1e](https://github.com/gravity-ui/yagr/commit/45ccf1e8c2b4e8f04396b5ebaf578f5ab7e23bbb))
+
 ## [4.6.1](https://github.com/gravity-ui/yagr/compare/v4.6.0...v4.6.1) (2025-03-04)
 
 
