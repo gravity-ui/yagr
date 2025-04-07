@@ -32,8 +32,8 @@
     "./weekends": "./dist/plugins/weekends/weekends.js",
     "./react": "./dist/react.js",
     "./dist/*": {
-      "default": "./dist/*",
-      "types": "./dist/*.d.ts"
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*"
     },
     "./dist/index.css": {
       "import": "./dist/index.css",
