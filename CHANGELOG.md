@@ -1,5 +1,12 @@
 ### master
 
+## [4.7.1](https://github.com/gravity-ui/yagr/compare/v4.7.0...v4.7.1) (2025-04-07)
+
+
+### Bug Fixes
+
+* order of default import at package.json ([#253](https://github.com/gravity-ui/yagr/issues/253)) ([108ee86](https://github.com/gravity-ui/yagr/commit/108ee860b7609a1fa70a5cbf94a3c414c4c347fb))
+
 ## [4.7.0](https://github.com/gravity-ui/yagr/compare/v4.6.1...v4.7.0) (2025-04-04)
 
 
