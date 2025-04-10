@@ -1,5 +1,12 @@
 ### master
 
+## [4.7.2](https://github.com/gravity-ui/yagr/compare/v4.7.1...v4.7.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* imports from @gravity-ui/yagr/types ([#256](https://github.com/gravity-ui/yagr/issues/256)) ([e775e5e](https://github.com/gravity-ui/yagr/commit/e775e5eb7a26219d43e506b67c3318bd38cc8ca9))
+
 ## [4.7.1](https://github.com/gravity-ui/yagr/compare/v4.7.0...v4.7.1) (2025-04-07)
 
 
