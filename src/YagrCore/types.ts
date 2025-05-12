@@ -250,6 +250,9 @@ export interface CommonSeriesOptions {
     /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
     showInTooltip?: boolean;
 
+    /** Should show series in legend, added to implement more flexible patterns of lines hiding */
+    showInLegend?: boolean;
+
     /**
      * Postprocessing function to change actual values (doesn't marks as _transformed series)
      * Use at your own risk

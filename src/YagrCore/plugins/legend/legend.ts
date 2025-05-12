@@ -439,7 +439,12 @@ export default class LegendPlugin {
         const series: (Series | typeof ALL_SERIES_IDX)[] = titleId ? [titleId] : [];
 
         for (let i = 1; i < uplotOptions.series.length; i++) {
-            series.push(uplotOptions.series[i]);
+            const serie = uplotOptions.series[i];
+            const showInLegend = serie.showInLegend === undefined ? true : serie.showInLegend;
+
+            if (showInLegend) {
+                series.push(serie);
+            }
         }
 
         const content = series
