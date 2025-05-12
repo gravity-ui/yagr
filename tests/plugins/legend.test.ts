@@ -14,6 +14,11 @@ describe('legend', () => {
         series: [
             {
                 data: [1, 2, 3, 4],
+                id: 'hidden-in-start',
+                showInLegend: false,
+            },
+            {
+                data: [1, 2, 3, 4],
                 id: '1',
             },
             {
@@ -22,11 +27,21 @@ describe('legend', () => {
             },
             {
                 data: [1, 2, 3, 4],
+                id: 'hidden-in-middle',
+                showInLegend: false,
+            },
+            {
+                data: [1, 2, 3, 4],
                 id: '3',
             },
             {
                 data: [1, 2, 3, 4],
                 id: '4',
+            },
+            {
+                data: [1, 2, 3, 4],
+                id: 'hidden-in-end',
+                showInLegend: false,
             },
         ],
         timeline: [1, 2, 3, 4],
@@ -243,6 +258,9 @@ describe('legend', () => {
                 if (s.id === serie.id) {
                     expect(node?.classList).not.toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeTruthy();
+                } else if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
                 } else {
                     expect(node?.classList).toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeFalsy();
@@ -258,8 +276,13 @@ describe('legend', () => {
 
                 const node = el.querySelector(`[data-serie-id="${s.id}"]`);
 
-                expect(node?.classList).not.toContain('yagr-legend__item_hidden');
-                expect(s.show).toBeTruthy();
+                if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
+                } else {
+                    expect(node?.classList).not.toContain('yagr-legend__item_hidden');
+                    expect(s.show).toBeTruthy();
+                }
             });
         });
 
@@ -298,15 +321,21 @@ describe('legend', () => {
             secondIcon!.dispatchEvent(secondClickEvent);
             await new Promise((resolve) => setTimeout(resolve, 200));
 
-            const expectedRange = [1, 3];
-            y.uplot.series.forEach((s, i) => {
+            const expectedVisibleIds = ['2', '3', '4'];
+            y.uplot.series.forEach((s) => {
                 if (s.id === DEFAULT_X_SERIE_NAME) {
                     return;
                 }
 
                 const node = el.querySelector(`[data-serie-id="${s.id}"]`);
 
-                if (i >= expectedRange[0] && i <= expectedRange[1]) {
+                if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
+                    return;
+                }
+
+                if (expectedVisibleIds.includes(s.id)) {
                     expect(node?.classList).not.toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeTruthy();
                 } else {

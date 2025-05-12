@@ -39,8 +39,12 @@ const TOTAL_LEGEND_VERTICAL_PADDING_TOP = 48;
 const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
 
+export const getSeriesInLegend = (series: Series[]) => {
+    return series.filter(({id, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false);
+};
+
 export const hasOneVisibleLine = (series: Series[]) => {
-    return series.some(({show, id}) => id !== DEFAULT_X_SERIE_NAME && show);
+    return series.some(({id, show, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false && show);
 };
 
 const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
@@ -140,15 +144,16 @@ export default class LegendPlugin {
         const onSerieClickBasic = (serieNode: HTMLElement) => () => {
             const serieId = serieNode.getAttribute('data-serie-id');
             const seriesToToggle: [Series, boolean][] = [];
+            const series = getSeriesInLegend(u.series);
 
             if (serieId === ALL_SERIES_IDX) {
-                const nextToggleState = !hasOneVisibleLine(u.series);
+                const nextToggleState = !hasOneVisibleLine(series);
 
-                for (let idx = 1; idx < u.series.length; idx++) {
-                    seriesToToggle.push([u.series[idx], nextToggleState]);
-                }
+                series.forEach((s) => {
+                    seriesToToggle.push([s, nextToggleState]);
+                });
             } else {
-                const serie = u.series.find(({id}) => id === serieId);
+                const serie = series.find(({id}) => id === serieId);
                 if (!serie) {
                     return;
                 }
@@ -167,7 +172,7 @@ export default class LegendPlugin {
             const allSeriesItem = yagr.root.querySelector('.yagr-legend__all-series');
 
             if (allSeriesItem) {
-                const title = getPrependingTitle(this.yagr.utils.i18n, u.series);
+                const title = getPrependingTitle(this.yagr.utils.i18n, series);
                 allSeriesItem.innerHTML = title || '';
             }
         };
@@ -185,25 +190,28 @@ export default class LegendPlugin {
 
             const selectSerie = (serie: UPlot.Series) => {
                 this.state.startSerieRange = serie;
+                const series = getSeriesInLegend(u.series);
 
-                const otherSeries = u.series.filter((s) => s.id !== serie.id);
+                const otherSeries = series.filter((s) => s.id !== serie.id);
                 const otherVisibility = !hasOneVisibleLine(otherSeries) && serie.show !== false;
 
-                u.series.forEach((s) => {
+                series.forEach((s) => {
                     const visibility = serie.id === s.id ? true : otherVisibility;
                     changeVisibility(s.id, visibility);
                 });
             };
 
             const selectRange = (serie: UPlot.Series) => {
+                const series = getSeriesInLegend(u.series);
+
                 // If startSerieRange is undefined then startSerieRange = first valid legend element
                 if (!this.state.startSerieRange) {
-                    this.state.startSerieRange = u.series[1];
+                    this.state.startSerieRange = series[0];
                 }
 
                 const range: number[] = [];
 
-                u.series.forEach((s, i) => {
+                series.forEach((s, i) => {
                     if (s.id === serie.id) {
                         range.push(i);
                     }
@@ -213,7 +221,7 @@ export default class LegendPlugin {
                     }
                 });
 
-                u.series.forEach((s, i) => {
+                series.forEach((s, i) => {
                     const visibility = i >= range[0] && i <= range[1];
                     changeVisibility(s.id, visibility);
                 });
@@ -434,18 +442,12 @@ export default class LegendPlugin {
     }
 
     private renderItems(uplotOptions: Options) {
-        const title = getPrependingTitle(this.yagr.utils.i18n, uplotOptions.series);
-        const titleId = this.options.behaviour !== 'extended' && getPrependingTitleId(uplotOptions.series);
-        const series: (Series | typeof ALL_SERIES_IDX)[] = titleId ? [titleId] : [];
-
-        for (let i = 1; i < uplotOptions.series.length; i++) {
-            const serie = uplotOptions.series[i];
-            const showInLegend = serie.showInLegend === undefined ? true : serie.showInLegend;
-
-            if (showInLegend) {
-                series.push(serie);
-            }
-        }
+        const seriesInLegend = getSeriesInLegend(uplotOptions.series);
+        const title = getPrependingTitle(this.yagr.utils.i18n, seriesInLegend);
+        const titleId = this.options.behaviour !== 'extended' && getPrependingTitleId(seriesInLegend);
+        const series: (Series | typeof ALL_SERIES_IDX)[] = titleId
+            ? [titleId, ...seriesInLegend]
+            : [...seriesInLegend];
 
         const content = series
             .map((serie) => {
