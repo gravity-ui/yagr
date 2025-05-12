@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.0](https://github.com/gravity-ui/yagr/compare/v4.7.2...v4.8.0) (2025-05-12)
+
+
+### Features
+
+* (legend) support showInLegend option ([#258](https://github.com/gravity-ui/yagr/issues/258)) ([19d9a7a](https://github.com/gravity-ui/yagr/commit/19d9a7adcd489225556ed9dcf04b7ac0b96ffcf3))
+
 ## [4.7.2](https://github.com/gravity-ui/yagr/compare/v4.7.1...v4.7.2) (2025-04-10)
 
 
