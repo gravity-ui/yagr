@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.1](https://github.com/gravity-ui/yagr/compare/v4.8.0...v4.8.1) (2025-05-13)
+
+
+### Bug Fixes
+
+* **legend:** do not change visibility for hidden series in legend ([#260](https://github.com/gravity-ui/yagr/issues/260)) ([b5ee582](https://github.com/gravity-ui/yagr/commit/b5ee582863134adc9a63ab76afadcad14ded9bb9))
+
 ## [4.8.0](https://github.com/gravity-ui/yagr/compare/v4.7.2...v4.8.0) (2025-05-12)
 
 
