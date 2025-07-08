@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.2](https://github.com/gravity-ui/yagr/compare/v4.8.1...v4.8.2) (2025-07-08)
+
+
+### Bug Fixes
+
+* **tooltip:** yarg tooltip position when page scale changed ([#263](https://github.com/gravity-ui/yagr/issues/263)) ([ca846f6](https://github.com/gravity-ui/yagr/commit/ca846f6a2cbe3a66868b4f4021e5980710cb2547))
+
 ## [4.8.1](https://github.com/gravity-ui/yagr/compare/v4.8.0...v4.8.1) (2025-05-13)
 
 
