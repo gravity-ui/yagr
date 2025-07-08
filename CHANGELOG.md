@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.3](https://github.com/gravity-ui/yagr/compare/v4.8.2...v4.8.3) (2025-07-08)
+
+
+### Bug Fixes
+
+* **tooltip:** yarg tooltip ([#265](https://github.com/gravity-ui/yagr/issues/265)) ([8129d0a](https://github.com/gravity-ui/yagr/commit/8129d0aa84fe20d4d2eb8fcddaecc474744cb608))
+
 ## [4.8.2](https://github.com/gravity-ui/yagr/compare/v4.8.1...v4.8.2) (2025-07-08)
 
 
