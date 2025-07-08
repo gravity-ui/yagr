@@ -304,7 +304,7 @@ class YagrTooltip {
         }
 
         top = inBetween(top, 0, (u.bbox.top + u.bbox.height) / window.devicePixelRatio);
-        left = inBetween(left, 0, (u.bbox.top + u.bbox.height) / window.devicePixelRatio);
+        left = inBetween(left, 0, (u.bbox.left + u.bbox.width) / window.devicePixelRatio);
 
         const {data} = u;
 
