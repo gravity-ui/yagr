@@ -4,6 +4,7 @@ import Yagr from '../../index';
 import {DEFAULT_X_SERIE_NAME} from '../../defaults';
 import {html} from '../../utils/common';
 import {preventMouseEvents} from '../../utils/events';
+import {escapeAttribute} from './utils';
 
 export type LegendPosition = 'top' | 'bottom';
 export interface LegendOptions {
@@ -164,7 +165,7 @@ export default class LegendPlugin {
                 if (serie.show === nextState) {
                     return;
                 }
-                const node = yagr.root.querySelector(`[data-serie-id="${serie.id}"]`);
+                const node = yagr.root.querySelector(`[data-serie-id="${escapeAttribute(serie.id)}"]`);
                 yagr.setVisible(serie.id, nextState, false);
                 node?.classList[nextState ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
@@ -179,7 +180,7 @@ export default class LegendPlugin {
 
         const onSerieClickExtended = (serieNode: HTMLElement) => {
             const changeVisibility = (id: string, visibility: boolean) => {
-                const node = yagr.root.querySelector(`[data-serie-id="${id}"]`);
+                const node = yagr.root.querySelector(`[data-serie-id="${escapeAttribute(id)}"]`);
                 yagr.setVisible(id, visibility, false);
                 node?.classList[visibility ? 'remove' : 'add']('yagr-legend__item_hidden');
             };
@@ -460,7 +461,7 @@ export default class LegendPlugin {
                     sId = titleId;
                     additionalCn = ' yagr-legend__all-series ';
                 } else {
-                    sId = serie.id;
+                    sId = escapeAttribute(serie.id);
                     const icon = this.createIconLineElement(serie);
                     const name = this.createSerieNameElement(serie);
 
