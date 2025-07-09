@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.4](https://github.com/gravity-ui/yagr/compare/v4.8.3...v4.8.4) (2025-07-09)
+
+
+### Bug Fixes
+
+* **legend:** escape quotes in data-serie-id attributes ([#267](https://github.com/gravity-ui/yagr/issues/267)) ([01f412d](https://github.com/gravity-ui/yagr/commit/01f412daa398965c3673c3dc43b42e5ea53e9473))
+
 ## [4.8.3](https://github.com/gravity-ui/yagr/compare/v4.8.2...v4.8.3) (2025-07-08)
 
 
