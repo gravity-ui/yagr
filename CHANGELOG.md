@@ -1,5 +1,12 @@
 ### master
 
+## [4.8.5](https://github.com/gravity-ui/yagr/compare/v4.8.4...v4.8.5) (2025-07-10)
+
+
+### Bug Fixes
+
+* built-in (default) tooltip visibility after data changed ([#269](https://github.com/gravity-ui/yagr/issues/269)) ([428713a](https://github.com/gravity-ui/yagr/commit/428713a178ec1d80c3b7ad5d7d1cf8919797dced))
+
 ## [4.8.4](https://github.com/gravity-ui/yagr/compare/v4.8.3...v4.8.4) (2025-07-09)
 
 
