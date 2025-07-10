@@ -100,7 +100,10 @@ export default function (
     const {primary, secondary} = Object.entries(NAMES).reduce(
         (acc, [key, value]) => ({
             primary: {...acc.primary, [key]: value[side === 'top' || side === 'bottom' ? 0 : 1]},
-            secondary: {...acc.secondary, [key]: value[side === 'top' || side === 'bottom' ? 1 : 0]},
+            secondary: {
+                ...acc.secondary,
+                [key]: value[side === 'top' || side === 'bottom' ? 1 : 0],
+            },
         }),
         {primary: {}, secondary: {}},
     ) as {
@@ -119,7 +122,8 @@ export default function (
     const secondaryMarginAfter = parseInt(elemStyle[secondary.marginAfter], 10);
     const secondaryMargin = secondaryMarginBefore + secondaryMarginAfter;
 
-    const secondaryMaxSize = boundRect[secondary.after] - boundRect[secondary.before] - secondaryMargin;
+    const secondaryMaxSize =
+        boundRect[secondary.after] - boundRect[secondary.before] - secondaryMargin;
     const styledSecondaryMaxSize = parseInt(elemStyle[secondary.maxSize], 10);
 
     if (!styledSecondaryMaxSize || secondaryMaxSize < styledSecondaryMaxSize) {
@@ -129,7 +133,9 @@ export default function (
     // Calculate the available room on either side of the anchor element. If
     // the size of the popup is more than is available on the given side, then we
     // will switch to the side with more room.
-    const margin = parseInt(elemStyle[primary.marginBefore], 10) + parseInt(elemStyle[primary.marginAfter], 10);
+    const margin =
+        parseInt(elemStyle[primary.marginBefore], 10) +
+        parseInt(elemStyle[primary.marginAfter], 10);
     const roomBefore = anchorRect[primary.before] - boundRect[primary.before] - margin;
     const roomAfter = boundRect[primary.after] - anchorRect[primary.after] - margin - offset;
 
@@ -153,7 +159,10 @@ export default function (
     // anchor's bounding rect. If we are working in the context of position:
     // absolute, then we will need to add the window's scroll position as well.
     const maxOffset = document.body[primary.bodyScroll] - window[primary.inner];
-    const scrollOffset = Math.max(Math.min(window[primary.scrollOffset] as unknown as number, maxOffset), 0);
+    const scrollOffset = Math.max(
+        Math.min(window[primary.scrollOffset] as unknown as number, maxOffset),
+        0,
+    );
 
     const boundPrimaryPos = (pos: number) => {
         return Math.max(
@@ -165,7 +174,10 @@ export default function (
     const boundSecondaryPos = (pos: number) => {
         return Math.max(
             boundRect[secondary.before],
-            Math.min(pos, boundRect[secondary.after] - elem[secondary.offsetSize] - secondaryMargin),
+            Math.min(
+                pos,
+                boundRect[secondary.after] - elem[secondary.offsetSize] - secondaryMargin,
+            ),
         );
     };
 
@@ -179,16 +191,22 @@ export default function (
         elem.style[primary.after] = 'auto';
     } else {
         // bottom or right
-        elem.style[primary.before] = px(scrollOffset + boundPrimaryPos(anchorRect[primary.after]) + offset);
+        elem.style[primary.before] = px(
+            scrollOffset + boundPrimaryPos(anchorRect[primary.after]) + offset,
+        );
         elem.style[primary.after] = 'auto';
     }
 
     // Set the position of the popup element along the secondary axis.
     const maxSecondaryOffset = document.body[secondary.bodyScroll] - window[secondary.inner];
-    const secondaryScrollOffset = Math.max(Math.min(window[secondary.scrollOffset] as unknown as number, maxSecondaryOffset), 0);
+    const secondaryScrollOffset = Math.max(
+        Math.min(window[secondary.scrollOffset] as unknown as number, maxSecondaryOffset),
+        0,
+    );
 
     elem.style[secondary.before] = px(
-        secondaryScrollOffset + boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore),
+        secondaryScrollOffset +
+            boundSecondaryPos(anchorRect[secondary.before] - secondaryMarginBefore),
     );
     elem.style[secondary.after] = 'auto';
 
