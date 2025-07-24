@@ -312,7 +312,11 @@ export interface DotsSeriesOptions extends CommonSeriesOptions {
     pointsSize?: number;
 }
 
-export type SeriesOptions = DotsSeriesOptions | LineSeriesOptions | AreaSeriesOptions | ColumnSeriesOptions;
+export type SeriesOptions =
+    | DotsSeriesOptions
+    | LineSeriesOptions
+    | AreaSeriesOptions
+    | ColumnSeriesOptions;
 
 /**
  * Expected serie config and data format from Chart API
@@ -334,7 +338,8 @@ export interface ExtendedSeriesOptions {
     /** Is line focused */
     focus?: boolean;
 }
-export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> = ExtendedSeriesOptions & T;
+export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> =
+    ExtendedSeriesOptions & T;
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 
@@ -379,6 +384,9 @@ export interface PLineConfig extends CommonPlotLineConfig {
 
     /** Line stroke dash style*/
     dash?: [number, number];
+
+    /** Line cap style */
+    lineCap?: Series.Cap;
 }
 
 export type PlotLineConfig = PBandConfig | PLineConfig;
@@ -415,7 +423,9 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?: ScaleRange | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
+    range?:
+        | ScaleRange
+        | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
 }
 

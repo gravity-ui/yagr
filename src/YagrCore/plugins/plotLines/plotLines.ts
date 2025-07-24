@@ -45,7 +45,9 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
     return function (yagr: Yagr) {
         const drawOrder = yagr.config.chart.appearance?.drawOrder;
 
-        const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join('');
+        const drawIndicies = (drawOrder ? drawOrder.map((key) => DRAW_MAP[key]) : [0, 1, 2]).join(
+            '',
+        );
 
         const hook = HOOKS_MAP[drawIndicies] || 'drawClear';
 
@@ -53,7 +55,9 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
             if (line.id) {
                 return line.id;
             }
-            const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) => deepIsEqual(l, line))?.[0];
+            const lineWithoutId = Array.from(plotLines.entries()).find(([_, l]) =>
+                deepIsEqual(l, line),
+            )?.[0];
             return lineWithoutId || genId();
         }
 
@@ -121,6 +125,10 @@ export default function plotLinesPlugin(options: PlotLineOptions): PlotLinesPlug
                     ctx.strokeStyle = pConf.color || '#000';
                     if (pConf.dash) {
                         ctx.setLineDash(pConf.dash);
+                    }
+
+                    if (pConf.lineCap) {
+                        ctx.lineCap = pConf.lineCap;
                     }
                     ctx.stroke();
                 }
