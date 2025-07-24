@@ -1,5 +1,12 @@
 ### master
 
+## [4.9.0](https://github.com/gravity-ui/yagr/compare/v4.8.5...v4.9.0) (2025-07-24)
+
+
+### Features
+
+* added lineCap option for line style ([#271](https://github.com/gravity-ui/yagr/issues/271)) ([9751c21](https://github.com/gravity-ui/yagr/commit/9751c21862cae60fd8155c12566cf9658dff9969))
+
 ## [4.8.5](https://github.com/gravity-ui/yagr/compare/v4.8.4...v4.8.5) (2025-07-10)
 
 
