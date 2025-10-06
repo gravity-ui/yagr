@@ -1,5 +1,12 @@
 ### master
 
+## [4.9.1](https://github.com/gravity-ui/yagr/compare/v4.9.0...v4.9.1) (2025-10-06)
+
+
+### Bug Fixes
+
+* **tooltip:** fix YagrConfig.TooltipOptions.title defined as a function ([#273](https://github.com/gravity-ui/yagr/issues/273)) ([5203730](https://github.com/gravity-ui/yagr/commit/52037305a89f8ba31d42e4b588ec69ea8afac115))
+
 ## [4.9.0](https://github.com/gravity-ui/yagr/compare/v4.8.5...v4.9.0) (2025-07-24)
 
 
