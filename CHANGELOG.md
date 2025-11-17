@@ -1,5 +1,12 @@
 ### master
 
+## [4.9.2](https://github.com/gravity-ui/yagr/compare/v4.9.1...v4.9.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* declarative and immutable chart config ([#275](https://github.com/gravity-ui/yagr/issues/275)) ([4447b00](https://github.com/gravity-ui/yagr/commit/4447b0029d2a9c2d270aeeaddba8a1478ab0bf21))
+
 ## [4.9.1](https://github.com/gravity-ui/yagr/compare/v4.9.0...v4.9.1) (2025-10-06)
 
 
