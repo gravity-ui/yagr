@@ -427,6 +427,9 @@ export interface Scale {
         | ScaleRange
         | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
+
+    /** Formatting scale values as it's time */
+    time?: boolean;
 }
 
 export type ScaleType = 'linear' | 'logarithmic';
