@@ -1,5 +1,12 @@
 ### master
 
+## [4.10.0](https://github.com/gravity-ui/yagr/compare/v4.9.2...v4.10.0) (2025-11-20)
+
+
+### Features
+
+* adds optional setting for scale "time" ([#277](https://github.com/gravity-ui/yagr/issues/277)) ([3c7ea9f](https://github.com/gravity-ui/yagr/commit/3c7ea9fb4e64d965a40a62fe1238673f67eb3a8f))
+
 ## [4.9.2](https://github.com/gravity-ui/yagr/compare/v4.9.1...v4.9.2) (2025-11-17)
 
 
