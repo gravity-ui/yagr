@@ -193,7 +193,6 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         if (scaleConfig.time) {
             scale.time = scaleConfig.time;
         }
-        scale.time = scaleConfig.time;
 
         const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
         const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
