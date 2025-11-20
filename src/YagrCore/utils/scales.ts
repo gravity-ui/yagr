@@ -11,7 +11,12 @@ import {
 import type Yagr from '../index';
 import {Scale as YScale} from './types';
 
-type ScaleRangeType = (min: number, max: number, scfg: Scale, ycfg: YagrConfig) => {min: number; max: number};
+type ScaleRangeType = (
+    min: number,
+    max: number,
+    scfg: Scale,
+    ycfg: YagrConfig,
+) => {min: number; max: number};
 
 export const getScaleRange = (scale: Scale, config: YagrConfig) => {
     const range = scale.range;
@@ -92,8 +97,14 @@ export function offsetScale(dataMin: number, dataMax: number, scaleConfig: Scale
     return {
         min: startFromZero
             ? 0
-            : Math.round(dataMin - Math.abs(dataMin) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET)),
-        max: endWithZero ? 0 : Math.round(dataMax + Math.abs(dataMax) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET)),
+            : Math.round(
+                  dataMin - Math.abs(dataMin) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET),
+              ),
+        max: endWithZero
+            ? 0
+            : Math.round(
+                  dataMax + Math.abs(dataMax) * (scaleConfig.offset || DEFAULT_Y_AXIS_OFFSET),
+              ),
     };
 }
 
@@ -112,7 +123,11 @@ export function niceScale(dataMin: number, dataMax: number, scaleConfig: Scale) 
      * range after usage of given max-min from scale config creates not centered lines
      */
     const dMax = endWithZero ? 0 : typeof scaleConfig.max === 'number' ? scaleConfig.max : dataMax;
-    const dMin = startFromZero ? 0 : typeof scaleConfig.min === 'number' ? scaleConfig.min : dataMin;
+    const dMin = startFromZero
+        ? 0
+        : typeof scaleConfig.min === 'number'
+          ? scaleConfig.min
+          : dataMin;
 
     if (dMin === dMax) {
         return dMin >= 0 ? {min: dMin, max: dMin + 2} : {min: dMin - 1, max: dMin + 1};
@@ -145,17 +160,17 @@ function niceNum(delta: number, round: boolean) {
         ? frac < 1.5
             ? 1
             : frac < 3
-            ? 2
-            : frac < 7
-            ? 5
-            : 10
+              ? 2
+              : frac < 7
+                ? 5
+                : 10
         : frac <= 1
-        ? 1
-        : frac <= 2
-        ? 2
-        : frac <= 5
-        ? 5
-        : 10;
+          ? 1
+          : frac <= 2
+            ? 2
+            : frac <= 5
+              ? 5
+              : 10;
 
     return niceFrac * 10 ** exp;
 }
@@ -174,6 +189,11 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         if (scaleName === DEFAULT_X_SCALE) {
             return;
         }
+
+        if (scaleConfig.time) {
+            scale.time = scaleConfig.time;
+        }
+        scale.time = scaleConfig.time;
 
         const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
         const forceMax = typeof scaleConfig.max === 'number' ? scaleConfig.max : null;
@@ -196,7 +216,10 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         }
 
         if (yagr.isEmpty) {
-            scale.range = [forceMin === null ? (isLogScale ? 1 : 0) : forceMin, forceMax === null ? 100 : forceMax];
+            scale.range = [
+                forceMin === null ? (isLogScale ? 1 : 0) : forceMin,
+                forceMax === null ? 100 : forceMax,
+            ];
             return;
         }
 
