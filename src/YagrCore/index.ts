@@ -219,6 +219,42 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     }
 
     /**
+     * Get current scale ranges (min/max values)
+     * @param scaleName - Optional scale name. If not provided, returns all scales
+     * @returns Object with min/max values for each scale
+     */
+    getScales(scaleName?: string): Record<string, {min: number; max: number}> {
+        if (!this.uplot || !this.uplot.scales) {
+            return {};
+        }
+
+        const scales = this.uplot.scales;
+        const result: Record<string, {min: number; max: number}> = {};
+
+        if (scaleName) {
+            const scale = scales[scaleName];
+            if (scale && scale.min !== undefined && scale.max !== undefined) {
+                result[scaleName] = {
+                    min: scale.min,
+                    max: scale.max,
+                };
+            }
+        } else {
+            Object.keys(scales).forEach((key) => {
+                const scale = scales[key];
+                if (scale && scale.min !== undefined && scale.max !== undefined) {
+                    result[key] = {
+                        min: scale.min,
+                        max: scale.max,
+                    };
+                }
+            });
+        }
+
+        return result;
+    }
+
+    /**
      *  Get uPlot's Series from series id
      */
     getSeriesById(id: string): Series {
@@ -275,7 +311,9 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
     protected init = () => {
         if (this.config.chart.size?.adaptive && !this.resizeOb) {
-            this.resizeOb = new ResizeObserver(debounce(this.onResize, this.config.chart.size.resizeDebounceMs || 100));
+            this.resizeOb = new ResizeObserver(
+                debounce(this.onResize, this.config.chart.size.resizeDebounceMs || 100),
+            );
             this.resizeOb.observe(this.root);
         }
 
@@ -385,7 +423,10 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
     private onResize = (args: ResizeObserverEntry[]) => {
         const [resize] = args;
 
-        if (this._cache.height === resize.contentRect.height && this._cache.width === resize.contentRect.width) {
+        if (
+            this._cache.height === resize.contentRect.height &&
+            this._cache.width === resize.contentRect.width
+        ) {
             return;
         }
 
@@ -397,11 +438,17 @@ class Yagr<TConfig extends MinimalValidConfig = MinimalValidConfig> {
 
     get clientHeight() {
         const MARGIN = 8;
-        const offset = this.config.title.text ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN : 0;
+        const offset = this.config.title.text
+            ? (this.config.title.fontSize || DEFAULT_TITLE_FONT_SIZE) + MARGIN
+            : 0;
         // https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model/Determining_the_dimensions_of_elements#how_much_room_does_it_use_up
         // getBoundingClientRect() provides more precise decimal point values.
-        // To prevent extra scroll we need round to floor 
-        return Math.floor(this.root.getBoundingClientRect().height) - offset - (this.plugins.legend?.state.totalSpace || 0);
+        // To prevent extra scroll we need round to floor
+        return (
+            Math.floor(this.root.getBoundingClientRect().height) -
+            offset -
+            (this.plugins.legend?.state.totalSpace || 0)
+        );
     }
 
     reflow(redraw = true) {
