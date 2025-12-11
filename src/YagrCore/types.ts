@@ -123,6 +123,9 @@ export type ProcessedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'pr
 export type InitedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'initTime'>}>;
 export type DisposeHandlerArg = CommonHookHandlerArg<{}>;
 export type ResizeHandlerArg = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}>;
+export type ScaleUpdateHandlerArg = CommonHookHandlerArg<{
+    scales: Record<string, {min: number; max: number}>;
+}>;
 
 export interface InternalYargHooks {
     load?: HookHandler<{meta: YagrMeta}>;
@@ -133,6 +136,7 @@ export interface InternalYargHooks {
     dispose?: HookHandler<{}>;
     resize?: HookHandler<{entries: ResizeObserverEntry[]}>;
     stage?: HookHandler<{stage: YagrState['stage']}>;
+    scaleUpdate?: HookHandler<{scales: Record<string, {min: number; max: number}>}>;
 }
 
 export type YagrHooks = Hooks.Arrays & InternalYargHooks;
