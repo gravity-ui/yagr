@@ -1,5 +1,12 @@
 ### master
 
+## [4.11.0](https://github.com/gravity-ui/yagr/compare/v4.10.0...v4.11.0) (2025-12-11)
+
+
+### Features
+
+* **core:** add new hook for scale update ([#279](https://github.com/gravity-ui/yagr/issues/279)) ([f2482c2](https://github.com/gravity-ui/yagr/commit/f2482c2ba52be8d9ab9478588662e67d19557f69))
+
 ## [4.10.0](https://github.com/gravity-ui/yagr/compare/v4.9.2...v4.10.0) (2025-11-20)
 
 
