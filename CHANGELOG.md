@@ -1,5 +1,12 @@
 ### master
 
+## [4.12.0](https://github.com/gravity-ui/yagr/compare/v4.11.0...v4.12.0) (2026-01-27)
+
+
+### Features
+
+* adds ability hide serie from chart only ([#281](https://github.com/gravity-ui/yagr/issues/281)) ([08cedde](https://github.com/gravity-ui/yagr/commit/08ceddea1a3d888f4b29cb93ad9ad69d02bd3dd7))
+
 ## [4.11.0](https://github.com/gravity-ui/yagr/compare/v4.10.0...v4.11.0) (2025-12-11)
 
 
