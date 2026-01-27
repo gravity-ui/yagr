@@ -328,7 +328,8 @@ class YagrTooltip {
         while (i >= 1) {
             const serie = u.series[i];
 
-            if (!serie.show) {
+            // Skip only if really hidden (not temporarily hidden for showInGraph)
+            if (!serie.show && !serie._tempHidden) {
                 i -= 1;
                 continue;
             }

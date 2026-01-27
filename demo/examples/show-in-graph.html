@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yagr - showInGraph Example</title>
+    <script src="../../dist/yagr.iife.js"></script>
+    <link rel="stylesheet" href="../../dist/index.css" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .description {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            margin-bottom: 40px;
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        #chart1, #chart2, #chart3 {
+            height: 400px;
+            margin-bottom: 10px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>showInGraph Example</h1>
+    
+    <div class="description">
+        <h3>Описание:</h3>
+        <p>
+            Новая опция <code>showInGraph</code> позволяет скрывать линию на графике, 
+            но при этом оставлять её в легенде и тултипе. Это полезно для сравнения данных 
+            без визуального загромождения графика.
+        </p>
+        <ul>
+            <li><code>showInGraph: true</code> (по умолчанию) - линия отображается на графике</li>
+            <li><code>showInGraph: false</code> - линия скрыта на графике, но видна в легенде и тултипе</li>
+            <li><code>show: false</code> - полностью скрывает линию везде (старое поведение)</li>
+        </ul>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">График 1: Все линии видны</div>
+        <div id="chart1"></div>
+        <div class="info">Все три линии отображаются на графике, в легенде и тултипе.</div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">График 2: Использование showInGraph: false</div>
+        <div id="chart2"></div>
+        <div class="info">
+            Красная линия скрыта на графике (showInGraph: false), но всё ещё видна в легенде и тултипе.
+            Наведите курсор на график, чтобы увидеть все значения в тултипе.
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">График 3: Комбинация всех опций</div>
+        <div id="chart3"></div>
+        <div class="info">
+            <ul>
+                <li>Синяя линия - полностью видна</li>
+                <li>Красная линия - скрыта на графике (showInGraph: false), но в легенде и тултипе</li>
+                <li>Зелёная линия - скрыта только в легенде (showInLegend: false)</li>
+                <li>Оранжевая линия - скрыта только в тултипе (showInTooltip: false)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Генерация тестовых данных
+        function generateTimeline(count) {
+            const now = Date.now();
+            return Array.from({length: count}, (_, i) => now - (count - i) * 60000);
+        }
+
+        function generateData(count, base, variance) {
+            return Array.from({length: count}, () => 
+                base + Math.random() * variance - variance / 2
+            );
+        }
+
+        const timeline = generateTimeline(50);
+        const data1 = generateData(50, 100, 40);
+        const data2 = generateData(50, 150, 50);
+        const data3 = generateData(50, 80, 30);
+        const data4 = generateData(50, 120, 35);
+
+        // График 1: Все линии видны
+        new Yagr(document.getElementById('chart1'), {
+            timeline: timeline,
+            legend: {
+                    show: true,
+                    position: 'top',
+                },
+            series: [
+                {
+                    id: 'series1',
+                    name: 'Синяя линия',
+                    data: data1,
+                    color: '#2196F3'
+                },
+                {
+                    id: 'series2',
+                    name: 'Красная линия',
+                    data: data2,
+                    color: '#F44336'
+                },
+                {
+                    id: 'series3',
+                    name: 'Зелёная линия',
+                    data: data3,
+                    color: '#4CAF50'
+                }
+            ]
+        });
+
+        // График 2: showInGraph: false для красной линии
+        new Yagr(document.getElementById('chart2'), {
+            timeline: timeline,
+            legend: {
+                    show: true,
+                    position: 'top',
+                },
+            series: [
+                {
+                    id: 'series1',
+                    name: 'Синяя линия',
+                    data: data1,
+                    color: '#2196F3'
+                },
+                {
+                    id: 'series2',
+                    name: 'Красная линия (скрыта на графике)',
+                    data: data2,
+                    color: '#F44336',
+                    showInGraph: false  // Линия скрыта на графике, но видна в легенде и тултипе
+                },
+                {
+                    id: 'series3',
+                    name: 'Зелёная линия',
+                    data: data3,
+                    color: '#4CAF50'
+                }
+            ]
+        });
+
+        // График 3: Комбинация всех опций
+        new Yagr(document.getElementById('chart3'), {
+            timeline: timeline,
+            legend: {
+                    show: true,
+                    position: 'top',
+                },
+            series: [
+                {
+                    id: 'series1',
+                    name: 'Синяя линия (видна везде)',
+                    data: data1,
+                    color: '#2196F3'
+                },
+                {
+                    id: 'series2',
+                    name: 'Красная линия (скрыта на графике)',
+                    data: data2,
+                    color: '#F44336',
+                    showInGraph: false  // Скрыта на графике
+                },
+                {
+                    id: 'series3',
+                    name: 'Зелёная линия (скрыта в легенде)',
+                    data: data3,
+                    color: '#4CAF50',
+                    showInLegend: false  // Скрыта в легенде
+                },
+                {
+                    id: 'series4',
+                    name: 'Оранжевая линия (скрыта в тултипе)',
+                    data: data4,
+                    color: '#FF9800',
+                    showInTooltip: false  // Скрыта в тултипе
+                }
+            ]
+        });
+    </script>
+</body>
+</html>

@@ -42,6 +42,8 @@ declare module 'uplot' {
         _focus?: boolean | null;
         /** Is series data transformd */
         _transformed?: boolean;
+        /** Temporary hidden flag for showInGraph */
+        _tempHidden?: boolean;
     }
 
     interface Axis {
@@ -256,6 +258,9 @@ export interface CommonSeriesOptions {
 
     /** Should show series in legend, added to implement more flexible patterns of lines hiding */
     showInLegend?: boolean;
+
+    /** Should show series on graph (render the line), added to implement more flexible patterns of lines hiding */
+    showInGraph?: boolean;
 
     /**
      * Postprocessing function to change actual values (doesn't marks as _transformed series)

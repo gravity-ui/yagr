@@ -69,6 +69,24 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
             );
             ctx.restore();
+
+            // Temporarily hide series with showInGraph: false for rendering
+            u.series.forEach((s) => {
+                if (s.showInGraph === false && s.show) {
+                    s._tempHidden = true;
+                    s.show = false;
+                }
+            });
+        };
+
+        this._uHooks.draw = () => {
+            // Restore show state after rendering
+            this.uplot?.series.forEach((s) => {
+                if (s._tempHidden) {
+                    s.show = true;
+                    s._tempHidden = false;
+                }
+            });
         };
         this._uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;

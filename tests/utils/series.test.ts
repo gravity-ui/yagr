@@ -213,7 +213,10 @@ describe('series options', () => {
             });
 
             it('should setup uPlot fields', () => {
-                expect(configureSeries(y, line, 0)).toHaveProperty('pointsSize', DEFAULT_POINT_SIZE);
+                expect(configureSeries(y, line, 0)).toHaveProperty(
+                    'pointsSize',
+                    DEFAULT_POINT_SIZE,
+                );
             });
         });
     });
@@ -243,6 +246,100 @@ describe('series options', () => {
             // @ts-ignore
             expect(configureSeries(y, line, 0).fill(y.uplot, 1)).toBe(COLOR);
             expect(configureSeries(y, line, 0)).toHaveProperty('pointsSize', POINTS_SIZE);
+        });
+    });
+
+    describe('showInGraph', () => {
+        describe('defaults', () => {
+            const series = {
+                data: [1, 2, 3],
+            };
+
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                series: [series],
+            });
+
+            it('should default showInGraph to true', () => {
+                expect(configureSeries(y, series, 0)).toHaveProperty('showInGraph', true);
+            });
+
+            it('should default show to true when showInGraph is not set', () => {
+                expect(configureSeries(y, series, 0)).toHaveProperty('show', true);
+            });
+        });
+
+        describe('showInGraph: false', () => {
+            const series = {
+                data: [1, 2, 3],
+                showInGraph: false,
+            };
+
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                series: [series],
+            });
+
+            it('should set showInGraph to false', () => {
+                expect(configureSeries(y, series, 0)).toHaveProperty('showInGraph', false);
+            });
+
+            it('should keep show as true when showInGraph is false', () => {
+                expect(configureSeries(y, series, 0)).toHaveProperty('show', true);
+            });
+        });
+
+        describe('explicit show overrides showInGraph', () => {
+            const series1 = {
+                data: [1, 2, 3],
+                show: true,
+                showInGraph: false,
+            };
+
+            const series2 = {
+                data: [1, 2, 3],
+                show: false,
+                showInGraph: true,
+            };
+
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                series: [series1, series2],
+            });
+
+            it('should respect explicit show: true even when showInGraph is false', () => {
+                const configured = configureSeries(y, series1, 0);
+                expect(configured).toHaveProperty('showInGraph', false);
+                expect(configured).toHaveProperty('show', true);
+            });
+
+            it('should respect explicit show: false even when showInGraph is true', () => {
+                const configured = configureSeries(y, series2, 0);
+                expect(configured).toHaveProperty('showInGraph', true);
+                expect(configured).toHaveProperty('show', false);
+            });
+        });
+
+        describe('combination with showInTooltip and showInLegend', () => {
+            const series = {
+                data: [1, 2, 3],
+                showInGraph: false,
+                showInTooltip: true,
+                showInLegend: true,
+            };
+
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                series: [series],
+            });
+
+            it('should allow hiding line on graph while keeping it in tooltip and legend', () => {
+                const configured = configureSeries(y, series, 0);
+                expect(configured).toHaveProperty('showInGraph', false);
+                expect(configured).toHaveProperty('showInTooltip', true);
+                expect(configured).toHaveProperty('showInLegend', true);
+                expect(configured).toHaveProperty('show', true);
+            });
         });
     });
 });
