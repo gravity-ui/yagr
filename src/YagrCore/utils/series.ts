@@ -42,8 +42,11 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         ...rawSeries,
         type,
         show: rawSeries.show ?? true,
+        showInGraph: rawSeries.showInGraph ?? rawSeries.show ?? true,
         name: rawSeries.name || `${yagr.utils.i18n('series')} ${idx + 1}`,
-        color: rawSeries.color ? yagr.utils.colors.parse(rawSeries.color) : yagr.utils.theme.DEFAULT_LINE_COLOR,
+        color: rawSeries.color
+            ? yagr.utils.colors.parse(rawSeries.color)
+            : yagr.utils.theme.DEFAULT_LINE_COLOR,
         id: (rawSeries.id === undefined ? rawSeries.name : String(rawSeries.id)) || genId(),
         $c: rawSeries.data,
         scale: rawSeries.scale || defaults.DEFAULT_Y_SCALE,
@@ -83,7 +86,12 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
             'interpolation',
             'linear',
         );
-        serie.spanGaps = getCommonProperty<AreaSeriesOptions, 'spanGaps'>(rawSeries, yagr, 'spanGaps', false);
+        serie.spanGaps = getCommonProperty<AreaSeriesOptions, 'spanGaps'>(
+            rawSeries,
+            yagr,
+            'spanGaps',
+            false,
+        );
     }
 
     if (serie.type === 'line') {
@@ -102,7 +110,12 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
             'interpolation',
             'linear',
         );
-        serie.spanGaps = getCommonProperty<LineSeriesOptions, 'spanGaps'>(rawSeries, yagr, 'spanGaps', false);
+        serie.spanGaps = getCommonProperty<LineSeriesOptions, 'spanGaps'>(
+            rawSeries,
+            yagr,
+            'spanGaps',
+            false,
+        );
     }
 
     if (serie.type === 'column') {
@@ -110,7 +123,11 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         serie.fill = colorFn;
         serie.points.show = false;
         serie.width = serie.width ?? 0;
-        serie.renderOptions = getCommonProperty<ColumnSeriesOptions, 'renderOptions'>(serie, yagr, 'renderOptions');
+        serie.renderOptions = getCommonProperty<ColumnSeriesOptions, 'renderOptions'>(
+            serie,
+            yagr,
+            'renderOptions',
+        );
     }
 
     if (serie.type === 'dots') {
