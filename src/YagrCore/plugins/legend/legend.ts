@@ -69,9 +69,6 @@ const isSeriesVisibleOnGraph = (serie: Series) => {
 
 /** If the line hidden with option showInGraph, but it showed at tooltip — we are disabling legend item. */
 const isLegendItemDisabled = (serie: Series) => {
-    if (serie.show === false) {
-        return false;
-    }
     if (serie.showInGraph === false) {
         return true;
     }
@@ -276,6 +273,13 @@ export default class LegendPlugin {
                         );
                         yagr.setVisible(s.id, true, false);
                         node?.classList.remove('yagr-legend__item_hidden');
+                    });
+                } else {
+                    // In solo mode, hide series with showInGraph: false from tooltip
+                    series.forEach((s) => {
+                        if (s.showInGraph === false) {
+                            yagr.setVisible(s.id, false, false);
+                        }
                     });
                 }
             };
