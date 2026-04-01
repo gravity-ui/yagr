@@ -41,11 +41,45 @@ const DEFAULT_FONT_SIZE = 12;
 const DEFAULT_LEGEND_PLACE_RATIO = 0.3;
 
 export const getSeriesInLegend = (series: Series[]) => {
-    return series.filter(({id, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false);
+    return series.filter(
+        ({id, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false,
+    );
 };
 
 export const hasOneVisibleLine = (series: Series[]) => {
-    return series.some(({id, show, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false && show);
+    return series.some(
+        ({id, show, showInLegend, showInGraph}) =>
+            id !== DEFAULT_X_SERIE_NAME && showInLegend !== false && show && showInGraph !== false,
+    );
+};
+
+/**
+ * Любая серия с show: true в легенде (без учёта showInGraph).
+ * Нужна для behaviour: 'extended' — там «solo / показать все» завязаны на show, как до showInGraph.
+ */
+const hasAnySeriesWithShowTrue = (series: Series[]) => {
+    return series.some(
+        ({id, show, showInLegend}) => id !== DEFAULT_X_SERIE_NAME && showInLegend !== false && show,
+    );
+};
+
+const isSeriesVisibleOnGraph = (serie: Series) => {
+    return serie.show !== false && serie.showInGraph !== false;
+};
+
+/** If the line hidden with option showInGraph, but it showed at tooltip — we are disabling legend item. */
+const isLegendItemDisabled = (serie: Series) => {
+    if (serie.show === false) {
+        return false;
+    }
+    if (serie.showInGraph === false) {
+        return true;
+    }
+    return false;
+};
+
+const shouldRestoreShowAfterShowAll = (serie: Series) => {
+    return serie.show === false && serie.showInGraph === false;
 };
 
 const getPrependingTitle = (i18n: Yagr['utils']['i18n'], series: Series[]) => {
@@ -119,16 +153,20 @@ export default class LegendPlugin {
     };
 
     update = () => {
-        const series: NodeListOf<HTMLDivElement> = this.yagr.root.querySelectorAll('[data-serie-id]');
+        const series: NodeListOf<HTMLDivElement> =
+            this.yagr.root.querySelectorAll('[data-serie-id]');
 
         series.forEach((serieNode) => {
             const serieId = serieNode.getAttribute('data-serie-id');
             if (!serieId || serieId === ALL_SERIES_IDX) {
                 return;
             }
-            const serieVisible = this.uplot?.series[this.yagr.state.y2uIdx[serieId]]?.show;
+            const serie = this.uplot?.series[this.yagr.state.y2uIdx[serieId]];
+            const hidden = serie?.show === false;
+            const disabled = Boolean(serie && isLegendItemDisabled(serie));
 
-            serieNode.classList[serieVisible ? 'remove' : 'add']('yagr-legend__item_hidden');
+            serieNode.classList[hidden ? 'add' : 'remove']('yagr-legend__item_hidden');
+            serieNode.classList[disabled ? 'add' : 'remove']('yagr-legend__item_disabled');
         });
     };
 
@@ -143,32 +181,55 @@ export default class LegendPlugin {
         const unsubsribe: (() => void)[] = [];
 
         const onSerieClickBasic = (serieNode: HTMLElement) => () => {
+            if (serieNode.classList.contains('yagr-legend__item_disabled')) {
+                return;
+            }
             const serieId = serieNode.getAttribute('data-serie-id');
             const seriesToToggle: [Series, boolean][] = [];
             const series = getSeriesInLegend(u.series);
+            let isShowAll = false;
 
             if (serieId === ALL_SERIES_IDX) {
                 const nextToggleState = !hasOneVisibleLine(series);
+                isShowAll = nextToggleState;
 
                 series.forEach((s) => {
+                    if (isLegendItemDisabled(s)) {
+                        return;
+                    }
                     seriesToToggle.push([s, nextToggleState]);
                 });
             } else {
                 const serie = series.find(({id}) => id === serieId);
-                if (!serie) {
+                if (!serie || isLegendItemDisabled(serie)) {
                     return;
                 }
-                seriesToToggle.push([serie, !serie.show]);
+                seriesToToggle.push([serie, !isSeriesVisibleOnGraph(serie)]);
             }
 
             seriesToToggle.forEach(([serie, nextState]) => {
-                if (serie.show === nextState) {
+                if (isSeriesVisibleOnGraph(serie) === nextState) {
                     return;
                 }
-                const node = yagr.root.querySelector(`[data-serie-id="${escapeAttribute(serie.id)}"]`);
+                const node = yagr.root.querySelector(
+                    `[data-serie-id="${escapeAttribute(serie.id)}"]`,
+                );
                 yagr.setVisible(serie.id, nextState, false);
                 node?.classList[nextState ? 'remove' : 'add']('yagr-legend__item_hidden');
             });
+
+            if (serieId === ALL_SERIES_IDX && isShowAll) {
+                series.forEach((s) => {
+                    if (!shouldRestoreShowAfterShowAll(s)) {
+                        return;
+                    }
+                    const node = yagr.root.querySelector(
+                        `[data-serie-id="${escapeAttribute(s.id)}"]`,
+                    );
+                    yagr.setVisible(s.id, true, false);
+                    node?.classList.remove('yagr-legend__item_hidden');
+                });
+            }
 
             const allSeriesItem = yagr.root.querySelector('.yagr-legend__all-series');
 
@@ -186,7 +247,7 @@ export default class LegendPlugin {
             };
 
             const toggleSerie = (serie: UPlot.Series) => {
-                changeVisibility(serie.id, !serie.show);
+                changeVisibility(serie.id, !isSeriesVisibleOnGraph(serie));
             };
 
             const selectSerie = (serie: UPlot.Series) => {
@@ -194,12 +255,29 @@ export default class LegendPlugin {
                 const series = getSeriesInLegend(u.series);
 
                 const otherSeries = series.filter((s) => s.id !== serie.id);
-                const otherVisibility = !hasOneVisibleLine(otherSeries) && serie.show !== false;
+                const otherVisibility =
+                    !hasAnySeriesWithShowTrue(otherSeries) && serie.show !== false;
 
                 series.forEach((s) => {
+                    if (isLegendItemDisabled(s)) {
+                        return;
+                    }
                     const visibility = serie.id === s.id ? true : otherVisibility;
                     changeVisibility(s.id, visibility);
                 });
+
+                if (otherVisibility) {
+                    series.forEach((s) => {
+                        if (!shouldRestoreShowAfterShowAll(s)) {
+                            return;
+                        }
+                        const node = yagr.root.querySelector(
+                            `[data-serie-id="${escapeAttribute(s.id)}"]`,
+                        );
+                        yagr.setVisible(s.id, true, false);
+                        node?.classList.remove('yagr-legend__item_hidden');
+                    });
+                }
             };
 
             const selectRange = (serie: UPlot.Series) => {
@@ -223,6 +301,9 @@ export default class LegendPlugin {
                 });
 
                 series.forEach((s, i) => {
+                    if (isLegendItemDisabled(s)) {
+                        return;
+                    }
                     const visibility = i >= range[0] && i <= range[1];
                     changeVisibility(s.id, visibility);
                 });
@@ -234,6 +315,11 @@ export default class LegendPlugin {
                 const serie = u.series.find(({id}) => id === serieId);
 
                 if (!serie) {
+                    return;
+                }
+
+                if (isLegendItemDisabled(serie)) {
+                    e.preventDefault();
                     return;
                 }
 
@@ -257,7 +343,11 @@ export default class LegendPlugin {
         const onSerieMouseEnter = (serieNode: HTMLElement) => () => {
             const serieId = serieNode.getAttribute('data-serie-id');
 
-            if (serieNode.classList.contains('yagr-legend__item_hidden') || serieId === ALL_SERIES_IDX) {
+            if (
+                serieNode.classList.contains('yagr-legend__item_hidden') ||
+                serieNode.classList.contains('yagr-legend__item_disabled') ||
+                serieId === ALL_SERIES_IDX
+            ) {
                 return;
             }
 
@@ -407,7 +497,8 @@ export default class LegendPlugin {
         }
 
         const upClassName = state.page === 0 ? 'yagr-legend__icon-up_disabled' : '';
-        const downClassName = state.page === state.pages - 1 ? 'yagr-legend__icon-down_disabled' : '';
+        const downClassName =
+            state.page === state.pages - 1 ? 'yagr-legend__icon-down_disabled' : '';
 
         pagination.innerHTML = `<span class="yagr-legend__icon-up ${upClassName}"></span>
 <span class="yagr-legend__pagination-text">${state.page + 1}/${state.pages}</span>
@@ -436,8 +527,8 @@ export default class LegendPlugin {
     }
 
     private createSerieNameElement(serie: Series) {
-        const serieNameElement = html('span');
-        serieNameElement.innerText = serie.name || 'unnamed';
+        const serieNameElement = html('span', {class: 'yagr-legend__name'});
+        serieNameElement.textContent = serie.name || 'unnamed';
 
         return serieNameElement;
     }
@@ -445,7 +536,8 @@ export default class LegendPlugin {
     private renderItems(uplotOptions: Options) {
         const seriesInLegend = getSeriesInLegend(uplotOptions.series);
         const title = getPrependingTitle(this.yagr.utils.i18n, seriesInLegend);
-        const titleId = this.options.behaviour !== 'extended' && getPrependingTitleId(seriesInLegend);
+        const titleId =
+            this.options.behaviour !== 'extended' && getPrependingTitleId(seriesInLegend);
         const series: (Series | typeof ALL_SERIES_IDX)[] = titleId
             ? [titleId, ...seriesInLegend]
             : [...seriesInLegend];
@@ -468,11 +560,22 @@ export default class LegendPlugin {
                     serieContent = `${icon.outerHTML}${name.outerHTML}`;
                 }
 
-                const visible = typeof serie === 'string' ? true : serie.show !== false;
+                if (typeof serie === 'string') {
+                    return `<div class="yagr-legend__item${additionalCn}" data-serie-id="${sId}">${serieContent}</div>`;
+                }
 
-                return `<div class="yagr-legend__item${additionalCn}${
-                    visible ? '' : 'yagr-legend__item_hidden'
-                }" data-serie-id="${sId}">${serieContent}</div>`;
+                const isHidden = serie.show === false;
+                const isDisabled = isLegendItemDisabled(serie);
+                let itemClass = `yagr-legend__item${additionalCn}`.trim();
+                if (isHidden) {
+                    itemClass += ' yagr-legend__item_hidden';
+                }
+                if (isDisabled) {
+                    itemClass += ' yagr-legend__item_disabled';
+                }
+
+                const aria = isDisabled ? ' aria-disabled="true"' : '';
+                return `<div class="${itemClass}" data-serie-id="${sId}"${aria}>${serieContent}</div>`;
             })
             .join('');
 
@@ -495,9 +598,14 @@ export default class LegendPlugin {
         const itemsPageSize = Math.min(itemsRowsPerPage * rowHeight, maxPossiblePlace);
         const paginatedPageSize = Math.min(rowsPerPage * rowHeight, maxPossiblePlace);
         const paginated = requiredHeight > itemsPageSize && itemsPageSize > 0;
-        const requiredSpace = Math.min(paginated ? paginatedPageSize : itemsPageSize, requiredHeight);
+        const requiredSpace = Math.min(
+            paginated ? paginatedPageSize : itemsPageSize,
+            requiredHeight,
+        );
         const pages = Math.ceil(requiredHeight / itemsPageSize);
-        const additionalSpace = paginated ? this.VERTICAL_PADDING + PAGINATION_BUTTON_HEIGHT : this.VERTICAL_PADDING;
+        const additionalSpace = paginated
+            ? this.VERTICAL_PADDING + PAGINATION_BUTTON_HEIGHT
+            : this.VERTICAL_PADDING;
 
         this.state.requiredSpace = requiredSpace;
         this.state.totalSpace = requiredSpace + additionalSpace;

@@ -43,11 +43,13 @@ $block: yagr-legend;
         font-size: 12px;
         line-height: 14px;
 
-        &:hover {
+        &:hover:not(.#{$block}__item_disabled):not(.#{$block}__item_hidden) {
             color: var(--yagr-legend-item-hover);
         }
 
         &_hidden {
+            cursor: pointer;
+
             color: var(--yagr-legend-item-hidden);
 
             .#{$block}__icon {
@@ -56,6 +58,29 @@ $block: yagr-legend;
                 background-color: var(--yagr-legend-item-hidden) !important;
             }
         }
+
+        &_disabled {
+            // stylelint-disable-next-line
+            cursor: not-allowed !important;
+            pointer-events: none;
+            touch-action: none;
+            user-select: none;
+            color: var(--yagr-legend-item-hidden);
+
+            .#{$block}__icon {
+                // stylelint-disable-next-line
+                background-color: var(--yagr-legend-item-hidden) !important;
+                opacity: 0.55;
+            }
+
+            &:hover {
+                color: var(--yagr-legend-item-hidden);
+            }
+        }
+    }
+
+    &__name {
+        text-decoration: inherit;
     }
 
     &__icon {
