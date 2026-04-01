@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.1](https://github.com/gravity-ui/yagr/compare/v4.13.0...v4.13.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* disable legend only for showInGraph false setting ([#285](https://github.com/gravity-ui/yagr/issues/285)) ([ca3acc8](https://github.com/gravity-ui/yagr/commit/ca3acc8992f4136c92686d30ab334977981c47ae))
+
 ## [4.13.0](https://github.com/gravity-ui/yagr/compare/v4.12.0...v4.13.0) (2026-04-01)
 
 
