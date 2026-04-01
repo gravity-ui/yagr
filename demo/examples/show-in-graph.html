@@ -31,7 +31,7 @@
             margin-bottom: 10px;
             color: #555;
         }
-        #chart1, #chart2, #chart3 {
+        #chart1, #chart2, #chart3, #chart4 {
             height: 400px;
             margin-bottom: 10px;
         }
@@ -89,6 +89,33 @@
         </div>
     </div>
 
+    <div class="chart-container">
+        <div class="chart-title">График 4: Несколько линий скрыты на графике по умолчанию</div>
+        <div id="chart4"></div>
+        <div class="info">
+            <p>
+                Синяя линия рисуется сразу. Красная, зелёная и оранжевая заданы с
+                <code>showInGraph: false</code> — в легенде они выглядят неактивными (серые), на графике их нет,
+                но значения участвуют в тултипе.
+            </p>
+            <ul>
+                <li>
+                    <strong>Клик по пункту легенды</strong> (<code>legend.behaviour: 'basic'</code>) переключает
+                    видимость выбранной серии на графике: первый клик включает линию, второй снова скрывает её на графике.
+                </li>
+                <li>
+                    Можно по очереди включить любую из «серых» линий — каждая переключается независимо, после включения
+                    пункт в легенде становится активным.
+                </li>
+                <li>
+                    Здесь в легенде четыре линии — сверху появляется кнопка «скрыть все / показать все». Она учитывает
+                    видимость именно на графике: «показать все» последовательно включает отрисовку и у линий с
+                    <code>showInGraph: false</code>.
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <script>
         // Генерация тестовых данных
         function generateTimeline(count) {
@@ -107,6 +134,8 @@
         const data2 = generateData(50, 150, 50);
         const data3 = generateData(50, 80, 30);
         const data4 = generateData(50, 120, 35);
+        const data5 = generateData(50, 60, 20);
+        const data6 = generateData(50, 180, 60);
 
         // График 1: Все линии видны
         new Yagr(document.getElementById('chart1'), {
@@ -186,7 +215,10 @@
                     name: 'Красная линия (скрыта на графике)',
                     data: data2,
                     color: '#F44336',
-                    showInGraph: false  // Скрыта на графике
+                    showInGraph: false,
+                    showInTooltip: false,
+                    showInLegend: false                    // Скрыта на графике
+
                 },
                 {
                     id: 'series3',
@@ -203,6 +235,59 @@
                     showInTooltip: false  // Скрыта в тултипе
                 }
             ]
+        });
+
+        // График 4: несколько линий с showInGraph: false — легенда неактивна, пока линию не включили кликом
+        new Yagr(document.getElementById('chart4'), {
+            timeline: timeline,
+            legend: {
+                show: true,
+                position: 'top',
+                behaviour: 'basic',
+            },
+            series: [
+                {
+                    id: 'c4s1',
+                    name: 'Синяя (на графике по умолчанию)',
+                    data: data1,
+                    color: '#2196F3',
+                },
+                {
+                    id: 'c4s2',
+                    name: 'Красная (showInGraph: false)',
+                    data: data2,
+                    color: '#F44336',
+                    showInGraph: false,
+                },
+                {
+                    id: 'c4s3',
+                    name: 'Зелёная (showInGraph: false)',
+                    data: data3,
+                    color: '#4CAF50',
+                    showInGraph: false,
+                },
+                {
+                    id: 'c4s4',
+                    name: 'Оранжевая (showInGraph: false)',
+                    data: data4,
+                    color: '#FF9800',
+                    showInGraph: false,
+                },
+                {
+                    id: 'c4s5',
+                    name: 'Фиолетовая (showInGraph: false)',
+                    data: data5,
+                    color: '#9C27B0',
+                    showInGraph: false,
+                },
+                {
+                    id: 'c4s6',
+                    name: 'Бирюзовая (showInGraph: false)',
+                    data: data6,
+                    color: '#009688',
+                    showInGraph: false,
+                },
+            ],
         });
     </script>
 </body>

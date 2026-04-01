@@ -34,6 +34,14 @@ function getCommonProperty<T extends SeriesOptions, K extends keyof T>(
     return defaultValue;
 }
 
+export function resolveShowInGraph(rawSeries: Pick<RawSerieData, 'showInGraph' | 'show'>): boolean {
+    if (rawSeries.showInGraph !== undefined) {
+        return rawSeries.showInGraph;
+    }
+
+    return rawSeries.show ?? true;
+}
+
 // eslint-disable-next-line complexity
 export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number): Series {
     const type = getCommonProperty(rawSeries, yagr, 'type', 'line');
@@ -42,7 +50,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         ...rawSeries,
         type,
         show: rawSeries.show ?? true,
-        showInGraph: rawSeries.showInGraph ?? rawSeries.show ?? true,
+        showInGraph: resolveShowInGraph(rawSeries),
         name: rawSeries.name || `${yagr.utils.i18n('series')} ${idx + 1}`,
         color: rawSeries.color
             ? yagr.utils.colors.parse(rawSeries.color)
