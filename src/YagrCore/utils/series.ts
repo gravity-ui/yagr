@@ -1,4 +1,4 @@
-import {Series} from 'uplot';
+import { Series } from 'uplot';
 
 import * as defaults from '../defaults';
 import type Yagr from '..';
@@ -11,10 +11,10 @@ import {
     RawSerieData,
     SeriesOptions,
 } from '../types';
-import {genId} from './common';
-import {getFocusedColor, getSerieFocusColors} from './colors';
-import {drawMarkersIfRequired} from '../plugins/markers';
-import {pathsRenderer} from './paths';
+import { genId } from './common';
+import { getFocusedColor, getSerieFocusColors } from './colors';
+import { drawMarkersIfRequired } from '../plugins/markers';
+import { pathsRenderer } from './paths';
 
 function getCommonProperty<T extends SeriesOptions, K extends keyof T>(
     series: RawSerieData | Series,
@@ -158,6 +158,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
 export const overrideSeriesInUpdate = (dest: Series, source: Series) => {
     dest.$c = source.$c ?? dest.$c;
     dest.show = source.show ?? dest.show;
+    dest.showInGraph = source.showInGraph ?? dest.showInGraph;
     dest.data = source.data ?? dest.data;
     dest.width = source.width ?? dest.width;
     dest.pointsSize = source.pointsSize ?? dest.pointsSize;

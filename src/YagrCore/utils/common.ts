@@ -73,7 +73,7 @@ export const getSumByIdx = (seriesOptions: Series[], idx: number, scale: string)
         const opts = seriesOptions[seriesIdx];
         const seriesValues = opts.$c;
         i += 1;
-        if (opts.scale !== scale || opts.show === false) {
+        if (opts.scale !== scale || opts.show === false || opts.showInGraph === false) {
             continue;
         }
         const value = seriesValues[idx];
