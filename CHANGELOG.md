@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.2](https://github.com/gravity-ui/yagr/compare/v4.13.1...v4.13.2) (2026-04-06)
+
+
+### Bug Fixes
+
+* recalculate area on line visibility with showInGraph change ([#287](https://github.com/gravity-ui/yagr/issues/287)) ([787de13](https://github.com/gravity-ui/yagr/commit/787de1312fa403da11e41f22fc78b00e9a21e223))
+
 ## [4.13.1](https://github.com/gravity-ui/yagr/compare/v4.13.0...v4.13.1) (2026-04-01)
 
 
