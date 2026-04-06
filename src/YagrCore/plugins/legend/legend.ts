@@ -54,8 +54,8 @@ export const hasOneVisibleLine = (series: Series[]) => {
 };
 
 /**
- * Любая серия с show: true в легенде (без учёта showInGraph).
- * Нужна для behaviour: 'extended' — там «solo / показать все» завязаны на show, как до showInGraph.
+ * Any series with show: true in the legend (regardless of showInGraph).
+ * Needed for behaviour: 'extended' — solo / show all are tied to show, as before showInGraph.
  */
 const hasAnySeriesWithShowTrue = (series: Series[]) => {
     return series.some(

@@ -31,7 +31,7 @@
             margin-bottom: 10px;
             color: #555;
         }
-        #chart1, #chart2, #chart3, #chart4 {
+        #chart1, #chart2, #chart3, #chart4, #chart5 {
             height: 400px;
             margin-bottom: 10px;
         }
@@ -113,6 +113,18 @@
                     <code>showInGraph: false</code>.
                 </li>
             </ul>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">График 5: Stacked area и showInGraph: false</div>
+        <div id="chart5"></div>
+        <div class="info">
+            <p>
+                Тип <code>area</code> с <code>scales.y.stacking: true</code>. Средняя серия (оранжевая) задана с
+                <code>showInGraph: false</code>: на графике не рисуется и <strong>не участвует в накоплении</strong> —
+                верхняя заливка опирается сразу на нижнюю. В легенде и тултипе значение оранжевого ряда по-прежнему есть.
+            </p>
         </div>
     </div>
 
@@ -286,6 +298,51 @@
                     data: data6,
                     color: '#009688',
                     showInGraph: false,
+                },
+            ],
+        });
+
+        // График 5: stacked area, средний ряд только в легенде/тултипе
+        const areaTimeline = generateTimeline(40);
+        const areaLow = Array.from({length: 40}, (_, i) => 20 + Math.sin(i / 4) * 8 + i * 0.3);
+        const areaMid = Array.from({length: 40}, (_, i) => 15 + Math.cos(i / 5) * 6);
+        const areaTop = Array.from({length: 40}, (_, i) => 12 + (i % 7));
+
+        new Yagr(document.getElementById('chart5'), {
+            timeline: areaTimeline,
+            legend: {
+                show: true,
+                position: 'top',
+            },
+            chart: {
+                series: {
+                    type: 'area',
+                },
+            },
+            scales: {
+                y: {
+                    stacking: true,
+                },
+            },
+            series: [
+                {
+                    id: 'area1',
+                    name: 'Нижний слой (синий)',
+                    data: areaLow,
+                    color: '#1e88e5',
+                },
+                {
+                    id: 'area2',
+                    name: 'Средний слой — скрыт на графике (оранжевый)',
+                    data: areaMid,
+                    color: '#fb8c00',
+                    showInGraph: false,
+                },
+                {
+                    id: 'area3',
+                    name: 'Верхний слой (зелёный)',
+                    data: areaTop,
+                    color: '#43a047',
                 },
             ],
         });
