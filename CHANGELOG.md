@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.3](https://github.com/gravity-ui/yagr/compare/v4.13.2...v4.13.3) (2026-04-16)
+
+
+### Bug Fixes
+
+* do not disable line if show is false ([#290](https://github.com/gravity-ui/yagr/issues/290)) ([58d3162](https://github.com/gravity-ui/yagr/commit/58d31621f7cfd815155ca8a3e212120ed34ac6b0))
+
 ## [4.13.2](https://github.com/gravity-ui/yagr/compare/v4.13.1...v4.13.2) (2026-04-06)
 
 
