@@ -69,10 +69,7 @@ const isSeriesVisibleOnGraph = (serie: Series) => {
 
 /** If the line hidden with option showInGraph, but it showed at tooltip — we are disabling legend item. */
 const isLegendItemDisabled = (serie: Series) => {
-    if (serie.showInGraph === false) {
-        return true;
-    }
-    return false;
+    return serie.showInGraph === false;
 };
 
 const shouldRestoreShowAfterShowAll = (serie: Series) => {
@@ -568,7 +565,7 @@ export default class LegendPlugin {
                     return `<div class="yagr-legend__item${additionalCn}" data-serie-id="${sId}">${serieContent}</div>`;
                 }
 
-                const isHidden = serie.show === false;
+                const isHidden = !isSeriesVisibleOnGraph(serie);
                 const isDisabled = isLegendItemDisabled(serie);
                 let itemClass = `yagr-legend__item${additionalCn}`.trim();
                 if (isHidden) {
