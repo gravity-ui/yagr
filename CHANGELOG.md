@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.4](https://github.com/gravity-ui/yagr/compare/v4.13.3...v4.13.4) (2026-05-07)
+
+
+### Bug Fixes
+
+* **cursor:** cursor points visibility ([#292](https://github.com/gravity-ui/yagr/issues/292)) ([912eb02](https://github.com/gravity-ui/yagr/commit/912eb020a202a55eac31bdcdde754949494f8c44))
+
 ## [4.13.3](https://github.com/gravity-ui/yagr/compare/v4.13.2...v4.13.3) (2026-04-16)
 
 
