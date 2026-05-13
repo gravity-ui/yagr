@@ -42,6 +42,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         ...rawSeries,
         type,
         show: rawSeries.show ?? true,
+        auto: rawSeries.showInGraph !== false,
         showInGraph: rawSeries.showInGraph ?? true,
         name: rawSeries.name || `${yagr.utils.i18n('series')} ${idx + 1}`,
         color: rawSeries.color

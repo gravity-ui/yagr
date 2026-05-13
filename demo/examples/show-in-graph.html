@@ -31,7 +31,7 @@
             margin-bottom: 10px;
             color: #555;
         }
-        #chart1, #chart2, #chart3, #chart4, #chart5 {
+        #chart1, #chart2, #chart3, #chart4, #chart5, #chart6 {
             height: 400px;
             margin-bottom: 10px;
         }
@@ -124,6 +124,22 @@
                 Тип <code>area</code> с <code>scales.y.stacking: true</code>. Средняя серия (оранжевая) задана с
                 <code>showInGraph: false</code>: на графике не рисуется и <strong>не участвует в накоплении</strong> —
                 верхняя заливка опирается сразу на нижнюю. В легенде и тултипе значение оранжевого ряда по-прежнему есть.
+            </p>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">График 6: Скрытая линия с огромными значениями (scale recalculation)</div>
+        <div id="chart6"></div>
+        <div class="info">
+            <p>
+                Красная линия имеет значения ~100 000, а синяя и зелёная — ~50–150.
+                Красная скрыта через <code>showInGraph: false</code>.
+                <strong>Ось Y пересчитывается</strong> и подстраивается под видимые линии,
+                поэтому синяя и зелёная хорошо различимы.
+            </p>
+            <p>
+                Без этого фикса ось бы растянулась до 100 000 и маленькие линии слились бы в одну полоску у нуля.
             </p>
         </div>
     </div>
@@ -343,6 +359,41 @@
                     name: 'Верхний слой (зелёный)',
                     data: areaTop,
                     color: '#43a047',
+                },
+            ],
+        });
+        // График 6: огромная скрытая линия + маленькие видимые
+        const timeline6 = generateTimeline(60);
+        const hugeData = Array.from({length: 60}, () => 100000 + Math.random() * 5000 - 2500);
+        const smallData1 = Array.from({length: 60}, () => 80 + Math.random() * 40);
+        const smallData2 = Array.from({length: 60}, () => 50 + Math.random() * 60);
+
+        new Yagr(document.getElementById('chart6'), {
+            timeline: timeline6,
+            legend: {
+                show: true,
+                position: 'top',
+                behaviour: 'basic',
+            },
+            series: [
+                {
+                    id: 'huge',
+                    name: 'Огромная линия (~100k, скрыта на графике)',
+                    data: hugeData,
+                    color: '#F44336',
+                    showInGraph: false,
+                },
+                {
+                    id: 'small1',
+                    name: 'Синяя линия (~80–120)',
+                    data: smallData1,
+                    color: '#2196F3',
+                },
+                {
+                    id: 'small2',
+                    name: 'Зелёная линия (~50–110)',
+                    data: smallData2,
+                    color: '#4CAF50',
                 },
             ],
         });
