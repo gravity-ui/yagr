@@ -69,24 +69,6 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 u.height * DEFAULT_CANVAS_PIXEL_RATIO - 2 * DEFAULT_CANVAS_PIXEL_RATIO,
             );
             ctx.restore();
-
-            // Temporarily hide series with showInGraph: false for rendering
-            u.series.forEach((s) => {
-                if (s.showInGraph === false && s.show) {
-                    s._tempHidden = true;
-                    s.show = false;
-                }
-            });
-        };
-
-        this._uHooks.draw = () => {
-            // Restore show state after rendering
-            this.uplot?.series.forEach((s) => {
-                if (s._tempHidden) {
-                    s.show = true;
-                    s._tempHidden = false;
-                }
-            });
         };
         this._uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;
@@ -206,6 +188,21 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
             const serie = configureSeries(this, seriesOptions[i] || {}, i);
+
+            /**
+             * Series with showInGraph: false must not contribute to scale
+             * auto-range calculation. uPlot computes dataMin/dataMax from
+             * series that have show !== false before any draw hook fires,
+             * so the only way to exclude these series from the scale is to
+             * give uPlot show: false from the very beginning. We preserve
+             * the user-facing visibility through _tempHidden, which the
+             * tooltip and other internals already respect.
+             */
+            if (serie.showInGraph === false && serie.show !== false) {
+                serie._tempHidden = true;
+                serie.show = false;
+            }
+
             const uIdx = resultingSeriesOptions.push(serie);
             this.state.y2uIdx[serie.id || i] = uIdx - 1;
         }
