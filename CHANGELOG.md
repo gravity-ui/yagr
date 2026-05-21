@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.5](https://github.com/gravity-ui/yagr/compare/v4.13.4...v4.13.5) (2026-05-21)
+
+
+### Bug Fixes
+
+* rewrite show false for uplot when showInGraph false ([#295](https://github.com/gravity-ui/yagr/issues/295)) ([65def47](https://github.com/gravity-ui/yagr/commit/65def478af6e7ca00f063fbbda8722cee79736ba))
+
 ## [4.13.4](https://github.com/gravity-ui/yagr/compare/v4.13.3...v4.13.4) (2026-05-07)
 
 
