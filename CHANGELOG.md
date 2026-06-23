@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.6](https://github.com/gravity-ui/yagr/compare/v4.13.5...v4.13.6) (2026-06-23)
+
+
+### Performance Improvements
+
+* tooltip optimization ([#297](https://github.com/gravity-ui/yagr/issues/297)) ([f3a267c](https://github.com/gravity-ui/yagr/commit/f3a267c815e9300f63c22d932e00ada1f2d5210c))
+
 ## [4.13.5](https://github.com/gravity-ui/yagr/compare/v4.13.4...v4.13.5) (2026-05-21)
 
 
