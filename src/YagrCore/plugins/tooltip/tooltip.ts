@@ -461,12 +461,6 @@ class YagrTooltip {
             return;
         }
 
-        const bbox = this.over.getBoundingClientRect();
-
-        this.bLeft = bbox.left;
-        this.bTop = bbox.top;
-        this.bWidth = bbox.width;
-
         const anchor = {
             left: left + this.bLeft,
             top: this.bTop + top - (opts.yOffset || 0),
@@ -530,6 +524,7 @@ class YagrTooltip {
         document.addEventListener('mouseup', this.onMouseUp);
 
         this.mountTooltip();
+        this.setSize();
     };
 
     setSize = () => {
@@ -537,6 +532,7 @@ class YagrTooltip {
 
         this.bLeft = bbox.left;
         this.bTop = bbox.top;
+        this.bWidth = bbox.width;
     };
 
     dispose = () => {
