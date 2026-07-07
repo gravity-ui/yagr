@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.8](https://github.com/gravity-ui/yagr/compare/v4.13.7...v4.13.8) (2026-07-07)
+
+
+### Bug Fixes
+
+* fix release issues ([#300](https://github.com/gravity-ui/yagr/issues/300)) ([23b5947](https://github.com/gravity-ui/yagr/commit/23b5947a84a6bbdca3c466f234a1d3087c33c3cb))
+
 ## [4.13.6](https://github.com/gravity-ui/yagr/compare/v4.13.5...v4.13.6) (2026-06-23)
 
 
