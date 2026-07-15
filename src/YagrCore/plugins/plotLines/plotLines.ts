@@ -1,9 +1,8 @@
 import type Yagr from '../../';
 import UPlot, {Plugin} from 'uplot';
 import {DEFAULT_X_SCALE, DEFAULT_CANVAS_PIXEL_RATIO} from '../../defaults';
-import {PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
+import {PBandConfig, PLineConfig, PlotLineConfig, YagrPlugin} from '../../types';
 import {DrawOrderKey} from '../../utils/types';
-import {PBandConfig} from 'src/types';
 import {deepIsEqual, genId} from '../../utils/common';
 import {calculateFromTo} from './utils';
 
