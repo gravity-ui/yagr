@@ -1,5 +1,12 @@
 ### master
 
+## [4.13.9](https://github.com/gravity-ui/yagr/compare/v4.13.8...v4.13.9) (2026-07-15)
+
+
+### Bug Fixes
+
+* remove baseUrl, use relative imports ([#302](https://github.com/gravity-ui/yagr/issues/302)) ([eb92a79](https://github.com/gravity-ui/yagr/commit/eb92a79e986bcb87107b0587a07c26e93506c3c5))
+
 ## [4.13.8](https://github.com/gravity-ui/yagr/compare/v4.13.7...v4.13.8) (2026-07-07)
 
 
