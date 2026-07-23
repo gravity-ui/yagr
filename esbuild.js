@@ -115,18 +115,57 @@ function buildPlugin(name, css = false) {
           })
         : Promise.resolve();
 
-    const esm = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.esm.js`, 'esm', true);
-    const iife = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.iife.js`, 'iife', true);
-    const cjs = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.cjs.js`, 'cjs', true);
-    const umd = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.umd.js`, 'umd', true, [
-        umdWrapper(),
-    ]);
+    const esm = build(
+        `./src/plugins/${name}/${name}.ts`,
+        `./dist/plugins/${name}/${name}.esm.js`,
+        'esm',
+        true,
+    );
+    const iife = build(
+        `./src/plugins/${name}/${name}.ts`,
+        `./dist/plugins/${name}/${name}.iife.js`,
+        'iife',
+        true,
+    );
+    const cjs = build(
+        `./src/plugins/${name}/${name}.ts`,
+        `./dist/plugins/${name}/${name}.cjs.js`,
+        'cjs',
+        true,
+    );
+    const umd = build(
+        `./src/plugins/${name}/${name}.ts`,
+        `./dist/plugins/${name}/${name}.umd.js`,
+        'umd',
+        true,
+        [umdWrapper()],
+    );
 
     return [scss, esm, iife, cjs, umd].filter(Boolean);
 }
 
+function buildTooltipPlacement() {
+    const esm = build(
+        `./src/YagrCore/plugins/tooltip/placement.ts`,
+        `./dist/tooltip-placement.esm.js`,
+        'esm',
+        true,
+    );
+    const cjs = build(
+        `./src/YagrCore/plugins/tooltip/placement.ts`,
+        `./dist/tooltip-placement.cjs.js`,
+        'cjs',
+        true,
+    );
+    return [esm, cjs].filter(Boolean);
+}
+
 function buildPlugins() {
-    return buildPlugin('labels', true).concat(buildPlugin('weekends')).concat(buildPlugin('aggregates')).filter(Boolean);
+    return buildPlugin('labels', true)
+        .concat(buildPlugin('weekends'))
+        .concat(buildPlugin('aggregates'))
+        .concat(buildTooltipPlacement())
+        .filter(Boolean);
 }
 
 function buildExamples() {
