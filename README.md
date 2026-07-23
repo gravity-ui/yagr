@@ -112,3 +112,7 @@ A high-performance HTML5 canvas time-series renderer built on uPlot — reach fo
 - **Mounting before the container has size** — Yagr relies on `ResizeObserver`; render after the target element has dimensions, or the chart draws at zero size.
 - **Forgetting the `timeline` array** — config requires `timeline` (x values) plus one entry per series in `series`; lengths must match.
 - **Importing plugins that aren't bundled** — tooltip, legend, plot-lines are separate plugins; import and enable them explicitly if needed.
+
+## Documentation for AI agents
+
+Agent-readable documentation for the installed version is located in `node_modules/@gravity-ui/yagr/dist/docs/INDEX.md`.
