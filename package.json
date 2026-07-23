@@ -28,7 +28,6 @@
   "exports": {
     ".": "./dist/index.js",
     "./labels": "./dist/plugins/labels/labels.js",
-    "./aggregates": "./dist/plugins/aggregates/aggregates.js",
     "./weekends": "./dist/plugins/weekends/weekends.js",
     "./react": "./dist/react.js",
     "./types": "./dist/types.js",
@@ -39,6 +38,16 @@
     "./dist/index.css": {
       "import": "./dist/index.css",
       "require": "./dist/index.css"
+    },
+    "./aggregates": {
+      "types": "./dist/plugins/aggregates/aggregates.d.ts",
+      "import": "./dist/plugins/aggregates/aggregates.mjs",
+      "require": "./dist/plugins/aggregates/aggregates.cjs"
+    },
+    "./tooltip-placement": {
+      "types": "./dist/YagrCore/plugins/tooltip/placement.d.ts",
+      "import": "./dist/tooltip-placement.mjs",
+      "require": "./dist/tooltip-placement.cjs"
     }
   },
   "typesVersions": {
