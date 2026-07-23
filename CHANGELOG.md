@@ -1,5 +1,12 @@
 ### master
 
+## [4.14.0](https://github.com/gravity-ui/yagr/compare/v4.13.9...v4.14.0) (2026-07-23)
+
+
+### Features
+
+* updated esbuild and package json for plugings aggregates ([#304](https://github.com/gravity-ui/yagr/issues/304)) ([1d1e476](https://github.com/gravity-ui/yagr/commit/1d1e476624a1abc8cc58124921c31ce67886bb67))
+
 ## [4.13.9](https://github.com/gravity-ui/yagr/compare/v4.13.8...v4.13.9) (2026-07-15)
 
 
