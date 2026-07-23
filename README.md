@@ -27,11 +27,13 @@ Yagr is a high-performance HTML5 canvas chart renderer based on [uPlot](https://
 
 ## [Documentation](https://yagr.tech)
 
-## Quick Start
+## Install
 
+```shell
+npm install @gravity-ui/yagr
 ```
-npm i @gravity-ui/yagr
-```
+
+## Quick Start
 
 ### NPM Module
 
@@ -83,3 +85,34 @@ Need something specific? Yagr presents some useful examples in the [demo/example
 3. Run `npm run build`.
 4. Run `npx http-server .`.
 5. Open examples in browser according to the http-server output.
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## For AI agents
+
+A high-performance HTML5 canvas time-series renderer built on uPlot — reach for it to draw large line/area/column/dot datasets (thousands of points) where SVG/React chart libs are too slow, instead of a general-purpose charting toolkit.
+
+### When to use
+
+- Large time-series datasets (monitoring, metrics, realtime streams) that need canvas-level performance.
+- Stacked areas/columns, normalization, per-series visualization types, plot lines/bands.
+- Realtime updates and data interpolation for missing points.
+
+### When not to use
+
+- For bar/pie/scatter/radar and the full breadth of ECharts-style chart types, use [`@gravity-ui/charts`](https://gravity-ui.com/charts) — Yagr is focused on time-series and continuous-axis plots.
+- For a legacy Highcharts-based integration, use [`@gravity-ui/chartkit`](https://github.com/gravity-ui/chartkit) — it wraps Highcharts; Yagr is the modern canvas alternative.
+- For a tiny static line chart with a handful of points, an SVG lib or uPlot directly may be lighter.
+
+### Common pitfalls
+
+- **Hallucinated React component `<YagrChart>`** — the core export is the `Yagr` class (`new Yagr(container, config)`); there is no first-class React component in this package.
+- **Mounting before the container has size** — Yagr relies on `ResizeObserver`; render after the target element has dimensions, or the chart draws at zero size.
+- **Forgetting the `timeline` array** — config requires `timeline` (x values) plus one entry per series in `series`; lengths must match.
+- **Importing plugins that aren't bundled** — tooltip, legend, plot-lines are separate plugins; import and enable them explicitly if needed.
+
+## Documentation for AI agents
+
+Agent-readable documentation for the installed version is located in `node_modules/@gravity-ui/yagr/dist/docs/INDEX.md`.
