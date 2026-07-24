@@ -113,14 +113,12 @@ function buildPlugin(name, css = false) {
           })
         : Promise.resolve();
 
-    const esm = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.mjs`, 'esm', true);
     const iife = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.iife.js`, 'iife', true);
-    const cjs = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.cjs`, 'cjs', true);
     const umd = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.umd.js`, 'umd', true, [
         umdWrapper(),
     ]);
 
-    return [scss, esm, iife, cjs, umd].filter(Boolean);
+    return [scss, iife, umd].filter(Boolean);
 }
 
 function buildTooltipPlacement() {

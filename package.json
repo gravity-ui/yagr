@@ -9,9 +9,6 @@
     "plot",
     "visualization"
   ],
-  "main": "./dist/yagr.cjs",
-  "module": "./dist/yagr.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "typings"
@@ -40,13 +37,6 @@
       "default": "./dist/index.css"
     },
     "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "react": [
-        "./dist/react.d.ts"
-      ]
-    }
   },
   "scripts": {
     "test": "TZ=UTC jest --coverage",
