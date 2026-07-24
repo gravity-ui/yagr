@@ -1,5 +1,16 @@
 ### master
 
+## [5.0.0](https://github.com/gravity-ui/yagr/compare/v4.14.1...v5.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* direct imports from dist and deprecated package subpaths are no longer supported.
+
+### Features
+
+* [BREAKING CHANGE] restrict package exports and add ESM/CJS builds ([#307](https://github.com/gravity-ui/yagr/issues/307)) ([177f7d3](https://github.com/gravity-ui/yagr/commit/177f7d3719b1860f0b19cecb3b473a7a926f40ac))
+
 ## [4.14.1](https://github.com/gravity-ui/yagr/compare/v4.14.0...v4.14.1) (2026-07-24)
 
 
