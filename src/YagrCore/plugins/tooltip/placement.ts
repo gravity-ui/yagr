@@ -57,7 +57,7 @@ function normalizeRect(rect: DOMRect | ClientRect): Coordinates {
 }
 
 // eslint-disable-next-line complexity
-export default function (
+export const placement = function (
     elem: HTMLElement,
     initialAnchor: Element | Range | Coordinates,
     side: Side = 'bottom',
@@ -217,4 +217,4 @@ export default function (
         anchorRect,
         boundRect,
     };
-}
+};

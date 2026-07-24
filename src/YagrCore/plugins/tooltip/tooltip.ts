@@ -3,7 +3,7 @@
 import uPlot, {Series} from 'uplot';
 
 import {CursorOptions} from '../cursor/cursor';
-import placementFn from './placement';
+import {placement as placementFn} from './placement';
 
 import Yagr from '../../index';
 import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
