@@ -44,6 +44,25 @@ describe('scales: stacking', () => {
             expect(y.uplot.data[2]).toEqual([4, 1, 6]);
             expect(y.uplot.data[1]).toEqual([5, 2, 6]);
         });
+
+        it('should exclude showInGraph: false from stack (area)', () => {
+            const y = new Yagr(window.document.body, {
+                chart: {series: {type: 'area'}},
+                timeline: [1, 2, 3],
+                scales: {
+                    y: {stacking: true},
+                },
+                series: [
+                    {data: [1, 1, 1]},
+                    {data: [10, 10, 10], showInGraph: false},
+                    {data: [1, 1, 1]},
+                ],
+            });
+
+            expect(y.uplot.data[3]).toEqual([1, 1, 1]);
+            expect(y.uplot.data[2]).toEqual([1, 1, 1]);
+            expect(y.uplot.data[1]).toEqual([2, 2, 2]);
+        });
     });
 
     describe('with processing', () => {

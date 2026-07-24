@@ -1,5 +1,5 @@
-import { Series } from 'uplot';
-import {MinimalValidConfig} from '../../src';
+import {Series} from 'uplot';
+import {AreaSeriesOptions, ExtendedSeriesOptions, MinimalValidConfig} from '../../src';
 import Yagr from '../../src/YagrCore';
 import {DEFAULT_X_SERIE_NAME} from '../../src/YagrCore/defaults';
 import {hasOneVisibleLine} from '../../src/YagrCore/plugins/legend/legend';
@@ -14,6 +14,11 @@ describe('legend', () => {
         series: [
             {
                 data: [1, 2, 3, 4],
+                id: 'hidden-in-start',
+                showInLegend: false,
+            },
+            {
+                data: [1, 2, 3, 4],
                 id: '1',
             },
             {
@@ -22,11 +27,21 @@ describe('legend', () => {
             },
             {
                 data: [1, 2, 3, 4],
+                id: 'hidden-in-middle',
+                showInLegend: false,
+            },
+            {
+                data: [1, 2, 3, 4],
                 id: '3',
             },
             {
                 data: [1, 2, 3, 4],
                 id: '4',
+            },
+            {
+                data: [1, 2, 3, 4],
+                id: 'hidden-in-end',
+                showInLegend: false,
             },
         ],
         timeline: [1, 2, 3, 4],
@@ -66,6 +81,54 @@ describe('legend', () => {
 
             expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
             expect(y.root.lastChild).toBe(y.root.querySelector('.yagr-legend'));
+        });
+    });
+
+    describe('color', () => {
+        afterEach(() => {
+            el.innerHTML = '';
+        });
+
+        const serie: ExtendedSeriesOptions & AreaSeriesOptions = {
+            type: 'area',
+            data: [1, 2, 3, 4],
+            id: '1',
+            color: 'rgba(255, 0, 0, 0.1)',
+            lineColor: 'rgb(255, 0, 0)',
+        };
+
+        const colorTestConfig: MinimalValidConfig = {
+            series: [serie],
+            timeline: [1, 2, 3, 4],
+            legend: {
+                show: true,
+                position: 'top',
+            },
+        };
+
+        it('should use color for legend if there is no legendColorKey', () => {
+            const y = new Yagr(el, {
+                ...colorTestConfig,
+            });
+
+            expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
+
+            const legendIcon = y.root.querySelector('.yagr-legend .yagr-legend__icon') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgba(255, 0, 0, 0.1)');
+        });
+
+        it('should use lineColor for legend if legendColorKey is lineColor', () => {
+            const y = new Yagr(el, {
+                ...colorTestConfig,
+                series: [{...colorTestConfig.series[0], legendColorKey: 'lineColor'}],
+            });
+
+            expect(y.root.querySelector('.yagr-legend')).toBeTruthy();
+
+            const legendIcon = y.root.querySelector('.yagr-legend .yagr-legend__icon') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgb(255, 0, 0)');
         });
     });
 
@@ -195,6 +258,9 @@ describe('legend', () => {
                 if (s.id === serie.id) {
                     expect(node?.classList).not.toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeTruthy();
+                } else if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
                 } else {
                     expect(node?.classList).toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeFalsy();
@@ -210,8 +276,13 @@ describe('legend', () => {
 
                 const node = el.querySelector(`[data-serie-id="${s.id}"]`);
 
-                expect(node?.classList).not.toContain('yagr-legend__item_hidden');
-                expect(s.show).toBeTruthy();
+                if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
+                } else {
+                    expect(node?.classList).not.toContain('yagr-legend__item_hidden');
+                    expect(s.show).toBeTruthy();
+                }
             });
         });
 
@@ -250,15 +321,21 @@ describe('legend', () => {
             secondIcon!.dispatchEvent(secondClickEvent);
             await new Promise((resolve) => setTimeout(resolve, 200));
 
-            const expectedRange = [1, 3];
-            y.uplot.series.forEach((s, i) => {
+            const expectedVisibleIds = ['2', '3', '4'];
+            y.uplot.series.forEach((s) => {
                 if (s.id === DEFAULT_X_SERIE_NAME) {
                     return;
                 }
 
                 const node = el.querySelector(`[data-serie-id="${s.id}"]`);
 
-                if (i >= expectedRange[0] && i <= expectedRange[1]) {
+                if (s.showInLegend === false) {
+                    expect(node).toBeNull();
+                    expect(s.show).toBeTruthy();
+                    return;
+                }
+
+                if (expectedVisibleIds.includes(s.id)) {
                     expect(node?.classList).not.toContain('yagr-legend__item_hidden');
                     expect(s.show).toBeTruthy();
                 } else {

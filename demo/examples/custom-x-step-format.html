@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>Yagr:: Custom Scale Step</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .grid {
+                height: 400px;
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Custom X Step</h1>
+        <div class="grid">
+            <div id="chart1" class="container"></div>
+        </div>
+
+        <script>
+            const yagr = new Yagr(chart1, {
+                title: {text: 'Custom X-Axis Step'},
+                timeline: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                series: [
+                    {data: [1, 2, 1.5, 3, 2, 4, 3, 5, 4, 6], color: 'red'},
+                    {data: [2, 1, 2.5, 2, 3, 2, 4, 3, 5, 4], color: 'blue'}
+                ],
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 8
+                    }
+                },
+                axes: {
+                    x: {
+                        values: (u, vals) => vals.map(v => `Step ${v}`),
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

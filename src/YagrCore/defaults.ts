@@ -46,7 +46,15 @@ export const Y_AXIS_SIZE = (self: uPlot, values: string[], axisIdx: number) => {
         labelSize = axis.labelSize || DEFAULT_AXIS_FONT_SIZE;
 
         ctx.font = axis.labelFont ? axis.labelFont[0] : AXIS_LABEL_FONT;
-        const {fontBoundingBoxAscent: size} = ctx.measureText(axis.label);
+
+        let labelText: string;
+        if (typeof axis.label === 'function') {
+            labelText = axis.label(self, axisIdx, 0, 0);
+        } else {
+            labelText = axis.label;
+        }
+
+        const {fontBoundingBoxAscent: size} = ctx.measureText(labelText);
         labelSize = size;
         ctx.restore();
     }

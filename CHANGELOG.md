@@ -1,5 +1,256 @@
 ### master
 
+## [4.14.0](https://github.com/gravity-ui/yagr/compare/v4.13.9...v4.14.0) (2026-07-23)
+
+
+### Features
+
+* updated esbuild and package json for plugings aggregates ([#304](https://github.com/gravity-ui/yagr/issues/304)) ([1d1e476](https://github.com/gravity-ui/yagr/commit/1d1e476624a1abc8cc58124921c31ce67886bb67))
+
+## [4.13.9](https://github.com/gravity-ui/yagr/compare/v4.13.8...v4.13.9) (2026-07-15)
+
+
+### Bug Fixes
+
+* remove baseUrl, use relative imports ([#302](https://github.com/gravity-ui/yagr/issues/302)) ([eb92a79](https://github.com/gravity-ui/yagr/commit/eb92a79e986bcb87107b0587a07c26e93506c3c5))
+
+## [4.13.8](https://github.com/gravity-ui/yagr/compare/v4.13.7...v4.13.8) (2026-07-07)
+
+
+### Bug Fixes
+
+* fix release issues ([#300](https://github.com/gravity-ui/yagr/issues/300)) ([23b5947](https://github.com/gravity-ui/yagr/commit/23b5947a84a6bbdca3c466f234a1d3087c33c3cb))
+
+## [4.13.6](https://github.com/gravity-ui/yagr/compare/v4.13.5...v4.13.6) (2026-06-23)
+
+
+### Performance Improvements
+
+* tooltip optimization ([#297](https://github.com/gravity-ui/yagr/issues/297)) ([f3a267c](https://github.com/gravity-ui/yagr/commit/f3a267c815e9300f63c22d932e00ada1f2d5210c))
+
+## [4.13.5](https://github.com/gravity-ui/yagr/compare/v4.13.4...v4.13.5) (2026-05-21)
+
+
+### Bug Fixes
+
+* rewrite show false for uplot when showInGraph false ([#295](https://github.com/gravity-ui/yagr/issues/295)) ([65def47](https://github.com/gravity-ui/yagr/commit/65def478af6e7ca00f063fbbda8722cee79736ba))
+
+## [4.13.4](https://github.com/gravity-ui/yagr/compare/v4.13.3...v4.13.4) (2026-05-07)
+
+
+### Bug Fixes
+
+* **cursor:** cursor points visibility ([#292](https://github.com/gravity-ui/yagr/issues/292)) ([912eb02](https://github.com/gravity-ui/yagr/commit/912eb020a202a55eac31bdcdde754949494f8c44))
+
+## [4.13.3](https://github.com/gravity-ui/yagr/compare/v4.13.2...v4.13.3) (2026-04-16)
+
+
+### Bug Fixes
+
+* do not disable line if show is false ([#290](https://github.com/gravity-ui/yagr/issues/290)) ([58d3162](https://github.com/gravity-ui/yagr/commit/58d31621f7cfd815155ca8a3e212120ed34ac6b0))
+
+## [4.13.2](https://github.com/gravity-ui/yagr/compare/v4.13.1...v4.13.2) (2026-04-06)
+
+
+### Bug Fixes
+
+* recalculate area on line visibility with showInGraph change ([#287](https://github.com/gravity-ui/yagr/issues/287)) ([787de13](https://github.com/gravity-ui/yagr/commit/787de1312fa403da11e41f22fc78b00e9a21e223))
+
+## [4.13.1](https://github.com/gravity-ui/yagr/compare/v4.13.0...v4.13.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* disable legend only for showInGraph false setting ([#285](https://github.com/gravity-ui/yagr/issues/285)) ([ca3acc8](https://github.com/gravity-ui/yagr/commit/ca3acc8992f4136c92686d30ab334977981c47ae))
+
+## [4.13.0](https://github.com/gravity-ui/yagr/compare/v4.12.0...v4.13.0) (2026-04-01)
+
+
+### Features
+
+* disable legend option if showInGraph true ([#283](https://github.com/gravity-ui/yagr/issues/283)) ([dccb47c](https://github.com/gravity-ui/yagr/commit/dccb47cc5dfa6b146e3e3a2255b0fc5674e53a73))
+
+## [4.12.0](https://github.com/gravity-ui/yagr/compare/v4.11.0...v4.12.0) (2026-01-27)
+
+
+### Features
+
+* adds ability hide serie from chart only ([#281](https://github.com/gravity-ui/yagr/issues/281)) ([08cedde](https://github.com/gravity-ui/yagr/commit/08ceddea1a3d888f4b29cb93ad9ad69d02bd3dd7))
+
+## [4.11.0](https://github.com/gravity-ui/yagr/compare/v4.10.0...v4.11.0) (2025-12-11)
+
+
+### Features
+
+* **core:** add new hook for scale update ([#279](https://github.com/gravity-ui/yagr/issues/279)) ([f2482c2](https://github.com/gravity-ui/yagr/commit/f2482c2ba52be8d9ab9478588662e67d19557f69))
+
+## [4.10.0](https://github.com/gravity-ui/yagr/compare/v4.9.2...v4.10.0) (2025-11-20)
+
+
+### Features
+
+* adds optional setting for scale "time" ([#277](https://github.com/gravity-ui/yagr/issues/277)) ([3c7ea9f](https://github.com/gravity-ui/yagr/commit/3c7ea9fb4e64d965a40a62fe1238673f67eb3a8f))
+
+## [4.9.2](https://github.com/gravity-ui/yagr/compare/v4.9.1...v4.9.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* declarative and immutable chart config ([#275](https://github.com/gravity-ui/yagr/issues/275)) ([4447b00](https://github.com/gravity-ui/yagr/commit/4447b0029d2a9c2d270aeeaddba8a1478ab0bf21))
+
+## [4.9.1](https://github.com/gravity-ui/yagr/compare/v4.9.0...v4.9.1) (2025-10-06)
+
+
+### Bug Fixes
+
+* **tooltip:** fix YagrConfig.TooltipOptions.title defined as a function ([#273](https://github.com/gravity-ui/yagr/issues/273)) ([5203730](https://github.com/gravity-ui/yagr/commit/52037305a89f8ba31d42e4b588ec69ea8afac115))
+
+## [4.9.0](https://github.com/gravity-ui/yagr/compare/v4.8.5...v4.9.0) (2025-07-24)
+
+
+### Features
+
+* added lineCap option for line style ([#271](https://github.com/gravity-ui/yagr/issues/271)) ([9751c21](https://github.com/gravity-ui/yagr/commit/9751c21862cae60fd8155c12566cf9658dff9969))
+
+## [4.8.5](https://github.com/gravity-ui/yagr/compare/v4.8.4...v4.8.5) (2025-07-10)
+
+
+### Bug Fixes
+
+* built-in (default) tooltip visibility after data changed ([#269](https://github.com/gravity-ui/yagr/issues/269)) ([428713a](https://github.com/gravity-ui/yagr/commit/428713a178ec1d80c3b7ad5d7d1cf8919797dced))
+
+## [4.8.4](https://github.com/gravity-ui/yagr/compare/v4.8.3...v4.8.4) (2025-07-09)
+
+
+### Bug Fixes
+
+* **legend:** escape quotes in data-serie-id attributes ([#267](https://github.com/gravity-ui/yagr/issues/267)) ([01f412d](https://github.com/gravity-ui/yagr/commit/01f412daa398965c3673c3dc43b42e5ea53e9473))
+
+## [4.8.3](https://github.com/gravity-ui/yagr/compare/v4.8.2...v4.8.3) (2025-07-08)
+
+
+### Bug Fixes
+
+* **tooltip:** yarg tooltip ([#265](https://github.com/gravity-ui/yagr/issues/265)) ([8129d0a](https://github.com/gravity-ui/yagr/commit/8129d0aa84fe20d4d2eb8fcddaecc474744cb608))
+
+## [4.8.2](https://github.com/gravity-ui/yagr/compare/v4.8.1...v4.8.2) (2025-07-08)
+
+
+### Bug Fixes
+
+* **tooltip:** yarg tooltip position when page scale changed ([#263](https://github.com/gravity-ui/yagr/issues/263)) ([ca846f6](https://github.com/gravity-ui/yagr/commit/ca846f6a2cbe3a66868b4f4021e5980710cb2547))
+
+## [4.8.1](https://github.com/gravity-ui/yagr/compare/v4.8.0...v4.8.1) (2025-05-13)
+
+
+### Bug Fixes
+
+* **legend:** do not change visibility for hidden series in legend ([#260](https://github.com/gravity-ui/yagr/issues/260)) ([b5ee582](https://github.com/gravity-ui/yagr/commit/b5ee582863134adc9a63ab76afadcad14ded9bb9))
+
+## [4.8.0](https://github.com/gravity-ui/yagr/compare/v4.7.2...v4.8.0) (2025-05-12)
+
+
+### Features
+
+* (legend) support showInLegend option ([#258](https://github.com/gravity-ui/yagr/issues/258)) ([19d9a7a](https://github.com/gravity-ui/yagr/commit/19d9a7adcd489225556ed9dcf04b7ac0b96ffcf3))
+
+## [4.7.2](https://github.com/gravity-ui/yagr/compare/v4.7.1...v4.7.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* imports from @gravity-ui/yagr/types ([#256](https://github.com/gravity-ui/yagr/issues/256)) ([e775e5e](https://github.com/gravity-ui/yagr/commit/e775e5eb7a26219d43e506b67c3318bd38cc8ca9))
+
+## [4.7.1](https://github.com/gravity-ui/yagr/compare/v4.7.0...v4.7.1) (2025-04-07)
+
+
+### Bug Fixes
+
+* order of default import at package.json ([#253](https://github.com/gravity-ui/yagr/issues/253)) ([108ee86](https://github.com/gravity-ui/yagr/commit/108ee860b7609a1fa70a5cbf94a3c414c4c347fb))
+
+## [4.7.0](https://github.com/gravity-ui/yagr/compare/v4.6.1...v4.7.0) (2025-04-04)
+
+
+### Features
+
+* update uplot to v1.6.32 ([#249](https://github.com/gravity-ui/yagr/issues/249)) ([45ccf1e](https://github.com/gravity-ui/yagr/commit/45ccf1e8c2b4e8f04396b5ebaf578f5ab7e23bbb))
+
+## [4.6.1](https://github.com/gravity-ui/yagr/compare/v4.6.0...v4.6.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* `dist` exports ([#247](https://github.com/gravity-ui/yagr/issues/247)) ([11a821f](https://github.com/gravity-ui/yagr/commit/11a821f95a7f2eea05ece0735965579ad495fc2b))
+* fix clientHeight calculation ([#245](https://github.com/gravity-ui/yagr/issues/245)) ([0ac3eda](https://github.com/gravity-ui/yagr/commit/0ac3eda0d95787a6ac9b28e05802f87eae98de77))
+
+## [4.6.0](https://github.com/gravity-ui/yagr/compare/v4.5.0...v4.6.0) (2025-02-06)
+
+
+### Features
+
+* Added uplot bands settings ([#242](https://github.com/gravity-ui/yagr/issues/242)) ([56c7128](https://github.com/gravity-ui/yagr/commit/56c71281d59f1c65cee2a52a2f09b9be070f336d))
+
+## [4.5.0](https://github.com/gravity-ui/yagr/compare/v4.4.1...v4.5.0) (2025-01-30)
+
+
+### Features
+
+* add legendColorKey property to series options ([#239](https://github.com/gravity-ui/yagr/issues/239)) ([87f590b](https://github.com/gravity-ui/yagr/commit/87f590b9e4dd48a06ab241b66b37a3c63347ad6a))
+
+## [4.4.1](https://github.com/gravity-ui/yagr/compare/v4.4.0...v4.4.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* baseline align for legend items ([#236](https://github.com/gravity-ui/yagr/issues/236)) ([bb62787](https://github.com/gravity-ui/yagr/commit/bb62787ef2e8db8458050701830d1f93c0f67113))
+
+## [4.4.0](https://github.com/gravity-ui/yagr/compare/v4.3.5...v4.4.0) (2025-01-09)
+
+
+### Features
+
+* use map for plot lines ([e80c0a5](https://github.com/gravity-ui/yagr/commit/e80c0a59909717bec62df29df0dac0d55214820a))
+
+
+### Bug Fixes
+
+* id generation ([eaf5595](https://github.com/gravity-ui/yagr/commit/eaf55952845f2524e4334d7c37fd897dbeb9a857))
+* id generation ([d7fece3](https://github.com/gravity-ui/yagr/commit/d7fece37b83657358432c8d93a7b8e107d352e41))
+* id generation ([a3f8e6a](https://github.com/gravity-ui/yagr/commit/a3f8e6a546a2794cd3ce1f42ef066c85eee705bf))
+* id generation ([0bfe4d0](https://github.com/gravity-ui/yagr/commit/0bfe4d03b890425844bdc7b2909628eb035573fb))
+* id generation func ([ec18654](https://github.com/gravity-ui/yagr/commit/ec18654e036c9306eda3e190a04db754a19717cd))
+* moved to incremental id generator ([ed2def1](https://github.com/gravity-ui/yagr/commit/ed2def1d255e51f3486e12de9c9ba87a604e076e))
+* review changes ([1699c82](https://github.com/gravity-ui/yagr/commit/1699c825f36e4039367bbc3b52e0101935c6f5db))
+* use nanoid for id generations ([a26c10f](https://github.com/gravity-ui/yagr/commit/a26c10f7dadbddbb148bad7fe6bb316d9b9d0a77))
+
+## [4.3.5](https://github.com/gravity-ui/yagr/compare/v4.3.4...v4.3.5) (2024-11-05)
+
+
+### Bug Fixes
+
+* tooltip position calculation ([#229](https://github.com/gravity-ui/yagr/issues/229)) ([26876d7](https://github.com/gravity-ui/yagr/commit/26876d7c1966a6a1d9f1ba089b2156e14b5f6bf0))
+
+## [4.3.4](https://github.com/gravity-ui/yagr/compare/v4.3.3...v4.3.4) (2024-10-07)
+
+
+### Bug Fixes
+
+* update uplot to v1.6.31 ([#226](https://github.com/gravity-ui/yagr/issues/226)) ([b069208](https://github.com/gravity-ui/yagr/commit/b069208789cc02975d1dfc7c917c0c23f48b76ee))
+
+## [4.3.3](https://github.com/gravity-ui/yagr/compare/v4.3.2...v4.3.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* bug with focus in stacking column chart ([#222](https://github.com/gravity-ui/yagr/issues/222)) ([c04ac11](https://github.com/gravity-ui/yagr/commit/c04ac115217bd8df59d095cbf767dc096457a3a3))
+
+## [4.3.2](https://github.com/gravity-ui/yagr/compare/v4.3.1...v4.3.2) (2024-09-19)
+
+
+### Bug Fixes
+
+* tooltip memory leak ([ec80853](https://github.com/gravity-ui/yagr/commit/ec80853d7cabe41ff4df129120e1e206cff36f9e))
+
 ## [4.3.1](https://github.com/gravity-ui/yagr/compare/v4.3.0...v4.3.1) (2024-08-13)
 
 

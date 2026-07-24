@@ -1,6 +1,13 @@
 /* eslint-disable complexity */
 
-import type {MinimalValidConfig, RawSerieData, Scale, SupportedLocales, YagrConfig, YagrTheme} from '../types';
+import type {
+    MinimalValidConfig,
+    RawSerieData,
+    Scale,
+    SupportedLocales,
+    YagrConfig,
+    YagrTheme,
+} from '../types';
 import Yagr from '..';
 
 import i18n from '../locale';
@@ -15,7 +22,11 @@ interface UpdateOptions {
     splice?: boolean;
 }
 
-function setLocaleImpl(yagr: Yagr, batch: Batch, locale: SupportedLocales | Record<string, string>) {
+function setLocaleImpl(
+    yagr: Yagr,
+    batch: Batch,
+    locale: SupportedLocales | Record<string, string>,
+) {
     yagr.utils.i18n = i18n(locale);
     batch.redrawLegend = true;
 }
@@ -57,9 +68,16 @@ function setFocusImpl(yagr: Yagr, lineId: string | null, focus: boolean) {
     yagr.uplot.setSeries(seriesIdx, {focus});
 }
 
-function setVisibleImpl(yagr: Yagr, lineId: string | null, show: boolean, updateLegend: boolean, batch: Batch) {
+function setVisibleImpl(
+    yagr: Yagr,
+    lineId: string | null,
+    show: boolean,
+    updateLegend: boolean,
+    batch: Batch,
+) {
     const seriesIdx = lineId === null ? null : yagr.state.y2uIdx[lineId];
-    const seriesCfg = lineId === null ? yagr.config.series : [yagr.config.series.find(({id}) => id === lineId)];
+    const seriesCfg =
+        lineId === null ? yagr.config.series : [yagr.config.series.find(({id}) => id === lineId)];
 
     seriesCfg.forEach((serie) => {
         if (serie) {
@@ -116,21 +134,26 @@ function setScalesImpl(yagr: Yagr, scales: YagrConfig['scales'], batch: Batch) {
                 stackingIsChanged = true;
             }
 
-            if (scaleConfig.normalize !== scale.normalize || scaleConfig.normalizeBase !== scale.normalizeBase) {
+            if (
+                scaleConfig.normalize !== scale.normalize ||
+                scaleConfig.normalizeBase !== scale.normalizeBase
+            ) {
                 normalizationIsChanged = true;
             }
         }
     });
 
-    const isChangingOnlyMinMax = Object.entries(scales).every(([key, scaleConfig]: [string, Scale]) => {
-        const cfg = yagr.config.scales[key];
+    const isChangingOnlyMinMax = Object.entries(scales).every(
+        ([key, scaleConfig]: [string, Scale]) => {
+            const cfg = yagr.config.scales[key];
 
-        const {min: pMin, max: pMax, ...pRest} = cfg;
-        const {min: nMin, max: nMax, ...nRest} = scaleConfig;
-        const isChangedSomething = deepIsEqual(nRest, pRest) === false;
+            const {min: pMin, max: pMax, ...pRest} = cfg;
+            const {min: nMin, max: nMax, ...nRest} = scaleConfig;
+            const isChangedSomething = deepIsEqual(nRest, pRest) === false;
 
-        return !isChangedSomething && (pMin !== nMin || pMax !== nMax);
-    });
+            return !isChangedSomething && (pMin !== nMin || pMax !== nMax);
+        },
+    );
 
     const isChangingXAxis = Object.keys(scales).includes(DEFAULT_X_SCALE);
 
@@ -192,7 +215,12 @@ function areSeriesChanged(a: YagrConfig['series'], b?: YagrConfig['series']) {
     return false;
 }
 
-function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>, fullUpdate = false) {
+function setConfigImpl(
+    yagr: Yagr,
+    batch: Batch,
+    newConfig: Partial<YagrConfig>,
+    fullUpdate = false,
+) {
     if (fullUpdate) {
         yagr.config = {...yagr.config, ...newConfig};
         batch.reinit = true;
@@ -221,16 +249,21 @@ function setConfigImpl(yagr: Yagr, batch: Batch, newConfig: Partial<YagrConfig>,
         yagr.setScales(newConfig.scales);
     }
 
-    const isChangedSeries = Boolean(newConfig.series) && areSeriesChanged(yagr.config.series, newConfig.series);
+    const isChangedSeries =
+        Boolean(newConfig.series) && areSeriesChanged(yagr.config.series, newConfig.series);
 
     if (isChangedSeries) {
         batch.redrawLegend = true;
     }
 
     if (newConfig.series || newConfig.timeline) {
-        yagr.setSeries(newConfig.timeline ?? yagr.config.timeline, newConfig.series ?? yagr.config.series, {
-            incremental: false,
-        });
+        yagr.setSeries(
+            newConfig.timeline ?? yagr.config.timeline,
+            newConfig.series ?? yagr.config.series,
+            {
+                incremental: false,
+            },
+        );
     }
 
     if (newConfig.tooltip && isChangedKey('tooltip')) {
@@ -306,7 +339,11 @@ function setSeriesImpl(
                 const seriesIdx = this.state.y2uIdx[id];
 
                 /** @TODO fixme (see Annotations.1) */
-                if (matched.type === 'dots' || serie.type === 'dots' || this.config.chart.series?.type === 'dots') {
+                if (
+                    matched.type === 'dots' ||
+                    serie.type === 'dots' ||
+                    this.config.chart.series?.type === 'dots'
+                ) {
                     batch.reinit = true;
                 }
 
@@ -329,12 +366,6 @@ function setSeriesImpl(
                 const opts = this.options.series[seriesIdx];
                 const uOpts = this.uplot.series[seriesIdx];
 
-                if (uOpts.show !== newSeries.show) {
-                    batch.fns.push(() => {
-                        this.uplot.setSeries(seriesIdx, {show: newSeries.show});
-                    });
-                }
-
                 if (uOpts._focus === null ? true : uOpts._focus !== newSeries.focus) {
                     batch.fns.push(() => {
                         this.uplot.setSeries(seriesIdx, {focus: newSeries.focus});
@@ -351,6 +382,47 @@ function setSeriesImpl(
 
                 overrideSeriesInUpdate(opts, newSeries);
                 overrideSeriesInUpdate(uOpts, newSeries);
+
+                /**
+                 * Handle showInGraph transitions. uPlot uses `series.show` to
+                 * determine which series contribute to scale auto-range; there
+                 * is no pre-scale hook, so the only correct way to exclude a
+                 * series is to keep it `show: false` in uPlot while marking it
+                 * as `_tempHidden` so that Yagr-side consumers (tooltip etc.)
+                 * still treat it as visible.
+                 *
+                 * Snapshot the previous uPlot `show` value BEFORE
+                 * `overrideSeriesInUpdate` mutates it below, then derive the
+                 * target uPlot `show` value and the expected `_tempHidden`
+                 * state. After the override we restore the correct uPlot-side
+                 * `show` and only queue a `setSeries` call if uPlot actually
+                 * needs to react (otherwise we'd just thrash the batch).
+                 */
+                const prevUplotShow = uOpts.show;
+                const userShow = newSeries.show !== false;
+                const hideForGraph = newSeries.showInGraph === false && userShow;
+                const targetUplotShow = hideForGraph ? false : userShow;
+                const targetTempHidden = hideForGraph;
+
+                /**
+                 * `overrideSeriesInUpdate` just synchronously copied
+                 * `newSeries.show` (the user-facing value) into `uOpts.show`.
+                 * For showInGraph handling we instead want uPlot to see
+                 * `targetUplotShow`. Apply our chosen state on top of the
+                 * override, and queue an actual `setSeries` call only when
+                 * the value visible to uPlot really changed — this is what
+                 * forces uPlot to recompute the scale, and it avoids
+                 * re-entrant setSeries storms that could freeze the UI.
+                 */
+                uOpts.show = targetUplotShow;
+                uOpts._tempHidden = targetTempHidden;
+                opts._tempHidden = targetTempHidden;
+
+                if (prevUplotShow !== targetUplotShow) {
+                    batch.fns.push(() => {
+                        this.uplot.setSeries(seriesIdx, {show: targetUplotShow});
+                    });
+                }
             } else {
                 batch.fns.push(() => {
                     const newSeries = configureSeries(this, serie, this.config.series.length);
@@ -460,7 +532,12 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
      * @param options UpdateOptions
      * @description Sets new series dataset with different timeline and redraws.
      */
-    setSeries(this: Yagr<T>, timeline: number[], series: Partial<RawSerieData>[], options: UpdateOptions): void;
+    setSeries(
+        this: Yagr<T>,
+        timeline: number[],
+        series: Partial<RawSerieData>[],
+        options: UpdateOptions,
+    ): void;
     setSeries(
         this: Yagr<T>,
         timelineOrSeriesOrId: Partial<RawSerieData>[] | number[] | number | string,
@@ -470,7 +547,9 @@ export class DynamicUpdatesMixin<T extends MinimalValidConfig> {
             splice: false,
         },
     ) {
-        this.batch((batch) => setSeriesImpl.call(this, batch, timelineOrSeriesOrId, maybeSeries, options));
+        this.batch((batch) =>
+            setSeriesImpl.call(this, batch, timelineOrSeriesOrId, maybeSeries, options),
+        );
     }
 
     /**

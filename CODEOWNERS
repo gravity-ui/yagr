@@ -1,0 +1,6 @@
+* @Estasie @catakot @jigetus @dsleepo @feelsbadmans
+
+# Allow everyone to update dependencies
+
+/package.json
+/package-lock.json

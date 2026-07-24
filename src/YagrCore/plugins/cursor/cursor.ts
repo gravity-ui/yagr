@@ -102,7 +102,9 @@ export default function CursorPlugin(
     const iValue = processing.interpolation?.value;
 
     const snapToNulls = opts.snapToValues === false ? false : opts.snapToValues || 'closest';
-    const snapToInterpolated = pInterpolation ? processing.interpolation?.snapToValues ?? 'closest' : false;
+    const snapToInterpolated = pInterpolation
+        ? (processing.interpolation?.snapToValues ?? 'closest')
+        : false;
 
     let mem: Record<string, HTMLElement> = {};
 
@@ -204,17 +206,27 @@ export default function CursorPlugin(
             opts: (_, uplotOptions) => {
                 uplotOptions.cursor = uplotOptions.cursor || {};
 
-                const emptyLines = uplotOptions.series.filter((s) => s.empty).length;
+                let emptyLines = 0;
+                let hiddenLines = 0;
+                for (const s of uplotOptions.series) {
+                    if (s.empty) {
+                        emptyLines += 1;
+                    }
+                    if (!s.show) {
+                        hiddenLines += 1;
+                    }
+                }
                 const totalLines = uplotOptions.series.length - 1;
                 const maxCursors = opts?.maxMarkers ?? MAX_CURSORS;
 
                 uplotOptions.cursor.points = {
-                    show: totalLines - emptyLines <= maxCursors ? cursorPoint : false,
+                    show: totalLines - emptyLines - hiddenLines <= maxCursors ? cursorPoint : false,
                     size: (u: uPlot, seriesIdx: number) => {
                         const serie = u.series[seriesIdx];
                         return (
-                            (serie.cursorOptions ? serie.cursorOptions.markersSize : opts?.markersSize) ||
-                            MARKER_DIAMETER
+                            (serie.cursorOptions
+                                ? serie.cursorOptions.markersSize
+                                : opts?.markersSize) || MARKER_DIAMETER
                         );
                     },
                 };

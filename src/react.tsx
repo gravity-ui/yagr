@@ -38,6 +38,30 @@ export default React.forwardRef(function YagrReact(
     const chartRef = React.useRef<HTMLDivElement>(null);
     const chart = React.useRef<Yagr>();
 
+    const getChartConfig = React.useCallback((): MinimalValidConfig => {
+        return {
+            ...config,
+            hooks: {
+                ...config.hooks,
+                load: [
+                    ...(config.hooks?.load || []),
+                    ...(onChartLoad
+                        ? [
+                              ({chart, meta}: {chart: Yagr; meta: YagrMeta}) =>
+                                  onChartLoad(chart, meta),
+                          ]
+                        : []),
+                ],
+                onSelect: [
+                    ...(config.hooks?.onSelect || []),
+                    ...(onSelect
+                        ? [({from, to}: {from: number; to: number}) => onSelect(from, to)]
+                        : []),
+                ],
+            },
+        };
+    }, [config, onChartLoad, onSelect]);
+
     React.useImperativeHandle(ref, () => ({
         yagr: () => chart.current,
         domElement: () => chartRef.current,
@@ -45,30 +69,17 @@ export default React.forwardRef(function YagrReact(
 
     const initChart = React.useCallback(() => {
         if (chartRef.current) {
-            config.hooks = config.hooks || {};
-            const hooks = config.hooks;
-
-            if (onChartLoad) {
-                const load = hooks.load || [];
-                load.push(({chart, meta}) => {
-                    onChartLoad(chart, meta);
-                });
-                hooks.load = load;
-            }
-
-            if (onSelect) {
-                const selection = hooks.onSelect || [];
-                selection.push(({from, to}) => onSelect(from, to));
-                hooks.onSelect = selection;
-            }
-
-            chart.current = new Yagr(chartRef.current, config);
+            chart.current = new Yagr(chartRef.current, getChartConfig());
         }
-    }, []);
+    }, [getChartConfig]);
 
     React.useEffect(() => {
-        config && chart.current?.setConfig(config, update === 'hard');
-    }, [config]);
+        if (!chart.current || !config) {
+            return;
+        }
+
+        chart.current.setConfig(getChartConfig(), update === 'hard');
+    }, [getChartConfig, update]);
 
     React.useEffect(() => {
         initChart();
@@ -81,7 +92,9 @@ export default React.forwardRef(function YagrReact(
     const onClick = React.useCallback(
         (event: React.MouseEvent) => {
             if (chart.current && (event.ctrlKey || event.metaKey) && event.shiftKey) {
-                const dataUrl = chart.current.toDataUrl().replace('image/png', 'image/octet-stream');
+                const dataUrl = chart.current
+                    .toDataUrl()
+                    .replace('image/png', 'image/octet-stream');
                 const a = document.createElement('a');
                 a.href = dataUrl;
                 a.download = (debug?.filename || chart.current.id) + '.png';

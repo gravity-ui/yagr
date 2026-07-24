@@ -1,5 +1,8 @@
+/* stylelint-disable value-keyword-case */
+
 .yagr-tooltip {
-    --yagr-tooltip-font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
+    --yagr-tooltip-font-family:
+        'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
 
     position: absolute;
     z-index: 1000;
@@ -70,7 +73,6 @@
     ._hidden-rows-number {
         white-space: nowrap;
     }
-
 
     &__idx {
         width: 25px;

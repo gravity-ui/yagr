@@ -8,7 +8,12 @@ import placementFn from './placement';
 import Yagr from '../../index';
 import {DataSeries, ProcessingInterpolation, YagrPlugin} from '../../types';
 
-import {TOOLTIP_Y_OFFSET, TOOLTIP_X_OFFSET, TOOLTIP_DEFAULT_MAX_LINES, DEFAULT_Y_SCALE} from '../../defaults';
+import {
+    TOOLTIP_Y_OFFSET,
+    TOOLTIP_X_OFFSET,
+    TOOLTIP_DEFAULT_MAX_LINES,
+    DEFAULT_Y_SCALE,
+} from '../../defaults';
 
 import {findInRange, findDataIdx, findSticky, px, isNil, inBetween} from '../../utils/common';
 import {
@@ -159,10 +164,6 @@ class YagrTooltip {
 
         if (this.opts.virtual) {
             this.placement = () => {};
-        } else {
-            this.renderNode.appendChild(this.tOverlay);
-            this.state.mounted = true;
-            this.emit('mount');
         }
     }
 
@@ -273,7 +274,11 @@ class YagrTooltip {
         const target = event.target as HTMLElement | null;
         let serieIdx: string | undefined;
 
-        if (target && this.tOverlay.contains(target) && target.classList.contains('yagr-tooltip__item')) {
+        if (
+            target &&
+            this.tOverlay.contains(target) &&
+            target.classList.contains('yagr-tooltip__item')
+        ) {
             serieIdx = target.dataset['series'];
         }
 
@@ -303,8 +308,8 @@ class YagrTooltip {
             this.hide();
         }
 
-        top = inBetween(top, 0, u.bbox.top + u.bbox.height);
-        left = inBetween(left, 0, u.bbox.left + u.bbox.width);
+        top = inBetween(top, 0, (u.bbox.top + u.bbox.height) / window.devicePixelRatio);
+        left = inBetween(left, 0, (u.bbox.left + u.bbox.width) / window.devicePixelRatio);
 
         const {data} = u;
 
@@ -323,7 +328,8 @@ class YagrTooltip {
         while (i >= 1) {
             const serie = u.series[i];
 
-            if (!serie.show) {
+            // Skip only if really hidden (not temporarily hidden for showInGraph)
+            if (!serie.show && !serie._tempHidden) {
                 i -= 1;
                 continue;
             }
@@ -350,7 +356,13 @@ class YagrTooltip {
                 const seriesData = u.data[seriesIdx] as DataSeries;
                 const serie = u.series[seriesIdx];
 
-                let value = findValue(this.yagr.config.cursor, seriesData, serie, idx, this.interpolation);
+                let value = findValue(
+                    this.yagr.config.cursor,
+                    seriesData,
+                    serie,
+                    idx,
+                    this.interpolation,
+                );
                 let dValue = value;
 
                 if (typeof value === 'string') {
@@ -384,9 +396,11 @@ class YagrTooltip {
                     value: displayValue,
                     y: yValue,
                     displayY: realY,
-                    color: serie.color,
+                    color: this.yagr.getSerieLegendColor(serie),
                     seriesIdx,
-                    rowIdx: section.rows.length ? section.rows[section.rows.length - 1].rowIdx + 1 : 0,
+                    rowIdx: section.rows.length
+                        ? section.rows[section.rows.length - 1].rowIdx + 1
+                        : 0,
                 };
 
                 if (serie.normalizedData) {
@@ -514,6 +528,8 @@ class YagrTooltip {
         this.over.addEventListener('mouseleave', this.onMouseLeave);
 
         document.addEventListener('mouseup', this.onMouseUp);
+
+        this.mountTooltip();
     };
 
     setSize = () => {
@@ -551,6 +567,17 @@ class YagrTooltip {
 
     off = (event: TooltipAction, handler: TooltipHandler) => {
         this.handlers[event] = this.handlers[event].filter((h) => h !== handler);
+    };
+
+    private mountTooltip = () => {
+        if (!this.opts.virtual) {
+            this.renderNode = this.opts.renderClassName
+                ? document.querySelector(this.opts.renderClassName) || document.body
+                : document.body;
+            this.renderNode.appendChild(this.tOverlay);
+            this.state.mounted = true;
+            this.emit('mount');
+        }
     };
 
     private detectClickOutside = (event: MouseEvent) => {
@@ -696,8 +723,8 @@ class YagrTooltip {
                 typeof precision === 'number'
                     ? precision
                     : typeof this.opts.precision === 'number'
-                    ? this.opts.precision
-                    : 2,
+                      ? this.opts.precision
+                      : 2,
             );
         }
 
@@ -734,14 +761,20 @@ class YagrTooltip {
 }
 
 /*
- * Tooltip plugin constructor.
+ * Tooltip plugin constructor .
  * Every charts has it's own tooltip plugin instance
  */
-function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): ReturnType<TooltipPlugin> {
+function YagrTooltipPlugin(
+    yagr: Yagr,
+    options: Partial<TooltipOptions> = {},
+): ReturnType<TooltipPlugin> {
     const tooltip = new YagrTooltip(yagr, options);
 
     const getUplotPlugin = () => ({
         hooks: {
+            destroy: () => {
+                tooltip.dispose();
+            },
             init: (u: uPlot) => {
                 tooltip.initWithUplot(u);
             },
@@ -763,6 +796,7 @@ function YagrTooltipPlugin(yagr: Yagr, options: Partial<TooltipOptions> = {}): R
         tooltip.reset();
 
         u.hooks.init!.push(uPlugin.hooks.init);
+        u.hooks.destroy!.push(uPlugin.hooks.destroy);
         u.hooks.setSize!.push(uPlugin.hooks.setSize);
         u.hooks.setCursor!.push(uPlugin.hooks.setCursor);
     }

@@ -20,7 +20,6 @@
         "experimentalDecorators": true,
         "allowJs": false,
         "jsx": "react",
-        "baseUrl": ".",
         "outDir": "./dist"
     },
     "include": ["./src", "./typings", "./node_modules/uplot/dist/uPlot.d.ts"]

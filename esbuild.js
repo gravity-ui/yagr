@@ -123,8 +123,28 @@ function buildPlugin(name, css = false) {
     return [scss, esm, iife, cjs, umd].filter(Boolean);
 }
 
+function buildTooltipPlacement() {
+    const esm = build(
+        `./src/YagrCore/plugins/tooltip/placement.ts`,
+        `./dist/tooltip-placement.esm.js`,
+        'esm',
+        true,
+    );
+    const cjs = build(
+        `./src/YagrCore/plugins/tooltip/placement.ts`,
+        `./dist/tooltip-placement.cjs.js`,
+        'cjs',
+        true,
+    );
+    return [esm, cjs].filter(Boolean);
+}
+
 function buildPlugins() {
-    return buildPlugin('labels', true).concat(buildPlugin('weekends')).concat(buildPlugin('aggregates')).filter(Boolean);
+    return buildPlugin('labels', true)
+        .concat(buildPlugin('weekends'))
+        .concat(buildPlugin('aggregates'))
+        .concat(buildTooltipPlacement())
+        .filter(Boolean);
 }
 
 function buildExamples() {

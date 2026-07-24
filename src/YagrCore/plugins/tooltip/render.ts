@@ -33,11 +33,15 @@ export function renderTooltip(data: TooltipRenderOptions) {
     const [allTitle, sectionTitle] = data.options.title
         ? typeof data.options.title === 'string'
             ? [data.options.title, false]
-            : ['', true]
+            : typeof data.options.title === 'function'
+              ? [data.options.title(data), false]
+              : ['', true]
         : ['', false];
 
     const sections = data.scales.map((x) => {
-        const sectionTitleBody = getOptionValue(data.options.title, x.scale);
+        const xScaleTitle = getOptionValue(data.options.title, x.scale);
+        const sectionTitleBody =
+            typeof xScaleTitle === 'function' ? xScaleTitle(data) : xScaleTitle;
         const scaleBody =
             data.scales.length > 1
                 ? data.options.scales

@@ -1,4 +1,4 @@
-import uPlot, {Axis as UAxis, Hooks, Series, Options, Plugin} from 'uplot';
+import uPlot, {Axis as UAxis, Hooks, Series, Options, Plugin, Band} from 'uplot';
 
 import Yagr, {YagrMeta, YagrState} from './index';
 import {TooltipOptions} from './plugins/tooltip/types';
@@ -42,6 +42,8 @@ declare module 'uplot' {
         _focus?: boolean | null;
         /** Is series data transformd */
         _transformed?: boolean;
+        /** Temporary hidden flag for showInGraph */
+        _tempHidden?: boolean;
     }
 
     interface Axis {
@@ -92,6 +94,9 @@ export interface YagrConfig {
     /** Raw series data and options */
     series: RawSerieData[];
 
+    /** UPlot bands for grouping series*/
+    bands?: Band[];
+
     /** uPlot hooks + Yagr hooks */
     hooks: YagrHooks;
 
@@ -120,6 +125,9 @@ export type ProcessedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'pr
 export type InitedHandlerArg = CommonHookHandlerArg<{meta: Pick<YagrMeta, 'initTime'>}>;
 export type DisposeHandlerArg = CommonHookHandlerArg<{}>;
 export type ResizeHandlerArg = CommonHookHandlerArg<{entries: ResizeObserverEntry[]}>;
+export type ScaleUpdateHandlerArg = CommonHookHandlerArg<{
+    scales: Record<string, {min: number; max: number}>;
+}>;
 
 export interface InternalYargHooks {
     load?: HookHandler<{meta: YagrMeta}>;
@@ -130,6 +138,7 @@ export interface InternalYargHooks {
     dispose?: HookHandler<{}>;
     resize?: HookHandler<{entries: ResizeObserverEntry[]}>;
     stage?: HookHandler<{stage: YagrState['stage']}>;
+    scaleUpdate?: HookHandler<{scales: Record<string, {min: number; max: number}>}>;
 }
 
 export type YagrHooks = Hooks.Arrays & InternalYargHooks;
@@ -247,11 +256,26 @@ export interface CommonSeriesOptions {
     /** Should show series in tooltip, added to implement more flexible patterns of lines hiding */
     showInTooltip?: boolean;
 
+    /** Should show series in legend, added to implement more flexible patterns of lines hiding */
+    showInLegend?: boolean;
+
+    /** Should show series on graph (render the line), added to implement more flexible patterns of lines hiding */
+    showInGraph?: boolean;
+
     /**
      * Postprocessing function to change actual values (doesn't marks as _transformed series)
      * Use at your own risk
      **/
     postProcess?: (data: (number | null)[], idx: number, y: Yagr) => (number | null)[];
+
+    /**
+     * Determines what data value should be used to get a color for legend and tooltip.
+     * - `lineColor` indicates that lineColor property should be used
+     * - `color` indicates that color property should be used
+     *
+     * @default 'color'
+     */
+    legendColorKey?: 'color' | 'lineColor';
 }
 
 export interface LineSeriesOptions extends CommonSeriesOptions {
@@ -297,7 +321,11 @@ export interface DotsSeriesOptions extends CommonSeriesOptions {
     pointsSize?: number;
 }
 
-export type SeriesOptions = DotsSeriesOptions | LineSeriesOptions | AreaSeriesOptions | ColumnSeriesOptions;
+export type SeriesOptions =
+    | DotsSeriesOptions
+    | LineSeriesOptions
+    | AreaSeriesOptions
+    | ColumnSeriesOptions;
 
 /**
  * Expected serie config and data format from Chart API
@@ -319,7 +347,8 @@ export interface ExtendedSeriesOptions {
     /** Is line focused */
     focus?: boolean;
 }
-export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> = ExtendedSeriesOptions & T;
+export type RawSerieData<T = Omit<SeriesOptions, 'type'> & {type?: ChartType}> =
+    ExtendedSeriesOptions & T;
 
 export type AxisSide = 'top' | 'bottom' | 'left' | 'right';
 
@@ -364,6 +393,9 @@ export interface PLineConfig extends CommonPlotLineConfig {
 
     /** Line stroke dash style*/
     dash?: [number, number];
+
+    /** Line cap style */
+    lineCap?: Series.Cap;
 }
 
 export type PlotLineConfig = PBandConfig | PLineConfig;
@@ -400,8 +432,13 @@ export interface Scale {
     minRange?: number;
 
     /** view type (default: nice) */
-    range?: ScaleRange | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
+    range?:
+        | ScaleRange
+        | ((u: uPlot, min: number, max: number, cfg: YagrConfig) => [min: number, max: number]);
     offset?: number;
+
+    /** Formatting scale values as it's time */
+    time?: boolean;
 }
 
 export type ScaleType = 'linear' | 'logarithmic';

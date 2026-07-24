@@ -35,6 +35,24 @@
             <div id="chart6" class="container"></div>
         </div>
 
+        <div class="grid">
+            <div id="chart7" class="container"></div>
+        </div>
+
+        <h2>Charts with semi-transparent colors</h2>
+        <div>To prevent transparent colors in legend and tooltip,
+            you can set <b>'lineColor'</b> to them with <b>legendColorKey</b> serie option</div>
+        <div class="grid">
+            <div id="chart8" class="container"></div>
+        </div>
+
+        <h2>Charts with hidden serie in legend</h2>
+        <div>To hide serie in legend, you can set <b>'showInLegend'</b> to false</div>
+        <div class="grid">
+            <div id="chart9" class="container"></div>
+            <div id="chart10" class="container"></div>
+        </div>
+
         <script>
             const y1 = new Yagr(chart1, {
                 title: {text: 'On top'},
@@ -163,6 +181,112 @@
                     show: true,
                     position: 'bottom',
                     maxLegendSpace: 0.2,
+                    behaviour: 'extended',
+                },
+            });
+
+            const y7 = new Yagr(chart7, {
+                title: {text: 'On top'},
+                timeline: [1, 2, 3],
+                series: [
+                    {data: [1, 2, 3], color: 'red', type: 'column',},
+
+                    {data: [2, 1, 2], color: 'green', type: 'column'},
+                    {data: [1, 2, 3], color: 'lime', type: 'column'},
+                ],
+                "scales": {
+                    "x": {},
+                    "y": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    },
+                    "yRight": {
+                        "normalize": false,
+                        "stacking": true,
+                        "type": "linear"
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                },
+            });
+
+            const timeline = Array(50).fill(0.2).map((v, i) => v * i)
+            const data1 = timeline.map(x => Math.sin(x))
+            const data2 = timeline.map(x => Math.cos(x))
+
+            const y8 = new Yagr(chart8, {
+                timeline: timeline,
+                series: [
+                    {
+                        name: "sin(x)",
+                        data: data1,
+                        color: 'rgba(126, 178, 109, 0.1)',
+                        lineColor: 'rgba(126, 178, 109)',
+                        type: 'area',
+                        legendColorKey: 'lineColor'
+                    },
+                    {
+                        name: "cos(x)",
+                        data: data2,
+                        color: 'rgba(110, 208, 224, 0.1)',
+                        lineColor: 'rgba(110, 208, 224)',
+                        type: 'area',
+                        legendColorKey: 'lineColor'
+                    },
+                ],
+                scales: {
+                    y: {min: -1.5, max: 1.5},
+                },
+                legend: {
+                    show: true,
+                },
+            });
+
+            const y9 = new Yagr(chart9, {
+                title: {text: 'Basic'},
+                timeline: [1, 2, 3],
+                series: [
+                    {data: [1, 2, 3], color: 'red', showInLegend: false},
+                    {data: [2, 1, 2], color: 'green', type: 'area'},
+                    {data: [1, 1, 1], color: 'blue', type: 'area'},
+                    {data: [1, 2, 1], color: 'tomato', type: 'area'},
+                    {data: [1, 2, 3], color: 'lime', type: 'area'},
+                ],
+                axes: {
+                    y: {values: (u, v) => v.map((x) => x + ' Mb')},
+                },
+                scales: {
+                    y: {min: 0, max: 5},
+                },
+                legend: {
+                    show: true,
+                    position: 'bottom',
+                    behaviour: 'basic',
+                },
+            });
+
+            const y10 = new Yagr(chart10, {
+                title: {text: 'Extended'},
+                timeline: [1, 2, 3],
+                series: [
+                    {data: [1, 2, 3], color: 'red', showInLegend: false},
+                    {data: [2, 1, 2], color: 'green', type: 'area'},
+                    {data: [1, 1, 1], color: 'blue', type: 'area'},
+                    {data: [1, 2, 1], color: 'tomato', type: 'area'},
+                    {data: [1, 2, 3], color: 'lime', type: 'area'},
+                ],
+                axes: {
+                    y: {values: (u, v) => v.map((x) => x + ' Mb')},
+                },
+                scales: {
+                    y: {min: 0, max: 5},
+                },
+                legend: {
+                    show: true,
+                    position: 'bottom',
                     behaviour: 'extended',
                 },
             });

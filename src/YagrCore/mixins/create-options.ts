@@ -72,7 +72,10 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         };
         this._uHooks.setSelect = (u: uPlot) => {
             const {left, width} = u.select;
-            const [_from, _to] = [u.posToVal(left, DEFAULT_X_SCALE), u.posToVal(left + width, DEFAULT_X_SCALE)];
+            const [_from, _to] = [
+                u.posToVal(left, DEFAULT_X_SCALE),
+                u.posToVal(left + width, DEFAULT_X_SCALE),
+            ];
             const {timeMultiplier = TIME_MULTIPLIER} = this.config.chart || {};
 
             this.execHooks('onSelect', {
@@ -81,6 +84,13 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
                 chart: this,
             });
             u.setSelect({width: 0, height: 0, top: 0, left: 0}, false);
+        };
+        this._uHooks.setScale = (_u: uPlot) => {
+            const scales = this.getScales();
+            this.execHooks('scaleUpdate', {
+                scales,
+                chart: this,
+            });
         };
     }
 
@@ -178,6 +188,21 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
          */
         for (let i = seriesOptions.length - 1; i >= 0; i--) {
             const serie = configureSeries(this, seriesOptions[i] || {}, i);
+
+            /**
+             * Series with showInGraph: false must not contribute to scale
+             * auto-range calculation. uPlot computes dataMin/dataMax from
+             * series that have show !== false before any draw hook fires,
+             * so the only way to exclude these series from the scale is to
+             * give uPlot show: false from the very beginning. We preserve
+             * the user-facing visibility through _tempHidden, which the
+             * tooltip and other internals already respect.
+             */
+            if (serie.showInGraph === false && serie.show !== false) {
+                serie._tempHidden = true;
+                serie.show = false;
+            }
+
             const uIdx = resultingSeriesOptions.push(serie);
             this.state.y2uIdx[serie.id || i] = uIdx - 1;
         }
@@ -211,11 +236,13 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
         options.hooks.ready = options.hooks.ready || [];
         options.hooks.drawClear = options.hooks.drawClear || [];
         options.hooks.setSelect = options.hooks.setSelect || [];
+        options.hooks.setScale = options.hooks.setScale || [];
 
         setIfNotSet(options.hooks.draw, this._uHooks.onDraw);
         setIfNotSet(options.hooks.ready, this._uHooks.ready);
         setIfNotSet(options.hooks.drawClear, this._uHooks.drawClear);
         setIfNotSet(options.hooks.setSelect, this._uHooks.setSelect);
+        setIfNotSet(options.hooks.setScale, this._uHooks.setScale);
 
         options.drawOrder = chart.appearance?.drawOrder
             ? (chart.appearance?.drawOrder.filter(
@@ -234,6 +261,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
          */
         this.plugins.legend?.preInit(this, this.config.legend, options);
         options.height = this.clientHeight;
+        options.bands = config.bands;
 
         this.options = options;
 

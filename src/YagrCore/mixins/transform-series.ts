@@ -108,7 +108,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                 }
 
                 if (scaleConfig.stacking) {
-                    if (serieOptions.show === false) {
+                    if (serieOptions.show === false || serieOptions.showInGraph === false) {
                         value = 0;
                     }
 

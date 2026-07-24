@@ -1,6 +1,6 @@
 import {AlignedData} from 'uplot';
 import Yagr from '../../index';
-import {ProcessingInterpolation} from 'src/types';
+import {ProcessingInterpolation} from '../../types';
 
 export type CustomTrackingFunctionOptions = {
     x: number;

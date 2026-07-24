@@ -1,0 +1,197 @@
+<html>
+    <head>
+        <title>Yagr - Get Scales Demo</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            .container {
+                margin-bottom: 26px;
+                height: 400px;
+                width: 100%;
+            }
+            .controls {
+                margin-bottom: 20px;
+            }
+            button {
+                margin-right: 10px;
+                padding: 8px 16px;
+                font-size: 14px;
+                cursor: pointer;
+            }
+            .info-panel {
+                background: #f5f5f5;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 15px;
+                margin-bottom: 20px;
+                font-family: monospace;
+            }
+            .info-panel h3 {
+                margin-top: 0;
+                font-family: Arial, sans-serif;
+            }
+            .scale-info {
+                margin: 10px 0;
+                padding: 8px;
+                background: white;
+                border-radius: 3px;
+            }
+            .scale-name {
+                font-weight: bold;
+                color: #0066cc;
+            }
+            .scale-value {
+                color: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Yagr - Get Scales Demo</h1>
+        <p>This demo shows how to retrieve real min/max values from chart scales using the <code>getScales()</code> method and <code>scaleUpdate</code> hook.</p>
+
+        <div class="info-panel">
+            <h3>Current Scale Values</h3>
+            <div id="scaleInfo">No scales yet...</div>
+        </div>
+
+        <div class="controls">
+            <button id="getScales">Get Current Scales</button>
+            <button id="randomData">Randomize Data</button>
+            <button id="setFixedScale">Set Fixed Scale (0-100)</button>
+            <button id="resetScale">Reset Scale (Auto)</button>
+            <button id="zoom">Enable Zoom (drag to zoom)</button>
+        </div>
+
+        <div id="chart1" class="container"></div>
+
+        <div class="info-panel">
+            <h3>Console Log</h3>
+            <div id="console"></div>
+        </div>
+
+        <script>
+            const consoleDiv = document.getElementById('console');
+            const scaleInfoDiv = document.getElementById('scaleInfo');
+
+            function log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                consoleDiv.innerHTML = `<div>[${timestamp}] ${message}</div>` + consoleDiv.innerHTML;
+            }
+
+            function displayScales(scales) {
+                let html = '';
+                for (const [scaleName, values] of Object.entries(scales)) {
+                    html += `
+                        <div class="scale-info">
+                            <span class="scale-name">${scaleName}:</span>
+                            <span class="scale-value">min = ${values.min.toFixed(4)}, max = ${values.max.toFixed(4)}</span>
+                        </div>
+                    `;
+                }
+                scaleInfoDiv.innerHTML = html || 'No scales available';
+            }
+
+            // Create initial data
+            function generateData(count = 50, multiplier = 10) {
+                return new Array(count).fill().map((_, i) => Math.random() * multiplier);
+            }
+
+            // Initialize chart
+            const yagr = new Yagr(chart1, {
+                title: { text: 'Scale Values Demo' },
+                timeline: new Array(50).fill().map((_, i) => i * 1000),
+                series: [
+                    { 
+                        data: generateData(50, 10), 
+                        color: '#FF6B6B', 
+                        id: 'series1',
+                        name: 'Series 1'
+                    },
+                    { 
+                        data: generateData(50, 8), 
+                        color: '#4ECDC4', 
+                        id: 'series2',
+                        name: 'Series 2'
+                    },
+                    { 
+                        data: generateData(50, 12), 
+                        color: '#FFE66D', 
+                        id: 'series3',
+                        name: 'Series 3'
+                    },
+                ],
+                scales: {
+                    y: {
+                        stacking: false,
+                    },
+                },
+                hooks: {
+                    // Hook that fires when scales are updated
+                    scaleUpdate: [
+                        ({ scales, chart }) => {
+                            log('Scale updated! New values: ' + JSON.stringify(scales, null, 2));
+                            displayScales(scales);
+                        }
+                    ],
+                    load: [
+                        ({ chart }) => {
+                            log('Chart loaded!');
+                            const scales = chart.getScales();
+                            displayScales(scales);
+                        }
+                    ]
+                }
+            });
+
+            // Button handlers
+            document.getElementById('getScales').onclick = () => {
+                const scales = yagr.getScales();
+                log('getScales() called');
+                console.log('All scales:', scales);
+                displayScales(scales);
+                
+                // You can also get a specific scale
+                const yScale = yagr.getScales('y');
+                console.log('Y scale only:', yScale);
+            };
+
+            document.getElementById('randomData').onclick = () => {
+                log('Generating random data...');
+                const multiplier = Math.random() * 50 + 10;
+                yagr.setSeries([
+                    { id: 'series1', data: generateData(50, multiplier) },
+                    { id: 'series2', data: generateData(50, multiplier * 0.8) },
+                    { id: 'series3', data: generateData(50, multiplier * 1.2) },
+                ]);
+            };
+
+            document.getElementById('setFixedScale').onclick = () => {
+                log('Setting fixed scale: min=0, max=100');
+                yagr.setScales({
+                    y: { min: 0, max: 100 }
+                });
+            };
+
+            document.getElementById('resetScale').onclick = () => {
+                log('Resetting to auto scale...');
+                yagr.setScales({
+                    y: { min: null, max: null }
+                });
+            };
+
+            document.getElementById('zoom').onclick = () => {
+                log('Zoom enabled! Drag on the chart to zoom. Scale will update automatically.');
+            };
+
+            // Initial scale display
+            setTimeout(() => {
+                const scales = yagr.getScales();
+                displayScales(scales);
+            }, 100);
+        </script>
+    </body>
+</html>

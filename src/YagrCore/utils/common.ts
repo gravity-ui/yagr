@@ -73,7 +73,7 @@ export const getSumByIdx = (seriesOptions: Series[], idx: number, scale: string)
         const opts = seriesOptions[seriesIdx];
         const seriesValues = opts.$c;
         i += 1;
-        if (opts.scale !== scale || opts.show === false) {
+        if (opts.scale !== scale || opts.show === false || opts.showInGraph === false) {
             continue;
         }
         const value = seriesValues[idx];
@@ -268,7 +268,8 @@ const interpolateImpl = (
     return result;
 };
 
-export const genId = () => Math.random().toString(36).substr(2, 9).replace(/^\d+/, '');
+// https://stackoverflow.com/a/53116778
+export const genId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
 /**
  * Processing data series to:

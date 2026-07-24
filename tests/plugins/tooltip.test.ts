@@ -1,4 +1,4 @@
-import {MinimalValidConfig, TooltipHandler} from '../../src';
+import {AreaSeriesOptions, ExtendedSeriesOptions, MinimalValidConfig, TooltipHandler} from '../../src';
 import Yagr from '../../src/YagrCore';
 
 const gen = (cfg: MinimalValidConfig) => {
@@ -46,6 +46,48 @@ describe('tooltip', () => {
             });
 
             yagr.dispose();
+        });
+    });
+
+    describe('color', () => {
+        const serie: ExtendedSeriesOptions & AreaSeriesOptions = {
+            type: 'area',
+            data: [1, 2, 3, 4],
+            id: '1',
+            color: 'rgba(255, 0, 0, 0.1)',
+            lineColor: 'rgb(255, 0, 0)',
+        };
+
+        const colorTestConfig: MinimalValidConfig = {
+            series: [serie],
+            timeline: [1, 2, 3, 4],
+        };
+
+        it('should use color for tooltip if there is no legendColorKey', () => {
+            const yagr = gen({...colorTestConfig});
+
+            yagr.uplot.setCursor({left: 10, top: 10});
+
+            const tooltipElem = window.document.querySelector(`#${yagr.id}_tooltip`) as HTMLElement;
+
+            const legendIcon = tooltipElem.querySelector('.yagr-tooltip__mark') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgba(255, 0, 0, 0.1)');
+        });
+
+        it('should use lineColor for tooltip if legendColorKey is lineColor', () => {
+            const yagr = gen({
+                ...colorTestConfig,
+                series: [{...colorTestConfig.series[0], legendColorKey: 'lineColor'}],
+            });
+
+            yagr.uplot.setCursor({left: 10, top: 10});
+
+            const tooltipElem = window.document.querySelector(`#${yagr.id}_tooltip`) as HTMLElement;
+
+            const legendIcon = tooltipElem.querySelector('.yagr-tooltip__mark') as HTMLSpanElement;
+
+            expect(legendIcon.style.background).toBe('rgb(255, 0, 0)');
         });
     });
 

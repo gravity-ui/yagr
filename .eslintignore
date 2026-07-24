@@ -1,3 +1,4 @@
 demo/**/*
 dist/**/*
 docs
+commitlint.config.js

@@ -78,8 +78,8 @@ new Yagr(document.body, {
 
 Need something specific? Yagr presents some useful examples in the [demo/examples](./demo/examples/) folder. How to start them with current version:
 
-1. Clone the repository
-2. Install dependencies `npm i`
-3. Run `npm run build`
-4. Run `npx http-server .`
-5. Open examples in browser according to the http-server output
+1. Clone the repository.
+2. Install dependencies `npm i`.
+3. Run `npm run build`.
+4. Run `npx http-server .`.
+5. Open examples in browser according to the http-server output.

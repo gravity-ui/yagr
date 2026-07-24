@@ -15,6 +15,7 @@ export const Scale: YScale = {
         Ordinal: 2 as uScale.Distr.Ordinal,
         Logarithmic: 3 as uScale.Distr.Logarithmic,
         ArcSinh: 4 as uScale.Distr.ArcSinh,
+        Custom: 5 as uScale.Distr.Custom,
     },
 };
 
