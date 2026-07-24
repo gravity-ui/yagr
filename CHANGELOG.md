@@ -1,5 +1,12 @@
 ### master
 
+## [4.14.1](https://github.com/gravity-ui/yagr/compare/v4.14.0...v4.14.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* exports files extensions ([#308](https://github.com/gravity-ui/yagr/issues/308)) ([5ab2385](https://github.com/gravity-ui/yagr/commit/5ab23858e9953754caddecc14aae68dab4257faf))
+
 ## [4.14.0](https://github.com/gravity-ui/yagr/compare/v4.13.9...v4.14.0) (2026-07-23)
 
 
