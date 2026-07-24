@@ -1,8 +1,14 @@
 export * from './YagrCore/types';
 export * from './YagrCore/plugins/tooltip/types';
+export * from './plugins/aggregates/aggregates';
+export * from './YagrCore/plugins/tooltip';
+
+export {default as aggregatesPlugin} from './plugins/aggregates/aggregates';
 
 export {CursorOptions} from './YagrCore/plugins/cursor/cursor';
 export {LegendOptions} from './YagrCore/plugins/legend/legend';
+
+export * from './YagrCore/utils';
 
 import * as DEF from './YagrCore/defaults';
 export const defaults = DEF;
