@@ -41,13 +41,13 @@
     },
     "./aggregates": {
       "types": "./dist/plugins/aggregates/aggregates.d.ts",
-      "import": "./dist/plugins/aggregates/aggregates.mjs",
-      "require": "./dist/plugins/aggregates/aggregates.cjs"
+      "import": "./dist/plugins/aggregates/aggregates.esm.js",
+      "require": "./dist/plugins/aggregates/aggregates.cjs.js"
     },
     "./tooltip-placement": {
       "types": "./dist/YagrCore/plugins/tooltip/placement.d.ts",
-      "import": "./dist/tooltip-placement.mjs",
-      "require": "./dist/tooltip-placement.cjs"
+      "import": "./dist/tooltip-placement.esm.js",
+      "require": "./dist/tooltip-placement.cjs.js"
     }
   },
   "typesVersions": {
