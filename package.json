@@ -1,6 +1,6 @@
 {
   "name": "@gravity-ui/yagr",
-  "version": "4.13.9",
+  "version": "5.0.0",
   "description": "High level wrapper for uPlot",
   "keywords": [
     "canvas",
@@ -9,9 +9,6 @@
     "plot",
     "visualization"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/yagr.esm.js",
-  "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "typings"
@@ -26,42 +23,20 @@
     "node": ">=16.0.0"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./labels": "./dist/plugins/labels/labels.js",
-    "./aggregates": "./dist/plugins/aggregates/aggregates.js",
-    "./weekends": "./dist/plugins/weekends/weekends.js",
-    "./react": "./dist/react.js",
-    "./types": "./dist/types.js",
-    "./dist/*": {
-      "types": "./dist/*.d.ts",
-      "default": "./dist/*"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/yagr.mjs",
+      "require": "./dist/yagr.cjs"
     },
-    "./dist/index.css": {
-      "import": "./dist/index.css",
-      "require": "./dist/index.css"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "index.d.ts": [
-        "./dist/index.d.ts"
-      ],
-      "aggregates": [
-        "./dist/plugins/aggregates/aggregates.d.ts"
-      ],
-      "labels": [
-        "./dist/plugins/labels/labels.d.ts"
-      ],
-      "weekends": [
-        "./dist/plugins/weekends/weekends.d.ts"
-      ],
-      "react": [
-        "./dist/react.d.ts"
-      ],
-      "types": [
-        "./dist/types.d.ts"
-      ]
-    }
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.cjs"
+    },
+    "./index.css": {
+      "default": "./dist/index.css"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "test": "TZ=UTC jest --coverage",

@@ -8,12 +8,12 @@ npm install @gravity-ui/yagr
 
 ## Integration
 
-By default, Yagr exposes the ES2019 module for TypeScript, though you can import other modules:
+Yagr automatically exposes the ES2019 ESM build to `import` and the CommonJS
+build to `require`. Use the package's public entry points:
 
--   `@gravity-ui/yagr/dist/yagr.ejs.js` - EJS module
--   `@gravity-ui/yagr/dist/yagr.cjs.js` - CommonJS module
--   `@gravity-ui/yagr/dist/yagr.umd.js` - UMD module
--   `@gravity-ui/yagr/dist/yagr.iife.js` - IIFE module
+-   `@gravity-ui/yagr`
+-   `@gravity-ui/yagr/react`
+-   `@gravity-ui/yagr/index.css`
 
 ## Run
 
@@ -23,7 +23,7 @@ Let's see the config for a minimum valid chart:
 import Yagr from '@gravity-ui/yagr';
 
 // don't forget to import styles
-import '@gravity-ui/yagr/dist/index.css';
+import '@gravity-ui/yagr/index.css';
 
 
 const config = {

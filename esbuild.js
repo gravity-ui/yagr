@@ -21,36 +21,32 @@ const banner = [
 const buildFn = isDevMode ? esbuild.context : esbuild.build;
 const log = (str) => console.log(str + (isDevMode ? ' (waiting for changes ...)' : ''));
 
-function build(entry, outfile, format, minify = false, plugins = []) {
+function build(entry, outfile, format, minify = false, plugins = [], external = []) {
     return buildFn({
         entryPoints: [entry],
         outfile,
         format,
         plugins,
+        external,
         bundle: true,
         sourcemap: true,
         banner: {js: banner},
         platform: 'browser',
+        target: 'es2019',
         logLevel: 'error',
-    }).then((ctx) => {
+    }).then(async (ctx) => {
         log(`${format.toUpperCase()} build for ${entry} finished`);
 
         if (minify) {
-            esbuild
-                .build({
-                    entryPoints: [outfile],
-                    outfile: outfile.replace('.js', '.min.js'),
-                    banner: {js: banner},
-                    sourcemap: true,
-                    minify: true,
-                })
-                .then(() => {
-                    console.log(`${format.toUpperCase()} minified build for ${entry} finished`);
-                })
-                .catch((e) => {
-                    console.error(e);
-                    process.exit(1);
-                });
+            await esbuild.build({
+                entryPoints: [outfile],
+                outfile: outfile.replace(/(\.[^.]+)$/, '.min$1'),
+                banner: {js: banner},
+                sourcemap: true,
+                minify: true,
+                target: 'es2019',
+            });
+            console.log(`${format.toUpperCase()} minified build for ${entry} finished`);
         }
 
         return ctx;
@@ -84,12 +80,14 @@ function buildMain() {
     });
 
     /** Build ESM */
-    const esm = build('./src/index.ts', './dist/yagr.esm.js', 'esm', true);
+    const esm = build('./src/index.ts', './dist/yagr.mjs', 'esm', true);
     const iife = build('./src/index.ts', './dist/yagr.iife.js', 'iife', true);
-    const cjs = build('./src/index.ts', './dist/yagr.cjs.js', 'cjs', false);
+    const cjs = build('./src/index.ts', './dist/yagr.cjs', 'cjs', false);
     const umd = build('./src/index.ts', './dist/yagr.umd.js', 'umd', true, [umdWrapper()]);
+    const reactEsm = build('./src/react.tsx', './dist/react.mjs', 'esm', false, [], ['react']);
+    const reactCjs = build('./src/react.tsx', './dist/react.cjs', 'cjs', false, [], ['react']);
 
-    return [scss, esm, iife, cjs, umd].filter(Boolean);
+    return [scss, esm, iife, cjs, umd, reactEsm, reactCjs].filter(Boolean);
 }
 
 function buildPlugin(name, css = false) {
@@ -115,14 +113,12 @@ function buildPlugin(name, css = false) {
           })
         : Promise.resolve();
 
-    const esm = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.esm.js`, 'esm', true);
     const iife = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.iife.js`, 'iife', true);
-    const cjs = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.cjs.js`, 'cjs', true);
     const umd = build(`./src/plugins/${name}/${name}.ts`, `./dist/plugins/${name}/${name}.umd.js`, 'umd', true, [
         umdWrapper(),
     ]);
 
-    return [scss, esm, iife, cjs, umd].filter(Boolean);
+    return [scss, iife, umd].filter(Boolean);
 }
 
 function buildPlugins() {
