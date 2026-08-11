@@ -3,7 +3,7 @@ import UPlot, {Plugin, Series} from 'uplot';
 
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE, DEFAULT_POINT_SIZE} from '../../defaults';
 import {DotsSeriesOptions, YagrConfig} from '../../types';
-import { isNil } from '../..//utils/common';
+import {isNil} from '../..//utils/common';
 
 export const renderCircle = (
     u: UPlot,
@@ -38,6 +38,23 @@ export const renderCircle = (
     ctx.closePath();
 };
 
+// Same as uPlot with clipping line content
+const drawWithinPlot = (u: UPlot, draw: () => void) => {
+    const {ctx, bbox} = u;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(bbox.left, bbox.top, bbox.width, bbox.height);
+    // here we're clipping all dots outside the rect
+    ctx.clip();
+
+    try {
+        draw();
+    } finally {
+        ctx.restore();
+    }
+};
+
 export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: number) {
     const {color, scale, spanGaps, count, pointsSize} = u.series[i];
 
@@ -46,35 +63,37 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
     }
 
     let j = i0;
-    let prev;
+    let prev: number | null | undefined;
 
-    while (j <= i1) {
-        const val = u.data[i][j];
+    drawWithinPlot(u, () => {
+        while (j <= i1) {
+            const val = u.data[i][j];
 
-        if (val === null) {
+            if (val === null) {
+                prev = val;
+                j++;
+                continue;
+            }
+
+            const nextIdx = j + 1;
+            const next = u.data[i][nextIdx];
+
+            if (isNil(prev) && isNil(next)) {
+                renderCircle(
+                    u,
+                    u.data[0][j] as number,
+                    val as number,
+                    pointsSize ?? DEFAULT_POINT_SIZE / 2,
+                    0,
+                    color,
+                    color,
+                    scale || DEFAULT_Y_SCALE,
+                );
+            }
             prev = val;
             j++;
-            continue;
         }
-
-        const nextIdx = j + 1;
-        const next = u.data[i][nextIdx];
-
-        if (isNil(prev) && isNil(next)) {
-            renderCircle(
-                u,
-                u.data[0][j] as number,
-                val as number,
-                pointsSize ?? (DEFAULT_POINT_SIZE / 2),
-                0,
-                color,
-                color,
-                scale || DEFAULT_Y_SCALE,
-            );
-        }
-        prev = val;
-        j++;
-    }
+    });
 
     return undefined;
 }
@@ -83,7 +102,12 @@ export function drawMarkersIfRequired(u: UPlot, i: number, i0: number, i1: numbe
  * This plugin configures points markers
  */
 export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugin {
-    const {size = DEFAULT_POINT_SIZE, strokeWidth = 2, strokeColor = '#ffffff', show} = config.markers;
+    const {
+        size = DEFAULT_POINT_SIZE,
+        strokeWidth = 2,
+        strokeColor = '#ffffff',
+        show,
+    } = config.markers;
 
     const chartSeriesOptions = config.chart?.series as DotsSeriesOptions;
     const defaultDotsSize = chartSeriesOptions?.pointsSize || DEFAULT_POINT_SIZE;
@@ -96,22 +120,24 @@ export default function YagrMarkersPlugin(yagr: Yagr, config: YagrConfig): Plugi
         // eslint-disable-next-line no-nested-ternary
         const pointSize = type === 'dots' ? (show ? size : defaultDotsSize) : size;
 
-        while (j <= i1) {
-            const val = u.data[i][j];
-            if (val !== null) {
-                renderCircle(
-                    u,
-                    u.data[0][j] as number,
-                    val as number,
-                    pointSize,
-                    strokeWidth,
-                    (_focus || _focus === null ? color : getFocusedColor(yagr, i)) || color,
-                    strokeColor,
-                    scale || DEFAULT_Y_SCALE,
-                );
+        drawWithinPlot(u, () => {
+            while (j <= i1) {
+                const val = u.data[i][j];
+                if (val !== null) {
+                    renderCircle(
+                        u,
+                        u.data[0][j] as number,
+                        val as number,
+                        pointSize,
+                        strokeWidth,
+                        (_focus || _focus === null ? color : getFocusedColor(yagr, i)) || color,
+                        strokeColor,
+                        scale || DEFAULT_Y_SCALE,
+                    );
+                }
+                j++;
             }
-            j++;
-        }
+        });
 
         return undefined;
     }
