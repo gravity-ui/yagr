@@ -1,5 +1,12 @@
 ### master
 
+## [5.1.0](https://github.com/gravity-ui/yagr/compare/v5.0.1...v5.1.0) (2026-08-12)
+
+
+### Features
+
+* export legend helpers ([#314](https://github.com/gravity-ui/yagr/issues/314)) ([0ef7976](https://github.com/gravity-ui/yagr/commit/0ef79765d89b251d9ae5a4748039085a0fc08f6a))
+
 ## [5.0.1](https://github.com/gravity-ui/yagr/compare/v5.0.0...v5.0.1) (2026-08-11)
 
 
