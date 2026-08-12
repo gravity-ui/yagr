@@ -1,5 +1,12 @@
 ### master
 
+## [5.0.1](https://github.com/gravity-ui/yagr/compare/v5.0.0...v5.0.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* clip dots outside the renderer block ([#311](https://github.com/gravity-ui/yagr/issues/311)) ([ff407d5](https://github.com/gravity-ui/yagr/commit/ff407d5963e55c83c53ae6aad2ba0eb1bd43bbc0))
+
 ## [5.0.0](https://github.com/gravity-ui/yagr/compare/v4.14.1...v5.0.0) (2026-07-24)
 
 
