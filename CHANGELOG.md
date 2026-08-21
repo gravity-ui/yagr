@@ -1,5 +1,12 @@
 ### master
 
+## [5.2.0](https://github.com/gravity-ui/yagr/compare/v5.1.0...v5.2.0) (2026-08-21)
+
+
+### Features
+
+* add fill option for line ([#316](https://github.com/gravity-ui/yagr/issues/316)) ([96092c6](https://github.com/gravity-ui/yagr/commit/96092c6b6fe13b3d929a1b377b85c3e50a6abec0))
+
 ## [5.1.0](https://github.com/gravity-ui/yagr/compare/v5.0.1...v5.1.0) (2026-08-12)
 
 
