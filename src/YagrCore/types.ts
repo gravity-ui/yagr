@@ -284,6 +284,9 @@ export interface LineSeriesOptions extends CommonSeriesOptions {
     /** Width of line (line type charts) */
     width?: number;
 
+    /** Area fill style under the line */
+    fill?: Series.Fill;
+
     /** Interpolation type */
     interpolation?: InterpolationType;
 
