@@ -413,10 +413,18 @@ export type ScaleRange = 'nice' | 'offset' | 'auto';
  * Settings of scale
  */
 export interface Scale {
-    /** Scale orientation: 0 — horizontal, 1 — vertical */
+    /**
+     * Scale orientation:
+     * 0 — horizontal,
+     * 1 — vertical
+     */
     ori?: 0 | 1;
 
-    /** Scale direction */
+    /**
+     * Scale direction:
+     * 1 — left-to-right for a horizontal scale and bottom-to-top for a vertical scale;
+     * -1 — the reverse direction
+     */
     dir?: 1 | -1;
 
     /** Scale range visualisation (default: linear) */
