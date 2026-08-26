@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Yagr — horizontal bars on multiple axes</title>
+        <script src="../../dist/yagr.iife.js"></script>
+        <link rel="stylesheet" href="../../dist/index.css" />
+        <style>
+            body {
+                margin: 24px;
+                font-family: sans-serif;
+            }
+
+            #chart {
+                width: min(100%, 960px);
+                height: 480px;
+            }
+
+            p {
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Horizontal bars on multiple axes</h1>
+        <p>
+            Revenue uses the bottom axis, while orders use the top axis. Category values are
+            displayed on the left.
+        </p>
+        <div id="chart"></div>
+
+        <script>
+            const categories = ['Search', 'Maps', 'Mail', 'Cloud'];
+            const barBounds = new Map();
+
+            const rememberBounds =
+                (seriesName) => (uplot, seriesIdx, dataIdx, left, top, width, height) => {
+                    const categoryIdx = uplot.data[0][dataIdx];
+                    barBounds.set(`${seriesIdx}:${dataIdx}`, {
+                        series: seriesName,
+                        category: categories[categoryIdx],
+                        left,
+                        top,
+                        width,
+                        height,
+                    });
+                };
+
+            const barLayout = (offset) => ({
+                x0: {
+                    unit: 1,
+                    values: (uplot) => uplot.data[0].map((category) => category + offset),
+                },
+                size: {
+                    // PixelPercent keeps the thickness positive when the category scale is vertical.
+                    unit: 2,
+                    values: (uplot) => uplot.data[0].map(() => 0.08),
+                },
+            });
+
+            const chart = new Yagr(document.getElementById('chart'), {
+                // Empty edge points give the first and last bar groups some breathing room.
+                timeline: [-0.5, 0, 1, 2, 3, 3.5],
+                chart: {
+                    series: {
+                        type: 'column',
+                    },
+                },
+                series: [
+                    {
+                        name: 'Revenue',
+                        scale: 'revenue',
+                        color: '#ffbe5c',
+                        data: [null, 72, 55, 38, 91, null],
+                        renderOptions: {
+                            align: 1,
+                            disp: barLayout(-0.36),
+                            each: rememberBounds('Revenue'),
+                        },
+                    },
+                    {
+                        name: 'Orders',
+                        scale: 'orders',
+                        color: '#4da2ff',
+                        data: [null, 820, 640, 510, 960, null],
+                        renderOptions: {
+                            align: 1,
+                            disp: barLayout(0.02),
+                            each: rememberBounds('Orders'),
+                        },
+                    },
+                ],
+                scales: {
+                    x: {time: false, ori: 1, dir: 1},
+                    revenue: {ori: 0, dir: 1, min: 0, max: 100},
+                    orders: {ori: 0, dir: 1, min: 0, max: 1000},
+                },
+                axes: {
+                    x: {
+                        side: 'left',
+                        size: 90,
+                        splits: () => [0, 1, 2, 3],
+                        values: (uplot, ticks) => ticks.map((value) => categories[value]),
+                    },
+                    revenue: {
+                        side: 'bottom',
+                        label: 'Revenue, $k',
+                    },
+                    orders: {
+                        side: 'top',
+                        label: 'Orders',
+                    },
+                },
+                legend: {
+                    show: true,
+                },
+                tooltip: {
+                    scales: {
+                        revenue: 'Revenue, $k',
+                        orders: 'Orders',
+                    },
+                },
+            });
+
+            // `each` provides exact canvas-pixel bounds for every bar in either orientation.
+            // Use `barBounds` as a spatial index for custom hover or tooltip implementations.
+            window.chart = chart;
+            window.barBounds = barBounds;
+        </script>
+    </body>
+</html>

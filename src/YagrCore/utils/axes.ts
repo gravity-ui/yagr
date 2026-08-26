@@ -146,7 +146,9 @@ function getAxis(axisConfig: AxisOptions, yagr: Yagr): Axis {
             scale: defaults.DEFAULT_X_SCALE,
             space: axisConfig.space || (() => defaults.X_AXIS_SPACE),
             incrs: axisConfig.incrs || (() => defaults.X_AXIS_INCRS.map((i) => i * (config.chart.timeMultiplier || defaults.TIME_MULTIPLIER))),
-            side: 2,
+            ...(axisConfig.side
+                ? getAxisPositioning(axisConfig.side, axisConfig.align)
+                : {side: TypedAxis.Side.Bottom}),
             stroke: axisConfig.stroke || (() => theme.AXIS_STROKE),
         });
     }
