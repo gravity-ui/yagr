@@ -186,12 +186,28 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
         scales[scaleName] = scales[scaleName] || {};
         const scale = scales[scaleName];
 
-        if (scaleName === DEFAULT_X_SCALE) {
-            return;
+        if (scaleConfig.time !== undefined) {
+            scale.time = scaleConfig.time;
         }
 
-        if (scaleConfig.time) {
-            scale.time = scaleConfig.time;
+        if (scaleConfig.ori !== undefined) {
+            scale.ori = scaleConfig.ori;
+        }
+
+        if (scaleConfig.dir !== undefined) {
+            scale.dir = scaleConfig.dir;
+        }
+
+        const isLogScale = scaleConfig.type === 'logarithmic';
+
+        if (isLogScale) {
+            scale.distr = YScale.Distr.Logarithmic;
+        }
+
+        // The x scale range is managed by uPlot. Keep Yagr's range processing
+        // off it, while still forwarding the native scale options above.
+        if (scaleName === DEFAULT_X_SCALE) {
+            return;
         }
 
         const forceMin = typeof scaleConfig.min === 'number' ? scaleConfig.min : null;
@@ -205,10 +221,7 @@ export function configureScales(yagr: Yagr, scales: UPlot.Scales, config: YagrCo
             scale.range = [forceMin, forceMax];
         }
 
-        const isLogScale = scaleConfig.type === 'logarithmic';
-
         if (isLogScale) {
-            scale.distr = YScale.Distr.Logarithmic;
             scale.range = getScaleRange(scaleConfig, config);
 
             return;

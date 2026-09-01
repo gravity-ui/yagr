@@ -20,6 +20,37 @@ describe('options', () => {
     });
 
     describe('custom settings and configs', () => {
+        it('forwards orientation and direction for horizontal bars', () => {
+            const each = jest.fn();
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2],
+                scales: {
+                    x: {time: false, ori: 1, dir: 1},
+                    y: {ori: 0, dir: 1},
+                },
+                axes: {
+                    x: {side: 'left'},
+                    y: {side: 'bottom'},
+                },
+                series: [{type: 'column', data: [1, 2], renderOptions: {each}}],
+            });
+
+            expect(y.options.scales).toMatchObject({
+                x: {time: false, ori: 1, dir: 1},
+                y: {ori: 0, dir: 1},
+            });
+            expect(y.options.axes).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({scale: 'x', side: 3}),
+                    expect.objectContaining({scale: 'y', side: 2}),
+                ]),
+            );
+            expect(y.options.series[1]).toMatchObject({
+                type: 'column',
+                renderOptions: {each},
+            });
+        });
+
         describe('settings.timeMultiplier', () => {
             it('should transform settings.timeMultiplier (default)', () => {
                 const y = new Yagr(window.document.body, DEFAULT_CONFIG);
