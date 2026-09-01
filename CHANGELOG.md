@@ -1,5 +1,12 @@
 ### master
 
+## [5.3.0](https://github.com/gravity-ui/yagr/compare/v5.2.0...v5.3.0) (2026-09-01)
+
+
+### Features
+
+* **scales:** add ori and dir settings for charts ([#318](https://github.com/gravity-ui/yagr/issues/318)) ([9fb55a4](https://github.com/gravity-ui/yagr/commit/9fb55a4c247222f6168cae9ae8b05fa27a760d40))
+
 ## [5.2.0](https://github.com/gravity-ui/yagr/compare/v5.1.0...v5.2.0) (2026-08-21)
 
 
