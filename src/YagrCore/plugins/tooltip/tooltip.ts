@@ -356,9 +356,13 @@ class YagrTooltip {
                 const seriesData = u.data[seriesIdx] as DataSeries;
                 const serie = u.series[seriesIdx];
 
+                const tooltipData = this.yagr.config.scales[scale]?.stacking
+                    ? serie.unstackedData || seriesData
+                    : seriesData;
+
                 let value = findValue(
                     this.yagr.config.cursor,
-                    seriesData,
+                    tooltipData,
                     serie,
                     idx,
                     this.interpolation,

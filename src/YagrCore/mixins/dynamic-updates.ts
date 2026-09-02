@@ -13,6 +13,7 @@ import Yagr from '..';
 import i18n from '../locale';
 import {DEFAULT_X_SCALE, DEFAULT_Y_SCALE} from '../defaults';
 import {overrideSeriesInUpdate, configureSeries} from '../utils/series';
+import {getStackedLineBands} from '../utils/bands';
 import {getRedrawOptionsForAxesUpdate, updateAxis} from '../utils/axes';
 import {Paths, deepIsEqual, get} from '../utils/common';
 import {Batch} from './batch-updates';
@@ -113,6 +114,10 @@ function setVisibleImpl(
         // batch.reopt = true;
         batch.recalc = true;
         batch.fns.push(() => {
+            yagr.uplot.delBand(null);
+            getStackedLineBands(yagr.uplot.series, yagr.config.scales, yagr.config.bands).forEach(
+                (band) => yagr.uplot.addBand(band),
+            );
             yagr.uplot.setData(yagr.series, true);
             updateLegend && yagr.plugins.legend?.update();
         });

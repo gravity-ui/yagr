@@ -1,4 +1,7 @@
 import Yagr from '../../src/YagrCore';
+import type {Band} from 'uplot';
+
+const getBands = (yagr: Yagr) => (yagr.uplot as unknown as {bands: Band[]}).bands;
 
 describe('scales: stacking', () => {
     describe('without processing', () => {
@@ -13,6 +16,43 @@ describe('scales: stacking', () => {
 
             expect(y.uplot.data[2]).toEqual([1, 3, 3]);
             expect(y.uplot.data[1]).toEqual([4, 4, 6]);
+            expect(y.uplot.series[1].unstackedData).toEqual([3, 1, 3]);
+            expect(y.uplot.series[2].unstackedData).toEqual([1, 3, 3]);
+        });
+
+        it('should preserve null positions in unstacked line data', () => {
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                scales: {y: {stacking: true}},
+                series: [
+                    {type: 'line', data: [1, null, 3]},
+                    {type: 'line', data: [3, 1, null]},
+                ],
+            });
+
+            expect(y.uplot.series[1].unstackedData).toEqual([3, 1, null]);
+            expect(y.uplot.series[2].unstackedData).toEqual([1, null, 3]);
+        });
+
+        it('should create and update non-overlapping bands for filled lines', () => {
+            const y = new Yagr(window.document.body, {
+                timeline: [1, 2, 3],
+                scales: {y: {stacking: true}},
+                series: [
+                    {id: 'bottom', type: 'line', fill: 'red', data: [1, 1, 1]},
+                    {id: 'middle', type: 'line', fill: 'blue', data: [1, 1, 1]},
+                    {id: 'top', type: 'line', fill: 'green', data: [1, 1, 1]},
+                ],
+            });
+
+            expect(getBands(y).map(({series}) => series)).toEqual([
+                [1, 2],
+                [2, 3],
+            ]);
+
+            y.setVisible('middle', false);
+
+            expect(getBands(y).map(({series}) => series)).toEqual([[1, 3]]);
         });
 
         it('should bring nulls to 0 for areas', () => {

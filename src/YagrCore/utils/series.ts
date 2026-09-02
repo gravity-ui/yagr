@@ -103,6 +103,7 @@ export function configureSeries(yagr: Yagr, rawSeries: RawSerieData, idx: number
         );
         serie.width = serie.width || defaults.SERIE_LINE_WIDTH;
         serie.stroke = colorFn;
+        serie.fill = getCommonProperty<LineSeriesOptions, 'fill'>(rawSeries, yagr, 'fill');
         serie.points.show = drawMarkersIfRequired;
         serie.interpolation = getCommonProperty<LineSeriesOptions, 'interpolation'>(
             rawSeries,
@@ -157,6 +158,7 @@ export const overrideSeriesInUpdate = (dest: Series, source: Series) => {
     dest.color = source.color ?? dest.color;
     dest.lineColor = source.lineColor ?? dest.lineColor;
     dest.lineWidth = source.lineWidth ?? dest.lineWidth;
+    dest.fill = source.fill ?? dest.fill;
     dest.stroke = source.stroke ?? dest.stroke;
     dest.getFocusedColor = source.getFocusedColor ?? dest.getFocusedColor;
     dest.formatter = source.formatter ?? dest.formatter;

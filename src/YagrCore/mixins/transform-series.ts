@@ -58,6 +58,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
             const sGroup = serieOptions.stackGroup || 0;
 
             let empty = true;
+            const unstackedData: (number | null)[] | undefined = isStacking ? [] : undefined;
 
             if (isStacking && !stacks[scale]) {
                 this.options.focus = this.options.focus || {alpha: 1.1};
@@ -91,6 +92,7 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                 if (value === null) {
                     if (serieOptions.type === 'line' || serieOptions.type === 'dots') {
                         dataLine.push(null);
+                        unstackedData?.push(null);
                         continue;
                     } else {
                         value = isStacking ? 0 : null;
@@ -107,12 +109,14 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
                     serieOptions.normalizedData[idx] = value;
                 }
 
+                unstackedData?.push(value);
+
                 if (scaleConfig.stacking) {
                     if (serieOptions.show === false || serieOptions.showInGraph === false) {
                         value = 0;
                     }
 
-                    value = stacks[scale][sGroup][idx] += (value ?? 0);
+                    value = stacks[scale][sGroup][idx] += value ?? 0;
                 }
 
                 if (scaleConfig.type === 'logarithmic' && value === 0) {
@@ -130,6 +134,9 @@ export class TransformSeriesMixin<T extends MinimalValidConfig> {
 
             serieOptions.avg = (serieOptions.sum || 0) / serieOptions.count;
             serieOptions.empty = empty;
+            if (unstackedData) {
+                serieOptions.unstackedData = unstackedData;
+            }
 
             if (serieOptions.postProcess) {
                 dataLine = serieOptions.postProcess(dataLine, sIdx, this);

@@ -47,6 +47,27 @@ describe('tooltip', () => {
 
             yagr.dispose();
         });
+
+        it('should display unstacked values for stacked series', () => {
+            const yagr = gen({
+                timeline: [1, 2],
+                scales: {y: {stacking: true}},
+                series: [{data: [10, 10]}, {data: [20, 20]}],
+                tooltip: {virtual: true},
+            });
+            const render = jest.fn();
+
+            yagr.plugins.tooltip?.on('render', (_, event) => render(event.data));
+            yagr.plugins.tooltip?.display({left: 0, top: 0, idx: 0});
+
+            const rows = render.mock.calls[0][0].scales[0].rows;
+            expect(rows.map(({originalValue}: {originalValue: number}) => originalValue)).toEqual([
+                10, 20,
+            ]);
+            expect(rows.map(({displayY}: {displayY: number}) => displayY)).toEqual([10, 30]);
+
+            yagr.dispose();
+        });
     });
 
     describe('color', () => {

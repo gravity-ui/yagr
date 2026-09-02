@@ -20,6 +20,7 @@ import markersPlugin from '../plugins/markers';
 import {configureScales} from '../utils/scales';
 import {configureAxes} from '../utils/axes';
 import {getPaddingByAxes} from '../utils/chart';
+import {getStackedLineBands} from '../utils/bands';
 import {DrawOrderKey} from '../utils/types';
 import plotLinesPlugin from '../plugins/plotLines/plotLines';
 
@@ -261,7 +262,7 @@ export class CreateUplotOptionsMixin<T extends MinimalValidConfig> {
          */
         this.plugins.legend?.preInit(this, this.config.legend, options);
         options.height = this.clientHeight;
-        options.bands = config.bands;
+        options.bands = getStackedLineBands(options.series, config.scales, config.bands);
 
         this.options = options;
 

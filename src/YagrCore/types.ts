@@ -23,6 +23,9 @@ declare module 'uplot' {
         /** Will appear after processing series */
         $c: DataSeriesExtended;
 
+        /** Values after transforms and normalization, but before stacking */
+        unstackedData?: DataSeries;
+
         /** Will appear after processing series if serie values normalized */
         normalizedData?: DataSeries;
 
