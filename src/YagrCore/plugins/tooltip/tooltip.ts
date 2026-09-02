@@ -348,7 +348,8 @@ class YagrTooltip {
                 rows: [],
             };
             const section = sections[scale];
-            const cursorValue = Number(u.posToVal(top, scale).toFixed(2));
+            const cursorPosition = u.scales[scale].ori === 0 ? left : top;
+            const cursorValue = Number(u.posToVal(cursorPosition, scale).toFixed(2));
 
             const valueRender = getOptionValue<ValueFormatter>(opts.value, scale);
 

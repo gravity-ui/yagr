@@ -47,6 +47,43 @@ describe('tooltip', () => {
 
             yagr.dispose();
         });
+
+        it.each([
+            {ori: 0 as const},
+            {ori: 1 as const},
+        ])(
+            'should track cursor along the value scale with orientation $ori',
+            ({ori}) => {
+                const tracking = jest.fn(() => 0);
+                const yagr = gen({
+                    timeline: [1],
+                    series: [{data: [1]}],
+                    scales: {
+                        y: {ori},
+                    },
+                    tooltip: {
+                        tracking,
+                    },
+                });
+
+                const left = (yagr.uplot.bbox.left + yagr.uplot.bbox.width) / devicePixelRatio;
+                const top = (yagr.uplot.bbox.top + yagr.uplot.bbox.height) / devicePixelRatio;
+                const cursorPosition = ori === 0 ? left : top;
+                const expectedCursorValue = Number(
+                    yagr.uplot.posToVal(cursorPosition, 'y').toFixed(2),
+                );
+
+                yagr.plugins.tooltip?.display({left: 10, top: 20, idx: 0});
+
+                expect(tracking).toHaveBeenCalledWith(
+                    expect.anything(),
+                    expectedCursorValue,
+                    expect.anything(),
+                );
+
+                yagr.dispose();
+            },
+        );
     });
 
     describe('color', () => {
