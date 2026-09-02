@@ -1,5 +1,12 @@
 ### master
 
+## [5.3.1](https://github.com/gravity-ui/yagr/compare/v5.3.0...v5.3.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* track horizontal cursors at tooltip ([#320](https://github.com/gravity-ui/yagr/issues/320)) ([fbf0fb4](https://github.com/gravity-ui/yagr/commit/fbf0fb4270dd84fa3119d26161070ae8058eee66))
+
 ## [5.3.0](https://github.com/gravity-ui/yagr/compare/v5.2.0...v5.3.0) (2026-09-01)
 
 
