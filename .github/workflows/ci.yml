@@ -47,3 +47,22 @@ jobs:
       run: npm ci
     - name: Unit Tests
       run: npm run test
+  size:
+    name: Size Limit
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    - name: Install Packages
+      run: npm ci
+    - name: Build
+      run: npm run build
+    - name: Size Limit
+      run: npm run size
