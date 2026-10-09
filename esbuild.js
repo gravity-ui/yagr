@@ -21,6 +21,30 @@ const banner = [
 const buildFn = isDevMode ? esbuild.context : esbuild.build;
 const log = (str) => console.log(str + (isDevMode ? ' (waiting for changes ...)' : ''));
 
+/**
+ * ./react must not embed the library. Every import stays external, and relative
+ * imports are rewritten to the package root so they share the main entry.
+ */
+function externalizeAll(packageName) {
+    return {
+        name: 'externalize-all',
+        setup(build) {
+            build.onResolve({filter: /.*/}, (args) => {
+                if (args.kind === 'entry-point') {
+                    return null;
+                }
+
+                const isRelative = args.path.startsWith('.') || args.path.startsWith('/');
+
+                return {
+                    path: isRelative ? packageName : args.path,
+                    external: true,
+                };
+            });
+        },
+    };
+}
+
 function build(entry, outfile, format, minify = false, plugins = [], external = []) {
     return buildFn({
         entryPoints: [entry],
@@ -84,8 +108,9 @@ function buildMain() {
     const iife = build('./src/index.ts', './dist/yagr.iife.js', 'iife', true);
     const cjs = build('./src/index.ts', './dist/yagr.cjs', 'cjs', false);
     const umd = build('./src/index.ts', './dist/yagr.umd.js', 'umd', true, [umdWrapper()]);
-    const reactEsm = build('./src/react.tsx', './dist/react.mjs', 'esm', false, [], ['react']);
-    const reactCjs = build('./src/react.tsx', './dist/react.cjs', 'cjs', false, [], ['react']);
+    const reactPlugins = [externalizeAll('@gravity-ui/yagr')];
+    const reactEsm = build('./src/react.tsx', './dist/react.mjs', 'esm', false, reactPlugins);
+    const reactCjs = build('./src/react.tsx', './dist/react.cjs', 'cjs', false, reactPlugins);
 
     return [scss, esm, iife, cjs, umd, reactEsm, reactCjs].filter(Boolean);
 }

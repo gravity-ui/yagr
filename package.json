@@ -57,6 +57,7 @@
     "precommit": "lint-staged",
     "docs": "yfm -i ./docs -o ./dist/docs --allowHTML",
     "prepublishOnly": "npm run build",
+    "size": "size-limit",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -66,6 +67,8 @@
     "@doc-tools/docs": "^1.13.1",
     "@gravity-ui/prettier-config": "^1.1.0",
     "@gravity-ui/stylelint-config": "^4.0.1",
+    "@size-limit/esbuild": "^14.2.0",
+    "@size-limit/file": "^14.2.0",
     "@types/jest": "^26.0.24",
     "@types/node": "^10.11.0",
     "@types/react": "^17.0.2",
@@ -91,6 +94,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "rimraf": "^2.6.2",
+    "size-limit": "^14.2.0",
     "stylelint": "^15.11.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.2.1",
