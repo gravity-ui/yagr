@@ -1,5 +1,12 @@
 ### master
 
+## [5.3.2](https://github.com/gravity-ui/yagr/compare/v5.3.1...v5.3.2) (2026-10-12)
+
+
+### Bug Fixes
+
+* keep the react entry from bundling the core ([#323](https://github.com/gravity-ui/yagr/issues/323)) ([34117e3](https://github.com/gravity-ui/yagr/commit/34117e3efcb8ac42f2158c158ff845c100bfcd57))
+
 ## [5.3.1](https://github.com/gravity-ui/yagr/compare/v5.3.0...v5.3.1) (2026-09-02)
 
 
