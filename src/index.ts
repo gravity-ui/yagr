@@ -1,7 +1,10 @@
 export * from './YagrCore/types';
 export * from './YagrCore/plugins/tooltip/types';
+export type {LabelsOptions, PointLabel, PlotLabel, AxisLabel} from './plugins/labels/types';
 export * from './plugins/aggregates/aggregates';
 export * from './YagrCore/plugins/tooltip';
+
+export {default as labelsPlugin} from './plugins/labels/labels';
 
 export {default as aggregatesPlugin} from './plugins/aggregates/aggregates';
 

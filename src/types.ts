@@ -1,5 +1,6 @@
 export * from './YagrCore/types';
 export * from './YagrCore/plugins/tooltip/types';
+export type {LabelsOptions, PointLabel, PlotLabel, AxisLabel} from './plugins/labels/types';
 
 export type {CursorOptions} from './YagrCore/plugins/cursor/cursor';
 export type {LegendOptions} from './YagrCore/plugins/legend/legend';

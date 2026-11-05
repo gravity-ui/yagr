@@ -36,6 +36,9 @@
     "./index.css": {
       "default": "./dist/index.css"
     },
+    "./labels.css": {
+      "default": "./dist/plugins/labels/labels.css"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
