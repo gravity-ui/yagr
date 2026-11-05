@@ -5,32 +5,40 @@ Labels plugin allows to render labels on chart. You can use it to render any tex
 ### Usage
 
 ```js
-import Labels from '@gravity-ui/yagr/labels';
+import Yagr, {labelsPlugin} from '@gravity-ui/yagr';
+import '@gravity-ui/yagr/index.css';
+import '@gravity-ui/yagr/labels.css';
 
 const yagr = new Yagr(document.body, {
-    timline: [1, 2, 3],
+    timeline: [1, 2, 3],
     series: [{
         data: [1, 2, 3],
         id: 'my-series',
     }],
-    plugins: [
-        Labels({
+    plugins: {
+        labels: labelsPlugin({
             series: {
                 draw: {
                     'my-series': {
-                        labels: (x, y) => `${y}`
-                    }
-                }
-            }  
-        })
-    ],
+                        label: (x, y) => `${y}`,
+                    },
+                },
+            },
+        }),
+    },
 });
 
 ```
 
+The plugin renders HTML labels over the plot. Import `labels.css` to position and
+style them; it is separate from the main chart stylesheet.
+
+The package also exports the `LabelsOptions`, `PointLabel`, `PlotLabel`, and
+`AxisLabel` types for configuring the plugin.
+
 ### Configuration
 
-You can setup different labels for different series, scales, axes and plot lines and bands. To setup labels rendering condition you should use `draw`, `foces`, `cursor` predicate in configuration. For instance, following configurations says: 
+You can setup different labels for different series, scales, axes and plot lines and bands. To setup labels rendering condition you should use `draw`, `focus`, `cursor` predicate in configuration. For instance, following configurations says:
 
 ```javascript
 {
